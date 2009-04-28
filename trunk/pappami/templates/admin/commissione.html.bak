@@ -1,0 +1,147 @@
+﻿<DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
+{%include "../header.inc"%}
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.Button");
+</script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>
+    <script type="text/javascript">
+
+    var map = null;
+    var geocoder = null;
+    var marker = null;
+
+    function initialize() {
+      if (GBrowserIsCompatible()) {
+        map = new GMap2(document.getElementById("map_canvas"));
+        map.setCenter(new GLatLng(45.4636889,9.1881408), 11);
+        geocoder = new GClientGeocoder();
+        if(dojo.byId("entry_lat").value != "") {
+          var point = new GLatLng(parseFloat(dojo.byId("entry_lat").value), parseFloat(dojo.byId("entry_lon").value));
+          map.setCenter(point, 13);
+          var marker = new GMarker(point);
+          map.addOverlay(marker);
+        } else if( dojo.byId("entry_2").value != "") {
+          showAddress();
+        }
+      }
+    }
+
+    function showAddress() {
+      var street = dojo.byId("entry_2").value;
+      var num = dojo.byId("entry_3").value;
+      var city = dojo.byId("entry_4").value;
+      var address = street + ", " + num + ", " + city;
+ 
+      if (geocoder && street != null && num != "" && city != "") {
+        geocoder.getLatLng(
+          address,
+          function(point) {
+            if (!point) {
+              alert(address + " not found");
+            } else {
+              map.setCenter(point, 13);
+              if(!marker) {
+       		marker = new GMarker(point);
+              	map.addOverlay(marker);
+              } else {
+              	marker.setLatLng(point);
+              }
+              dojo.byId("entry_lat").value = point.lat();
+              dojo.byId("entry_lon").value = point.lng();
+            }
+          }
+        );
+      }
+    }
+</script>
+</HEAD><BODY class="nihilo" onload="initialize()" onunload="GUnload()">
+{%include "../nav.inc"%}
+<DIV class="ss-form-container"><H1 class="ss-form-title">Commissioni Mensa: Commissione</H1>
+<P>
+<P>
+<HR class="ss-email-break" style="display:none;">
+<SPAN class="ss-required-asterisk">* Campo obbligatorio</SPAN>
+<BR>
+<FORM dojoType="dijit.form.Form" action="/admin/commissione" method="POST" id="form_0">
+<input type="hidden" name="cmd" value="save">
+<input type="hidden" name="key" value="{{key}}">
+<input type="hidden" name="lat" value="{{commissione.geo.lat}}" id="entry_lat">
+<input type="hidden" name="lon" value="{{commissione.geo.lon}}" id="entry_lon">
+<script type="dojo/method" event="onSubmit">
+if(this.validate()){
+    return true;
+} else {
+    alert('Il form contiene valori non corretti');
+    return false;
+}
+</script>
+<table width="100%">
+<tr>
+<td colspan="2">
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Nome Commissione
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_1"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="{{commissione.nome}}" class="ss-q-short" id="entry_0"></DIV></DIV>
+</td>
+<td colspan="2">
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome Scuola
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nomeScuola" value="{{commissione.nomeScuola}}" class="ss-q-short" id="entry_1"></DIV></DIV>
+</td>
+</tr>
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Indirizzo
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="strada" value="{{commissione.strada}}" class="ss-q-short" id="entry_2"></DIV></DIV>
+</td>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">Numero Civico</LABEL>
+<LABEL class="ss-q-help" for="entry_2"></LABEL>
+<LABEL for="group_2_1_1"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" size="10" name="civico" value="{{commissione.civico}}" class="ss-form-input" id="entry_3">
+</DIV></DIV>
+</td>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Città
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true"  onchange="showAddress()" name="citta" value="{{commissione.citta}}" class="ss-q-short" id="entry_4"></DIV></DIV>
+</td>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">Telefono</LABEL>
+<LABEL class="ss-q-help" for="entry_2"></LABEL>
+<LABEL for="group_2_1_1"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" name="telefono" value="{{commissione.telefono}}" class="ss-form-input" id="entry_5">
+</DIV></DIV>
+</td>
+</tr>
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">CAP
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="cap" value="{{commissione.cap}}" class="ss-q-short" id="entry_4"></DIV></DIV>
+</td>
+
+<td colspan="3">
+<INPUT type="submit" value="Salva dati"/><button dojoType="dijit.form.Button" onclick="location.href='/admin/commissione';return false;">Annulla</button>
+</td>
+</tr>
+</table>
+</FORM>
+<div id="map_canvas" style="width: 500px; height: 300px"></div>
+</BODY></HTML>
