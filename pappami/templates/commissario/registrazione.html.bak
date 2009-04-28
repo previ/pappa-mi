@@ -1,0 +1,66 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
+{%include "header.inc"%}
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.Button");
+</script>
+</HEAD><BODY class="nihilo">
+{%include "nav.inc"%}
+<DIV class="ss-form-container"><H1 class="ss-form-title">Commissioni Mensa: Registrazione Commissario</H1>
+<P>
+<P>
+<HR class="ss-email-break" style="display:none;">
+<SPAN class="ss-required-asterisk">* Campo obbligatorio</SPAN>
+<BR>
+<FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
+<script type="dojo/method" event="onSubmit">
+if(this.validate()){
+    return true;
+} else {
+    alert('Il form contiene valori non corretti');
+    return false;
+}
+</script>
+<table width="100%">
+<tr>
+<td colspan="3">
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_1">Commissione che ha eseguito l'ispezione</LABEL>
+<SELECT name="commissione" id="entry_1" dojoType="dijit.form.Select" multiple="yes">{% for c in commissioni %}
+<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}}</OPTION>{% endfor %}
+</SELECT></DIV></DIV>
+</td>
+</tr>
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="" class="ss-q-short" id="entry_0"></DIV></DIV>
+</td>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Cognome
+<SPAN class="ss-required-asterisk">*</SPAN></LABEL>
+<LABEL class="ss-q-help" for="entry_0"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="cognome" value="" class="ss-q-short" id="entry_0"></DIV></DIV>
+</td>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">email</LABEL>
+<LABEL class="ss-q-help" for="entry_2"></LABEL>
+<LABEL for="group_2_1_1"></LABEL><INPUT type="text" readonly="yes" name="email" value="{{user.email}}" class="ss-form-input" id="group_2_1_1">
+</DIV></DIV>
+</td>
+</tr>
+</table>
+<P align="center">
+<INPUT type="submit" value="Salva dati"/><button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Annulla</button></FORM>
+<P>
+</BODY></HTML>

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Commissioni Mensa: Statistiche</TITLE>
+{%include "header.inc"%}
+<body class="nihilo">
+{%include "nav.inc"%}
+<DIV class="ss-form-container">
+<H1 class="ss-form-title">Statistiche</H1>
+<TABLE class="goog-ws-table" cellspacing="0">
+<thead class="goog-ws-list-header">
+<tr>
+<th>Valori</th>
+<th>Media totale</th>
+<th>Media ultimo mese</th>
+</tr>
+</thead>
+<tbody class="goog-ws-list-table">
+<tr>
+<td>Numero Schede</td><td>{{stats.numeroSchede}}</td><td>{{statsMese.numeroSchede}}</td>
+<tr></tr>
+<td>Primo Piatto - Assaggio</td><td>{{stats.primoAssaggio}}</td><td>{{statsMese.primoAssaggio}}</td>
+<tr></tr>
+<td>Primo Piatto - Gradimento</td><td>{{stats.primoGradimento}}</td><td>{{statsMese.primoGradimento}}</td>
+<tr></tr>
+<td>Secondo Piatto - Assaggio</td><td>{{stats.secondoAssaggio}}</td><td>{{statsMese.secondoAssaggio}}</td>
+<tr></tr>
+<td>Secondo Piatto - Gradimento</td><td>{{stats.secondoGradimento}}</td><td>{{statsMese.secondoGradimento}}</td>
+<tr></tr>
+<td>Contorno Piatto - Assaggio</td><td>{{stats.contornoAssaggio}}</td><td>{{statsMese.contornoAssaggio}}</td>
+<tr></tr>
+<td>Contorno Piatto - Gradimento</td><td>{{stats.contornoGradimento}}</td><td>{{statsMese.contornoGradimento}}</td>
+<tr></tr>
+<td>Pulizia Refettorio</td><td>{{stats.puliziaRefettorio}}</td><td>{{statsMese.puliziaRefettorio}}</td>
+<tr></tr>
+<td>Lavaggio Finale</td><td>{{stats.lavaggioFinale}}</td><td>{{statsMese.lavaggioFinale}}</td>
+<tr></tr>
+<td>Smaltimento Rifiuti</td><td>{{stats.smaltimentoRifiuti}}</td><td>{{statsMese.smaltimentoRifiuti}}</td>
+<tr></tr>
+<td>Giudizio Globale</td><td>{{stats.giudizioGlobale}}</td><td>{{statsMese.giudizioGlobale}}</td>
+<tr></tr>
+<td>Numero Nonconformità Cibo Crudo o Bruciato</td><td>{{stats.ncCrudoBruciato}}</td><td>{{statsMese.ncCrudoBruciato}}</td>
+<tr></tr>
+<td>Numero Nonconformità Corpi Estranei</td><td>{{stats.ncCorpiEstranei}}</td><td>{{statsMese.ncCorpiEstranei}}</td>
+<tr></tr>
+<td>Numero Nonconformità Cattivo Odore</td><td>{{stats.ncCattivoOdore}}</td><td>{{statsMese.ncCattivoOdore}}</td>
+<tr></tr>
+<td>Numero Nonconformità Gusto Sospetto</td><td>{{stats.ncGustoSospetto}}</td><td>{{statsMese.ncGustoSospetto}}</td>
+<tr></tr>
+<td>Richiesta Campionatura</td><td>{{stats.ncRichiestaCampionatura}}</td><td>{{statsMese.ncRichiestaCampionatura}}</td>
+</tr>
+<tr>
+</tbody>
+</table>
+</div>
+</body> 
+</html>
