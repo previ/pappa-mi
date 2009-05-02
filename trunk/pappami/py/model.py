@@ -11,10 +11,10 @@ class CentroCucina(db.Model):
   telefono = db.StringProperty()
   fax = db.StringProperty()
   email = db.EmailProperty()
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
+  #creato_da = db.UserProperty(auto_current_user_add=True)
+  #creato_il = db.DateTimeProperty(auto_now_add=True)
+  #modificato_da = db.UserProperty(auto_current_user=True)
+  #modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
 class Commissione(db.Model):
@@ -71,7 +71,7 @@ class Menu(db.Model):
   secondo = db.StringProperty()
   contorno = db.StringProperty()
   
-class Ispezione(db.Model):
+class Ispezione(db.Expando):
       
   commissione = db.ReferenceProperty(Commissione)
   commissario = db.ReferenceProperty(Commissario)
@@ -84,16 +84,17 @@ class Ispezione(db.Model):
   
   dataIspezione = db.DateProperty()
 
-  aaRispettoCapitolato = db.BooleanProperty()
-  aaTavoliApparecchiati = db.BooleanProperty()
-  aaTermichePulite = db.BooleanProperty()
-  aaScaldaVivande = db.BooleanProperty()  
-  aaLavastovigliePresente = db.BooleanProperty()
-  aaTabellaEsposta = db.BooleanProperty()
+  aaRispettoCapitolato = db.IntegerProperty()
+  aaTavoliApparecchiati = db.IntegerProperty()
+  aaTermichePulite = db.IntegerProperty()
+  aaAcqua = db.IntegerProperty()
+  aaScaldaVivande = db.IntegerProperty()  
+  aaLavastovigliePresente = db.IntegerProperty()
+  aaTabellaEsposta = db.IntegerProperty()
   
-  ricicloStoviglie = db.BooleanProperty()
-  ricicloPosate = db.BooleanProperty()
-  ricicloBicchieri = db.BooleanProperty()
+  ricicloStoviglie = db.IntegerProperty()
+  ricicloPosate = db.IntegerProperty()
+  ricicloBicchieri = db.IntegerProperty()
 
   numeroPastiTotale = db.IntegerProperty()
   numeroPastiBambini = db.IntegerProperty()
@@ -110,7 +111,7 @@ class Ispezione(db.Model):
   primoFineDist = db.TimeProperty()
   primoPrevisto = db.StringProperty(default="")
   primoEffettivo = db.StringProperty(default="")
-  primoCondito = db.StringProperty()
+  primoCondito = db.IntegerProperty()
   primoCottura = db.IntegerProperty()
   primoTemperatura = db.IntegerProperty()
   primoQuantita = db.IntegerProperty()
@@ -129,7 +130,7 @@ class Ispezione(db.Model):
 
   contornoPrevisto = db.StringProperty(default="")
   contornoEffettivo = db.StringProperty(default="")
-  contornoCondito = db.StringProperty()
+  contornoCondito = db.IntegerProperty()
   contornoCottura = db.IntegerProperty()
   contornoTemperatura = db.IntegerProperty()
   contornoQuantita = db.IntegerProperty()
@@ -156,19 +157,31 @@ class Ispezione(db.Model):
   giudizioGlobale = db.IntegerProperty()
   note = db.TextProperty(default="")
 
-  ncMenuDiverso = db.BooleanProperty()
-  ncCiboAvanzato = db.BooleanProperty()
-  ncQuantita = db.BooleanProperty()
-  ncStoviglie = db.BooleanProperty()
-  ncArredi = db.BooleanProperty()
-  ncPulizia = db.BooleanProperty()
-  ncRifiuti = db.BooleanProperty()
-  ncDiete = db.BooleanProperty()
-  ncRitardo = db.BooleanProperty()
-  ncCorpiEstranei = db.BooleanProperty()
-  ncRichiestaCampionatura = db.BooleanProperty()
+  ncMenuDiverso = db.IntegerProperty()
+  ncCiboAvanzato = db.IntegerProperty()
+  ncQuantita = db.IntegerProperty()
+  ncStoviglie = db.IntegerProperty()
+  ncArredi = db.IntegerProperty()
+  ncPulizia = db.IntegerProperty()
+  ncRifiuti = db.IntegerProperty()
+  ncDiete = db.IntegerProperty()
+  ncRitardo = db.IntegerProperty()
+  ncCorpiEstranei = db.IntegerProperty()
+  ncRichiestaCampionatura = db.IntegerProperty()
   ncNote = db.TextProperty(default="")
 
+  def ncPresenti(self):
+    s = self.ncMenuDiverso + self.ncCiboAvanzato + self.ncQuantita + self.ncStoviglie + self.ncArredi + self.ncPulizia + self.ncRifiuti + self.ncDiete + self.ncRitardo + self.ncCorpiEstranei + self.ncRichiestaCampionatura
+    #for n in self.properties():
+      #if n.find("nc") == 0:        
+        #v = self.properties()[n]
+        #s = s + v
+    if s > 0 :
+      s = 1
+    else:
+      s = 0
+    return s
+  
 class Statistiche:
   numeroSchede = int(0)
   
@@ -184,8 +197,5 @@ class Statistiche:
   smaltimentoRifiuti = float(0)
   giudizioGlobale = float(0)
 
-  ncCrudoBruciato = int(0)
-  ncCorpiEstranei = int(0)
-  ncCattivoOdore = int(0)
-  ncGustoSospetto = int(0)
+  ncTotali = int(0)
   ncRichiestaCampionatura = int(0)

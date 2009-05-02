@@ -1,3 +1,4 @@
+<div class="navigation" id="navigation">
 <span class="goog-ws-half-width">
 <a href="/" class="btn"><b><b><b><b  style="font-weight:bold !important;">Home Page</b></b></b></b></a>
 </span>
@@ -25,4 +26,4 @@
 <span class="goog-ws-half-width">
 <a href="{{url}}" class="btn"><b><b><b><b  style="font-weight:bold !important;">{{url_linktext}} {{user.nickname}} - {{user.email}}</b></b></b></b></a>
 </span>
-<br/><br/>
+</div>

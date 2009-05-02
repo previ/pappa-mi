@@ -1,13 +1,37 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
 {%include "header.inc"%}
+<style>
+#main {
+width:60em;
+height:40em;
+background-color:#fff;
+border:1px solid #ccc;
+margin:1em auto;
+padding:0em
+}
+#content {
+float:left;
+width:30em;
+height:auto;
+padding:0;
+padding:1em;
+}
+#side {
+float:left;
+width:26em;
+height:50%;
+padding:1em;
+}
+</style>
 </HEAD>
 <body class="nihilo">
 {%include "nav.inc"%}
-<DIV class="ss-form-container">
+<div id="main">
+<div id="content">
 <H1 class="ss-form-title">Benvenuti in Commissione Mensa</H1>
-<br><br><br>
+<br><br>
 <p>
 Questa applicazione permette la raccolta delle schede di valutazione del servizio di ristorazione offerto nelle scuole di Milano
 </p>
@@ -25,5 +49,7 @@ Se siete un Commissario e volete utilizzare l'applicazione per inserire i dati d
 </p>
 <br><br><br>
 </div>
-</body> 
+<div id="side">
+<embed src="http://rsstool.sanriotown.com/rssReader.swf" FlashVars="rss=http%3A%2F%2Fgroups.google.it%2Fgroup%2Fpappami-aggiornamenti%2Ffeed%2Frss_v2_0_msgs.xml&count=10&bgcolor=#FFFFFF&color=#000000&titlecolor=#000000&titlebgcolor=#FFFFFF&fontsize=12&summary=1&sumlen=0&showTime=1&bullet=1&border=1" quality="high" bgcolor="#ffffff" name="rssReader" align="middle" allowScriptAccess="sameDomain" width="100%" height="100%" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /></div></div>{%include "footer.inc"%}
+</body>
 </html>

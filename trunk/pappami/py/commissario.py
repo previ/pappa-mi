@@ -27,7 +27,9 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.api import mail
 
+from py.gviz_api import *
 from py.model import *
 from py.form import IspezioneForm
 
@@ -40,12 +42,33 @@ class CMCommissarioHandler(webapp.RequestHandler):
     user = users.get_current_user()
     commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
     if( commissario is None):
-      self.request.redirect("/commissario/registrazione")
+      self.redirect("/commissario/registrazione")
     else:
+      # Creating the data
+      description = {"commissione": ("string", "Commissione"),
+                     "dataIspezione": ("date", "Data"),
+                     "primo": ("string", "Primo"),
+                     "secondo": ("string", "Secondo"),
+                     "contorno": ("string", "Contorno"),
+                     "frutta": ("string", "Frutta"),
+                     "pasti": ("string", "Pasti serviti"),
+                     "nc": ("string", u"Non conformita"),
+                     "key": ("string", "")}
+      
+      data = list()
+      for ispezione in Ispezione.all().filter("commissario",commissario).order("-dataIspezione"):
+        data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "primo": str(ispezione.primoAssaggio) + " " + str(ispezione.primoGradimento), "secondo": str(ispezione.secondoAssaggio) + " " + str(ispezione.secondoGradimento), "contorno":str(ispezione.contornoAssaggio) + " " + str(ispezione.contornoGradimento), "frutta":str(ispezione.fruttaAssaggio) + " " + str(ispezione.fruttaGradimento), "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "nc":str(ispezione.ncPresenti()), "key":"<a href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
+
+      # Loading it into gviz_api.DataTable
+      data_table = DataTable(description)
+      data_table.LoadData(data)
+
+      # Creating a JSon string
+      ispezioni = data_table.ToJSon(columns_order=("commissione", "dataIspezione", "primo", "secondo", "contorno", "frutta", "pasti", "nc", "key"), order_by="dataIspezione")
 
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
-      ispezioni = Ispezione.all().filter("commissario = ", commissario).order("-dataIspezione")
+
       template_values = {
         'user': user,
         'admin': users.is_current_user_admin(),
@@ -92,7 +115,9 @@ class CMRegistrazioneHandler(webapp.RequestHandler):
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
-      
+
+      self.sendRegistrationRequestMail(commissario)
+    
     url = users.create_logout_url("/")
     url_linktext = 'Logout'
     user = users.get_current_user()
@@ -107,6 +132,20 @@ class CMRegistrazioneHandler(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), '../templates/commissario/registrazione_ok.html')
     self.response.out.write(template.render(path, template_values))
 
+  def sendRegistrationRequestMail(self, commissario) :
+
+    message = mail.EmailMessage()
+    message.sender = users.get_current_user().email()
+    message.to = "aiuto.pappami@gmail.com"
+    message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
+    message.body = commissario.nome + " " + commissario.cognome + """ ha inviato una richiesta di registrazione come Commissario. 
+    
+    Per abilitarlo usare il seguente link:
+    
+    """ + "http://test-pappa-mi.appspot.com/admin/commissario?cmd=enable&key="+str(commissario.key())
+
+    message.send()
+      
 class CMIspezioneHandler(webapp.RequestHandler):
   
   @login_required
@@ -141,7 +180,10 @@ class CMIspezioneHandler(webapp.RequestHandler):
       for field in form:
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
-        
+      
+      form.data["ncPresenti"] = str(isp.ncPresenti())
+      form.data["commissione"] = isp.commissione
+      logging.info(form.data["ncPresenti"])
       url_linktext = 'Logout'
       url = users.create_logout_url("/")
       user = users.get_current_user()
@@ -172,7 +214,8 @@ class CMIspezioneHandler(webapp.RequestHandler):
       for field in form:
         #logging.info(field.name)
         form.data[field.name] = str(form.initial[field.name])
-         
+      #form.data["ncPresenti"] = isp.ncPresenti()
+        
       template_values = {
         'user': user,
         'admin': users.is_current_user_admin(),
@@ -180,7 +223,7 @@ class CMIspezioneHandler(webapp.RequestHandler):
         'url': url,
         'url_linktext': url_linktext,
         'form': form,
-        'commissioni': Commissario.all().filter("user", user).order("nome").get().commissioni()
+        'commissioni': Commissario.all().filter("user", user).filter("stato", 1).get().commissioni()
         }
 
       path = os.path.join(os.path.dirname(__file__), '../templates/commissario/ispezione.html')
@@ -196,23 +239,10 @@ class CMIspezioneHandler(webapp.RequestHandler):
       isp = memcache.get(preview)
       memcache.delete(preview)
       isp.put()
-
-      ispezioni = Ispezione.all().filter("commissario = ", commissario).order("-dataIspezione")    
+      memcache.delete("stats")
+      memcache.delete("statsMese")
       
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-  
-      template_values = {
-        'user': user,
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'url': url,
-        'url_linktext': url_linktext,
-        'ispezioni': ispezioni
-        }
-  
-      path = os.path.join(os.path.dirname(__file__), '../templates/commissario/commissario.html')
-      self.response.out.write(template.render(path, template_values))
+      self.redirect("/commissario")
     else:
       key = self.request.get("key")
       if( key != "" ) :
@@ -256,11 +286,13 @@ class CMIspezioneHandler(webapp.RequestHandler):
         url = users.create_logout_url("/")
         user = users.get_current_user()
   
+        commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+        
         template_values = {
           'user': user,
           'admin': users.is_current_user_admin(),
-          'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-          'commissioni': Commissario.all().filter("user", user).filter("stato", 1).get().commissioni(),
+          'commissario': commissario is not None,
+          'commissioni': commissario.commissioni(),
           'url': url,
           'url_linktext': url_linktext,
           'form': form
@@ -268,74 +300,6 @@ class CMIspezioneHandler(webapp.RequestHandler):
         
         path = os.path.join(os.path.dirname(__file__), '../templates/commissario/ispezione.html')
         self.response.out.write(template.render(path, template_values))
-
-
-  def saveIspezione(self, isp):
-    isp.commissione = Commissione.get(db.Key(self.request.get("commissione")))
-
-    isp.data = datetime.strptime(self.request.get("dataIspezione"),DATE_FORMAT).date()
-  
-    isp.ncCrudoBruciato = self.request.get("ncCrudoBruciato")
-    isp.ncCorpiEstranei = self.request.get("ncCorpiEstranei")
-    isp.ncCattivoOdore = self.request.get("ncCattivoOdore")
-    isp.ncGustoSospetto = self.request.get("ncGustoSospetto")
-    isp.ncRichiestaCampionatura = self.request.get("ncRichiestaCampionatura")
-
-    isp.ncMenuDiverso = self.request.get("ncMenuDiverso")
- 
-    isp.numeroPastiTotale = int(self.request.get("numeroPastiTotale"))
-    isp.numeroPastiBambini = int(self.request.get("numeroPastiBambini"))
-    isp.numeroPastiSpeciali = int(self.request.get("numeroPastiSpeciali"))
-    isp.numeroAddetti = int(self.request.get("numeroAddetti"))
-
-    isp.puliziaRefettorio = int(self.request.get("puliziaRefettorio"))
-
-    isp.ricicloStoviglie = self.request.get("ricicloStoviglie")
-    isp.ricicloPosate = self.request.get("ricicloPosate")
-    isp.ricicloBicchieri = self.request.get("ricicloBicchieri")
-
-    isp.arrivoTermiche = datetime.strptime(self.request.get("arrivoTermiche"),TIME_FORMAT).time()
-
-    isp.primoDistribuzione = datetime.strptime(self.request.get("primoDistribuzione"),TIME_FORMAT).time()
-    isp.primoCottura = int(self.request.get("primoCottura"))
-    isp.primoTemperatura = int(self.request.get("primoTemperatura"))
-    isp.primoAssaggio = int(self.request.get("primoAssaggio"))
-    isp.primoGradimento = int(self.request.get("primoGradimento"))
-    isp.primoQuantita = int(self.request.get("primoQuantita"))
-    #isp.primoNote = self.request.get("primoNote")
-
-    isp.secondoDistribuzione = datetime.strptime(self.request.get("secondoDistribuzione"),TIME_FORMAT).time()
-    isp.secondoCottura = int(self.request.get("secondoCottura"))
-    isp.secondoTemperatura = int(self.request.get("secondoTemperatura"))
-    isp.secondoAssaggio = int(self.request.get("secondoAssaggio"))
-    isp.secondoGradimento = int(self.request.get("secondoGradimento"))
-    isp.secondoQuantita = int(self.request.get("secondoQuantita"))
-    #isp.secondoNote = self.request.get("secondoNote")
-
-    isp.contornoCottura = int(self.request.get("contornoCottura"))
-    isp.contornoTemperatura = int(self.request.get("contornoTemperatura"))
-    isp.contornoAssaggio = int(self.request.get("contornoAssaggio"))
-    isp.contornoGradimento = int(self.request.get("contornoGradimento"))
-    isp.contornoQuantita = int(self.request.get("contornoQuantita"))
-    #isp.contornoNote = self.request.get("contornoNote")
-
-    isp.paneAssaggio = int(self.request.get("paneAssaggio"))
-    isp.paneGradimento = int(self.request.get("paneGradimento"))
-    isp.paneQuantita = int(self.request.get("paneQuantita"))
-    #isp.paneNote = self.request.get("paneNote")
-
-    isp.fruttaTipo = self.request.get("fruttaTipo")
-    isp.fruttaAssaggio = int(self.request.get("fruttaAssaggio"))
-    isp.fruttaGradimento = int(self.request.get("fruttaGradimento"))
-    #isp.fruttaQuantita = int(self.request.get("fruttaQuantita"))
-    #isp.fruttaNote = self.request.get("fruttaNote")
-
-    isp.finePasto = datetime.strptime(self.request.get("finePasto"),TIME_FORMAT).time()
-    
-    isp.lavaggioFinale = int(self.request.get("lavaggioFinale"))
-    isp.smaltimentoRifiuti = int(self.request.get("smaltimentoRifiuti"))
-    isp.giudizioGlobale = int(self.request.get("giudizioGlobale"))
-    isp.note = self.request.get("note")
 
 application = webapp.WSGIApplication([
   ('/commissario/ispezione', CMIspezioneHandler),

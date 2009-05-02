@@ -71,6 +71,7 @@ class CMCommissioneHandler(webapp.RequestHandler):
       'user': user,
       'admin': users.is_current_user_admin(),
       'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+      'test': self.request.url.find("test") != -1,
       'url': url,
       'url_linktext': url_linktext
       }
@@ -99,19 +100,13 @@ class CMStatsHandler(webapp.RequestHandler):
         stats.contornoGradimento = stats.contornoGradimento + isp.contornoGradimento
   
         stats.puliziaRefettorio = stats.puliziaRefettorio + isp.puliziaRefettorio
-        stats.lavaggioFinale = stats.lavaggioFinale + isp.lavaggioFinale
         stats.smaltimentoRifiuti = stats.smaltimentoRifiuti + isp.smaltimentoRifiuti
         stats.giudizioGlobale = stats.giudizioGlobale + isp.giudizioGlobale
   
-        if isp.ncCrudoBruciato == "Si" :
-          stats.ncCrudoBruciato = stats.ncCrudoBruciato + 1 
-        if isp.ncCorpiEstranei == "Si": 
-          stats.ncCorpiEstranei = stats.ncCorpiEstranei + 1 
-        if isp.ncCattivoOdore == "Si":
-          stats.ncCattivoOdore = stats.ncCattivoOdore + 1 
-        if isp.ncGustoSospetto == "Si" :
-          stats.ncGustoSospetto = stats.ncGustoSospetto + 1 
-        if isp.ncRichiestaCampionatura == "Si":
+        if isp.ncPresenti() :
+          stats.ncTotali = stats.ncTotali + 1
+           
+        if isp.ncRichiestaCampionatura:
           stats.ncRichiestaCampionatura = stats.ncRichiestaCampionatura + 1 
   
         if( datetime.now().date() - isp.dataIspezione < timedelta(days = 30)):
@@ -125,21 +120,12 @@ class CMStatsHandler(webapp.RequestHandler):
           statsMese.contornoGradimento = statsMese.contornoGradimento + isp.contornoGradimento
   
           statsMese.puliziaRefettorio = statsMese.puliziaRefettorio + isp.puliziaRefettorio
-          statsMese.lavaggioFinale = statsMese.lavaggioFinale + isp.lavaggioFinale
           statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti + isp.smaltimentoRifiuti
           statsMese.giudizioGlobale = statsMese.giudizioGlobale + isp.giudizioGlobale
-  
-          if isp.ncCrudoBruciato == "Si" :
-            statsMese.ncCrudoBruciato = statsMese.ncCrudoBruciato + 1 
-          if isp.ncCorpiEstranei == "Si": 
-            statsMese.ncCorpiEstranei = statsMese.ncCorpiEstranei + 1 
-          if isp.ncCattivoOdore == "Si":
-            statsMese.ncCattivoOdore = statsMese.ncCattivoOdore + 1 
-          if isp.ncGustoSospetto == "Si" :
-            statsMese.ncGustoSospetto = statsMese.ncGustoSospetto + 1 
-          if isp.ncRichiestaCampionatura == "Si":
-            statsMese.ncRichiestaCampionatura = statsMese.ncRichiestaCampionatura + 1 
-  
+
+          if isp.ncPresenti() :
+            statsMese.ncTotali = statsMese.ncTotali + 1
+
       if stats.numeroSchede > 0 :
         stats.primoAssaggio = stats.primoAssaggio / stats.numeroSchede
         stats.primoGradimento = stats.primoGradimento / stats.numeroSchede
@@ -202,12 +188,12 @@ class CMMenuHandler(webapp.RequestHandler):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
 
-      menus = Menu.all().filter("validitaDa <", data).filter("giorno", data.isoweekday())
+      menus = Menu.all().filter("validitaDa <", data).filter("giorno", data.isoweekday()).filter("centroCucina", Commissione.get(self.request.get("commissione")).centroCucina)
 
       logging.info("len %d" , menus.count())
 
       for m in menus:
-        logging.info("settimana %d giorno %d", m.settimana, m.giorno)
+        #logging.info("settimana %d giorno %d", m.settimana, m.giorno)
         if(((data-m.validitaDa).days - data.isoweekday()) / 7 % 4 == m.settimana):
           menu = m
       

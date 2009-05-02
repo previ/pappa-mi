@@ -36,20 +36,20 @@ function validateradio() {
 //Request the data using the query passed as a parameter
   var getMenu = function(){
     date = dojo.byId("e_dataIspezione").value;
+    commissione = dojo.byId("e_commissione").value;
     dateArr = date.split("/");
     date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
-    var urlserv = "/menu?cmd=getbydate&data="+date;
-
+    var urlserv = "/menu?cmd=getbydate&data="+date+"&commissione="+commissione;
 	var kw = {
 	        url: urlserv,
 	        load: function(data){ 
 			var menu = data.split("|");				        	
-	                dojo.byId('primoPrevisto').value = menu[0];
-	                dojo.byId('secondoPrevisto').value = menu[1];
-	                dojo.byId('contornoPrevisto').value = menu[2];
-	                dojo.byId('primoEffettivo').value = menu[0];
-	                dojo.byId('secondoEffettivo').value = menu[1];
-	                dojo.byId('contornoEffettivo').value = menu[2];
+	                dojo.byId('e_primoPrevisto').value = menu[0];
+	                dojo.byId('e_secondoPrevisto').value = menu[1];
+	                dojo.byId('e_contornoPrevisto').value = menu[2];
+	                dojo.byId('e_primoEffettivo').value = menu[0];
+	                dojo.byId('e_secondoEffettivo').value = menu[1];
+	                dojo.byId('e_contornoEffettivo').value = menu[2];
 	        },
 	        error: function(data){
 	                console.debug("Errore: ", data);
@@ -59,9 +59,29 @@ function validateradio() {
 	dojo.xhrGet(kw);
   }
   
-function set_all(prefix, value) {
-  var radios = dojo.query('INPUT[type=radio][name^='+prefix+'][value='+value+']');
+function setAll(prefix, value) {
+  var radios = dojo.query('INPUT[type=radio][name^='+prefix+']');
   for(var x = 0; x < radios.length; x++){
-    radios[x].checked = true;
+    var radio = radios[x];
+    if(radio.name!="ncPresenti") {
+      if(value=="0") {
+        if(radio.value=="0")        
+          radio.checked = true;
+	else
+	  radio.checked = false;
+        radio.disabled = true;
+      } else {
+        radio.disabled = false;
+      }
+    }
+  }	
+}
+function enableAll(prefix) {
+  var radios = dojo.query('INPUT[type=radio][name^='+prefix+']');
+  for(var x = 0; x < radios.length; x++){
+    var radio = radios[x];
+    if(radio.name!="ncPresenti") {
+      radio.disabled = false;
+    }
   }	
 }

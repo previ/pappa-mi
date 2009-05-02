@@ -1,5 +1,6 @@
 import datetime
 from google.appengine.ext import db
+from google.appengine.tools.bulkloader import Loader
 from py.model import *
 
 class CommissioneLoader(Loader):
@@ -20,3 +21,6 @@ class CommissioneLoader(Loader):
                      ('distretto', str),
                      ('centroCucina', lambda x: db.Key.from_path('CentroCucina',x))
                      ])
+    self.alias_old_names()
+    
+loaders = [CommissioneLoader]
