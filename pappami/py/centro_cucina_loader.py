@@ -1,6 +1,7 @@
 import datetime
 from google.appengine.ext import db
-from pappami.model import *
+from google.appengine.tools.bulkloader import Loader
+from py.model import *
 
 class CentroCucinaLoader(Loader):
   def __init__(self):
@@ -16,3 +17,6 @@ class CentroCucinaLoader(Loader):
                      ('email', str)
                      ])
                      
+    self.alias_old_names()
+    
+loaders = [CentroCucinaLoader]

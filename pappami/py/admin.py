@@ -18,7 +18,7 @@
 import os
 import cgi
 import logging
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, date, time
 import wsgiref.handlers
 
 from google.appengine.ext import db
@@ -27,9 +27,11 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.api import mail
 
 from py.model import *
 from py.form import CommissioneForm
+from py.gviz_api import *
 
 
 TIME_FORMAT = "T%H:%M:%S"
@@ -52,7 +54,7 @@ class CMAdminMenuHandler(webapp.RequestHandler):
     }
 
     if( self.request.get("data") ):
-      data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
+      data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
       menu = Menu.all().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
       template_values['data'] = data
       template_values['menu'] = menu
@@ -75,8 +77,8 @@ class CMAdminMenuHandler(webapp.RequestHandler):
         'url_linktext': url_linktext,
       }
 
-      if( self.request.get("data") ):
-        data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
+      if self.request.get("data") :
+        data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
         menu = Menu.all().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
         template_values['data'] = data
         template_values['menu'] = menu
@@ -109,6 +111,7 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
         'centriCucina': CentroCucina.all().order("nome"),
         'user': user,      
         'admin': users.is_current_user_admin(),
+        'test': self.request.url.find("test") != -1,
         'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
         'url': url,
         'url_linktext': url_linktext
@@ -265,21 +268,103 @@ class CMAdminHandler(webapp.RequestHandler):
       url_linktext = 'Logout'
       user = users.get_current_user()
 
+      stato = False
+      commissario = Commissario.all().filter("user", user).get()
+      if commissario :
+        stato = commissario.stato
+        
       template_values = {
         'user': user,
         'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'commissario': stato == 1,
         'url': url,
         'url_linktext': url_linktext
       }
       path = os.path.join(os.path.dirname(__file__), '../templates/admin/admin.html')
       self.response.out.write(template.render(path, template_values))
 
+class CMAdminCommissarioHandler(webapp.RequestHandler):
+
+  def get(self):    
+
+    if( self.request.get("cmd") == "enable" or
+        self.request.get("cmd") == "disable" ):
+      
+      commissario = Commissario.get(self.request.get("key"))
+
+      url = users.create_logout_url("/")
+      url_linktext = 'Logout'
+      user = users.get_current_user()
+              
+      if self.request.get("cmd") == "enable" :
+        commissario.stato = 1 
+      elif self.request.get("cmd") == "disable" :
+        commissario.stato = 0 
+        
+      commissario.put()
+      
+      if commissario.stato == 1:
+
+        message = mail.EmailMessage()
+        message.sender = "aiuto.pappami@gmail.com"
+        message.to = commissario.user.email()
+        message.subject = "Pappa-Mi Registrazione confermata"
+        message.body = """ Benvenuto in commissione mensa !"""
+          
+        message.send()
+
+      
+      self.redirect("/admin/commissario")
+    
+    else:
+      url = users.create_logout_url("/")
+      url_linktext = 'Logout'
+      user = users.get_current_user()
+
+      # Creating the data
+      description = {"nome": ("string", "Nome"),
+                     "cognome": ("string", "Cognome"),
+                     "email": ("string", "Email"),
+                     "commissioni": ("string", "Commissioni"),
+                     "stato": ("string", "Stato"),
+                     "comando": ("string", "Azione")}
+      
+      data = list()
+      for commissario in Commissario.all():
+        if commissario.stato == 1:
+          stato = "Attivo"
+          cmd = "disable"
+          comando = "Disabilita"
+        else:
+          stato = "Richiesta"
+          cmd = "enable"
+          comando = "Attiva"
+        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissario.commissioni()[0].nome, "stato":stato, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
+
+      # Loading it into gviz_api.DataTable
+      data_table = DataTable(description)
+      data_table.LoadData(data)
+
+      # Creating a JSon string
+      json = data_table.ToJSon(columns_order=("nome", "cognome", "email", "commissioni", "stato", "comando"), order_by="cognome")
+
+ 
+      template_values = {
+        'admin': users.is_current_user_admin(),
+        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'json': json,
+        'url': url,
+        'url_linktext': url_linktext,
+        'user': user
+      }
+      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissari.html')
+      self.response.out.write(template.render(path, template_values))
     
     
 application = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/menu', CMAdminMenuHandler),
+  ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
 ], debug=True)
 

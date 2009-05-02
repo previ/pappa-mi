@@ -20,38 +20,40 @@ dojo.require("custom.form.TimeTextBox");
 <div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Raccolta dati Ispezioni</h1>
 <p/>
 <p/>
-<hr class="ss-email-break" style="display:none;">
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
 <br/>
 <br/>
-<form dojoType="dijit.form.Form" action="/commissario/ispezione" method="post" id="form0">
+{% if form.errors %}
+<div class="errorbox-bad" id="form-error">
+	<p>Non è stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
+	<ul>
+{{form.errors}}
+	</ul>
+</div>
+{% endif %}<form dojoType="dijit.form.Form" action="/commissario/ispezione" method="post" id="form0">
 <script type="dojo/method" event="onSubmit">
+dojo.byId("e_submit").disabled = true;
+dojo.byId("e_annulla").disabled = true;
+enableAll("nc");
 if(this.validate()&&validateradio()){
     return true;
 } else {
+    dojo.byId("e_submit").disabled = false;
+    dojo.byId("e_annulla").disabled = false;
     alert('Il form contiene valori non corretti');
     return false;
 }
 return true;
 </script>
 <table width="100%">
-{% if form.errors.all %}
-<tr>
-<td colspan="3">
-<div class="errorbox-bad">
-{{ form.errors|pluralize }}
-</div>
-<td>
-<tr>
-{% endif %}
 <tr>
 <td>
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<select name="commissione" id="e_commissione">{% for commissione in commissioni %}
-<option value="{{commissione.key}}"{% ifequal form.data.commissione commissione.key %} selected{% endifequal %}>{{commissione.nome}}</option>{% endfor %}
+<select name="commissione" id="e_commissione" onchange="getMenu()">{% for cm in commissioni %}
+<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>
@@ -177,8 +179,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="True" id="e_aarc_1" {% ifequal form.data.aaRispettoCapitolato "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="False" id="e_aarc_2" {% ifequal form.data.aaRispettoCapitolato "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="1" id="e_aarc_1" {% ifequal form.data.aaRispettoCapitolato "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="0" id="e_aarc_2" {% ifequal form.data.aaRispettoCapitolato "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -193,8 +195,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaTavoliApparecchiati" value="True" id="e_ncta_1" {% ifequal form.data.aaTavoliApparecchiati "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaTavoliApparecchiati" value="False" id="e_nctp_2" {% ifequal form.data.aaTavoliApparecchiati "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaTavoliApparecchiati" value="1" id="e_aata_1" {% ifequal form.data.aaTavoliApparecchiati "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaTavoliApparecchiati" value="0" id="e_aatp_2" {% ifequal form.data.aaTavoliApparecchiati "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -209,8 +211,24 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaTermichePulite" value="True" id="e_nctp_1" {% ifequal form.data.aaTermichePulite "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaTermichePulite" value="False" id="e_nctp_2" {% ifequal form.data.aaTermichePulite "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaTermichePulite" value="1" id="e_aatp_1" {% ifequal form.data.aaTermichePulite "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaTermichePulite" value="0" id="e_aatp_2" {% ifequal form.data.aaTermichePulite "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">L'acqua servita non proviene dai servizi igienici
+<span class="ss-required-asterisk">*</span></label>
+</td>
+<td align="center">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry">
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">Si</td>
+<td class="ss-scalerow"><input type="radio" name="aaAcqua" value="1" id="e_aaac_1" {% ifequal form.data.aaAcqua "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaAcqua" value="0" id="e_aaac_2" {% ifequal form.data.aaAcqua "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -225,8 +243,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="True" id="e_ncsv_1" {% ifequal form.data.aaScaldaVivande "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="False" id="e_ncsv_2" {% ifequal form.data.aaScaldaVivande "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="1" id="e_ncsv_1" {% ifequal form.data.aaScaldaVivande "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="0" id="e_ncsv_2" {% ifequal form.data.aaScaldaVivande "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -241,8 +259,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="True" id="e_nclp_1" {% ifequal form.data.aaLavastovigliePresente "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="False" id="e_nclp_2" {% ifequal form.data.aaLavastovigliePresente "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="1" id="e_nclp_1" {% ifequal form.data.aaLavastovigliePresente "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="0" id="e_nclp_2" {% ifequal form.data.aaLavastovigliePresente "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -257,8 +275,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="True" id="e_ncte_1" {% ifequal form.data.aaTabellaEsposta "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="False" id="e_ncte_2" {% ifequal form.data.aaTabellaEsposta "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="1" id="e_ncte_1" {% ifequal form.data.aaTabellaEsposta "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="0" id="e_ncte_2" {% ifequal form.data.aaTabellaEsposta "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -273,8 +291,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ricicloStoviglie" value="True" id="e_ncte_1" {% ifequal form.data.ricicloStoviglie "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ricicloStoviglie" value="False" id="e_ncte_2" {% ifequal form.data.ricicloStoviglie "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ricicloStoviglie" value="1" id="e_ncte_1" {% ifequal form.data.ricicloStoviglie "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ricicloStoviglie" value="0" id="e_ncte_2" {% ifequal form.data.ricicloStoviglie "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -289,8 +307,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ricicloBicchieri" value="True" id="e_ncte_1" {% ifequal form.data.ricicloBicchieri "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ricicloBicchieri" value="False" id="e_ncte_2" {% ifequal form.data.ricicloBicchieri "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ricicloBicchieri" value="1" id="e_ncte_1" {% ifequal form.data.ricicloBicchieri "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ricicloBicchieri" value="0" id="e_ncte_2" {% ifequal form.data.ricicloBicchieri "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -305,8 +323,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ricicloPosate" value="True" id="e_ncte_1" {% ifequal form.data.ricicloPosate "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ricicloPosate" value="False" id="e_ncte_2" {% ifequal form.data.ricicloPosate "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ricicloPosate" value="1" id="e_ncte_1" {% ifequal form.data.ricicloPosate "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ricicloPosate" value="0" id="e_ncte_2" {% ifequal form.data.ricicloPosate "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -325,8 +343,8 @@ return true;
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="primoCondito" value="True" id="e_pc_1" {% ifequal form.data.primoCondito "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="primoCondito" value="False" id="e_pc_2" {% ifequal form.data.primoCondito "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="primoCondito" value="1" id="e_pc_1" {% ifequal form.data.primoCondito "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="primoCondito" value="0" id="e_pc_2" {% ifequal form.data.primoCondito "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 <td>
@@ -472,12 +490,12 @@ Contorno
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
+<div class="ss-form-entry"><label class="ss-q-title" for="e_cc_1">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="True" id="e_pc_1" {% ifequal form.data.contornoCondito "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="False" id="e_pc_2" {% ifequal form.data.contornoCondito "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="1" id="e_cc_1" {% ifequal form.data.contornoCondito "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="0" id="e_cc_2" {% ifequal form.data.contornoCondito "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 <td>
@@ -555,12 +573,12 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Presente in tavola a inizio pasto
+<div class="ss-form-entry"><label class="ss-q-title" for="e_pp_1">Presente in tavola a inizio pasto
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="True" id="e_pc_1" {% ifequal form.data.paneServito "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="contornoCondito" value="False" id="e_pc_2" {% ifequal form.data.paneServito "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="paneServito" value="1" id="e_pp_1" {% ifequal form.data.paneServito "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="paneServito" value="0" id="e_pp_2" {% ifequal form.data.paneServito "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 <td>
@@ -769,8 +787,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="" value="True" id="e_ncpr_1" {% ifequal form.data.ncPresenti "True" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="set_all('nc', 'False');" value="False" id="e_ncpr_2" {% ifequal form.data.ncPresenti "True" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="setAll('nc', '1');" value="1" id="e_ncpr_1" {% ifequal form.data.ncPresenti "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="setAll('nc', '0');" value="0" id="e_ncpr_2" {% ifequal form.data.ncPresenti "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -785,8 +803,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="True" id="e_ncmd_1" {% ifequal form.data.ncMenuDiverso "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="False" id="e_ncmd_2" {% ifequal form.data.ncMenuDiverso "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="1" id="e_ncmd_1" {% ifequal form.data.ncMenuDiverso "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="0" id="e_ncmd_2" {% ifequal form.data.ncMenuDiverso "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -801,8 +819,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="True" id="e_ncca_1" {% ifequal form.data.ncCiboAvanzato "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="False" id="e_ncca_2" {% ifequal form.data.ncCiboAvanzato "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="1" id="e_ncca_1" {% ifequal form.data.ncCiboAvanzato "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="0" id="e_ncca_2" {% ifequal form.data.ncCiboAvanzato "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -817,8 +835,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="True" id="e_ncqt_1" {% ifequal form.data.ncQuantita "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="False" id="e_ncqt_2" {% ifequal form.data.ncQuantita "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="1" id="e_ncqt_1" {% ifequal form.data.ncQuantita "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="0" id="e_ncqt_2" {% ifequal form.data.ncQuantita "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -833,8 +851,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="True" id="e_ncst_1" {% ifequal form.data.ncStoviglie "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="False" id="e_ncst_2" {% ifequal form.data.ncStoviglie "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="1" id="e_ncst_1" {% ifequal form.data.ncStoviglie "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="0" id="e_ncst_2" {% ifequal form.data.ncStoviglie "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -849,8 +867,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncArredi" value="True" id="e_ncar_1" {% ifequal form.data.ncArredi "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncArredi" value="False" id="e_ncar_2" {% ifequal form.data.ncArredi "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncArredi" value="1" id="e_ncar_1" {% ifequal form.data.ncArredi "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncArredi" value="0" id="e_ncar_2" {% ifequal form.data.ncArredi "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -865,8 +883,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="True" id="e_ncpz_1" {% ifequal form.data.ncPulizia "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="False" id="e_ncpz_2" {% ifequal form.data.ncPulizia "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="1" id="e_ncpz_1" {% ifequal form.data.ncPulizia "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="0" id="e_ncpz_2" {% ifequal form.data.ncPulizia "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -881,8 +899,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="True" id="e_ncrf_1" {% ifequal form.data.ncRifiuti "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="False" id="e_ncrf_2" {% ifequal form.data.ncRifiuti "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="1" id="e_ncrf_1" {% ifequal form.data.ncRifiuti "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="0" id="e_ncrf_2" {% ifequal form.data.ncRifiuti "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -897,8 +915,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncDiete" value="True" id="e_ncdt_1" {% ifequal form.data.ncDiete "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncDiete" value="False" id="e_ncdt_2" {% ifequal form.data.ncDiete "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncDiete" value="1" id="e_ncdt_1" {% ifequal form.data.ncDiete "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncDiete" value="0" id="e_ncdt_2" {% ifequal form.data.ncDiete "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -913,8 +931,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="True" id="e_ncrt_1" {% ifequal form.data.ncRitardo "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="False" id="e_ncrt_2" {% ifequal form.data.ncRitardo "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="1" id="e_ncrt_1" {% ifequal form.data.ncRitardo "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="0" id="e_ncrt_2" {% ifequal form.data.ncRitardo "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -929,8 +947,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="True" id="e_ncce_1" {% ifequal form.data.ncCorpiEstranei "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="False" id="e_ncce_2" {% ifequal form.data.ncCorpiEstranei "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="1" id="e_ncce_1" {% ifequal form.data.ncCorpiEstranei "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="0" id="e_ncce_2" {% ifequal form.data.ncCorpiEstranei "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -945,8 +963,8 @@ Non Conformità Gravi
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="True" id="e_ncrc_1" {% ifequal form.data.ncRichiestaCampionatura "True" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="False" id="e_ncrc_2" {% ifequal form.data.ncRichiestaCampionatura "False" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="1" id="e_ncrc_1" {% ifequal form.data.ncRichiestaCampionatura "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="0" id="e_ncrc_2" {% ifequal form.data.ncRichiestaCampionatura "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -960,11 +978,11 @@ Non Conformità Gravi
 </textarea></div></div>
 </td>
 </tr>
-</table>
-</div>
+<tr>
+<td colspan="3">
+<input type="submit" value="Salva dati" id="e_submit"/><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table>
-<p>
-<input type="submit" value="Salva dati"/><button onclick="location.href='/commissario';return false;">Annulla</button></p></form></div>
+</form></div>{%include "footer.inc"%}
 </body></html>

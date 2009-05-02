@@ -6,8 +6,9 @@
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.Button");
-</script>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>
+</script>{%if test%}
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxR-kkwChykYW7WKcP9E61FIpqtdnBTu75SoRIRFZtvbJ_a6sG3HegmbSw" type="text/javascript"></script>
+{%else%}<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>{%endif%}
 <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/mapiconmaker/1.0/src/mapiconmaker.js" type="text/javascript"></script> 
 <script type="text/javascript">
     var map = null;
@@ -24,23 +25,24 @@ dojo.require("dijit.form.Button");
           map.setCenter(point, 13);
           var marker = new GMarker(point);
           map.addOverlay(marker);
-        } else if( dojo.byId("entry_2").value != "") {
+        } else if( dojo.byId("e_strada").value != "") {
           showAddress();
         }
       }
     }
 
     function showAddress() {
-      var street = dojo.byId("entry_2").value;
-      var num = dojo.byId("entry_3").value;
-      var city = dojo.byId("entry_4").value;
-      var address = street + ", " + num + ", " + city;
-      if (geocoder && street != "" && num != "" && city != "") {
+      var street = dojo.byId("e_strada").value;
+      var num = dojo.byId("e_numero").value;
+      var city = dojo.byId("e_citta").value;
+      var cap = dojo.byId("e_cap").value;
+      var address = street + ", " + num + ", " + cap + " " + city;
+      if (geocoder && street != "" && num != "" && cap != "" && city != "") {
         geocoder.getLatLng(
           address,
           function(point) {
             if (!point) {
-              alert(address + " not found");
+              alert(address + " non trovato");
             } else {
               map.setCenter(point, 13);
               if(marker == undefined) {
@@ -81,24 +83,24 @@ if(this.validate()){
 <tr>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Nome Commissione
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_nome">Nome Commissione
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_1"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="{{commissione.nome}}" class="ss-q-short" id="entry_0"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_nome"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="{{commissione.nome}}" class="ss-q-short" id="e_nome"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome Scuola
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_nomeScuola">Nome Scuola
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nomeScuola" value="{{commissione.nomeScuola}}" class="ss-q-short" id="entry_1"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_nomeScuola"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nomeScuola" value="{{commissione.nomeScuola}}" class="ss-q-short" id="e_nomeScuola"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Tipo Scuola
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_tipoScuola">Tipo Scuola
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<SELECT name="tipoScuola" id="entry_2">
+<LABEL class="ss-q-help" for="e_tipoScuola"></LABEL>
+<SELECT name="tipoScuola" id="e_tipoScuola">
 <OPTION value="Materna"{% ifequal commissione.tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
 <OPTION value="Primaria"{% ifequal commissione.tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
 <OPTION value="Secondaria"{% ifequal commissione.tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
@@ -106,90 +108,90 @@ if(this.validate()){
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Codice Scuola
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_codiceScuola">Codice Scuola
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="codiceScuola" value="{{commissione.codiceScuola}}" class="ss-q-short" id="entry_3"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_codiceScuola"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="codiceScuola" value="{{commissione.codiceScuola}}" class="ss-q-short" id="e_codiceScuola" style="width:7em;"></DIV></DIV>
 </td>
 </tr>
 <tr>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Indirizzo
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_strada">Indirizzo
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="strada" value="{{commissione.strada}}" class="ss-q-short" id="entry_4"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_strada"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="strada" value="{{commissione.strada}}" class="ss-q-short" id="e_strada"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">Numero Civico</LABEL>
-<LABEL class="ss-q-help" for="entry_2"></LABEL>
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_numero">Numero Civico</LABEL>
+<LABEL class="ss-q-help" for="e_numero"></LABEL>
 <LABEL for="group_2_1_1"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="civico" value="{{commissione.civico}}" class="ss-form-input" id="entry_5">
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="civico" value="{{commissione.civico}}" class="ss-form-input" id="e_numero" style="width:5em;">
 </DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Città
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_citta">Città
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="citta" value="{{commissione.citta}}" class="ss-q-short" id="entry_6"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_citta"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="citta" value="{{commissione.citta}}" class="ss-q-short" id="e_citta"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">Telefono</LABEL>
-<LABEL class="ss-q-help" for="entry_2"></LABEL>
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_telefono">Telefono</LABEL>
+<LABEL class="ss-q-help" for="e_telefono"></LABEL>
 <LABEL for="group_2_1_1"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" name="telefono" value="{{commissione.telefono}}" class="ss-form-input" id="entry_7">
+<INPUT type="text" dojoType="dijit.form.TextBox" name="telefono" value="{{commissione.telefono}}" class="ss-form-input" id="e_telefono" style="width:8em;">
 </DIV></DIV>
 </td>
 </tr>
 <tr>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">CAP
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_cap">CAP
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="cap" value="{{commissione.cap}}" class="ss-q-short" id="entry_8"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_cap"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="cap" value="{{commissione.cap}}" class="ss-q-short" id="e_cap" style="width:5em;"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Centro Cucina
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_cc">Centro Cucina
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<SELECT name="centroCucina" id="entry_9">{% for cc in centriCucina %}
+<LABEL class="ss-q-help" for="e_cc"></LABEL>
+<SELECT name="centroCucina" id="e_cc">{% for cc in centriCucina %}
 <OPTION value="{{cc.key}}"{% ifequal commissione.centroCucina.key cc.key %} selected{% endifequal %}>{{cc.nome}}</OPTION>{% endfor %}
 </SELECT></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">email
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_email">email
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="email" value="{{commissione.email}}" class="ss-q-short" id="entry_10"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_email"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="email" value="{{commissione.email}}" class="ss-q-short" id="e_email"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Fax
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_fax">Fax
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="fax" value="{{commissione.fax}}" class="ss-q-short" id="entry_11"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_fax"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="fax" value="{{commissione.fax}}" class="ss-q-short" id="e_fax" style="width:8em;"></DIV></DIV>
 </td>
 </tr>
 <tr>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Zona
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_zona">Zona
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="zona" value="{{commissione.zona}}" class="ss-q-short" id="entry_12"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_zona"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="zona" value="{{commissione.zona}}" class="ss-q-short" id="e_zona" style="width:4em;"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Distretto
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_distretto">Distretto
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="distretto" value="{{commissione.distretto}}" class="ss-q-short" id="entry_13"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_distretto"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="distretto" value="{{commissione.distretto}}" class="ss-q-short" id="e_distretto" style="width:4em;"></DIV></DIV>
 </td>
 <td>
 </td>
@@ -201,5 +203,5 @@ if(this.validate()){
 </tr>
 </table>
 </FORM>
-<div id="map_canvas" style="height: 300px"></div></div>
+<div id="map_canvas" style="height: 300px"></div></div>{%include "footer.inc"%}
 </BODY></HTML>

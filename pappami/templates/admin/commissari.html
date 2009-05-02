@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
+{%include "../header.inc"%}
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+  <script>
+    google.load('visualization', '1', {packages:['table']});
+
+    google.setOnLoadCallback(drawTable);
+    
+    function drawTable() {
+      var json_table = new google.visualization.Table(document.getElementById('table_div_json'));
+      var json_data = new google.visualization.DataTable({{json}}, 0.5);
+
+      json_table.draw(json_data, {allowHtml: true, showRowNumber: true});
+    }
+  </script>
+</HEAD><body class="nihilo">
+{%include "../nav.inc"%}
+<div class="ss-form-container"><H1 class="ss-form-title">Gestione Commissari</H1>
+<div id="table_div_json"></div>
+</div>{%include "footer.inc"%}
+</body>
+</html>

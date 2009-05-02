@@ -2,54 +2,35 @@
 <HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
 {%include "../header.inc"%}
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+  <script>
+google.load('visualization', '1', {packages:['table']});
+
+google.setOnLoadCallback(drawTable);
+
+function drawTable() {
+  var table = new google.visualization.Table(document.getElementById('ispezioni'));
+  var data = new google.visualization.DataTable({{ispezioni}}, 0.5);
+  new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data, 1);
+  table.draw(data, {allowHtml: true, showRowNumber: false});
+}
+
+    </script>
 </HEAD><BODY class="nihilo">
 {%include "../nav.inc"%}
 <DIV class="ss-form-container"><H1 class="ss-form-title">Pagina Commissario</H1>
-  <p>
-  
-<DIV id="jot-content" class="goog-ws-content goog-ws-clear">
-<DIV id="goog-ws-list-floatingBar" class="goog-scrollfloater">
-<DIV class="goog-ws-clear">
-<DIV class="goog-ws-half-width goog-ws-right goog-ws-text-right">
-<SPAN class="goog-ws-grey">
-                    Visualizzazione di <SPAN xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-rowCount">{{ispezioni.count}}</SPAN> voci
-                  </SPAN>
-</DIV>
-</DIV>
-<TABLE class="goog-ws-table" cellspacing="0">
-<THEAD class="goog-ws-list-header"><TR>
-<TH width="20&percnt;">Commissione</TH>
-<TH width="20&percnt;">Data</TH>
-<TH width="20&percnt;">Ambienti</TH>
-<TH width="10&percnt;">Giudizio Servizio</TH>
-<TH width="20&percnt;">Giudizio Cibo</TH>
-<TH width="20&percnt;">Nonconformità</TH>
-</TR>
-</THEAD>
-<TBODY>
-{% for isp in ispezioni %}
-<TR class="goog-ws-list-tableRow">
-<TD width="20&percnt;" dir="ltr">{{isp.commissione.nome}}</TD>
-<TD width="20&percnt;" dir="ltr"><a href="/commissario/ispezione?cmd=open&key={{isp.key}}">{{isp.dataIspezione|date:"d/m/Y"}}</a></TD>
-<TD width="20&percnt;" dir="ltr">Pulizia: {{isp.puliziaRefettorio}}<br>Lavaggio: {{isp.lavaggioFinale}}<br>Smaltimento: {{isp.smaltimentoRifiuti}}</TD>
-<TD width="10&percnt;"></TD>
-<TD width="20&percnt;" dir="ltr">Primo {{isp.primoAssaggio}}/{{isp.primoGradimento}}<br>Secondo: {{isp.secondoAssaggio}}/{{isp.secondoGradimento}}<br> Contorno: {{isp.contornoAssaggio}}/{{isp.contornoGradimento}}</TD>
-<TD width="10&percnt;">{{isp.ncMenuDiverso}}</TD>
-</TR>
-{% endfor %}
-</TBODY>
-</TABLE>
-<DIV class="goog-ws-clear" style="padding-top:5px;">
+</p>
+</p>
+</p>
+<div id="ispezioni"></div>
+</p>
+</p>
 <DIV class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/ispezione" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Ispezione</B></B></B></B></A>
 </DIV>
-<DIV class="goog-ws-half-width goog-ws-right goog-ws-text-right">
-<SPAN class="goog-ws-grey">
-                  Visualizzazione di <SPAN xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-rowCount">{{ispezioni.count}}</SPAN> voci
-                </SPAN>
-</DIV>
-</DIV>
-</DIV>
-
-  </body> 
+</p>
+</p>
+</p>
+</DIV>{%include "footer.inc"%}
+</body> 
 </html>
