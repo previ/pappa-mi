@@ -124,12 +124,46 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
       url_linktext = 'Logout'
       user = users.get_current_user()
 
+      # Creating the data
+      description = {"nome": ("string", "Commissione"),
+                     "nomeScuola": ("string", "Scuola"),
+                     "tipo": ("string", "Tipo"),
+                     "indirizzo": ("string", "Indirizzo"),
+                     "centroCucina": ("string", "Centro Cucina"),
+                     "distretto": ("string", "Dist."),
+                     "zona": ("string", "Zona"),
+                     "comando": ("string", "")}
+      
+      commissioni = Commissione.all()
+      if self.request.get("tipoScuola") :
+        commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
+      if self.request.get("centroCucina") :
+        commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
+      if self.request.get("nome") :
+        commissioni = commissioni.filter("nome>=", self.request.get("nome"))
+        commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
+
+      data = list()
+      for commissione in commissioni.order("nome"):
+        data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "centroCucina": commissione.centroCucina.nome, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"'>Apri</a>"})
+
+      # Loading it into gviz_api.DataTable
+      data_table = DataTable(description)
+      data_table.LoadData(data)
+
+      # Creating a JSon string
+      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "centroCucina", "distretto", "zona", "comando"), order_by="nome")
+
       centriCucina = CentroCucina.all().order("nome")
- 
+
       template_values = {
         'admin': users.is_current_user_admin(),
         'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
         'centriCucina': centriCucina,
+        'gvizdata': gvizdata,
+        'tipoScuola': self.request.get("tipoScuola"),
+        'centroCucina': self.request.get("centroCucina"),
+        'nome': self.request.get("nome"),
         'url': url,
         'url_linktext': url_linktext,
         'user': user
@@ -151,22 +185,8 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
         commissione.geo = db.GeoPt(float(self.request.get("lat")), float(self.request.get("lon")))
         commissione.put()
 
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-              
-      commissioni = Commissione.all().order("nome")
-      template_values = {
-        'commissioni': commissioni,
-        'user': user,      
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'url': url,
-        'url_linktext': url_linktext
-      }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissioni.html')
-      self.response.out.write(template.render(path, template_values))
-
+      self.redirect("/admin/commissione")
+      
     elif self.request.get("cmd") == "list":
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
@@ -202,68 +222,6 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
 class CMAdminHandler(webapp.RequestHandler):
 
   def get(self):    
-    if( self.request.get("cmd") == "init" ):
-
-      commissione = Commissione(nome="Commissione Materna Muzio", nomeScuola="Scuola Materna Muzio", strada="Via Muzio", civico="9", citta="Milano", cap="20124", telefono="0212345678", geo=db.GeoPt(45.4912543, 9.1995684))
-      commissione.put()
-
-      commissione = Commissione(nome="Commissione Elementare Muzio", nomeScuola="Scuola Elementare Muzio", strada="Via Muzio", civico="9", citta="Milano", cap="20124", telefono="0212345678", geo=db.GeoPt(45.4912543, 9.1995684))
-      commissione.put()
-      commissario = Commissario(user=users.User("test@example.com"), nome="Barba", cognome="Papa", commissione=commissione)
-      commissario.put()
-    
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 1, giorno = 1, primo="Primo 1 - 1", secondo="Secondo 1 - 1", contorno="Contorno 1 - 1")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 1, giorno = 2, primo="Primo 1 - 2", secondo="Secondo 1 - 2", contorno="Contorno 1 - 2")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 1, giorno = 3, primo="Primo 1 - 3", secondo="Secondo 1 - 3", contorno="Contorno 1 - 3")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 1, giorno = 4, primo="Primo 1 - 4", secondo="Secondo 1 - 4", contorno="Contorno 1 - 4")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 1, giorno = 5, primo="Primo 1 - 5", secondo="Secondo 1 - 5", contorno="Contorno 1 - 5")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 2, giorno = 1, primo="Primo 2 - 1", secondo="Secondo 2 - 1", contorno="Contorno 2 - 1")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 2, giorno = 2, primo="Primo 2 - 2", secondo="Secondo 2 - 2", contorno="Contorno 2 - 2")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 2, giorno = 3, primo="Primo 2 - 3", secondo="Secondo 2 - 3", contorno="Contorno 2 - 3")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 2, giorno = 4, primo="Primo 2 - 4", secondo="Secondo 2 - 4", contorno="Contorno 2 - 4")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 2, giorno = 5, primo="Primo 2 - 5", secondo="Secondo 2 - 5", contorno="Contorno 2 - 5")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 3, giorno = 1, primo="Primo 3 - 1", secondo="Secondo 3 - 1", contorno="Contorno 3 - 1")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 3, giorno = 2, primo="Primo 3 - 2", secondo="Secondo 3 - 2", contorno="Contorno 3 - 2")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 3, giorno = 3, primo="Primo 3 - 3", secondo="Secondo 3 - 3", contorno="Contorno 3 - 3")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 3, giorno = 4, primo="Primo 3 - 4", secondo="Secondo 3 - 4", contorno="Contorno 3 - 4")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 3, giorno = 5, primo="Primo 3 - 5", secondo="Secondo 3 - 5", contorno="Contorno 3 - 5")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 4, giorno = 1, primo="Primo 4 - 1", secondo="Secondo 4 - 1", contorno="Contorno 4 - 1")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 4, giorno = 2, primo="Primo 4 - 2", secondo="Secondo 4 - 2", contorno="Contorno 4 - 2")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 4, giorno = 3, primo="Primo 4 - 3", secondo="Secondo 4 - 3", contorno="Contorno 4 - 3")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 4, giorno = 4, primo="Primo 4 - 4", secondo="Secondo 4 - 4", contorno="Contorno 4 - 4")
-      menu.put()
-      menu = Menu(validitaDa=datetime.strptime("2008-09-01",DATE_FORMAT).date(),validitaA=datetime.strptime("2009-06-30",DATE_FORMAT).date(), settimana = 4, giorno = 5, primo="Primo 4 - 5", secondo="Secondo 4 - 5", contorno="Contorno 4 - 5")
-      menu.put()
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-
-      template_values = {
-        'user': users.get_current_user(),      
-        'url': url,
-        'url_linktext': url_linktext
-      }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/admin.html')
-      self.response.out.write(template.render(path, template_values))
-
-    else:
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
       user = users.get_current_user()
@@ -339,7 +297,11 @@ class CMAdminCommissarioHandler(webapp.RequestHandler):
           stato = "Richiesta"
           cmd = "enable"
           comando = "Attiva"
-        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissario.commissioni()[0].nome, "stato":stato, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
+        
+        commissioni = ""
+        for c in commissario.commissioni():
+          commissioni = commissioni + c.nome + "<br/>"
+        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissioni, "stato":stato, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
 
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)

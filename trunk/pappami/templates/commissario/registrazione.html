@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
 {%include "../header.inc"%}
@@ -6,6 +6,7 @@
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.Button");
+dojo.require("dijit.Tooltip");
 </script>
 </HEAD><BODY class="nihilo">
 {%include "../nav.inc"%}
@@ -17,10 +18,13 @@ dojo.require("dijit.form.Button");
 <BR>
 <FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
-if(this.validate()){
+if(this.validate()&&
+dojo.byId("e_n").value != "" &&
+dojo.byId("e_c").value != "" &&
+dojo.byId("e_cm").value != ""){
     return true;
 } else {
-    alert('Il form contiene valori non corretti');
+    alert('Inserire tutti i dati richiesti');
     return false;
 }
 </script>
@@ -28,39 +32,42 @@ if(this.validate()){
 <tr>
 <td colspan="3">
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_cm">Commissione
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_1">Commissione che ha eseguito l'ispezione</LABEL>
-<SELECT name="commissione" id="entry_1" dojoType="dijit.form.Select" multiple="yes">{% for c in commissioni %}
+<SELECT name="commissione" id="e_cm" multiple="yes">{% for c in commissioni %}
 <OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}}</OPTION>{% endfor %}
-</SELECT></DIV></DIV>
+</SELECT><span dojoType="dijit.Tooltip" connectId="e_cm" position="above" id="tt_cm"> 
+Selezionare una o più Commissioni Mensa</span> 
+</DIV></DIV>
 </td>
 </tr>
 <tr>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_n">Nome
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="" class="ss-q-short" id="entry_0"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_n"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="nome" value="" class="ss-q-short" id="e_n"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Cognome
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_c">Cognome
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
-<LABEL class="ss-q-help" for="entry_0"></LABEL>
-<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="cognome" value="" class="ss-q-short" id="entry_0"></DIV></DIV>
+<LABEL class="ss-q-help" for="e_c"></LABEL>
+<INPUT type="text" dojoType="dijit.form.TextBox" required="true" name="cognome" value="" class="ss-q-short" id="e_c"></DIV></DIV>
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">email</LABEL>
-<LABEL class="ss-q-help" for="entry_2"></LABEL>
-<LABEL for="group_2_1_1"></LABEL><INPUT type="text" readonly="yes" name="email" value="{{user.email}}" class="ss-form-input" id="group_2_1_1">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_c">email</LABEL>
+<LABEL class="ss-q-help" for="e_c"></LABEL>
+<LABEL for="group_2_1_1"></LABEL><INPUT type="text" readonly="yes" name="email" value="{{user.email}}" class="ss-form-input" id="e_e">
 </DIV></DIV>
 </td>
 </tr>
+<tr>
+<td align="center">
+<INPUT type="submit" value="Salva dati"/><button onclick="location.href='/';return false;" id="e_b">Annulla</button></FORM>
+</td>
+</tr>
 </table>
-<P align="center">
-<INPUT type="submit" value="Salva dati"/><button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Annulla</button></FORM>
-<P>
 </BODY></HTML>

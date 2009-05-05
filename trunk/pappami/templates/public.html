@@ -1,5 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
 {%include "header.inc"%}
 <style>
@@ -25,6 +27,54 @@ height:50%;
 padding:1em;
 }
 </style>
+<script type="text/javascript">
+dojo.require("dojox.data.GoogleFeedStore");
+dojo.require("dijit.form.Button");
+dojo.addOnLoad(doQuery);
+
+function printResults(items){
+  var container = dojo.byId("atomResults");
+  var buffer = [""];
+  //Iterate over the items that were retrieved
+  dojo.forEach(items, function(item, request){        
+    
+    //Calling getValue returns a single value.  
+    var title = atomStore1.getValue(item, "title");
+    var content = atomStore1.getValue(item, "content");
+    var link = atomStore1.getValue(item, "link");
+    var date = new Date(atomStore1.getValue(item, "publishedDate"));
+    buffer.push(date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear());
+    buffer.push("<a href='" + link 
+          + "' target='_new'>" 
+          + title + "</a>");
+    buffer.push(content);
+    
+    //Calling getValues returns an array of values
+    var categories = atomStore1.getValues(item, "category");
+    
+    if (categories&&categories.length) {
+      var buffer2 = [];
+      dojo.forEach(categories, function(category){
+        buffer2.push(category.term)
+      });
+      buffer.push("Categories: " + buffer2.join(" | "));
+    }
+    container.innerHTML = buffer.join("<br/>")
+  });
+  container.innerHTML = buffer.join("<br/>");
+}
+  
+function doQuery(){
+  //Call the asynchronous 'fetch' method, and specify 
+  //the function to call with the returned results 
+  //using the onComplete parameter.
+  atomStore1.fetch({
+    query:{url: "http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"},
+    count: 5,
+    onComplete: printResults
+  });
+}
+</script>
 </HEAD>
 <body class="nihilo">
 {%include "nav.inc"%}
@@ -45,11 +95,14 @@ I commissari sono volontari (genitori di allievi) che operano per conto di una o
 I dati raccolti sono utilzzati come base statistica per il monitoraggio del servizio offerto.
 </p>
 <p>
-Se siete un Commissario e volete utilizzare l'applicazione per inserire i dati delle ispezioni potete registratevi con il link in basso.
+Se siete un Commissario e volete utilizzare l'applicazione per inserire i dati delle ispezioni potete registratevi con il link "Registrazione Nuovo Commissario".
 </p>
 <br><br><br>
 </div>
 <div id="side">
-<embed src="http://rsstool.sanriotown.com/rssReader.swf" FlashVars="rss=http%3A%2F%2Fgroups.google.it%2Fgroup%2Fpappami-aggiornamenti%2Ffeed%2Frss_v2_0_msgs.xml&count=10&bgcolor=#FFFFFF&color=#000000&titlecolor=#000000&titlebgcolor=#FFFFFF&fontsize=12&summary=1&sumlen=0&showTime=1&bullet=1&border=1" quality="high" bgcolor="#ffffff" name="rssReader" align="middle" allowScriptAccess="sameDomain" width="100%" height="100%" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /></div></div>{%include "footer.inc"%}
+<div dojoType="dojox.data.GoogleFeedStore" url="http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"
+  id="atomStore1" jsId="atomStore1"></div>
+<div id="atomResults"></div>
+</div></div>{%include "footer.inc"%}
 </body>
 </html>
