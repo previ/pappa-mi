@@ -27,6 +27,32 @@ indexes:
   - name: user
   - name: nome
 
+# Used 6 times in query history.
+- kind: Commissione
+  properties:
+  - name: centroCucina
+  - name: tipoScuola
+  - name: nome
+
+# Used once in query history.
+- kind: Commissione
+  properties:
+  - name: nome<
+  - name: nome>=
+  - name: nome
+
+# Used 3 times in query history.
+- kind: Commissione
+  properties:
+  - name: nome>=
+  - name: nome
+
+# Used once in query history.
+- kind: Commissione
+  properties:
+  - name: tipoScuola
+  - name: nome
+
 # Used 126 times in query history.
 - kind: Ispezione
   properties:
@@ -34,14 +60,14 @@ indexes:
   - name: data
     direction: desc
 
-# Used 275 times in query history.
+# Used 334 times in query history.
 - kind: Ispezione
   properties:
   - name: commissario
   - name: dataIspezione
     direction: desc
 
-# Used 198 times in query history.
+# Used 206 times in query history.
 - kind: Menu
   properties:
   - name: centroCucina

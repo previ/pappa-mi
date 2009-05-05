@@ -135,10 +135,10 @@ class CMRegistrazioneHandler(webapp.RequestHandler):
   def sendRegistrationRequestMail(self, commissario) :
 
     message = mail.EmailMessage()
-    message.sender = users.get_current_user().email()
+    message.sender = "aiuto.pappami@gmail.com"
     message.to = "aiuto.pappami@gmail.com"
     message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
-    message.body = commissario.nome + " " + commissario.cognome + """ ha inviato una richiesta di registrazione come Commissario. 
+    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
     
     Per abilitarlo usare il seguente link:
     

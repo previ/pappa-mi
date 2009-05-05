@@ -4,17 +4,21 @@ from google.appengine.ext import db
 
 class CentroCucina(db.Model):
   nome = db.StringProperty()
+  codice = db.StringProperty()
   strada = db.StringProperty()
   civico = db.StringProperty()
   citta = db.StringProperty()
   cap = db.StringProperty()
+  nomeContatto = db.StringProperty()
+  cognomeContatto = db.StringProperty()
   telefono = db.StringProperty()
   fax = db.StringProperty()
   email = db.EmailProperty()
-  #creato_da = db.UserProperty(auto_current_user_add=True)
-  #creato_il = db.DateTimeProperty(auto_now_add=True)
-  #modificato_da = db.UserProperty(auto_current_user=True)
-  #modificato_il = db.DateTimeProperty(auto_now=True)
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
 class Commissione(db.Model):
@@ -32,8 +36,8 @@ class Commissione(db.Model):
   fax = db.StringProperty(default="")
   email = db.EmailProperty()
   geo = db.GeoPtProperty()
+  
   centroCucina = db.ReferenceProperty(CentroCucina)
-
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)

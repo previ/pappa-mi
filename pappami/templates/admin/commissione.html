@@ -1,5 +1,6 @@
-<DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"pa "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
 {%include "../header.inc"%}
 <script type="text/javascript">
@@ -20,7 +21,7 @@ dojo.require("dijit.form.Button");
         map = new GMap2(document.getElementById("map_canvas"));
         map.setCenter(new GLatLng(45.4636889,9.1881408), 11);
         geocoder = new GClientGeocoder();
-        if(dojo.byId("entry_lat").value != "") {
+        if(dojo.byId("entry_lat").value != "") {tml
           var point = new GLatLng(parseFloat(dojo.byId("entry_lat").value), parseFloat(dojo.byId("entry_lon").value));
           map.setCenter(point, 13);
           var marker = new GMarker(point);

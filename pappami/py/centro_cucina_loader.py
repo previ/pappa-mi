@@ -12,6 +12,8 @@ class CentroCucinaLoader(Loader):
                      ('civico', str),
                      ('citta', str),
                      ('cap', str),
+                     ('nomeContatto', str),
+                     ('cognomeContatto', str),
                      ('telefono', str),
                      ('fax', str),
                      ('email', str)

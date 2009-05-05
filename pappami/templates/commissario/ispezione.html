@@ -4,6 +4,7 @@
 <title>Commissioni Mensa: Raccolda dati Ispezioni</title>
 {%include "../header.inc"%}
 <script type="text/javascript">
+dojo.require("dijit.Tooltip");
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.Textarea");
 dojo.require("dijit.form.NumberTextBox");
@@ -58,9 +59,12 @@ return true;
 </td>
 <td>
 <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_dataIspezione">Data Ispezione
+<div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataIspezione">Data Ispezione
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" onchange="getMenu()" required="true" name="dataIspezione" value="{{form.data.dataIspezione}}" class="ss-q-short" id="e_dataIspezione"/></div></div>
+<span dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
+Inserire la data in cui è stata effettuata l'ispezione.
+</span> 
 </td>
 <td>
 </td>
@@ -105,21 +109,21 @@ return true;
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoEffettivo">Primo
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.TextBox" required="yes" name="primoEffettivo" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo"/>
+<input type="text" dojoType="dijit.form.TextBox" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo"/>
 </div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoEffettivo">Secondo
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.TextBox" name="secondoEffettivo" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo"/>
+<input type="text" dojoType="dijit.form.TextBox" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo"/>
 </div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_contornoEffettivo">Contorno
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.TextBox" name="contornoEffettivo" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo"/>
+<input type="text" dojoType="dijit.form.TextBox" name="contornoEffettivo" required="true" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo"/>
 </div></div>
 </td>
 </tr>
@@ -128,13 +132,13 @@ return true;
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 </td>
 </tr>
 <tr>
@@ -337,7 +341,11 @@ return true;
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_primoFineDist">Fine distribuzione
+<span class="ss-required-asterisk">*</span></label>
+<input type="text" name="primoFineDist" value="{{form.data.primoFineDist}}" class="ss-q-short" id="e_primoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
@@ -407,21 +415,21 @@ return true;
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">
+<th colspan="3" class="table_separator">
 Secondo Piatto
-</td>
+</th>
 </tr>
 <tr>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="entry_14"></label>
-<input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
@@ -463,11 +471,11 @@ Secondo Piatto
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoAssaggio">Assaggio
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Pessimo</td>
+<tr><td class="ss-scalerow ss-leftlabel">Non Accettabile</td>
 <td class="ss-scalerow"><input type="radio" name="secondoAssaggio" value="1" id="e_secondoAssaggio_1" {% ifequal form.data.secondoAssaggio "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoAssaggio" value="2" id="e_secondoAssaggio_2" {% ifequal form.data.secondoAssaggio "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoAssaggio" value="3" id="e_secondoAssaggio_3" {% ifequal form.data.secondoAssaggio "3" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow ss-rightlabel">Ottimo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Gradevole</td></tr></tbody></table></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
@@ -483,9 +491,9 @@ Secondo Piatto
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">
+<th colspan="3" class="table_separator">
 Contorno
-</td>
+</th>
 </tr>
 <tr>
 <td>
@@ -558,7 +566,7 @@ Contorno
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">Pane</td>
+<th colspan="3" class="table_separator">Pane</th>
 </tr>
 <tr>
 <td>
@@ -621,9 +629,7 @@ Contorno
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">
-Frutta
-</td>
+<th colspan="3" class="table_separator">Frutta</th>
 </tr><tr>
 <td>
 <br/> <div class="errorbox-good">
@@ -695,16 +701,15 @@ Frutta
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">
-Fine Pasto
-</td>
+<th colspan="3" class="table_separator">Fine Pasto
+</th>
 </tr>
 <tr>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_finePasto">Ora di fine pasto
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:05:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
 </td>
 </tr>
 <tr>
@@ -772,9 +777,9 @@ Fine Pasto
 </td>
 </tr>
 <tr>
-<td colspan="3" class="table_separator">
+<th colspan="3" class="table_separator">
 Non Conformità Gravi
-</td>
+</th>
 </tr>
 <tr>
 <td colspan="2">
@@ -974,12 +979,12 @@ Non Conformità Gravi
 <div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Note
 </label>
 <label class="ss-q-help" for="e_ncNote"></label>
-<textarea name="ncNote" rows="8" cols="75" class="ss-q-long" id="e_ncNote" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.ncNote}}
+<textarea name="ncNote" rows="8" cols="120" class="ss-q-long" id="e_ncNote" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.ncNote}}
 </textarea></div></div>
 </td>
 </tr>
 <tr>
-<td colspan="3">
+<td colspan="3" align="center">
 <input type="submit" value="Salva dati" id="e_submit"/><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>

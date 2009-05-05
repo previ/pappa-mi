@@ -7,7 +7,7 @@ djConfig={
           modulePaths: { custom: "/js/dojo/custom" }
         };
 </script>
-<script type="text/javascript">google.load("dojo", "1.3", {uncompressed:true});</script>
+<script type="text/javascript">google.load("dojo", "1.3", {uncompressed:false});</script>
 <link type="text/css" rel="stylesheet" href="/css/form.css"/>
 <!--LINK rel="stylesheet" type="text/css" href="/css/jot-old.css"-->
 <!--LINK rel="stylesheet" type="text/css" href="/css/list.css"-->
