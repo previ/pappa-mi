@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
 {%include "../header.inc"%}
@@ -8,7 +8,7 @@ dojo.require("dijit.form.Button");
 </script>
 </HEAD><BODY class="nihilo">
 {%include "../nav.inc"%}
-<DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}}</H1>
+<DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 <P>
 <P>
 <BR>
@@ -304,22 +304,22 @@ dojo.require("dijit.form.Button");
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoCottura">Cottura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Poco</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Scarsa</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoCottura" value="1" id="e_primoCottura_1" {% ifequal isp.primoCottura 1 %}CHECKED{%endifequal%}></TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoCottura" value="2" id="e_primoCottura_2" {% ifequal isp.primoCottura 2 %}CHECKED{%endifequal%}></TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoCottura" value="3" id="e_primoCottura_3" {% ifequal isp.primoCottura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Troppo</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Eccessiva</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 <td>
 <BR> <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoTemperatura">Temperatura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Bassa</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Freddo</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoTemperatura" value="1" id="e_primoTemperatura_1" {% ifequal isp.primoTemperatura 1 %}CHECKED{%endifequal%}></TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoTemperatura" value="2" id="e_primoTemperatura_2" {% ifequal isp.primoTemperatura 2 %}CHECKED{%endifequal%}></TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="primoTemperatura" value="3" id="e_primoTemperatura_3" {% ifequal isp.primoTemperatura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Alta</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Caldo</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 </tr>
 <tr>
@@ -380,22 +380,22 @@ Secondo Piatto
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoCottura">Cottura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Poco</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Scarsa</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoCottura" value="1" id="e_secondoCottura_1" {% ifequal isp.secondoCottura 1 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoCottura" value="2" id="e_secondoCottura_2" {% ifequal isp.secondoCottura 2 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoCottura" value="3" id="e_secondoCottura_3" {% ifequal isp.secondoCottura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Troppo</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Eccessiva</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 <td>
 <BR> <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoTemperatura">Temperatura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Bassa</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Freddo</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoTemperatura" value="1" id="e_secondoTemperatura_1" {% ifequal isp.secondoTemperatura 1 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoTemperatura" value="2" id="e_secondoTemperatura_2" {% ifequal isp.secondoTemperatura 2 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="secondoTemperatura" value="3" id="e_secondoTemperatura_3" {% ifequal isp.secondoTemperatura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Alta</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Caldo</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 </tr>
 <tr>
@@ -454,22 +454,22 @@ Contorno
 <DIV class="ss-form-entry"><LABEL class="ss-q-title"for="entry_15">Cottura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Poco</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Scarsa</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoCottura" value="1" id="group_20_1" {% ifequal isp.contornoCottura 1 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoCottura" value="2" id="group_20_2" {% ifequal isp.contornoCottura 2 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoCottura" value="3" id="group_20_3" {% ifequal isp.contornoCottura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Troppo</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Eccessiva</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 <td>
 <BR> <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_16">Temperatura
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
-<TR><TD class="ss-scalerow ss-leftlabel">Bassa</TD>
+<TR><TD class="ss-scalerow ss-leftlabel">Freddo</TD>
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoTemperatura" value="1" id="group_22_1" {% ifequal isp.contornoTemperatura 1 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoTemperatura" value="2" id="group_22_2" {% ifequal isp.contornoTemperatura 2 %}CHECKED{%endifequal%}></TD> 
 <TD class="ss-scalerow"><INPUT type="radio" disabled="yes" name="contornoTemperatura" value="3" id="group_22_3" {% ifequal isp.contornoTemperatura 3 %}CHECKED{%endifequal%}></TD>
-<TD class="ss-scalerow ss-rightlabel">Alta</TD></TR></TBODY></TABLE></DIV></DIV>
+<TD class="ss-scalerow ss-rightlabel">Caldo</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 </tr>
 <tr>
@@ -702,214 +702,8 @@ Fine Pasto
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_note">Note
 </LABEL>
 <LABEL class="ss-q-help" for="entry_13"></LABEL>
-{{isp.note}}
+{{isp.note|linebreaksbr}}
 </DIV></DIV>
-</td>
-</tr>
-<tr>
-<td colspan="3" class="table_separator">
-Non Conformità gravi
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Nonconformità Gravi presenti
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncPresenti" onclick="set_all('nc', '1');" value="1" id="e_ncpr_1" {% ifequal isp.ncPresenti 1 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncPresenti" onclick="set_all('nc', '0');" value="0" id="e_ncpr_2" {% ifequal isp.ncPresenti 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Cambiamenti di menù
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncMenuDiverso" value="1" id="e_ncmd_1" {% ifequal isp.ncMenuDiverso 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncMenuDiverso" value="0" id="e_ncmd_2" {% ifequal isp.ncMenuDiverso 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Cibo avanzato iltre 30%
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncCiboAvanzato" value="1" id="e_ncca_1" {% ifequal isp.ncCiboAvanzato 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncCiboAvanzato" value="0" id="e_ncca_2" {% ifequal isp.ncCiboAvanzato 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Quantità insufficiente di una vivanda
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncQuantita" value="1" id="e_ncqt_1" {% ifequal isp.ncQuantita 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncQuantita" value="0" id="e_ncqt_2" {% ifequal isp.ncQuantita 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Stoviglie in numero insufficiente
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncStoviglie" value="1" id="e_ncst_1" {% ifequal isp.ncStoviglie 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncStoviglie" value="0" id="e_ncst_2" {% ifequal isp.ncStoviglie 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Arredi e attrezzature inadeguate della sala di rigoverno
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncArredi" value="1" id="e_ncar_1" {% ifequal isp.ncArredi 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncArredi" value="0" id="e_ncar_2" {% ifequal isp.ncArredi 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Inadeguata pulizia dei locali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncPulizia" value="1" id="e_ncpz_1" {% ifequal isp.ncPulizia 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncPulizia" value="0" id="e_ncpz_2" {% ifequal isp.ncPulizia 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Inadeguata pulizia dei locali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRifiuti" value="1" id="e_ncrf_1" {% ifequal isp.ncRifiuti 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRifiuti" value="0" id="e_ncrf_2" {% ifequal isp.ncRifiuti 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Mancata consegna diete speciali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncDiete" value="1" id="e_ncdt_1" {% ifequal isp.ncDiete 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncDiete" value="0" id="e_ncdt_2" {% ifequal isp.ncDiete 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Ritardo o anticipo nella consegna delle termiche
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRitardo" value="1" id="e_ncrt_1" {% ifequal isp.ncRitardo 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRitardo" value="0" id="e_ncrt_2" {% ifequal isp.ncRitardo 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Corpo estraneo
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncCorpiEstranei" value="1" id="e_ncce_1" {% ifequal isp.ncCorpiEstranei 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncCorpiEstranei" value="0" id="e_ncce_2" {% ifequal isp.ncCorpiEstranei 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Richiesta campionatura
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRichiestaCampionatura" value="1" id="e_ncrc_1" {% ifequal isp.ncRichiestaCampionatura 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="ncRichiestaCampionatura" value="0" id="e_ncrc_2" {% ifequal isp.ncRichiestaCampionatura 0 %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="3">
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_ncNote">Note
-</LABEL>
-<LABEL class="ss-q-help" for="e_ncNote"></LABEL>
-{{isp.ncNote}}</DIV></DIV>
 </td>
 </tr>
 </table>

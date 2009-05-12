@@ -103,11 +103,11 @@ class CMStatsHandler(webapp.RequestHandler):
         stats.smaltimentoRifiuti = stats.smaltimentoRifiuti + isp.smaltimentoRifiuti
         stats.giudizioGlobale = stats.giudizioGlobale + isp.giudizioGlobale
   
-        if isp.ncPresenti() :
-          stats.ncTotali = stats.ncTotali + 1
+        #if isp.ncPresenti() :
+          #stats.ncTotali = stats.ncTotali + 1
            
-        if isp.ncRichiestaCampionatura:
-          stats.ncRichiestaCampionatura = stats.ncRichiestaCampionatura + 1 
+        #if isp.ncRichiestaCampionatura:
+          #stats.ncRichiestaCampionatura = stats.ncRichiestaCampionatura + 1 
   
         if( datetime.now().date() - isp.dataIspezione < timedelta(days = 30)):
           statsMese.numeroSchede = statsMese.numeroSchede + 1;
@@ -123,8 +123,8 @@ class CMStatsHandler(webapp.RequestHandler):
           statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti + isp.smaltimentoRifiuti
           statsMese.giudizioGlobale = statsMese.giudizioGlobale + isp.giudizioGlobale
 
-          if isp.ncPresenti() :
-            statsMese.ncTotali = statsMese.ncTotali + 1
+          #if isp.ncPresenti() :
+            #statsMese.ncTotali = statsMese.ncTotali + 1
 
       if stats.numeroSchede > 0 :
         stats.primoAssaggio = stats.primoAssaggio / stats.numeroSchede
@@ -188,13 +188,15 @@ class CMMenuHandler(webapp.RequestHandler):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
 
-      menus = Menu.all().filter("validitaDa <", data).filter("giorno", data.isoweekday()).filter("centroCucina", Commissione.get(self.request.get("commissione")).centroCucina)
+      #logging.info("data: %s", data)
 
-      logging.info("len %d" , menus.count())
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("centroCucina", Commissione.get(self.request.get("commissione")).centroCucina)
+
+      #logging.info("len %d" , menus.count())
 
       for m in menus:
-        #logging.info("settimana %d giorno %d", m.settimana, m.giorno)
-        if(((data-m.validitaDa).days - data.isoweekday()) / 7 % 4 == m.settimana):
+        #logging.info("settimana %d giorno %d, settimanacalc: %d, day: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
+        if(((((data-m.validitaDa).days) / 7)%4+1) == m.settimana):
           menu = m
       
       self.response.out.write(menu.primo)

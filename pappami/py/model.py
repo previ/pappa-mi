@@ -75,18 +75,13 @@ class Menu(db.Model):
   secondo = db.StringProperty()
   contorno = db.StringProperty()
   
-class Ispezione(db.Expando):
+class Ispezione(db.Model):
       
   commissione = db.ReferenceProperty(Commissione)
   commissario = db.ReferenceProperty(Commissario)
  
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
-  
   dataIspezione = db.DateProperty()
+  turno = db.IntegerProperty()
 
   aaRispettoCapitolato = db.IntegerProperty()
   aaTavoliApparecchiati = db.IntegerProperty()
@@ -142,7 +137,7 @@ class Ispezione(db.Expando):
   contornoGradimento = db.IntegerProperty()
 
   paneTipo = db.StringProperty()
-  paneServito = db.StringProperty()
+  paneServito = db.IntegerProperty()
   paneQuantita = db.IntegerProperty()
   paneAssaggio = db.IntegerProperty()
   paneGradimento = db.IntegerProperty()
@@ -161,30 +156,46 @@ class Ispezione(db.Expando):
   giudizioGlobale = db.IntegerProperty()
   note = db.TextProperty(default="")
 
-  ncMenuDiverso = db.IntegerProperty()
-  ncCiboAvanzato = db.IntegerProperty()
-  ncQuantita = db.IntegerProperty()
-  ncStoviglie = db.IntegerProperty()
-  ncArredi = db.IntegerProperty()
-  ncPulizia = db.IntegerProperty()
-  ncRifiuti = db.IntegerProperty()
-  ncDiete = db.IntegerProperty()
-  ncRitardo = db.IntegerProperty()
-  ncCorpiEstranei = db.IntegerProperty()
-  ncRichiestaCampionatura = db.IntegerProperty()
-  ncNote = db.TextProperty(default="")
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
 
-  def ncPresenti(self):
-    s = self.ncMenuDiverso + self.ncCiboAvanzato + self.ncQuantita + self.ncStoviglie + self.ncArredi + self.ncPulizia + self.ncRifiuti + self.ncDiete + self.ncRitardo + self.ncCorpiEstranei + self.ncRichiestaCampionatura
-    #for n in self.properties():
-      #if n.find("nc") == 0:        
-        #v = self.properties()[n]
-        #s = s + v
-    if s > 0 :
-      s = 1
-    else:
-      s = 0
-    return s
+class Nonconformita(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  commissario = db.ReferenceProperty(Commissario)
+ 
+  dataNonconf = db.DateProperty()
+  turno = db.IntegerProperty()
+  
+  tipo = db.IntegerProperty()
+  richiestaCampionatura = db.IntegerProperty()
+
+  note = db.TextProperty(default="")
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+
+  _tipi = {1:"Cambiamenti di menu",
+           2:"Cibo avanzato oltre 30%",
+           3:"Quantita insufficiente di una vivanda",
+           4:"Stoviglie in numero insufficiente",
+           5:"Arredi e attrezzature inadeguate della sala di rigoverno",
+           6:"Inadeguata pulizia dei locali",
+           7:"Mancata consegna diete speciali",
+           8:"Ritardo o anticipo nella consegna delle termiche",
+           9:"Corpo estraneo",
+           10:"Temperatura non conforme alla legge",
+           99:"Altro"}
+  def tipi(self):
+    return self._tipi
+  
+  def tipoNome(self):
+    return self._tipi[self.tipo]
   
 class Statistiche:
   numeroSchede = int(0)
