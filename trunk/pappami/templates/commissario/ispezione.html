@@ -67,6 +67,15 @@ Inserire la data in cui è stata effettuata l'ispezione.
 </span> 
 </td>
 <td>
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_turno">Turno
+<span class="ss-required-asterisk">*</span></label>
+<select name="turno" id="e_turno">
+<option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
+<option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
+<option value="3"{% ifequal form.data.turno "3" %} selected{% endifequal %}>Terzo</option>
+<option value="4"{% ifequal form.data.turno "4" %} selected{% endifequal %}>Quarto</option>
+</select></div></div>
 </td>
 </tr>
 <tr>
@@ -132,13 +141,13 @@ Inserire la data in cui è stata effettuata l'ispezione.
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
 </tr>
 <tr>
@@ -341,11 +350,11 @@ Inserire la data in cui è stata effettuata l'ispezione.
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoFineDist">Fine distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="primoFineDist" value="{{form.data.primoFineDist}}" class="ss-q-short" id="e_primoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="primoFineDist" value="{{form.data.primoFineDist}}" class="ss-q-short" id="e_primoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
@@ -360,22 +369,22 @@ Inserire la data in cui è stata effettuata l'ispezione.
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoCottura">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Poco</td>
+<tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="1" id="e_primoCottura_1" {% ifequal form.data.primoCottura "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="2" id="e_primoCottura_2" {% ifequal form.data.primoCottura "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="3" id="e_primoCottura_3" {% ifequal form.data.primoCottura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Troppo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Eccessiva</td></tr></tbody></table></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoTemperatura">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Bassa</td>
+<tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="1" id="e_primoTemperatura_1" {% ifequal form.data.primoTemperatura "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="2" id="e_primoTemperatura_2" {% ifequal form.data.primoTemperatura "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="3" id="e_primoTemperatura_3" {% ifequal form.data.primoTemperatura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Alta</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -424,34 +433,34 @@ Secondo Piatto
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="entry_14"></label>
-<input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoCottura">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Poco</td>
+<tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="secondoCottura" value="1" id="e_secondoCottura_1" {% ifequal form.data.secondoCottura "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoCottura" value="2" id="e_secondoCottura_2" {% ifequal form.data.secondoCottura "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoCottura" value="3" id="e_secondoCottura_3" {% ifequal form.data.secondoCottura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Troppo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Eccessiva</td></tr></tbody></table></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoTemperatura">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Bassa</td>
+<tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
 <td class="ss-scalerow"><input type="radio" name="secondoTemperatura" value="1" id="e_secondoTemperatura_1" {% ifequal form.data.secondoTemperatura "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoTemperatura" value="2" id="e_secondoTemperatura_2" {% ifequal form.data.secondoTemperatura "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="secondoTemperatura" value="3" id="e_secondoTemperatura_3" {% ifequal form.data.secondoTemperatura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Alta</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -511,22 +520,22 @@ Contorno
 <div class="ss-form-entry"><label class="ss-q-title"for="entry_15">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Poco</td>
+<tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="contornoCottura" value="1" id="group_20_1" {% ifequal form.data.contornoCottura "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="contornoCottura" value="2" id="group_20_2" {% ifequal form.data.contornoCottura "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="contornoCottura" value="3" id="group_20_3" {% ifequal form.data.contornoCottura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Troppo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Eccessiva</td></tr></tbody></table></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="entry_16">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Bassa</td>
+<tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
 <td class="ss-scalerow"><input type="radio" name="contornoTemperatura" value="1" id="group_22_1" {% ifequal form.data.contornoTemperatura "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="contornoTemperatura" value="2" id="group_22_2" {% ifequal form.data.contornoTemperatura "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="contornoTemperatura" value="3" id="group_22_3" {% ifequal form.data.contornoTemperatura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Alta</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -709,7 +718,7 @@ Contorno
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_finePasto">Ora di fine pasto
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00'}"/></div></div>
+<input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
 </tr>
 <tr>
@@ -773,213 +782,6 @@ Contorno
 </label>
 <label class="ss-q-help" for="entry_13"></label>
 <textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.note}}
-</textarea></div></div>
-</td>
-</tr>
-<tr>
-<th colspan="3" class="table_separator">
-Non Conformità Gravi
-</th>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Nonconformità Gravi presenti
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="setAll('nc', '1');" value="1" id="e_ncpr_1" {% ifequal form.data.ncPresenti "1" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow"><input type="radio" name="ncPresenti" onclick="setAll('nc', '0');" value="0" id="e_ncpr_2" {% ifequal form.data.ncPresenti "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Cambiamenti di menù
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="1" id="e_ncmd_1" {% ifequal form.data.ncMenuDiverso "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncMenuDiverso" value="0" id="e_ncmd_2" {% ifequal form.data.ncMenuDiverso "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Cibo avanzato iltre 30%
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="1" id="e_ncca_1" {% ifequal form.data.ncCiboAvanzato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncCiboAvanzato" value="0" id="e_ncca_2" {% ifequal form.data.ncCiboAvanzato "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Quantità insufficiente di una vivanda
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="1" id="e_ncqt_1" {% ifequal form.data.ncQuantita "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncQuantita" value="0" id="e_ncqt_2" {% ifequal form.data.ncQuantita "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Stoviglie in numero insufficiente
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="1" id="e_ncst_1" {% ifequal form.data.ncStoviglie "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncStoviglie" value="0" id="e_ncst_2" {% ifequal form.data.ncStoviglie "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Arredi e attrezzature inadeguate della sala di rigoverno
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncArredi" value="1" id="e_ncar_1" {% ifequal form.data.ncArredi "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncArredi" value="0" id="e_ncar_2" {% ifequal form.data.ncArredi "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Inadeguata pulizia dei locali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="1" id="e_ncpz_1" {% ifequal form.data.ncPulizia "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncPulizia" value="0" id="e_ncpz_2" {% ifequal form.data.ncPulizia "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Inadeguata pulizia dei locali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="1" id="e_ncrf_1" {% ifequal form.data.ncRifiuti "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRifiuti" value="0" id="e_ncrf_2" {% ifequal form.data.ncRifiuti "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Mancata consegna diete speciali
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncDiete" value="1" id="e_ncdt_1" {% ifequal form.data.ncDiete "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncDiete" value="0" id="e_ncdt_2" {% ifequal form.data.ncDiete "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Ritardo o anticipo nella consegna delle termiche
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="1" id="e_ncrt_1" {% ifequal form.data.ncRitardo "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRitardo" value="0" id="e_ncrt_2" {% ifequal form.data.ncRitardo "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Corpo estraneo
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="1" id="e_ncce_1" {% ifequal form.data.ncCorpiEstranei "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncCorpiEstranei" value="0" id="e_ncce_2" {% ifequal form.data.ncCorpiEstranei "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Richiesta campionatura
-<span class="ss-required-asterisk">*</span></label>
-</td>
-<td align="center">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry">
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="1" id="e_ncrc_1" {% ifequal form.data.ncRichiestaCampionatura "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="ncRichiestaCampionatura" value="0" id="e_ncrc_2" {% ifequal form.data.ncRichiestaCampionatura "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
-</td>
-</tr>
-<tr>
-<td colspan="3">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Note
-</label>
-<label class="ss-q-help" for="e_ncNote"></label>
-<textarea name="ncNote" rows="8" cols="120" class="ss-q-long" id="e_ncNote" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.ncNote}}
 </textarea></div></div>
 </td>
 </tr>

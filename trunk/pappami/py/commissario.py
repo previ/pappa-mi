@@ -31,7 +31,7 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
-from py.form import IspezioneForm
+from py.form import IspezioneForm, NonconformitaForm
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
@@ -44,28 +44,48 @@ class CMCommissarioHandler(webapp.RequestHandler):
     if( commissario is None):
       self.redirect("/commissario/registrazione")
     else:
+      tab=self.request.get("tab")
       # Creating the data
       description = {"commissione": ("string", "Commissione"),
                      "dataIspezione": ("date", "Data"),
+                     "turno": ("string", "Turno"),
                      "primo": ("string", "Primo"),
                      "secondo": ("string", "Secondo"),
                      "contorno": ("string", "Contorno"),
                      "frutta": ("string", "Frutta"),
                      "pasti": ("string", "Pasti serviti"),
-                     "nc": ("string", u"Non conformita"),
                      "key": ("string", "")}
       
       data = list()
       for ispezione in Ispezione.all().filter("commissario",commissario).order("-dataIspezione"):
-        data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "primo": str(ispezione.primoAssaggio) + " " + str(ispezione.primoGradimento), "secondo": str(ispezione.secondoAssaggio) + " " + str(ispezione.secondoGradimento), "contorno":str(ispezione.contornoAssaggio) + " " + str(ispezione.contornoGradimento), "frutta":str(ispezione.fruttaAssaggio) + " " + str(ispezione.fruttaGradimento), "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "nc":str(ispezione.ncPresenti()), "key":"<a href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
+        data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "turno": ispezione.turno, "primo": str(ispezione.primoAssaggio) + " " + str(ispezione.primoGradimento), "secondo": str(ispezione.secondoAssaggio) + " " + str(ispezione.secondoGradimento), "contorno":str(ispezione.contornoAssaggio) + " " + str(ispezione.contornoGradimento), "frutta":str(ispezione.fruttaAssaggio) + " " + str(ispezione.fruttaGradimento), "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
 
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)
       data_table.LoadData(data)
 
       # Creating a JSon string
-      ispezioni = data_table.ToJSon(columns_order=("commissione", "dataIspezione", "primo", "secondo", "contorno", "frutta", "pasti", "nc", "key"), order_by="dataIspezione")
+      ispezioni = data_table.ToJSon(columns_order=("commissione", "dataIspezione", "turno", "primo", "secondo", "contorno", "frutta", "pasti", "key"), order_by="dataIspezione")
 
+      # Creating the data
+      description_nc = {"commissione": ("string", "Commissione"), 
+                     "dataNonconf": ("date", "Data"),
+                     "turno": ("string", "Turno"),
+                     "tipo": ("string", "Tipo"),
+                     "key": ("string", "")}
+      
+      data_nc = list()
+      for nc in Nonconformita.all().filter("commissario",commissario).order("-dataNonconf"):
+        data_nc.append({"commissione": str(nc.commissione.nome), "dataNonconf": nc.dataNonconf, "turno": str(nc.turno), "tipo": nc.tipoNome(), 
+                     "key":"<a href='/commissario/nonconf?cmd=open&key="+str(nc.key())+"'>Apri</a>"})
+
+      # Loading it into gviz_api.DataTable
+      data_table_nc = DataTable(description_nc)
+      data_table_nc.LoadData(data_nc)
+
+      # Creating a JSon string
+      nonconf = data_table_nc.ToJSon(columns_order=("commissione", "dataNonconf", "turno", "tipo", "key"), order_by="dataNonconf")
+      
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
 
@@ -76,6 +96,8 @@ class CMCommissarioHandler(webapp.RequestHandler):
         'url': url,
         'url_linktext': url_linktext,
         'ispezioni': ispezioni,
+        'nonconf': nonconf,
+        'tab': tab
         }
       path = os.path.join(os.path.dirname(__file__), '../templates/commissario/commissario.html')
       self.response.out.write(template.render(path, template_values))
@@ -164,7 +186,6 @@ class CMIspezioneHandler(webapp.RequestHandler):
         'url': url,
         'url_linktext': url_linktext,
         'isp': isp,
-        'key': isp.key(),
         }
       
       path = os.path.join(os.path.dirname(__file__), '../templates/commissario/ispezione_read.html')
@@ -181,9 +202,8 @@ class CMIspezioneHandler(webapp.RequestHandler):
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
       
-      form.data["ncPresenti"] = str(isp.ncPresenti())
       form.data["commissione"] = isp.commissione
-      logging.info(form.data["ncPresenti"])
+
       url_linktext = 'Logout'
       url = users.create_logout_url("/")
       user = users.get_current_user()
@@ -214,7 +234,6 @@ class CMIspezioneHandler(webapp.RequestHandler):
       for field in form:
         #logging.info(field.name)
         form.data[field.name] = str(form.initial[field.name])
-      #form.data["ncPresenti"] = isp.ncPresenti()
         
       template_values = {
         'user': user,
@@ -301,8 +320,158 @@ class CMIspezioneHandler(webapp.RequestHandler):
         path = os.path.join(os.path.dirname(__file__), '../templates/commissario/ispezione.html')
         self.response.out.write(template.render(path, template_values))
 
+class CMNonconfHandler(webapp.RequestHandler):
+  
+  def get(self): 
+    if( self.request.get("cmd") == "open" ):
+      nc = Nonconformita.get(self.request.get("key"))
+  
+      url_linktext = 'Logout'
+      url = users.create_logout_url("/")
+      user = users.get_current_user()
+
+      template_values = {
+        'user': user,
+        'admin': users.is_current_user_admin(),
+        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'url': url,
+        'url_linktext': url_linktext,
+        'nc': nc,
+        }
+      
+      path = os.path.join(os.path.dirname(__file__), '../templates/commissario/nonconf_read.html')
+      self.response.out.write(template.render(path, template_values))
+
+    elif( self.request.get("cmd") == "edit" ):
+   
+      nc = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("nc"))
+     
+      form = NonconformitaForm(instance=nc)
+      
+      for field in form:
+        logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = nc.commissione
+      url_linktext = 'Logout'
+      url = users.create_logout_url("/")
+      user = users.get_current_user()
+
+      template_values = {
+        'user': user,
+        'admin': users.is_current_user_admin(),
+        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'url': url,
+        'url_linktext': url_linktext,
+        'form': form,
+        'commissioni': Commissario.all().filter("user", user).filter("stato", 1).get().commissioni()
+      }
+      
+      path = os.path.join(os.path.dirname(__file__), '../templates/commissario/nonconf.html')
+      self.response.out.write(template.render(path, template_values))
+    
+    else:     
+      user = users.get_current_user()
+      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+
+      url_linktext = 'Logout'
+      url = users.create_logout_url("/")
+  
+      nc = Nonconformita(commissario = commissario) 
+      form = NonconformitaForm(instance=nc)
+
+      for field in form:
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'user': user,
+        'admin': users.is_current_user_admin(),
+        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'url': url,
+        'url_linktext': url_linktext,
+        'form': form,
+        'commissioni': Commissario.all().filter("user", user).filter("stato", 1).get().commissioni()
+        }
+
+      path = os.path.join(os.path.dirname(__file__), '../templates/commissario/nonconf.html')
+      self.response.out.write(template.render(path, template_values))
+
+  def post(self):    
+    user = users.get_current_user()
+    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+   
+    preview = self.request.get("preview")
+   
+    if( preview ):
+      nc = memcache.get(preview)
+      memcache.delete(preview)
+      nc.put()
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+      
+      self.redirect("/commissario?tab=nc")
+    else:
+      key = self.request.get("k")
+      if( key != "" ) :
+        nc = Nonconformita.get(key)
+      else:
+        nc = Nonconformita()
+    
+      form = NonconformitaForm(data=self.request.POST, instance=nc)
+      for field in form:
+        logging.info("%s, %s",field.name, field)
+
+      if form.is_valid():
+        nc = form.save(commit=False)
+        nc.commissario = commissario
+   
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        memcache.add(preview, nc, 3600)
+  
+        url_linktext = 'Logout'
+        url = users.create_logout_url("/")
+        user = users.get_current_user()
+  
+        template_values = {
+          'user': user,
+          'admin': users.is_current_user_admin(),
+          'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+          'url': url,
+          'url_linktext': url_linktext,
+          'nc': nc,
+          'preview': preview
+        }
+        
+        path = os.path.join(os.path.dirname(__file__), '../templates/commissario/nonconf_read.html')
+        self.response.out.write(template.render(path, template_values))
+      else:
+        #logging.info("data: %s", form.data)
+        for e in form.errors["__all__"] :
+          logging.info("errors: %s", e)
+
+        url_linktext = 'Logout'
+        url = users.create_logout_url("/")
+        user = users.get_current_user()
+  
+        commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+        
+        template_values = {
+          'user': user,
+          'admin': users.is_current_user_admin(),
+          'commissario': commissario is not None,
+          'commissioni': commissario.commissioni(),
+          'url': url,
+          'url_linktext': url_linktext,
+          'form': form
+        }
+        
+        path = os.path.join(os.path.dirname(__file__), '../templates/commissario/nonconf.html')
+        self.response.out.write(template.render(path, template_values))
+        
 application = webapp.WSGIApplication([
   ('/commissario/ispezione', CMIspezioneHandler),
+  ('/commissario/nonconf', CMNonconfHandler),
   ('/commissario/registrazione', CMRegistrazioneHandler),
   ('/commissario', CMCommissarioHandler)
 ], debug=True)

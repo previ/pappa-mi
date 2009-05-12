@@ -60,14 +60,14 @@ indexes:
   - name: data
     direction: desc
 
-# Used 334 times in query history.
+# Used 397 times in query history.
 - kind: Ispezione
   properties:
   - name: commissario
   - name: dataIspezione
     direction: desc
 
-# Used 206 times in query history.
+# Used 345 times in query history.
 - kind: Menu
   properties:
   - name: centroCucina
@@ -93,3 +93,10 @@ indexes:
     direction: desc
   - name: settimana
   - name: giorno
+
+# Used 61 times in query history.
+- kind: Nonconformita
+  properties:
+  - name: commissario
+  - name: dataNonconf
+    direction: desc

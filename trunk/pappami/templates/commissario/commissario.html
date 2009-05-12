@@ -2,8 +2,12 @@
 <HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
 {%include "../header.inc"%}
-  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-  <script>
+<script type="text/javascript">
+dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit.layout.TabContainer");
+</script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script>
 google.load('visualization', '1', {packages:['table']});
 
 google.setOnLoadCallback(drawTable);
@@ -12,23 +16,35 @@ function drawTable() {
   var table = new google.visualization.Table(document.getElementById('ispezioni'));
   var data = new google.visualization.DataTable({{ispezioni}}, 0.5);
   new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data, 1);
-  table.draw(data, {allowHtml: true, showRowNumber: false});
+  table.draw(data, {allowHtml: true, showRowNumber: false, page: 'enable'});
+
+  var table_nc = new google.visualization.Table(document.getElementById('nonconf'));
+  var data_nc = new google.visualization.DataTable({{nonconf}}, 0.5);
+  new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data_nc, 1);
+  table_nc.draw(data_nc, {allowHtml: true, showRowNumber: false, page: 'enable'});
 }
 
-    </script>
+</script>
 </HEAD><BODY class="nihilo">
 {%include "../nav.inc"%}
 <DIV class="ss-form-container"><H1 class="ss-form-title">Pagina Commissario</H1>
 </p>
 </p>
 </p>
+<div id="mainTabContainer" dojoType="dijit.layout.TabContainer"style="width:100%;height:50em">
+<div id="isp_tab" dojoType="dijit.layout.ContentPane" title="Ispezioni" {%ifequal tab "isp"%} selected="true" {%endifequal%}>
 <div id="ispezioni"></div>
-</p>
-</p>
-<DIV class="goog-ws-half-width goog-ws-left">
+<div class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/ispezione" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Ispezione</B></B></B></B></A>
-</DIV>
-</p>
+</div>
+</div>
+<div id="nc_tab" dojoType="dijit.layout.ContentPane" title="Non Conformità" {%ifequal tab "nc"%} selected="true" {%endifequal%}>
+<div id="nonconf"></div>
+<div class="goog-ws-half-width goog-ws-left">
+<A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformità</B></B></B></B></A>
+</div>
+</div>
+</div>
 </p>
 </p>
 </DIV>{%include "footer.inc"%}
