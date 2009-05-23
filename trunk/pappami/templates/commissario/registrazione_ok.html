@@ -1,15 +1,11 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
-{%include "../header.inc"%}
-<script type="text/javascript">
-dojo.require("dijit.form.Form");
-dojo.require("dijit.form.TextBox");
+﻿<script type="text/javascript">
 dojo.require("dijit.form.Button");
 </script>
-</HEAD><BODY class="nihilo">
-{%include "../nav.inc"%}
-<DIV class="ss-form-container"><H1 class="ss-form-title">Commissioni Mensa: Registrazione Commissario Completata</H1>
+<style>
+#subwrap {width: 64em;}
+#content-main {width: 64em;}
+</style>
+<H1 class="ss-form-title">Registrazione Commissario Completata</H1>
 <P>
 Grazie per esserti registrato, riceverai a breve via mail la conferma dell'abilitazione.
 <P>
@@ -31,11 +27,23 @@ Grazie per esserti registrato, riceverai a breve via mail la conferma dell'abili
 <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome</LABEL>{{commissario.nome}}</DIV></DIV>
 </td>
+<td rowspan="3">
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione</LABEL> 
+{% for c in commissario.commissioni %}
+{{c.nome}}<br>
+{% endfor %}
+</DIV></DIV>
+</td>
+</tr>
+<tr>
 <td>
 <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Cognome</LABEL>{{commissario.cognome}}
 </DIV></DIV>
 </td>
+</tr>
+<tr>
 <td>
 <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">email</LABEL>{{commissario.user.email}}</DIV></DIV>
@@ -43,6 +51,5 @@ Grazie per esserti registrato, riceverai a breve via mail la conferma dell'abili
 </tr>
 </table>
 <P align="center">
-<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Torna a pagina principale</button></FORM>
+<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Torna a pagina principale</button>
 <P>
-</BODY></HTML>

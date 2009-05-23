@@ -1,8 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Registrazione Commissario</TITLE>
-{%include "../header.inc"%}
 <script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
@@ -21,7 +16,7 @@ dojo.require("dijit.form.Button");
         map = new GMap2(document.getElementById("map_canvas"));
         map.setCenter(new GLatLng(45.4636889,9.1881408), 11);
         geocoder = new GClientGeocoder();
-        if(dojo.byId("entry_lat").value != "") {tml
+        if(dojo.byId("entry_lat").value != "") {
           var point = new GLatLng(parseFloat(dojo.byId("entry_lat").value), parseFloat(dojo.byId("entry_lon").value));
           map.setCenter(point, 13);
           var marker = new GMarker(point);
@@ -39,7 +34,7 @@ dojo.require("dijit.form.Button");
       var cap = dojo.byId("e_cap").value;
       var address = street + ", " + num + ", " + cap + " " + city;
       if (geocoder && street != "" && num != "" && cap != "" && city != "") {
-        geocoder.getLatLng(
+	geocoder.getLatLng(
           address,
           function(point) {
             if (!point) {
@@ -59,10 +54,10 @@ dojo.require("dijit.form.Button");
         );
       }
     }
+    window.onload = initialize;
+    window.onunload = GUnload;
 </script>
-</HEAD><BODY class="nihilo" onload="initialize()" onunload="GUnload()">
-{%include "../nav.inc"%}
-<DIV class="ss-form-container"><H1 class="ss-form-title">Commissioni Mensa: Commissione</H1>
+<H1>Commissione</H1>
 <P>
 <P>
 <SPAN class="ss-required-asterisk">* Campo obbligatorio</SPAN>
@@ -133,7 +128,7 @@ if(this.validate()){
 </td>
 <td>
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_citta">Citt√†
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_citta">Citt‡
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
 <LABEL class="ss-q-help" for="e_citta"></LABEL>
 <INPUT type="text" dojoType="dijit.form.TextBox" required="true" onchange="showAddress()" name="citta" value="{{commissione.citta}}" class="ss-q-short" id="e_citta"></DIV></DIV>
@@ -204,5 +199,4 @@ if(this.validate()){
 </tr>
 </table>
 </FORM>
-<div id="map_canvas" style="height: 300px"></div></div>{%include "footer.inc"%}
-</BODY></HTML>
+<div id="map_canvas" style="height: 300px"></div>

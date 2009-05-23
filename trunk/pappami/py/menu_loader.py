@@ -8,7 +8,7 @@ DATE_FORMAT = "%d/%m/%Y"
 class MenuLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Menu',
-                    [('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
+                    [('tipoScuola', str),
                      ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
                      ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
                      ('settimana', int),

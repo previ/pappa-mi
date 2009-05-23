@@ -1,0 +1,22 @@
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script>
+google.load('visualization', '1', {packages:['table']});
+
+google.setOnLoadCallback(drawTable);
+
+function drawTable() {
+  var table_nc = new google.visualization.Table(document.getElementById('nonconf'));
+  var data_nc = new google.visualization.DataTable({{nonconf}}, 0.5);
+  new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data_nc, 1);
+  table_nc.draw(data_nc, {allowHtml: true, showRowNumber: false, page: 'enable'});
+}
+
+</script>
+<style>
+#content-main {width: 64em;}
+</style>
+<H1 class="ss-form-title">Elenco Schede Non Conformit&agrave</H1>
+<div id="nonconf"></div>
+<div class="goog-ws-half-width goog-ws-left">
+<A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformit&agrave</B></B></B></B></A>
+</div>

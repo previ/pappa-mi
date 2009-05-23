@@ -1,108 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
-{%include "header.inc"%}
-<style>
-#main {
-width:60em;
-height:40em;
-background-color:#fff;
-border:1px solid #ccc;
-margin:1em auto;
-padding:0em
-}
-#content {
-float:left;
-width:30em;
-height:auto;
-padding:0;
-padding:1em;
-}
-#side {
-float:left;
-width:26em;
-height:50%;
-padding:1em;
-}
-</style>
-<script type="text/javascript">
-dojo.require("dojox.data.GoogleFeedStore");
-dojo.require("dijit.form.Button");
-dojo.addOnLoad(doQuery);
-
-function printResults(items){
-  var container = dojo.byId("atomResults");
-  var buffer = [""];
-  //Iterate over the items that were retrieved
-  dojo.forEach(items, function(item, request){        
-    
-    //Calling getValue returns a single value.  
-    var title = atomStore1.getValue(item, "title");
-    var content = atomStore1.getValue(item, "content");
-    var link = atomStore1.getValue(item, "link");
-    var date = new Date(atomStore1.getValue(item, "publishedDate"));
-    buffer.push(date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear());
-    buffer.push("<a href='" + link 
-          + "' target='_new'>" 
-          + title + "</a>");
-    buffer.push(content);
-    
-    //Calling getValues returns an array of values
-    var categories = atomStore1.getValues(item, "category");
-    
-    if (categories&&categories.length) {
-      var buffer2 = [];
-      dojo.forEach(categories, function(category){
-        buffer2.push(category.term)
-      });
-      buffer.push("Categories: " + buffer2.join(" | "));
-    }
-    container.innerHTML = buffer.join("<br/>")
-  });
-  container.innerHTML = buffer.join("<br/>");
-}
-  
-function doQuery(){
-  //Call the asynchronous 'fetch' method, and specify 
-  //the function to call with the returned results 
-  //using the onComplete parameter.
-  atomStore1.fetch({
-    query:{url: "http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"},
-    count: 5,
-    onComplete: printResults
-  });
-}
-</script>
-</HEAD>
-<body class="nihilo">
-{%include "nav.inc"%}
-<div id="main">
-<div id="content">
-<H1 class="ss-form-title">Benvenuti in Commissione Mensa</H1>
-<br><br>
+<H1 class="ss-form-title">Benvenuti in Pappa-Mi</H1>
 <p>
-Questa applicazione permette la raccolta delle schede di valutazione del servizio di ristorazione offerto nelle scuole di Milano
+Il progetto Pappa-Mi nasce dall'esigenza di mettere in atto alcune delle raccomandazioni contenute nelle  Linee Guida della Regione Lombardia per la Refezione Scolastica, pubblicate nel 2002 che prevedono la valutazione periodica e diretta del servizio di ristorazione offerto nelle scuole lombarde.
 </p>
 <p>
-Le schede sono compilate dai Commissari a seguito di una ispezione effettuata direttamente presso una Scuola, contestualmente all'erogazione del servizio di ristorazione.
+E' parso indispensabile al coordinamento di genitori denominato Milano_Commissioni_Mensa avere una misura dei reali problemi che affliggono la ristorazione scolastica milanese, iniziando dell'accettabilit&agrave del pasto, come viene peraltro suggerito nelle suddette linee guida, che affermano che di ciascun sopralluogo effettuato, la Commissione Mensa <b>pu&ograve redigere</b> una scheda di valutazione da far pervenire all'Amministrazione o alla Direzione della Scuola e <b>a chi si ritiene necessario</b>.</p>
+<p>
+Questo sito internet permette la raccolta di schede di valutazione dei pasti e l'esecuzione di statistiche (se necessario suddivise per scuola o centri cucina). I dati in esso contenuti verrranno inseriti dalle commissioni mensa delle singole scuole.
 </p>
 <p>
-I commissari sono volontari (genitori di allievi) che operano per conto di una o più Commissioni. Ogni Commissione è associata a una Scuola.
+Il Sistema di Valutazione presentato in questa applicazione ha come obiettivo principale il miglioramento del servizio, nel senso della soddisfazione dei bisogni e delle attese di bambini ed alunni che usufruiscono della Ristorazione Scolastica.
 </p>
 <p>
-I dati raccolti sono utilzzati come base statistica per il monitoraggio del servizio offerto.
+L'adozione di questo obiettivo implica che il sistema di valutazione sia innanzi tutto un
+sistema d'identificazione degli errori, delle inefficienze, delle non conformit&agrave, poich&eacute il
+miglioramento consiste precisamente nella correzione degli errori e nell'eliminazione
+delle cause d'inefficienze e di non conformit&agrave.
 </p>
+{%if not commissario%}
 <p>
-Se siete un Commissario e volete utilizzare l'applicazione per inserire i dati delle ispezioni potete registratevi con il link "Registrazione Nuovo Commissario".
+Se fate parte di una Commissione Mensa e volete utilizzare l'applicazione per inserire i dati delle ispezioni potete registratevi con il link <a href="/commissario/registrazione">Registrazione Nuovo Commissario</a>.
 </p>
-<br><br><br>
-</div>
-<div id="side">
-<div dojoType="dojox.data.GoogleFeedStore" url="http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"
-  id="atomStore1" jsId="atomStore1"></div>
-<div id="atomResults"></div>
-</div></div>{%include "footer.inc"%}
-</body>
-</html>
+{%endif%}

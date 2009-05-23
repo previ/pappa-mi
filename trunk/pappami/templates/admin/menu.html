@@ -1,7 +1,3 @@
-<!DOCTYPE html PUBLIC "<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
-{%include "../header.inc"%}
 <script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TimeTextBox");
@@ -11,15 +7,8 @@ dojo.require("dijit.form.DateTextBox");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.RadioButton");
 </script>
-</HEAD><BODY class="nihilo">
-{%include "../nav.inc"%}
-<DIV class="ss-form-container"><H1 class="ss-form-title">Pagina Gestione Menu</H1>
+<H1>Pagina Gestione Menu</H1>
   <p>
-  
-<DIV id="jot-content" class="goog-ws-content goog-ws-clear">
-<DIV id="goog-ws-list-floatingBar" class="goog-scrollfloater">
-<DIV class="goog-ws-clear">
-<DIV class="goog-ws-half-width goog-ws-left">
 <FORM dojoType="dijit.form.Form" action="/admin/menu" method="POST" id="form_0">
 <input type="hidden" name="cmd" value="list" method="GET"/>
 <script type="dojo/method" event="onSubmit">
@@ -72,9 +61,3 @@ if(this.validate()){
 <SPAN class="goog-ws-grey">
 Visualizzazione di <SPAN xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-rowCount">{{menu.count}}</SPAN> voci
 </SPAN>
-</DIV>
-</DIV>
-</DIV>
-
-  </body> 
-</html>

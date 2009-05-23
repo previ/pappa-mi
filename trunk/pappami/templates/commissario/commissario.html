@@ -1,7 +1,3 @@
-<!DOCTYPE html PUBLIC "<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
-{%include "../header.inc"%}
 <script type="text/javascript">
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.layout.TabContainer");
@@ -25,28 +21,23 @@ function drawTable() {
 }
 
 </script>
-</HEAD><BODY class="nihilo">
-{%include "../nav.inc"%}
-<DIV class="ss-form-container"><H1 class="ss-form-title">Pagina Commissario</H1>
+<H1 class="ss-form-title">Pagina Commissario</H1>
 </p>
 </p>
 </p>
-<div id="mainTabContainer" dojoType="dijit.layout.TabContainer"style="width:100%;height:50em">
+<div id="mainTabContainer" dojoType="dijit.layout.TabContainer" style="height:50em">
 <div id="isp_tab" dojoType="dijit.layout.ContentPane" title="Ispezioni" {%ifequal tab "isp"%} selected="true" {%endifequal%}>
 <div id="ispezioni"></div>
 <div class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/ispezione" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Ispezione</B></B></B></B></A>
 </div>
 </div>
-<div id="nc_tab" dojoType="dijit.layout.ContentPane" title="Non Conformit√†" {%ifequal tab "nc"%} selected="true" {%endifequal%}>
+<div id="nc_tab" dojoType="dijit.layout.ContentPane" title="Non Conformit‡" {%ifequal tab "nc"%} selected="true" {%endifequal%}>
 <div id="nonconf"></div>
 <div class="goog-ws-half-width goog-ws-left">
-<A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformit√†</B></B></B></B></A>
+<A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformit‡</B></B></B></B></A>
 </div>
 </div>
 </div>
 </p>
 </p>
-</DIV>{%include "footer.inc"%}
-</body> 
-</html>
