@@ -60,7 +60,7 @@ indexes:
   - name: data
     direction: desc
 
-# Used 554 times in query history.
+# Used 557 times in query history.
 - kind: Ispezione
   properties:
   - name: commissario
@@ -101,7 +101,7 @@ indexes:
   - name: settimana
   - name: giorno
 
-# Used 183 times in query history.
+# Used 184 times in query history.
 - kind: Nonconformita
   properties:
   - name: commissario

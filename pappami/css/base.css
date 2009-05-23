@@ -2,7 +2,7 @@
 
 body { margin:0; padding:0; background:#305aac; color:black; }
 body, th, td { font:12px/1.4em Verdana,sans-serif; }
-#container { position:relative; min-width:68em; max-width:100em; }
+#container { position:absolute; min-width:68em; max-width:100em; margin:0; padding:0; top:0px; left:0px;}
 #homepage #container { max-width:100em; }
 
 /* LINKS */
@@ -20,7 +20,8 @@ a:hover { color:blue; }
 /* HEADER */
 
 #header { position:relative; height:64px; background:#eff3f6; }
-#header h1#logo { margin:0; width:111px; position:absolute; bottom:10px; left:25px; }
+#header h1#logo { margin:0; width:111px; position:absolute; bottom:0px; left:25px; }
+#header h1#logo-txt { margin:0; width:111px; position:absolute; bottom:10px; left:120px; }
 
 /* NAV */
 
