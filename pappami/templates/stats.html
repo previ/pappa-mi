@@ -1,20 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Statistiche</TITLE>
-{%include "header.inc"%}
-<body class="nihilo">
-{%include "nav.inc"%}
-<DIV class="ss-form-container">
-<H1 class="ss-form-title">Statistiche</H1>
-<TABLE class="goog-ws-table" cellspacing="0">
-<thead class="goog-ws-list-header">
+<H1>Statistiche</H1>
+<TABLE cellspacing="0">
+<thead>
 <tr>
 <th>Valori</th>
 <th>Media totale</th>
 <th>Media ultimo mese</th>
 </tr>
 </thead>
-<tbody class="goog-ws-list-table">
+<tbody>
 <tr>
 <td>Numero Schede</td><td>{{stats.numeroSchede}}</td><td>{{statsMese.numeroSchede}}</td>
 <tr></tr>
@@ -36,13 +29,10 @@
 <tr></tr>
 <td>Giudizio Globale</td><td>{{stats.giudizioGlobale}}</td><td>{{statsMese.giudizioGlobale}}</td>
 <tr></tr>
-<td>Numero Nonconformit√† complessive</td><td>{{stats.ncTotali}}</td><td>{{statsMese.ncTotali}}</td>
+<td>Numero Nonconformit‡ complessive</td><td>{{stats.ncTotali}}</td><td>{{statsMese.ncTotali}}</td>
 <tr></tr>
 <td>Richiesta Campionatura</td><td>{{stats.ncRichiestaCampionatura}}</td><td>{{statsMese.ncRichiestaCampionatura}}</td>
 </tr>
 <tr>
 </tbody>
 </table>
-</div>
-</body> 
-</html>

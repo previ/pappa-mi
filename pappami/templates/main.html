@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="Content-Language" content="en-us"/>
+		<title>Pappa-Mi Raccolta dati Commissioni Mensa Milano</title>
+		<meta name="ROBOTS" content="ALL"/>
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<meta name="MSSmartTagsPreventParsing" content="true"/>
+		<meta name="Copyright" content=""/>
+		<meta name="keywords" content="Scuola, Milano, Mensa, Refezione"/>
+		<meta name="description" content="Raccolta dati Commissioni mensa Milano"/>
+		<link href="/css/homepage.css" rel="stylesheet" type="text/css" media="screen"/>
+		<link href="/css/print.css" rel="stylesheet" type="text/css" media="print"/>
+      {%include "header.inc"%}
+</head>
+<body id="homepage" class="nihilo">
+<div id="container">
+  <div id="header">
+    <H1 id="logo"><A href="/">Pappa-Mi</A></H1>
+    <UL id="nav-global">
+	<LI id="nav-homepage"><A href="/">Home</A></LI>
+	{% if user and commissario %}
+	<LI id="nav-homepage"><A href="/commissario">Area Commissari</A></LI>
+	{% endif %}
+	{% if user and not commissario %}
+	<LI id="nav-homepage"><A href="/commissario/registrazione">Registrazione Nuovo Commissario</A></LI>
+	{% endif %}
+	{% if admin %}
+	<LI id="nav-homepage"><A href="/admin">Gestione Sistema</A></LI>
+	{% endif %}
+	<LI id="nav-homepage"><A href="/supporto">Supporto</A></LI>
+	<LI id="nav-homepage"><A href="{{url}}">{{url_linktext}}</A></LI>
+  <UL>
+</div>
+<!-- END header -->
+{%include billboard%}
+<div id="columnwrap">
+<div id="subwrap">
+{% include content_left %}
+<div id="content-main">
+{% include content %}
+</div>
+<!-- END #content-main -->
+{% include content_right %}
+<!-- END #content-related -->
+</div>
+<!-- END #subwrap -->
+{% include content_extra %}
+<!-- END #content-extra -->
+</div>
+<!-- END #colwrap -->
+<div id="footer">
+<P>Pappa-Mi versione {{version}}
+</P>
+</div>
+<!-- END #footer -->
+</div>{%include "footer.inc"%}
+<!-- END #container -->
+</body></html>

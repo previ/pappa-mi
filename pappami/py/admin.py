@@ -32,25 +32,19 @@ from google.appengine.api import mail
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
+from py.main import BasePage
 
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMAdminMenuHandler(webapp.RequestHandler):
+class CMAdminMenuHandler(BasePage):
 
   def get(self):    
 
-    user = users.get_current_user()
-    url = users.create_logout_url("/")
-    url_linktext = 'Logout'
-
     template_values = {
-      'user': user,
-      'admin': users.is_current_user_admin(),
-      'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-      'url': url,
-      'url_linktext': url_linktext
+      'content_left': 'admin/leftbar.html',
+      'content': 'admin/menu.html'
     }
 
     if( self.request.get("data") ):
@@ -59,8 +53,7 @@ class CMAdminMenuHandler(webapp.RequestHandler):
       template_values['data'] = data
       template_values['menu'] = menu
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/admin/menu.html')
-    self.response.out.write(template.render(path, template_values))
+    self.getBase(template_values)
 
   def post(self):    
     if( self.request.get("cmd") == "list" ):
@@ -70,11 +63,8 @@ class CMAdminMenuHandler(webapp.RequestHandler):
       user = users.get_current_user()
 
       template_values = {
-        'user': user,      
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'url': url,
-        'url_linktext': url_linktext,
+        'content_left': 'admin/leftbar.html',
+        'content': 'admin/menu.html'
       }
 
       if self.request.get("data") :
@@ -83,11 +73,10 @@ class CMAdminMenuHandler(webapp.RequestHandler):
         template_values['data'] = data
         template_values['menu'] = menu
 
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/menu.html')
-      self.response.out.write(template.render(path, template_values))
+      self.getBase(template_values)
 
 
-class CMAdminCommissioneHandler(webapp.RequestHandler):
+class CMAdminCommissioneHandler(BasePage):
 
   def get(self):    
 
@@ -106,19 +95,15 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
         key = commissione.key()
               
       template_values = {
+        'content_left': 'admin/leftbar.html',
+        'content': 'admin/commissione.html',
         'commissione': commissione,
         'key': key,
-        'centriCucina': CentroCucina.all().order("nome"),
-        'user': user,      
-        'admin': users.is_current_user_admin(),
-        'test': self.request.url.find("test") != -1,
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'url': url,
-        'url_linktext': url_linktext
+        'centriCucina': CentroCucina.all().order("nome")
       }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissione.html')
-      self.response.out.write(template.render(path, template_values))
     
+      self.getBase(template_values)
+
     else:
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
@@ -157,19 +142,15 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
       centriCucina = CentroCucina.all().order("nome")
 
       template_values = {
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
+        'content_left': 'admin/leftbar.html',
+        'content': 'admin/commissioni.html',
         'centriCucina': centriCucina,
         'gvizdata': gvizdata,
         'tipoScuola': self.request.get("tipoScuola"),
         'centroCucina': self.request.get("centroCucina"),
-        'nome': self.request.get("nome"),
-        'url': url,
-        'url_linktext': url_linktext,
-        'user': user
+        'nome': self.request.get("nome")
       }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissioni.html')
-      self.response.out.write(template.render(path, template_values))
+      self.getBase(template_values)
 
   def post(self):    
     if( self.request.get("cmd") == "save" ):
@@ -205,43 +186,27 @@ class CMAdminCommissioneHandler(webapp.RequestHandler):
         commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
 
       template_values = {
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'url': url,
-        'url_linktext': url_linktext,
+        'content_left': 'admin/leftbar.html',
+        'content': 'admin/commissioni.html',
         'commissioni': commissioni,
         'centriCucina': centriCucina,
         'tipoScuola': self.request.get("tipoScuola"),
         'centroCucina': self.request.get("centroCucina"),
-        'nome': self.request.get("nome"),
-        'user': user
+        'nome': self.request.get("nome")
       }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissioni.html')
-      self.response.out.write(template.render(path, template_values))
+      self.getBase(template_values)
 
-class CMAdminHandler(webapp.RequestHandler):
+class CMAdminHandler(BasePage):
 
   def get(self):    
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-
-      stato = False
-      commissario = Commissario.all().filter("user", user).get()
-      if commissario :
-        stato = commissario.stato
         
-      template_values = {
-        'user': user,
-        'admin': users.is_current_user_admin(),
-        'commissario': stato == 1,
-        'url': url,
-        'url_linktext': url_linktext
-      }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/admin.html')
-      self.response.out.write(template.render(path, template_values))
+    template_values = {
+      'content_left': 'admin/leftbar.html',
+      'content': ''
+    }
+    self.getBase(template_values)
 
-class CMAdminCommissarioHandler(webapp.RequestHandler):
+class CMAdminCommissarioHandler(BasePage):
 
   def get(self):    
 
@@ -312,16 +277,11 @@ class CMAdminCommissarioHandler(webapp.RequestHandler):
 
  
       template_values = {
-        'admin': users.is_current_user_admin(),
-        'commissario': Commissario.all().filter("user", user).filter("stato", 1).get() is not None,
-        'json': json,
-        'url': url,
-        'url_linktext': url_linktext,
-        'user': user
+        'content_left': 'admin/leftbar.html',
+        'content': 'admin/commissari.html',
+        'json': json
       }
-      path = os.path.join(os.path.dirname(__file__), '../templates/admin/commissari.html')
-      self.response.out.write(template.render(path, template_values))
-    
+      self.getBase(template_values)
     
 application = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),

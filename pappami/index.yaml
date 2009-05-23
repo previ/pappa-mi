@@ -47,7 +47,7 @@ indexes:
   - name: nome>=
   - name: nome
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Commissione
   properties:
   - name: tipoScuola
@@ -60,18 +60,25 @@ indexes:
   - name: data
     direction: desc
 
-# Used 397 times in query history.
+# Used 554 times in query history.
 - kind: Ispezione
   properties:
   - name: commissario
   - name: dataIspezione
     direction: desc
 
-# Used 345 times in query history.
+# Used 353 times in query history.
 - kind: Menu
   properties:
   - name: centroCucina
   - name: giorno
+  - name: validitaDa
+
+# Used 12 times in query history.
+- kind: Menu
+  properties:
+  - name: giorno
+  - name: tipoScuola
   - name: validitaDa
 
 # Used 126 times in query history.
@@ -86,7 +93,7 @@ indexes:
   - name: giorno=
   - name: validitaDa
 
-# Used 24 times in query history.
+# Used 27 times in query history.
 - kind: Menu
   properties:
   - name: validitaA
@@ -94,7 +101,7 @@ indexes:
   - name: settimana
   - name: giorno
 
-# Used 61 times in query history.
+# Used 183 times in query history.
 - kind: Nonconformita
   properties:
   - name: commissario

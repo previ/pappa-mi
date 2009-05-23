@@ -1,0 +1,21 @@
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script>
+google.load('visualization', '1', {packages:['table']});
+
+google.setOnLoadCallback(drawTable);
+
+function drawTable() {
+  var table = new google.visualization.Table(document.getElementById('ispezioni'));
+  var data = new google.visualization.DataTable({{ispezioni}}, 0.5);
+  new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data, 1);
+  table.draw(data, {allowHtml: true, showRowNumber: false, page: 'enable'});
+}
+</script>
+<style>
+#content-main {width: 64em;}
+</style>
+<H1 class="ss-form-title">Elenco Schede Ispezione</H1>
+<div id="ispezioni"></div>
+<div class="goog-ws-half-width goog-ws-left">
+<A id="test-list-page-add-button" href="/commissario/ispezione" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Ispezione</B></B></B></B></A>
+</div>

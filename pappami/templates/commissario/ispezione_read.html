@@ -1,13 +1,11 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Commissioni Mensa: Raccolda dati Ispezioni</TITLE>
-{%include "../header.inc"%}
+﻿<link type="text/css" rel="stylesheet" href="/css/form.css"/>
 <script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.Button");
 </script>
-</HEAD><BODY class="nihilo">
-{%include "../nav.inc"%}
+<style>
+#content-main {width: 64em;}
+</style>
 <DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 <P>
 <P>
@@ -325,7 +323,7 @@ dojo.require("dijit.form.Button");
 <tr>
 <td>
 <BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoQuantita">Quantità
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoQuantita">Quantit&agrave
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
 <TR><TD class="ss-scalerow ss-leftlabel">Scarso</TD>
@@ -401,7 +399,7 @@ Secondo Piatto
 <tr>
 <td>
 <BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoQuantita">Quantità
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoQuantita">Quantit&agrave
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
 <TR><TD class="ss-scalerow ss-leftlabel">Scarso</TD>
@@ -475,7 +473,7 @@ Contorno
 <tr>
 <td>
 <BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_23">Quantità
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_23">Quantit&agrave
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
 <TR><TD class="ss-scalerow ss-leftlabel">Scarso</TD>
@@ -609,7 +607,7 @@ Frutta
 <td>
 </td>
 <td>
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_23">Quantità
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_23">Quantit&agrave
 </LABEL>
 <TABLE border="0" cellpadding="5" cellspacing="0"><TBODY>
 <TR><TD class="ss-scalerow ss-leftlabel">Scarsa</TD>
@@ -716,7 +714,7 @@ return true;
 </script>
 <P align="center">
 <input type="hidden" name="preview" value="{{preview}}">
-<input type="submit" value="Conferma salvataggio dati"/>
+<button>Conferma salvataggio dati</button>
 <button onclick="location.href='/commissario/ispezione?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
 <P>
 </form>
@@ -725,4 +723,4 @@ return true;
 <button dojoType="dijit.form.Button" onclick="location.href='/commissario';return false;">Pagina precedente</button>
 <P>
 {% endif %}
-</BODY>{%include "footer.inc"%}</HTML>
+</DIV>

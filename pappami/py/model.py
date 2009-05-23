@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+import logging
 
 from google.appengine.ext import db
 
@@ -44,6 +45,12 @@ class Commissione(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
+  def commissari(self):
+    commissari = []
+    for cc in CommissioneCommissario.all().filter("commissione", self):
+      commissari.append(cc.commissario)
+    return commissari
+
 class Commissario(db.Model):
   user = db.UserProperty()
   nome = db.StringProperty()
@@ -66,7 +73,7 @@ class CommissioneCommissario(db.Model):
   commissario = db.ReferenceProperty(Commissario)
   
 class Menu(db.Model):
-  centroCucina = db.ReferenceProperty(CentroCucina)
+  tipoScuola = db.StringProperty()
   validitaDa = db.DateProperty()
   validitaA = db.DateProperty()
   settimana = db.IntegerProperty()
@@ -198,6 +205,7 @@ class Nonconformita(db.Model):
     return self._tipi[self.tipo]
   
 class Statistiche:
+  numeroCommissioni = int(0)
   numeroSchede = int(0)
   
   primoAssaggio = float(0)

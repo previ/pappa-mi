@@ -1,8 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>Commissioni Mensa: Raccolda dati Ispezioni</title>
-{%include "../header.inc"%}
 <script type="text/javascript">
 dojo.require("dijit.Tooltip");
 dojo.require("dijit.form.Form");
@@ -12,11 +7,12 @@ dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.form.FilteringSelect");
 </script>
+<style>
+#content-main {width: 64em;}
+</style>
 <script src="/js/form.js" type="text/javascript"></script>
-</head><body class="nihilo"><div>
-{%include "../nav.inc"%}
-</div>
-<div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Segnalazione Non Conformità</h1>
+<div class="ss-form-container">
+<h1 class="table_separator">Pappa-Mi - Segnalazione Non Conformit&agrave</h1>
 <p/>
 <p/>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
@@ -24,7 +20,7 @@ dojo.require("dijit.form.FilteringSelect");
 <br/>
 {% if form.errors %}
 <div class="errorbox-bad" id="form-error">
-	<p>Non è stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
+	<p>Non � stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
 	<ul>
 {{form.errors}}
 	</ul>
@@ -61,7 +57,7 @@ return true;
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" required="true" name="dataNonconf" value="{{form.data.dataNonconf}}" class="ss-q-short" id="e_dataNonconf"/></div></div>
 <span dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
-Inserire la data in cui è stata effettuata l'ispezione.
+Inserire la data in cui � stata effettuata l'ispezione.
 </span> 
 </td>
 <td>
@@ -79,19 +75,19 @@ Inserire la data in cui è stata effettuata l'ispezione.
 </tr>
 <tr>
 <th colspan="3" class="table_separator">
-Non Conformità Gravi
+Non Conformit&agrave Gravi
 </th>
 </tr>
 <tr>
 <td colspan="2">
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Non Conformità
+<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Non Conformit&agrave
 <span class="ss-required-asterisk">*</span></label>
 <select name="tipo" id="e_tipo" dojoType="dijit.form.FilteringSelect" required="true">
-<option value="1"{% ifequal form.data.tipo "1" %} selected{% endifequal %}>Cambiamenti di menù</option>
+<option value="1"{% ifequal form.data.tipo "1" %} selected{% endifequal %}>Cambiamenti di men�</option>
 <option value="2"{% ifequal form.data.tipo "2" %} selected{% endifequal %}>Cibo avanzato oltre 30%</option>
-<option value="3"{% ifequal form.data.tipo "3" %} selected{% endifequal %}>Quantità insufficiente di una vivanda</option>
+<option value="3"{% ifequal form.data.tipo "3" %} selected{% endifequal %}>Quantit&agrave insufficiente di una vivanda</option>
 <option value="4"{% ifequal form.data.tipo "4" %} selected{% endifequal %}>Stoviglie in numero insufficiente</option>
 <option value="5"{% ifequal form.data.tipo "5" %} selected{% endifequal %}>Arredi e attrezzature inadeguate della sala di rigoverno</option>
 <option value="6"{% ifequal form.data.tipo "6" %} selected{% endifequal %}>Inadeguata pulizia dei locali</option>
@@ -125,9 +121,8 @@ Non Conformità Gravi
 </tr>
 <tr>
 <td colspan="3" align="center">
-<input type="submit" value="Salva dati" id="e_submit"/><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
+<button id="e_submit" type="submit">Salva dati</button><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table>
-</form></div>{%include "footer.inc"%}
-</body></html>
+</form></div>
