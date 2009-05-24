@@ -199,7 +199,9 @@ class CMAdminCommissioneHandler(BasePage):
 class CMAdminHandler(BasePage):
 
   def get(self):    
-        
+    if self.request.get("cmd") == "flush":
+      memcache.flush_all()
+      
     template_values = {
       'content_left': 'admin/leftbar.html',
       'content': ''
@@ -231,8 +233,20 @@ class CMAdminCommissarioHandler(BasePage):
         message = mail.EmailMessage()
         message.sender = "aiuto.pappami@gmail.com"
         message.to = commissario.user.email()
-        message.subject = "Pappa-Mi Registrazione confermata"
-        message.body = """ Benvenuto in commissione mensa !"""
+        message.bcc = "aiuto.pappami@gmail.com"
+        message.subject = "Benvenuto in Pappa-Mi"
+        message.body = """ La tua richiesta di registrazione come Commissario è stata confermata.
+        
+        Ora puoi accedere all'applicazione utilizzando il seguente link:
+        
+        http://test-papp-mi.appspot.com
+        
+        e iniziare a inserire le schede di valutazione e di non conformita'
+        
+        Ciao
+        Pappa-Mi staff
+        
+        """
           
         message.send()
 
