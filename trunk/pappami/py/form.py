@@ -12,7 +12,7 @@ class IspezioneForm(djangoforms.ModelForm):
       #logging.info("data: %s, %s", f, cleaned_data.get(f))
     pastiTotale = int(cleaned_data.get("numeroPastiTotale"))
     pastiBambini = int(cleaned_data.get("numeroPastiBambini"))
-    pastiSpeciali = int(cleaned_data.get("numeroPastiBambini"))
+    pastiSpeciali = int(cleaned_data.get("numeroPastiSpeciali"))
     
     if pastiTotale < pastiBambini or pastiBambini < pastiSpeciali:
       raise newforms.ValidationError("Il numero di pasti serviti ai bambini deve essere minore del numero totale pasti serviti")
@@ -68,7 +68,7 @@ class NonconformitaForm(djangoforms.ModelForm):
     #for f in cleaned_data:
       #logging.info("data: %s, %s", f, cleaned_data.get(f))
 
-    if Nonconformita.all().filter("dataNonconf",cleaned_data.get("dataNonconf")).filter("commissione",cleaned_data.get("commissione")).filter("turno",cleaned_data.get("turno")).count() > 0 :
+    if Nonconformita.all().filter("dataNonconf",cleaned_data.get("dataNonconf")).filter("commissione",cleaned_data.get("commissione")).filter("turno",cleaned_data.get("turno")).filter("tipo",cleaned_data.get("tipo")).count() > 0 :
       raise newforms.ValidationError("Esiste gia' una scheda di Non Conformita' per questa commissione con la stessa data e turno.")
 
     if cleaned_data.get("dataNonconf").isoweekday() > 5 :

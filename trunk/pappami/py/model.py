@@ -48,6 +48,8 @@ class Commissione(db.Model):
   def commissari(self):
     commissari = []
     for cc in CommissioneCommissario.all().filter("commissione", self):
+      #logging.info(cc.key().id())
+      #logging.info(cc.commissario.key().id())
       commissari.append(cc.commissario)
     return commissari
 

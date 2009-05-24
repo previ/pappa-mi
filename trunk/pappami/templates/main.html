@@ -30,7 +30,9 @@
 	{% if admin %}
 	<LI id="nav-homepage"><A href="/admin">Gestione Sistema</A></LI>
 	{% endif %}
+	{% if user %}
 	<LI id="nav-homepage"><A href="/supporto">Supporto</A></LI>
+	{% endif %}
 	<LI id="nav-homepage"><A href="{{url}}">{{url_linktext}}</A></LI>
   <UL>
 </div>

@@ -342,10 +342,12 @@ class CMNonconfHandler(BasePage):
       #for field in form:
         #logging.info("%s, %s",field.name, field)
 
+      user = users.get_current_user()
+      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+
       if form.is_valid():
         nc = form.save(commit=False)
-        user = users.get_current_user()
-        nc.commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+        nc.commissario = commissario
    
         preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
         memcache.add(preview, nc, 3600)
