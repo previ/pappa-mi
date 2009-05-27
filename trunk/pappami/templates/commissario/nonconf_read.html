@@ -70,11 +70,11 @@ dojo.byId("e_annulla").disabled = true;
 return true;
 </script>
 <input type="hidden" name="preview" value="{{preview}}">
-<button>Conferma salvataggio dati</button>
+<button type="submit" id="e_submit">Conferma salvataggio dati</button>
 <button onclick="location.href='/commissario/nonconf?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
 </form>
 {% else %}
-<button dojoType="dijit.form.Button" onclick="location.href='/commissario?tab=nc';return false;">Pagina precedente</button>
+<button dojoType="dijit.form.Button" id="e_annulla" onclick="location.href='/commissario?tab=nc';return false;">Pagina precedente</button>
 {% endif %}
 </form>
 </td>

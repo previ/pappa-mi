@@ -16,7 +16,7 @@ class CentroCucinaLoader(Loader):
                      ('cognomeContatto', str),
                      ('telefono', str),
                      ('fax', str),
-                     ('email', str)
+                     ('codice', str)
                      ])
                      
     self.alias_old_names()

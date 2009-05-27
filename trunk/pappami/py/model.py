@@ -36,15 +36,18 @@ class Commissione(db.Model):
   telefono = db.StringProperty(default="")
   fax = db.StringProperty(default="")
   email = db.EmailProperty()
-  geo = db.GeoPtProperty()
-  
   centroCucina = db.ReferenceProperty(CentroCucina)
+  
+  geo = db.GeoPtProperty()
+
+  numCommissari = db.IntegerProperty(default=0)
+    
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
-
+  
   def commissari(self):
     commissari = []
     for cc in CommissioneCommissario.all().filter("commissione", self):
@@ -83,6 +86,7 @@ class Menu(db.Model):
   primo = db.StringProperty()
   secondo = db.StringProperty()
   contorno = db.StringProperty()
+  dessert = db.StringProperty()
   
 class Ispezione(db.Model):
       

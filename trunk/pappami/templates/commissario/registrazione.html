@@ -39,7 +39,7 @@ dojo.byId("e_cm").value != ""){
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_cm">Commissione
 <SPAN class="ss-required-asterisk">*</SPAN></LABEL>
 <SELECT name="commissione" id="e_cm" multiple="yes">{% for c in commissioni %}
-<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}}</OPTION>{% endfor %}
+<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
 </SELECT><span dojoType="dijit.Tooltip" connectId="e_cm" position="above" id="tt_cm"> 
 Selezionare una o pi&ugrave Commissioni Mensa</span> 
 </DIV></DIV>

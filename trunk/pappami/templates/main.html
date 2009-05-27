@@ -12,31 +12,40 @@
 		<meta name="description" content="Raccolta dati Commissioni mensa Milano"/>
 		<link href="/css/homepage.css" rel="stylesheet" type="text/css" media="screen"/>
 		<link href="/css/print.css" rel="stylesheet" type="text/css" media="print"/>
-      {%include "header.inc"%}
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.3/dijit/themes/nihilo/nihilo.css" />
+		<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+djConfig={
+          parseOnLoad: true,
+          baseUrl: "./",
+          modulePaths: { custom: "/js/dojo/custom" }
+        };
+</script>
+<script type="text/javascript">google.load("dojo", "1.3", {uncompressed:false});</script>
 </head>
 <body id="homepage" class="nihilo">
 <div id="container">
   <div id="header">
-    <H1 id="logo"><A href="/"><img src="/img/pappa-mi-logo.jpg" width="80px" height="64px"></A></H1>
-    <H1 id="logo-txt"><A href="/">Pappa-Mi</A></H1>
-    <UL id="nav-global">
-	<LI id="nav-homepage"><A href="/">Home</A></LI>
+    <h1 id="logo"><A href="/"><img src="/img/pappa-mi-logo.jpg"></A></h1>
+    <h1 id="logo-txt"><A href="/">Pappa-Mi</A></h1>
+    <ul id="nav-global">
+	<li id="nav-homepage"><A href="/">Home</A></li>
 	{% if user and commissario %}
-	<LI id="nav-homepage"><A href="/commissario">Area Commissari</A></LI>
+	<li id="nav-homepage"><A href="/commissario">Area Commissari</A></li>
 	{% endif %}
 	{% if user and not commissario %}
-	<LI id="nav-homepage"><A href="/commissario/registrazione">Registrazione Nuovo Commissario</A></LI>
+	<li id="nav-homepage"><A href="/commissario/registrazione">Registrazione Nuovo Commissario</A></li>
 	{% endif %}
 	{% if admin %}
-	<LI id="nav-homepage"><A href="/admin">Gestione Sistema</A></LI>
+	<li id="nav-homepage"><A href="/admin">Gestione Sistema</A></li>
 	{% endif %}
 	{% if user %}
-	<LI id="nav-homepage"><A href="/supporto">Supporto</A></LI>
+	<li id="nav-homepage"><A href="/supporto">Supporto</A></li>
 	{% endif %}
-	<LI id="nav-homepage"><A href="{{url}}">{{url_linktext}}</A></LI>
-  <UL>
-</div>
-<!-- END header -->
+	<li id="nav-homepage"><A href="{{url}}">{{url_linktext}}</A></li>
+  <ul>
+  </div>
+  <!-- END header -->
 {%include billboard%}
 <div id="columnwrap">
 <div id="subwrap">
