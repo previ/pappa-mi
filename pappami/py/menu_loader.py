@@ -15,7 +15,8 @@ class MenuLoader(Loader):
                      ('giorno', int),
                      ('primo', str),
                      ('secondo', str),
-                     ('contorno', str)
+                     ('contorno', str),
+                     ('dessert', str)
                      ])
     self.alias_old_names()
     

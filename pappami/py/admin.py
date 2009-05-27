@@ -114,7 +114,6 @@ class CMAdminCommissioneHandler(BasePage):
                      "nomeScuola": ("string", "Scuola"),
                      "tipo": ("string", "Tipo"),
                      "indirizzo": ("string", "Indirizzo"),
-                     "centroCucina": ("string", "Centro Cucina"),
                      "distretto": ("string", "Dist."),
                      "zona": ("string", "Zona"),
                      "comando": ("string", "")}
@@ -129,15 +128,18 @@ class CMAdminCommissioneHandler(BasePage):
         commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
 
       data = list()
-      for commissione in commissioni.order("nome"):
-        data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "centroCucina": commissione.centroCucina.nome, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"'>Apri</a>"})
-
+      try:
+        for commissione in commissioni.order("nome"):
+          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"'>Apri</a>"})
+      except db.Timeout:
+        errmsg = "Timeout"
+        
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)
       data_table.LoadData(data)
 
       # Creating a JSon string
-      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "centroCucina", "distretto", "zona", "comando"), order_by="nome")
+      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "comando"))
 
       centriCucina = CentroCucina.all().order("nome")
 
@@ -222,9 +224,15 @@ class CMAdminCommissarioHandler(BasePage):
       user = users.get_current_user()
               
       if self.request.get("cmd") == "enable" :
-        commissario.stato = 1 
+        commissario.stato = 1
+        for c in commissario.commissioni():
+          c.numCommissari = c.numCommissari + 1
+          c.put() 
       elif self.request.get("cmd") == "disable" :
         commissario.stato = 0 
+        for c in commissario.commissioni():
+          c.numCommissari = c.numCommissari - 1
+          c.put() 
         
       commissario.put()
       
@@ -235,11 +243,11 @@ class CMAdminCommissarioHandler(BasePage):
         message.to = commissario.user.email()
         message.bcc = "aiuto.pappami@gmail.com"
         message.subject = "Benvenuto in Pappa-Mi"
-        message.body = """ La tua richiesta di registrazione come Commissario è stata confermata.
+        message.body = """ La tua richiesta di registrazione come Commissario e' stata confermata.
         
         Ora puoi accedere all'applicazione utilizzando il seguente link:
         
-        http://test-papp-mi.appspot.com
+        http://test-pappa-mi.appspot.com/commissario
         
         e iniziare a inserire le schede di valutazione e di non conformita'
         

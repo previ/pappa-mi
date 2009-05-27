@@ -50,7 +50,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.0.0.1 - 2009.05.19"
+    template_values["version"] = "0.3.0.6 - 2009.05.26"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -85,7 +85,7 @@ class MainPage(BasePage):
       statsMese = Statistiche()
       
       for c in Commissione.all() :
-        if len(c.commissari()) > 0:
+        if c.numCommissari > 0:
           stats.numeroCommissioni = stats.numeroCommissioni + 1
 
       for isp in Ispezione.all().order("-dataIspezione"):
@@ -184,9 +184,7 @@ class CMStatsHandler(BasePage):
       statsMese = Statistiche()
 
       for c in Commissione.all() :
-        logging.info(c.nome)
-        logging.info(len(c.commissari()))
-        if len(c.commissari()) > 0:
+        if c.numCommissari > 0:
           stats.numeroCommissioni = stats.numeroCommissioni + 1
           
       for isp in Ispezione.all().order("-dataIspezione"):
@@ -301,11 +299,14 @@ class CMMapHandler(webapp.RequestHandler):
       commissioni = Commissione.all()
         
       markers = "<markers>\n"
-      for c in commissioni :
-        if(c.geo and len(c.commissari()) > 0):
-          markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
-          markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' />\n"
-
+      try:
+        for c in commissioni :
+          if(c.geo and c.numCommissari > 0):
+            markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
+            markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' />\n"
+      except db.Timeout:
+        logging.error("Timeout")
+        
       markers = markers + "</markers>"    
       memcache.add("markers", markers)
     

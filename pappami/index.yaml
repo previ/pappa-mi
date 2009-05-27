@@ -21,67 +21,73 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 182 times in query history.
+# Unused in query history -- copied from input.
 - kind: Commissario
   properties:
   - name: user
   - name: nome
 
-# Used 6 times in query history.
+# Used once in query history.
+- kind: Commissione
+  properties:
+  - name: centroCucina
+  - name: nome
+
+# Used once in query history.
 - kind: Commissione
   properties:
   - name: centroCucina
   - name: tipoScuola
   - name: nome
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Commissione
   properties:
   - name: nome<
   - name: nome>=
   - name: nome
 
-# Used 3 times in query history.
+# Unused in query history -- copied from input.
 - kind: Commissione
   properties:
   - name: nome>=
   - name: nome
 
-# Used 2 times in query history.
+# Unused in query history -- copied from input.
 - kind: Commissione
   properties:
   - name: tipoScuola
   - name: nome
 
-# Used 126 times in query history.
+# Unused in query history -- copied from input.
 - kind: Ispezione
   properties:
   - name: commissario
   - name: data
     direction: desc
 
-# Used 557 times in query history.
+# Unused in query history -- copied from input.
 - kind: Ispezione
   properties:
   - name: commissario
   - name: dataIspezione
     direction: desc
 
-# Used 353 times in query history.
+# Unused in query history -- copied from input.
 - kind: Menu
   properties:
   - name: centroCucina
   - name: giorno
   - name: validitaDa
 
-# Used 12 times in query history.
+# Unused in query history -- copied from input.
 - kind: Menu
   properties:
   - name: giorno
   - name: tipoScuola
   - name: validitaDa
 
-# Used 126 times in query history.
+# Unused in query history -- copied from input.
 - kind: Menu
   properties:
   - name: giorno
@@ -93,7 +99,7 @@ indexes:
   - name: giorno=
   - name: validitaDa
 
-# Used 27 times in query history.
+# Unused in query history -- copied from input.
 - kind: Menu
   properties:
   - name: validitaA
@@ -101,7 +107,7 @@ indexes:
   - name: settimana
   - name: giorno
 
-# Used 184 times in query history.
+# Unused in query history -- copied from input.
 - kind: Nonconformita
   properties:
   - name: commissario

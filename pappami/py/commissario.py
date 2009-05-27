@@ -275,7 +275,7 @@ class CMNonconfHandler(BasePage):
         'content_left': 'commissario/leftbar.html',
         'nc': nc
         }
-      
+
       self.getBase(template_values)
 
     elif( self.request.get("cmd") == "edit" ):
@@ -300,6 +300,8 @@ class CMNonconfHandler(BasePage):
         'form': form,
         'commissioni': commissario.commissioni()
       }
+
+      self.getBase(template_values)
           
     else:     
       commissario = Commissario.all().filter("user", users.get_current_user()).filter("stato", 1).get()
@@ -317,7 +319,7 @@ class CMNonconfHandler(BasePage):
         'commissioni': commissario.commissioni()
         }
 
-    self.getBase(template_values)
+      self.getBase(template_values)
 
   def post(self):    
    

@@ -2,7 +2,7 @@
 
 body { margin:0; padding:0; background:#305aac; color:black; }
 body, th, td { font:12px/1.4em Verdana,sans-serif; }
-#container { position:absolute; min-width:68em; max-width:100em; margin:0; padding:0; top:0px; left:0px;}
+#container { position:relative; min-width:68em; max-width:100em; margin:0; padding:0; top:0px; left:0px;}
 #homepage #container { max-width:100em; }
 
 /* LINKS */
@@ -19,9 +19,9 @@ a:hover { color:blue; }
 
 /* HEADER */
 
-#header { position:relative; height:64px; background:#eff3f6; }
+#header { position:relative; height:65px; background:#eff3f6; }
 #header h1#logo { margin:0; width:111px; position:absolute; bottom:0px; left:25px; }
-#header h1#logo-txt { margin:0; width:111px; position:absolute; bottom:10px; left:120px; }
+#header h1#logo-txt { margin:0; width:111px; position:absolute; bottom:10px; left:100px; }
 
 /* NAV */
 
@@ -42,7 +42,7 @@ a:hover { color:blue; }
 .sidebar { font-size:92%; }
 .sidebar * { margin-left:14px; margin-right:14px; }
 .sidebar * * { margin-left:0; margin-right:0; }
-#content-nav { float:left; width:20%; }
+#content-nav { float:left; width:18%; }
 #content-extra { float:left; width:20%; font-size:75%; }
 #content-related { float:right; width:30%;}
 #content-secondary { clear:both; margin-left:0; margin-right:0; margin-top:15px; margin-bottom:-10px; padding:10px 24px; color:black; }
@@ -208,7 +208,6 @@ h3 .small { font-size:80%; }
 #subwrap { display: block; }
 /* End hide from IE-mac */om IE-mac */
 
-/* Copyright 2009 Google, Inc.  All Rights Reserved */ 
 h5, table{font-size:1.1em}
 sup,sub{font-size:.7em}
 input,select,textarea,option{
@@ -246,7 +245,6 @@ background-color:#969696;
 color:#fff;
 padding:.2em .5em}
 .ss-form-container{
-width:58em;
 background-color:#fff;
 border:1px solid #ccc;
 margin:1em auto;padding:1em}
