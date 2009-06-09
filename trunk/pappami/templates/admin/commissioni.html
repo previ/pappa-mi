@@ -15,8 +15,8 @@ dojo.require("dijit.Dialog");
     var table = new google.visualization.Table(document.getElementById('table_div'));
     var data = new google.visualization.DataTable({{gvizdata}}, 0.5);
 
-    table.draw(data, {allowHtml: true, showRowNumber: true, page: 'enable'});
-  }
+    table.draw(data, {allowHtml: true});
+}
 </script>
 <H1>Pagina Gestione Commissioni</H1>
 <div dojoType="dijit.form.DropDownButton">
@@ -82,6 +82,17 @@ if(this.validate()){
 </div>
 </div>
 <div id="table_div"></div>
-<br/><DIV class="goog-ws-half-width goog-ws-left">
-<A id="test-list-page-add-button" href="/admin/commissione?cmd=open" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Commissione</B></B></B></B></A>
+<br/>
+<DIV class="goog-ws-half-width goog-ws-left">
+<A href="/admin/commissione?cmd=open" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Commissione</B></B></B></B></A>
 </DIV>
+{%if prev%}
+<DIV class="goog-ws-half-width goog-ws-left">
+<A id="test-list-page-add-button" href="/admin/commissione?offset={{prev}}&tipoScuola={{tipoScuola}}&centroCucina={{centroCucina}}&zona={{zona}}" class="btn"><B><B><B><B style="font-weight:bold !important;">precedente</B></B></B></B></A>
+</DIV>
+{%endif%}
+{%if next%}
+<DIV class="goog-ws-half-width goog-ws-left">
+<A id="test-list-page-add-button" href="/admin/commissione?offset={{next}}&tipoScuola={{tipoScuola}}&centroCucina={{centroCucina}}&zona={{zona}}" class="btn"><B><B><B><B style="font-weight:bold !important;">successiva</B></B></B></B></A>
+</DIV>
+{%endif%}

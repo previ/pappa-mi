@@ -99,6 +99,11 @@ class CMAdminCommissioneHandler(BasePage):
         'content': 'admin/commissione.html',
         'commissione': commissione,
         'key': key,
+        'offset': self.request.get("offset"),
+        'tipoScuola': self.request.get("tipoScuola"),
+        'centroCucina': self.request.get("centroCucina"),
+        'zona': self.request.get("zona"),
+        'distretto': self.request.get("distretto"),
         'centriCucina': CentroCucina.all().order("nome")
       }
     
@@ -108,7 +113,17 @@ class CMAdminCommissioneHandler(BasePage):
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
       user = users.get_current_user()
-
+      if self.request.get("offset"):
+        offset = int(self.request.get("offset"))
+      else:
+        offset = 0
+        
+      if offset > 0:
+        prev = offset - 10
+      else:
+        prev = None
+      next = offset + 10
+      
       # Creating the data
       description = {"nome": ("string", "Commissione"),
                      "nomeScuola": ("string", "Scuola"),
@@ -129,8 +144,8 @@ class CMAdminCommissioneHandler(BasePage):
 
       data = list()
       try:
-        for commissione in commissioni.order("nome"):
-          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"'>Apri</a>"})
+        for commissione in commissioni.order("nome").fetch(10, offset):
+          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
       except db.Timeout:
         errmsg = "Timeout"
         
@@ -148,8 +163,12 @@ class CMAdminCommissioneHandler(BasePage):
         'content': 'admin/commissioni.html',
         'centriCucina': centriCucina,
         'gvizdata': gvizdata,
+        'prev': prev,
+        'next': next,
         'tipoScuola': self.request.get("tipoScuola"),
         'centroCucina': self.request.get("centroCucina"),
+        'zona': self.request.get("zona"),
+        'distretto': self.request.get("distretto"),
         'nome': self.request.get("nome")
       }
       self.getBase(template_values)
@@ -168,7 +187,7 @@ class CMAdminCommissioneHandler(BasePage):
         commissione.geo = db.GeoPt(float(self.request.get("lat")), float(self.request.get("lon")))
         commissione.put()
 
-      self.redirect("/admin/commissione")
+      self.redirect("/admin/commissione?offset=" + self.request.get("offset") + "&tipoScuola=" + self.request.get("q_tipoScuola") + "&centroCucina=" + self.request.get("q_centroCucina") + "&zona="+ self.request.get("q_zona") + "&distretto=" + self.request.get("q_distretto") )
       
     elif self.request.get("cmd") == "list":
       url = users.create_logout_url("/")
@@ -194,6 +213,8 @@ class CMAdminCommissioneHandler(BasePage):
         'centriCucina': centriCucina,
         'tipoScuola': self.request.get("tipoScuola"),
         'centroCucina': self.request.get("centroCucina"),
+        'prev': self.requst.get("prev"),
+        'next': self.requst.get("next"),
         'nome': self.request.get("nome")
       }
       self.getBase(template_values)
