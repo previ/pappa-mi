@@ -27,13 +27,13 @@ indexes:
   - name: user
   - name: nome
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Commissione
   properties:
   - name: centroCucina
   - name: nome
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Commissione
   properties:
   - name: centroCucina
@@ -66,7 +66,7 @@ indexes:
   - name: data
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 9 times in query history.
 - kind: Ispezione
   properties:
   - name: commissario
@@ -87,6 +87,14 @@ indexes:
   - name: tipoScuola
   - name: validitaDa
 
+# Used 5 times in query history.
+- kind: Menu
+  properties:
+  - name: giorno
+  - name: tipoScuola
+  - name: validitaDa
+    direction: desc
+
 # Unused in query history -- copied from input.
 - kind: Menu
   properties:
@@ -99,7 +107,7 @@ indexes:
   - name: giorno=
   - name: validitaDa
 
-# Unused in query history -- copied from input.
+# Used 6 times in query history.
 - kind: Menu
   properties:
   - name: validitaA
@@ -107,7 +115,7 @@ indexes:
   - name: settimana
   - name: giorno
 
-# Unused in query history -- copied from input.
+# Used 2 times in query history.
 - kind: Nonconformita
   properties:
   - name: commissario

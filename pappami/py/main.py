@@ -50,7 +50,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.3.0.6 - 2009.05.26"
+    template_values["version"] = "0.3.0.7 - 2009.05.28"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -274,14 +274,15 @@ class CMMenuHandler(webapp.RequestHandler):
 
       #logging.info("data: %s", data)
 
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", Commissione.get(self.request.get("commissione")).tipoScuola)
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", Commissione.get(self.request.get("commissione")).tipoScuola).order("-validitaDa")
 
       #logging.info("len %d" , menus.count())
 
       for m in menus:
-        #logging.info("settimana %d giorno %d, settimanacalc: %d, day: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
+        #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
         if(((((data-m.validitaDa).days) / 7)%4+1) == m.settimana):
           menu = m
+          break
       
       self.response.out.write(menu.primo)
       self.response.out.write("|")

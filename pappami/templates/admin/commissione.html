@@ -67,6 +67,11 @@ dojo.require("dijit.form.Button");
 <input type="hidden" name="key" value="{{key}}">
 <input type="hidden" name="lat" value="{{commissione.geo.lat}}" id="entry_lat">
 <input type="hidden" name="lon" value="{{commissione.geo.lon}}" id="entry_lon">
+<input type="hidden" name="offset" value="{{offset}}">
+<input type="hidden" name="q_centroCucina" value="{{centroCucina}}">
+<input type="hidden" name="q_tipoScuola" value="{{tipoScuola}}">
+<input type="hidden" name="q_zona" value="{{zona}}">
+<input type="hidden" name="q_distretto" value="{{distretto}}">
 <script type="dojo/method" event="onSubmit">
 if(this.validate()){
     return true;
@@ -194,7 +199,7 @@ if(this.validate()){
 </tr>
 <tr>
 <td>
-<INPUT type="submit" value="Salva dati"/><button dojoType="dijit.form.Button" onclick="location.href='/admin/commissione';return false;">Annulla</button>
+<INPUT type="submit" value="Salva dati"/><button dojoType="dijit.form.Button" onclick="location.href='/admin/commissione?offset={{offset}}';return false;">Annulla</button>
 </td>
 </tr>
 </table>
