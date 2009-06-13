@@ -114,7 +114,7 @@ class CMRegistrazioneHandler(BasePage):
     commissario = Commissario.all().filter("user", users.get_current_user()).get()
     if commissario is not None:
       template_values["content"] = "commissario/registrazione_ok.html"
-      template_values["commissario"] = commissario
+      template_values["cmsro"] = commissario
     else:
       template_values["content"] = "commissario/registrazione.html"
       
@@ -133,7 +133,8 @@ class CMRegistrazioneHandler(BasePage):
       self.sendRegistrationRequestMail(commissario)
     
     template_values = {
-      'content': 'commissario/registrazione_ok.html'
+      'content': 'commissario/registrazione_ok.html',
+      'cmsro': commissario
     }
     self.getBase(template_values)
 
