@@ -1,7 +1,7 @@
 function validateradio() {
 	var value = false;
 	var e = dojo.query('DIV.errorbox-bad');
-	for(var x = 0; x < e.length; x++){e[x].setAttribute("class", "errorbox-good");}
+	for(var x = 0; x < e.length; x++){e[x].setAttribute("className", "errorbox-good");}
 
 	var radios = dojo.query('INPUT[type=radio]');
 	var radio = radios[0];
@@ -11,8 +11,12 @@ function validateradio() {
 		if( radio.name != radios[x].name ) {
 			if( value == false ) {
 				var e = radio;
-				while(e.getAttribute("class") != "errorbox-good" && e.getAttribute("class") != "errorbox-bad") e = e.parentNode;
-				e.setAttribute("class", "errorbox-bad");
+				while(e.getAttribute("className") != "errorbox-good" && 
+				      e.getAttribute("className") != "errorbox-bad" && 
+				      e.parentNode) {
+				      e = e.parentNode;
+				}
+				e.setAttribute("className", "errorbox-bad");
 				if(first == undefined) first = radio;
 			}
 			value = false;
@@ -22,8 +26,8 @@ function validateradio() {
 	}
 	if( value == false ) {
 		var e = radio;
-		while(e.getAttribute("class") != "errorbox-good" && e.getAttribute("class") != "errorbox-bad") e = e.parentNode;
-		e.setAttribute("class", "errorbox-bad");
+		while(e.getAttribute("className") != "errorbox-good" && e.getAttribute("className") != "errorbox-bad") e = e.parentNode;
+		e.setAttribute("className", "errorbox-bad");
 		if(first == undefined) first = radio;
 	}
 	if(first) {
