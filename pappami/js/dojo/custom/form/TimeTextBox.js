@@ -16,7 +16,8 @@ dojo.declare("custom.form.TimeTextBox",dijit.form.TimeTextBox, {
                                 this.value = dojo.date.locale.parse(item.value, {selector:'time',timePattern:'HH:mm:ss'});
                         }
                 }
-        }
+        },
+        popupClass:""
 });
 }
 
