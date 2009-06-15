@@ -131,6 +131,7 @@ class CMAdminCommissioneHandler(BasePage):
                      "indirizzo": ("string", "Indirizzo"),
                      "distretto": ("string", "Dist."),
                      "zona": ("string", "Zona"),
+                     "geo": ("string", "Geo"),
                      "comando": ("string", "")}
       
       commissioni = Commissione.all()
@@ -145,7 +146,7 @@ class CMAdminCommissioneHandler(BasePage):
       data = list()
       try:
         for commissione in commissioni.order("nome").fetch(10, offset):
-          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
+          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
       except db.Timeout:
         errmsg = "Timeout"
         
@@ -154,7 +155,7 @@ class CMAdminCommissioneHandler(BasePage):
       data_table.LoadData(data)
 
       # Creating a JSon string
-      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "comando"))
+      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
 
       centriCucina = CentroCucina.all().order("nome")
 
