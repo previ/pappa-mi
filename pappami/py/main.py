@@ -294,25 +294,44 @@ class CMMenuHandler(webapp.RequestHandler):
 class CMMapHandler(webapp.RequestHandler):
   
   def get(self): 
-    markers = memcache.get("markers")
-    if(markers == None):
-        
-      commissioni = Commissione.all()
-        
-      markers = "<markers>\n"
-      try:
-        for c in commissioni :
-          if(c.geo and c.numCommissari > 0):
+    if self.request.get("cmd") == "all":
+      markers = memcache.get("markers_all")
+      if(markers == None):
+          
+        commissioni = Commissione.all()
+          
+        markers = "<markers>\n"
+        try:
+          for c in commissioni :
             markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
             markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' />\n"
-      except db.Timeout:
-        logging.error("Timeout")
-        
-      markers = markers + "</markers>"    
-      memcache.add("markers", markers)
-    
-    logging.info(markers)
-    self.response.out.write(markers)
+        except db.Timeout:
+          logging.error("Timeout")
+          
+        markers = markers + "</markers>"    
+        memcache.add("markers_all", markers)
+      
+      #logging.info(markers)
+      self.response.out.write(markers)      
+    else
+      markers = memcache.get("markers")
+      if(markers == None):
+          
+        commissioni = Commissione.all().filter("numCommissari >", 0)
+          
+        markers = "<markers>\n"
+        try:
+          for c in commissioni :
+            markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
+            markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' numcm='" + c.numCommissari + "' />\n"
+        except db.Timeout:
+          logging.error("Timeout")
+          
+        markers = markers + "</markers>"    
+        memcache.add("markers", markers)
+      
+      #logging.info(markers)
+      self.response.out.write(markers)
 
 application = webapp.WSGIApplication([
   ('/', MainPage),

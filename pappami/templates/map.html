@@ -12,13 +12,14 @@
       map.addControl(new GSmallMapControl());
       map.setCenter(new GLatLng(45.4636889,9.1881408), 12);
       
-      GDownloadUrl("/map", function(data) {
+      GDownloadUrl("/map?cmd=all", function(data) {
         var xml = GXml.parse(data);
         var markers = xml.documentElement.getElementsByTagName("marker");
         for (var i = 0; i < markers.length; i++) {
           var name = markers[i].getAttribute("nome");
           var address = markers[i].getAttribute("indirizzo");
           var type = markers[i].getAttribute("tipo");
+          var numcm = markers[i].getAttribute("numcm");
           var latlng = new GLatLng(parseFloat(markers[i].getAttribute("lat")),
                                   parseFloat(markers[i].getAttribute("lon")));
           var store = {latlng: latlng, name: name, address: address, type: type};
@@ -42,7 +43,7 @@
 
     function createMarker(stores) {
       var store = stores[0];
-      var newIcon = MapIconMaker.createMarkerIcon({width: 32, height: 32, primaryColor: "#0000ff"});
+      var newIcon = MapIconMaker.createMarkerIcon({width: 16, height: 16, primaryColor: (store > 0 ? "#0000ff" : "#777777")});
       var marker = new GMarker(store.latlng, {icon: newIcon});
       var html = "<b>" + store.name + "</b> <br/>" + store.address;
       GEvent.addListener(marker, 'click', function() {
