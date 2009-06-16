@@ -19,7 +19,7 @@ class CommissioneLoader(Loader):
                      ('zona', str),
                      ('distretto', str),
                      ('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
-                     ('geo', lambda x: db.Geo(float(split(x,":")[0]),float(split(x,":")[1])))
+                     ('geo', lambda x: db.GeoPt(float(x.split(":")[0]),float(x.split(":")[1])))
                      ])
     self.alias_old_names()
     
