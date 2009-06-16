@@ -18,7 +18,7 @@ dojo.require("custom.form.TimeTextBox");
 <br/>
 {% if form.errors %}
 <div class="errorbox-bad" id="form-error">
-	<p>Non è stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
+	<p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
 	<ul>
 {{form.errors}}
 	</ul>
@@ -55,7 +55,7 @@ return true;
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" onchange="getMenu()" required="true" name="dataIspezione" value="{{form.data.dataIspezione}}" class="ss-q-short" id="e_dataIspezione"/></div></div>
 <span dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
-Inserire la data in cui è stata effettuata l'ispezione.
+Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </span> 
 </td>
 <td>
