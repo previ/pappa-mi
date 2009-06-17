@@ -22,7 +22,7 @@
           var numcm = markers[i].getAttribute("numcm");
           var latlng = new GLatLng(parseFloat(markers[i].getAttribute("lat")),
                                   parseFloat(markers[i].getAttribute("lon")));
-          var store = {latlng: latlng, name: name, address: address, type: type};
+          var store = {latlng: latlng, name: name, address: address, type: type, cm: numcm};
           var latlngHash = (latlng.lat().toFixed(6) + "" + latlng.lng().toFixed(6));
           latlngHash = latlngHash.replace(".","").replace(".", "").replace("-","");
           if (locations[latlngHash] == null) {
@@ -43,9 +43,16 @@
 
     function createMarker(stores) {
       var store = stores[0];
-      var newIcon = MapIconMaker.createMarkerIcon({width: 16, height: 16, primaryColor: (store > 0 ? "#0000ff" : "#777777")});
+      if(store.type == "Materna") {
+        color = (store.cm > 0 ? "#0000ff" : "#222277");
+      } else if (store.type == "Primaria") {
+        color = (store.cm > 0 ? "#00ff00" : "#227722");
+      } else {
+        color = (store.cm > 0 ? "#ff0000" : "#772222");
+      }
+      var newIcon = MapIconMaker.createMarkerIcon({width: 32, height: 32, primaryColor: color});
       var marker = new GMarker(store.latlng, {icon: newIcon});
-      var html = "<b>" + store.name + "</b> <br/>" + store.address;
+      var html = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address;
       GEvent.addListener(marker, 'click', function() {
         marker.openInfoWindowHtml(html);
       });
@@ -57,7 +64,7 @@
       var marker = new GMarker(stores[0].latlng, {icon: newIcon});
       var html = "";
       for (var i = 0; i < stores.length; i++) {
-        html += "<b>" + stores[i].name + "</b> <br/>" + stores[i].address + "<br/>";
+        html += "<b>" + stores[i].name + " - " + stores[i].type + "</b> <br/>" + stores[i].address + "<br/>";
       }
       GEvent.addListener(marker, 'click', function() {
         marker.openInfoWindowHtml(html);
@@ -72,5 +79,5 @@
   <style>
 #content-main { width:100%; }
   </style>
-<H1 class="ss-form-title">Le Commissioni</H1>
+<h1 class="ss-form-title">Le Commissioni</h1>
 <div id="map" style="height: 600px; border: 1px solid black"></div>

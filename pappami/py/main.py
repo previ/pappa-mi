@@ -303,8 +303,9 @@ class CMMapHandler(webapp.RequestHandler):
         markers = "<markers>\n"
         try:
           for c in commissioni :
-            markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
-            markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' />\n"
+            if c.geo:
+              markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
+              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
           
@@ -313,7 +314,7 @@ class CMMapHandler(webapp.RequestHandler):
       
       #logging.info(markers)
       self.response.out.write(markers)      
-    else
+    else:
       markers = memcache.get("markers")
       if(markers == None):
           
@@ -322,8 +323,8 @@ class CMMapHandler(webapp.RequestHandler):
         markers = "<markers>\n"
         try:
           for c in commissioni :
-            markers = markers + "<marker nome='" + c.nome + "' indirizzo='" + c.strada + ", " + c.civico + ", " + c.cap + " " + c.citta + "'"
-            markers = markers + " lat='" + str(c.geo.lat) + "' lon='" + str(c.geo.lon) + "' tipo='school' numcm='" + c.numCommissari + "' />\n"
+            markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
+            markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
           
