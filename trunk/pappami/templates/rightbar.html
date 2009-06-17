@@ -12,7 +12,7 @@
     function load() {
       var map = new GMap2(document.getElementById("map"));
       map.addControl(new GSmallMapControl());
-      map.setCenter(new GLatLng(45.4636889,9.1881408), 11);
+      map.setCenter(new GLatLng(45.4636889,9.1881408), 10);
       
       GDownloadUrl("/map", function(data) {
         var xml = GXml.parse(data);
