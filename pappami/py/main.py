@@ -163,6 +163,7 @@ class CMCommissioneHandler(BasePage):
   def get(self):
     template_values = dict()
     template_values["content"] = "map.html"
+    template_values["centriCucina"] = CentroCucina.all().order("nome")
     self.getBase(template_values)
 
 class CMSupportoHandler(BasePage):
@@ -305,7 +306,7 @@ class CMMapHandler(webapp.RequestHandler):
           for c in commissioni :
             if c.geo:
               markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
-              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" />\n'
+              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.centroCucina.key().name() + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
           
@@ -323,8 +324,9 @@ class CMMapHandler(webapp.RequestHandler):
         markers = "<markers>\n"
         try:
           for c in commissioni :
-            markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
-            markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" />\n'
+            if c.geo :
+              markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
+              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.centroCucina.key().name() + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
           
