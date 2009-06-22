@@ -159,7 +159,8 @@ class MainPage(BasePage):
     return [stats, statsMese]
 
 class CMCommissioneHandler(BasePage):
-  
+    
+  @login_required
   def get(self):
     template_values = dict()
     template_values["content"] = "map.html"
@@ -341,7 +342,7 @@ application = webapp.WSGIApplication([
   ('/map', CMMapHandler),
   ('/stats', CMStatsHandler),
   ('/menu', CMMenuHandler),
-  ('/commissione', CMCommissioneHandler),
+  ('/commissioni', CMCommissioneHandler),
   ('/supporto', CMSupportoHandler)
 ], debug=True)
 
