@@ -15,6 +15,8 @@ dojo.require("dijit.Dialog");
     var list;
     var xml = null;
     var gmap;
+    var iMarker;
+    var mrks = {};
 
     function drawMap(data) {
         if( !xml ) xml = GXml.parse(data);
@@ -23,6 +25,7 @@ dojo.require("dijit.Dialog");
         while (list.firstChild) {
           list.removeChild(list.firstChild);
         }
+        iMarker = 0;
         var markers = xml.documentElement.getElementsByTagName("marker");
         var f_cc = dojo.byId("e_cc").value;
         var f_type = dojo.byId("e_tipo").value;
@@ -43,7 +46,6 @@ dojo.require("dijit.Dialog");
               locations[latlngHash] = []
             }
             locations[latlngHash].push(store);
-            addLocationToList(list, store);
           }
         }
         for (var latlngHash in locations) {
@@ -57,7 +59,8 @@ dojo.require("dijit.Dialog");
       }    
     function load() {
       gmap = new GMap2(document.getElementById("map"));
-      gmap.addControl(new GSmallMapControl());
+      //gmap.addControl(new GLargeMapControl3D());
+      gmap.setUIToDefault();
       gmap.setCenter(new GLatLng(45.4636889,9.1881408), 12);
       list = dojo.byId("left_list");
       
@@ -75,30 +78,42 @@ dojo.require("dijit.Dialog");
       }
       var newIcon = MapIconMaker.createMarkerIcon({width: 32, height: 32, primaryColor: color});
       var marker = new GMarker(store.latlng, {icon: newIcon});
+      mrks[iMarker] = marker;
       var html = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address;
       GEvent.addListener(marker, 'click', function() {
         marker.openInfoWindowHtml(html);
       });
+      addLocationToList(list, store, iMarker++);      
       return marker;
     }
 
     function createClusteredMarker(stores) {
       var newIcon = MapIconMaker.createMarkerIcon({width: 44, height: 44, primaryColor: "#0000ff"});
       var marker = new GMarker(stores[0].latlng, {icon: newIcon});
+      mrks[iMarker] = marker;
       var html = "";
       for (var i = 0; i < stores.length; i++) {
         html += "<b>" + stores[i].name + " - " + stores[i].type + "</b> <br/>" + stores[i].address + "<br/>";
+        addLocationToList(list, store, iMarker);      
       }
       GEvent.addListener(marker, 'click', function() {
         marker.openInfoWindowHtml(html);
       });
+      iMarker++;
       return marker;
     }
 
-    function addLocationToList(list, store) {
+    function addLocationToList(list, store, im) {
       school = document.createElement("div");
       school.innerHTML = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address;
+      //school.addEventListener("click", showMarker, false);
+      //school.setAttribute("im", im);
       list.appendChild(school);
+    }
+
+    function showMarker() {
+      //alert(this.im);
+      mrks[this.im].showMapBlowup();
     }
     
     //]]>
