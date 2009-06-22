@@ -37,6 +37,9 @@ djConfig={
 	{% if user and not commissario %}
 	<li><a href="/commissario/registrazione">Registrazione Nuovo Commissario</a></li>
 	{% endif %}
+	{% if user and commissario %}
+	<li><a href="/commissioni">Commissioni</a></li>
+	{% endif %}
 	{% if admin %}
 	<li><a href="/admin">Gestione Sistema</a></li>
 	{% endif %}

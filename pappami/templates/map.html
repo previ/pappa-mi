@@ -94,7 +94,7 @@ dojo.require("dijit.Dialog");
       var html = "";
       for (var i = 0; i < stores.length; i++) {
         html += "<b>" + stores[i].name + " - " + stores[i].type + "</b> <br/>" + stores[i].address + "<br/>";
-        addLocationToList(list, store, iMarker);      
+        addLocationToList(list, stores[i], iMarker);      
       }
       GEvent.addListener(marker, 'click', function() {
         marker.openInfoWindowHtml(html);
