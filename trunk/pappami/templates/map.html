@@ -1,4 +1,10 @@
-﻿</script>{%if test%}
+﻿<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+</script>
+{%if test%}
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxR-kkwChykYW7WKcP9E61FIpqtdnBTu75SoRIRFZtvbJ_a6sG3HegmbSw" type="text/javascript"></script>
 {%else%}<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>{%endif%}
     <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/mapiconmaker/1.0/src/mapiconmaker.js" type="text/javascript"></script> 
@@ -6,39 +12,56 @@
     //<![CDATA[
 
     var locations = {};
+    var list;
+    var xml = null;
+    var gmap;
 
-    function load() {
-      var map = new GMap2(document.getElementById("map"));
-      map.addControl(new GSmallMapControl());
-      map.setCenter(new GLatLng(45.4636889,9.1881408), 12);
-      
-      GDownloadUrl("/map?cmd=all", function(data) {
-        var xml = GXml.parse(data);
+    function drawMap(data) {
+        if( !xml ) xml = GXml.parse(data);
+        gmap.clearOverlays();
+        locations = {};
+        while (list.firstChild) {
+          list.removeChild(list.firstChild);
+        }
         var markers = xml.documentElement.getElementsByTagName("marker");
+        var f_cc = dojo.byId("e_cc").value;
+        var f_type = dojo.byId("e_tipo").value;
+        var f_numcm = dojo.byId("e_numcm").value;
         for (var i = 0; i < markers.length; i++) {
           var name = markers[i].getAttribute("nome");
           var address = markers[i].getAttribute("indirizzo");
           var type = markers[i].getAttribute("tipo");
           var numcm = markers[i].getAttribute("numcm");
-          var latlng = new GLatLng(parseFloat(markers[i].getAttribute("lat")),
-                                  parseFloat(markers[i].getAttribute("lon")));
-          var store = {latlng: latlng, name: name, address: address, type: type, cm: numcm};
-          var latlngHash = (latlng.lat().toFixed(6) + "" + latlng.lng().toFixed(6));
-          latlngHash = latlngHash.replace(".","").replace(".", "").replace("-","");
-          if (locations[latlngHash] == null) {
-            locations[latlngHash] = []
+          var cc = markers[i].getAttribute("cc");
+          if(( !f_cc || cc == f_cc) && (!f_type || type == f_type) && (f_numcm == 0 || numcm > 0)) {
+            var latlng = new GLatLng(parseFloat(markers[i].getAttribute("lat")),
+                                    parseFloat(markers[i].getAttribute("lon")));
+            var store = {latlng: latlng, name: name, address: address, type: type, cm: numcm};
+            var latlngHash = (latlng.lat().toFixed(6) + "" + latlng.lng().toFixed(6));
+            latlngHash = latlngHash.replace(".","").replace(".", "").replace("-","");
+            if (locations[latlngHash] == null) {
+              locations[latlngHash] = []
+            }
+            locations[latlngHash].push(store);
+            addLocationToList(list, store);
           }
-          locations[latlngHash].push(store);
         }
         for (var latlngHash in locations) {
           var stores = locations[latlngHash];
           if (stores.length > 1) {
-            map.addOverlay(createClusteredMarker(stores));
+            gmap.addOverlay(createClusteredMarker(stores));
           } else {
-            map.addOverlay(createMarker(stores));
+            gmap.addOverlay(createMarker(stores));
           }
          }
-      });
+      }    
+    function load() {
+      gmap = new GMap2(document.getElementById("map"));
+      gmap.addControl(new GSmallMapControl());
+      gmap.setCenter(new GLatLng(45.4636889,9.1881408), 12);
+      list = dojo.byId("left_list");
+      
+      GDownloadUrl("/map?cmd=all", drawMap);
     }
 
     function createMarker(stores) {
@@ -71,6 +94,13 @@
       });
       return marker;
     }
+
+    function addLocationToList(list, store) {
+      school = document.createElement("div");
+      school.innerHTML = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address;
+      list.appendChild(school);
+    }
+    
     //]]>
     
     window.onload = load;
@@ -80,4 +110,47 @@
 #content-main { width:100%; }
   </style>
 <h1 class="ss-form-title">Le Commissioni</h1>
-<div id="map" style="height: 600px; border: 1px solid black"></div>
+
+<div dojoType="dijit.form.DropDownButton">
+  <span>Filtra dati</span>
+  <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
+<table>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_3">Tipo</LABEL>
+<SELECT name="tipoScuola" id="e_tipo">
+<OPTION value=""></OPTION>
+<OPTION value="Materna"{% ifequal tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
+<OPTION value="Primaria"{% ifequal tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
+<OPTION value="Secondaria"{% ifequal tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_4">C.Cucina</LABEL>
+<SELECT name="centroCucina" id="e_cc">
+<OPTION value=""></OPTION>{%for cc in centriCucina%}
+<OPTION value="{{cc.key.name}}">{{cc.nome}}</OPTION>{%endfor%}
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_4">Stato</LABEL>
+<SELECT name="numcm" id="e_numcm">
+<OPTION value="0">Tutte</OPTION>
+<OPTION value="1">Attive</OPTION>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit" onclick="drawMap()">Applica</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id="left_list" style="height: 600px; width: 14em; float:left; border: 0px solid black; overflow: auto;"></div>
+<div id="map" style="height: 600px; width: 58em; float:left; border: 1px solid black"></div>
