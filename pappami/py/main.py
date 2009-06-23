@@ -43,14 +43,14 @@ class BasePage(webapp.RequestHandler):
     else:
       url = users.create_login_url(self.request.uri)
       url_linktext = 'Login'
-
-    template_values["test"] = self.request.url.find("test") != -1,
+    if self.request.url.find("test") != -1 :
+      template_values["test"] = "true"
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.3.0.7 - 2009.05.28"
+    template_values["version"] = "0.4.0.7 - 2009.06.23"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))

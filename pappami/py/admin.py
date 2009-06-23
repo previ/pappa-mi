@@ -259,6 +259,10 @@ class CMAdminCommissarioHandler(BasePage):
       commissario.put()
       
       if commissario.stato == 1:
+        if self.request.url.find("test") != -1:
+          url = "test-pappa-mi.appspot.com"
+        else:
+          url = "pappa-mi.appspot.com"
 
         message = mail.EmailMessage()
         message.sender = "aiuto.pappami@gmail.com"
@@ -269,7 +273,7 @@ class CMAdminCommissarioHandler(BasePage):
         
         Ora puoi accedere all'applicazione utilizzando il seguente link:
         
-        http://test-pappa-mi.appspot.com/commissario
+        http://"""  + url + """/commissario
         
         e iniziare a inserire le schede di valutazione e di non conformita'
         

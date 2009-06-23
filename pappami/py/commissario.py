@@ -140,6 +140,11 @@ class CMRegistrazioneHandler(BasePage):
 
   def sendRegistrationRequestMail(self, commissario) :
 
+    if self.request.url.find("test") != -1:
+      url = "test-pappa-mi.appspot.com"
+    else:
+      url = "pappa-mi.appspot.com"
+    
     message = mail.EmailMessage()
     message.sender = "aiuto.pappami@gmail.com"
     message.to = "aiuto.pappami@gmail.com"
@@ -148,7 +153,7 @@ class CMRegistrazioneHandler(BasePage):
     
     Per abilitarlo usare il seguente link:
     
-    """ + "http://test-pappa-mi.appspot.com/admin/commissario?cmd=enable&key="+str(commissario.key())
+    """ + "http://" + url + "/admin/commissario?cmd=enable&key="+str(commissario.key())
 
     message.send()
       
