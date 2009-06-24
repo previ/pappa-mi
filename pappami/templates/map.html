@@ -3,6 +3,8 @@ dojo.require("dijit.form.Form");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.Dialog");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.ProgressBar");
 </script>
 {%if test%}
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxR-kkwChykYW7WKcP9E61FIpqtdnBTu75SoRIRFZtvbJ_a6sG3HegmbSw" type="text/javascript"></script>
@@ -45,18 +47,22 @@ dojo.require("dijit.Dialog");
             locations[latlngHash].push(store);
           }
         }
+        //jsProgress.update({ maximum: markers.length, progress:0 });
+        m = 0;
         for (var latlngHash in locations) {
+          //m++;
           var stores = locations[latlngHash];
           if (stores.length > 1) {
             gmap.addOverlay(createClusteredMarker(stores));
           } else {
             gmap.addOverlay(createMarker(stores));
-          }
-         }
+          }          
+          //if(!(m % 10)) jsProgress.update({ progress:m });
+        }
+        //jsProgress.update({ progress: markers.length });
       }    
     function load() {
       gmap = new GMap2(document.getElementById("map"));
-      //gmap.addControl(new GLargeMapControl3D());
       gmap.setUIToDefault();
       gmap.setCenter(new GLatLng(45.4636889,9.1881408), 12);
       list = dojo.byId("left_list");
@@ -117,7 +123,7 @@ dojo.require("dijit.Dialog");
 #content-main { width:100%; }
   </style>
 <h1 class="ss-form-title">Le Commissioni</h1>
-
+<!--div dojoType="dijit.ProgressBar" style="width:600px; position:absolute; left: 14em; top: 10em;" jsId="jsProgress" id="downloadProgress"></div--> 
 <div dojoType="dijit.form.DropDownButton">
   <span>Filtra dati</span>
   <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
@@ -147,7 +153,7 @@ dojo.require("dijit.Dialog");
 <LABEL class="ss-q-title" for="entry_4">Stato</LABEL>
 <SELECT name="numcm" id="e_numcm">
 <OPTION value="0">Tutte</OPTION>
-<OPTION value="1">Attive</OPTION>
+<OPTION value="1" selected>Attive</OPTION>
 </select>
 </td>
 </tr>
