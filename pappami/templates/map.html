@@ -16,6 +16,8 @@ dojo.require("dijit.ProgressBar");
     var list;
     var xml = null;
     var gmap;
+    var iLast;
+    var locArray;
 
     function drawMap(data) {
         if( !xml ) xml = GXml.parse(data);
@@ -25,8 +27,6 @@ dojo.require("dijit.ProgressBar");
           list.removeChild(list.firstChild);
         }
         var markers = xml.documentElement.getElementsByTagName("marker");
-        numParts = Math.floor(markers.length/10);
-        jsProgress.update({ maximum: numParts, progress:0 });
         var f_cc = dojo.byId("e_cc").value;
         var f_type = dojo.byId("e_tipo").value;
         var f_numcm = dojo.byId("e_numcm").value;
@@ -47,17 +47,36 @@ dojo.require("dijit.ProgressBar");
             }
             locations[latlngHash].push(store);
           }
-          if(i%10) setTimeout("jsProgress.update({ progress: "+ i * 10 +"})",  (i+1)*100 + Math.floor(Math.random()*100));
         }
+        iLast = 0;
+        locArray = [];
+        var i = 0;
         for (var latlngHash in locations) {
-          var stores = locations[latlngHash];
-          if (stores.length > 1) {
-            gmap.addOverlay(createClusteredMarker(stores));
-          } else {
-            gmap.addOverlay(createMarker(stores));
-          }
-         }
+          locArray[i++] = locations[latlngHash];
+        }
+        jsProgress.update({ maximum: locArray.length, progress:0 });     
+        dojo.byId("progress").style.visibility = "visible";
+        overlay();
       }    
+
+    function overlay() {
+      for (var i = iLast; i < locArray.length && i < iLast + 10; i++) {
+        var stores = locArray[i];
+        if (stores.length > 1) {
+          gmap.addOverlay(createClusteredMarker(stores));
+        } else {        
+          gmap.addOverlay(createMarker(stores));
+        }
+      }
+      iLast = i;
+      jsProgress.update({progress: iLast});
+      if(iLast < locArray.length) {
+        setTimeout(overlay, 10);
+      } else {
+        dojo.byId("progress").style.visibility = "hidden";
+      }
+    }
+    
     function load() {
       gmap = new GMap2(document.getElementById("map"));
       //gmap.addControl(new GLargeMapControl3D());
@@ -114,14 +133,12 @@ dojo.require("dijit.ProgressBar");
     
     //]]>
     
-    window.onload = load;
+    dojo.addOnLoad(load);
     window.onunload = GUnload;
   </script>
   <style>
 #content-main { width:100%; }
   </style>
-<div dojoType="dijit.ProgressBar" style="width:300px position:absolute; top: 100px; left: 100px"
-     jsId="jsProgress" id="downloadProgress"></div>
 <h1 class="ss-form-title">Le Commissioni</h1>
 <div dojoType="dijit.form.DropDownButton">
   <span>Filtra dati</span>
@@ -131,7 +148,7 @@ dojo.require("dijit.ProgressBar");
 <td>
 <LABEL class="ss-q-title" for="entry_3">Tipo</LABEL>
 <SELECT name="tipoScuola" id="e_tipo">
-<OPTION value=""></OPTION>
+<OPTION value="">Tutte</OPTION>
 <OPTION value="Materna"{% ifequal tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
 <OPTION value="Primaria"{% ifequal tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
 <OPTION value="Secondaria"{% ifequal tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
@@ -142,7 +159,7 @@ dojo.require("dijit.ProgressBar");
 <td>
 <LABEL class="ss-q-title" for="entry_4">C.Cucina</LABEL>
 <SELECT name="centroCucina" id="e_cc">
-<OPTION value=""></OPTION>{%for cc in centriCucina%}
+<OPTION value="">Tutti</OPTION>{%for cc in centriCucina%}
 <OPTION value="{{cc.key.name}}">{{cc.nome}}</OPTION>{%endfor%}
 </select>
 </td>
@@ -166,3 +183,4 @@ dojo.require("dijit.ProgressBar");
 </div>
 <div id="left_list" style="height: 600px; width: 14em; float:left; border: 0px solid black; overflow: auto;"></div>
 <div id="map" style="height: 600px; width: 58em; float:left; border: 1px solid black"></div>
+<div style="width:58em; position:absolute; top: 100px; left: 19.5em; visibility: hidden;" id="progress"><center>Caricamento in corso ...</center><div dojoType="dijit.ProgressBar" jsId="jsProgress" id="downloadProgress"></div>
