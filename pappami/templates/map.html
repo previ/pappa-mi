@@ -3,7 +3,6 @@ dojo.require("dijit.form.Form");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.Dialog");
-dojo.require("dijit.Dialog");
 dojo.require("dijit.ProgressBar");
 </script>
 {%if test%}
@@ -26,6 +25,8 @@ dojo.require("dijit.ProgressBar");
           list.removeChild(list.firstChild);
         }
         var markers = xml.documentElement.getElementsByTagName("marker");
+        numParts = Math.floor(markers.length/10);
+        jsProgress.update({ maximum: numParts, progress:0 });
         var f_cc = dojo.byId("e_cc").value;
         var f_type = dojo.byId("e_tipo").value;
         var f_numcm = dojo.byId("e_numcm").value;
@@ -46,23 +47,20 @@ dojo.require("dijit.ProgressBar");
             }
             locations[latlngHash].push(store);
           }
+          if(i%10) setTimeout("jsProgress.update({ progress: "+ i * 10 +"})",  (i+1)*100 + Math.floor(Math.random()*100));
         }
-        //jsProgress.update({ maximum: markers.length, progress:0 });
-        m = 0;
         for (var latlngHash in locations) {
-          //m++;
           var stores = locations[latlngHash];
           if (stores.length > 1) {
             gmap.addOverlay(createClusteredMarker(stores));
           } else {
             gmap.addOverlay(createMarker(stores));
-          }          
-          //if(!(m % 10)) jsProgress.update({ progress:m });
-        }
-        //jsProgress.update({ progress: markers.length });
+          }
+         }
       }    
     function load() {
       gmap = new GMap2(document.getElementById("map"));
+      //gmap.addControl(new GLargeMapControl3D());
       gmap.setUIToDefault();
       gmap.setCenter(new GLatLng(45.4636889,9.1881408), 12);
       list = dojo.byId("left_list");
@@ -122,8 +120,9 @@ dojo.require("dijit.ProgressBar");
   <style>
 #content-main { width:100%; }
   </style>
+<div dojoType="dijit.ProgressBar" style="width:300px position:absolute; top: 100px; left: 100px"
+     jsId="jsProgress" id="downloadProgress"></div>
 <h1 class="ss-form-title">Le Commissioni</h1>
-<!--div dojoType="dijit.ProgressBar" style="width:600px; position:absolute; left: 14em; top: 10em;" jsId="jsProgress" id="downloadProgress"></div--> 
 <div dojoType="dijit.form.DropDownButton">
   <span>Filtra dati</span>
   <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
@@ -153,7 +152,7 @@ dojo.require("dijit.ProgressBar");
 <LABEL class="ss-q-title" for="entry_4">Stato</LABEL>
 <SELECT name="numcm" id="e_numcm">
 <OPTION value="0">Tutte</OPTION>
-<OPTION value="1" selected>Attive</OPTION>
+<OPTION value="1">Attive</OPTION>
 </select>
 </td>
 </tr>
