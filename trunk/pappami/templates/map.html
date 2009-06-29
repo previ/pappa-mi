@@ -1,4 +1,8 @@
-﻿<script type="text/javascript">
+﻿<style>
+#content-main {width: 69em;}
+#subwrap {width: 82em;}
+</style>
+<script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.Button");
@@ -60,7 +64,7 @@ dojo.require("dijit.ProgressBar");
       }    
 
     function overlay() {
-      for (var i = iLast; i < locArray.length && i < iLast + 10; i++) {
+      for (var i = iLast; i < locArray.length && i < iLast + 20; i++) {
         var stores = locArray[i];
         if (stores.length > 1) {
           gmap.addOverlay(createClusteredMarker(stores));
@@ -123,10 +127,11 @@ dojo.require("dijit.ProgressBar");
     function addLocationToList(list, store, marker) {
       school = document.createElement("div");
       school.style.cursor = "hand";
-      school.innerHTML = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address + "";
+      var html = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address + "";
+      school.innerHTML = html;
       if(school.addEventListener)       
         school.addEventListener("click", function(){
-        marker.openInfoWindow(school);
+        marker.openInfoWindow(html);
         }, false);
       list.appendChild(school);
     }
@@ -181,6 +186,6 @@ dojo.require("dijit.ProgressBar");
 </table>
 </div>
 </div>
-<div id="left_list" style="height: 600px; width: 14em; float:left; border: 0px solid black; overflow: auto;"></div>
-<div id="map" style="height: 600px; width: 58em; float:left; border: 1px solid black"></div>
+<div id="left_list" style="height: 600px; width: 14em; max-width=14em; float:left; border: 0px solid black; overflow: auto;"></div>
+<div id="map" style="height: 600px; width: 58em; max-width=58em; float:left; border: 1px solid black"></div>
 <div style="width:58em; position:absolute; top: 100px; left: 19.5em; visibility: hidden;" id="progress"><center>Caricamento in corso ...</center><div dojoType="dijit.ProgressBar" jsId="jsProgress" id="downloadProgress"></div>
