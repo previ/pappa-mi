@@ -46,7 +46,7 @@ return true;
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
 <select name="commissione" id="e_commissione" onchange="getMenu()">{% for cm in commissioni %}
-<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}}</option>{% endfor %}
+<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>
@@ -54,7 +54,7 @@ return true;
 <div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataIspezione">Data Ispezione
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" onchange="getMenu()" required="true" name="dataIspezione" value="{{form.data.dataIspezione}}" class="ss-q-short" id="e_dataIspezione"/></div></div>
-<span dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
+<span style="display:none;" dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
 Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </span> 
 </td>
@@ -65,8 +65,6 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <select name="turno" id="e_turno">
 <option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
 <option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
-<option value="3"{% ifequal form.data.turno "3" %} selected{% endifequal %}>Terzo</option>
-<option value="4"{% ifequal form.data.turno "4" %} selected{% endifequal %}>Quarto</option>
 </select></div></div>
 </td>
 </tr>
@@ -131,13 +129,15 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
+<div class="ss-form-entry" id="l_arrivoTermiche"><label class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
+<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_arrivoTermiche, l_aperturaTermiche, l_primoInizioDist, l_primoFineDist, l_secondoInizioDist, l_secondoFineDist, l_finePasto" position="above" id="tt_arrivoTermiche"> 
+Inserire ora e minunti (es. 13:30)
+</span></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
+<div class="ss-form-entry" id="l_aperturaTermiche"><label class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
@@ -148,27 +148,29 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_15">Pulizia Centro Cottura
+<div class="ss-form-entry" id="l_puliziaRef"><label class="ss-q-title" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Scarso</td>
+<tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="puliziaCentroCottura" value="1" id="e_pcc_1" {% ifequal form.data.puliziaCentroCottura "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaCentroCottura" value="2" id="e_pcc_2" {% ifequal form.data.puliziaCentroCottura "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaCentroCottura" value="3" id="e_pcc_3" {% ifequal form.data.puliziaCentroCottura "3" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaCentroCottura" value="4" id="e_pcc_4" {% ifequal form.data.puliziaCentroCottura "4" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Buono</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Buona</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_puliziaRef, l_puliziaCC" position="above" id="tt_pulizia"> 
+Valori possibili: Scarsa, Mediocre, Sufficiente, Buona
+</span></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_15">Pulizia Refettorio
+<div class="ss-form-entry" id="l_puliziaCC"><label class="ss-q-title" for="entry_15">Pulizia Refettorio
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Scarso</td>
+<tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="puliziaRefettorio" value="1" id="e_pr_1" {% ifequal form.data.puliziaRefettorio "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaRefettorio" value="2" id="e_pr_2" {% ifequal form.data.puliziaRefettorio "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaRefettorio" value="3" id="e_pr_3" {% ifequal form.data.puliziaRefettorio "3" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="puliziaRefettorio" value="4" id="e_pr_4" {% ifequal form.data.puliziaRefettorio "4" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Buono</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Buona</td></tr></tbody></table></div></div>
 </td>
 <td>
 </td>
@@ -181,12 +183,15 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry">
+<div class="ss-form-entry" id="l_capitolato">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="1" id="e_aarc_1" {% ifequal form.data.aaRispettoCapitolato "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="0" id="e_aarc_2" {% ifequal form.data.aaRispettoCapitolato "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_capitolato" position="above" id="tt_capitolato"> 
+Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda "Non conformit&agrave;".<br/>
+Indicare "No" anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.
+</span></div></div>
 </td>
 </tr>
 <tr>
@@ -229,12 +234,14 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry">
+<div class="ss-form-entry" id="l_acqua">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaAcqua" value="1" id="e_aaac_1" {% ifequal form.data.aaAcqua "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="aaAcqua" value="0" id="e_aaac_2" {% ifequal form.data.aaAcqua "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_acqua" position="above" id="tt_acqua"> 
+Nel Manuale di autocontrollo di MilanoRistorazione &egrave; espressamente vietato il rifornimento di acqua proveniente dai bagni.
+</span></div></div>
 </td>
 </tr>
 <tr>
@@ -245,12 +252,14 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry">
+<div class="ss-form-entry" id="l_scaldaVivande">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="1" id="e_ncsv_1" {% ifequal form.data.aaScaldaVivande "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="0" id="e_ncsv_2" {% ifequal form.data.aaScaldaVivande "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_scaldaVivande" position="above" id="tt_scaldaVivande"> 
+Le scatole termiche di trasporto ("termobox") non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.
+</span></div></div>
 </td>
 </tr>
 <tr>
@@ -272,7 +281,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Tabella dietetica esposta
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Tabella dietetica (Men&ugrave;) esposta
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -288,7 +297,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Stoviglie Riciclabili
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Stoviglie riutilizzabili
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -304,7 +313,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Bicchieri Riciclabili
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Bicchieri riutilizzabili
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -320,7 +329,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Posate Riciclabili
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Posate riutilizzabili
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -340,43 +349,46 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
+<div class="ss-form-entry" id="l_primoInizioDist"><label class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_primoFineDist">Fine distribuzione
+<div class="ss-form-entry" id="l_primoFineDist"><label class="ss-q-title" for="e_primoFineDist">Fine distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" name="primoFineDist" value="{{form.data.primoFineDist}}" class="ss-q-short" id="e_primoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
+<div class="ss-form-entry" id="l_primoCondito"><label class="ss-q-title" for="entry_42">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="primoCondito" value="1" id="e_pc_1" {% ifequal form.data.primoCondito "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="primoCondito" value="0" id="e_pc_2" {% ifequal form.data.primoCondito "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_primoCondito, l_contornoCondito" position="above" id="tt_condito"> 
+I primi e i contorni devono essere conditi al momento secondo le modalit&agrave; del Manuale di autocontrollo di MilanoRistorazione.</span></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_primoCottura">Cottura
+<div class="ss-form-entry" id="l_primoCottura"><label class="ss-q-title" for="e_primoCottura">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="1" id="e_primoCottura_1" {% ifequal form.data.primoCottura "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="2" id="e_primoCottura_2" {% ifequal form.data.primoCottura "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoCottura" value="3" id="e_primoCottura_3" {% ifequal form.data.primoCottura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Eccessiva</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Eccessiva</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_primoCottura, l_secondoCottura, l_contornoCottura" position="above" id="tt_cottura"> 
+In caso di piatti che non necessitano cottura indicare il valore centrale ("giusta").</span></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_primoTemperatura">Temperatura
+<div class="ss-form-entry" id="l_primoTemperatura"><label class="ss-q-title" for="e_primoTemperatura">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="1" id="e_primoTemperatura_1" {% ifequal form.data.primoTemperatura "1" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="2" id="e_primoTemperatura_2" {% ifequal form.data.primoTemperatura "2" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow"><input type="radio" name="primoTemperatura" value="3" id="e_primoTemperatura_3" {% ifequal form.data.primoTemperatura "3" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_primoTemperatura, l_secondoTemperatura, l_contornoTemperatura" position="above" id="tt_temperatura"> 
+In caso di piatti serviti "freddi" (come insalata o roast-beef) indicare il valore centrale ("giusta").</span></div></div>
 </td>
 </tr>
 <tr>
@@ -404,7 +416,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_primoGradimento">Gradimento dei bambini
+<div class="ss-form-entry" id="e_primoGradimento"><label class="ss-q-title" for="e_primoGradimento">Gradimento dei bambini
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
@@ -412,7 +424,18 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <td class="ss-scalerow"><input type="radio" name="primoGradimento" value="2" id="e_primoGradimento_2" {% ifequal form.data.primoGradimento "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="primoGradimento" value="3" id="e_primoGradimento_3" {% ifequal form.data.primoGradimento "3" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="primoGradimento" value="4" id="e_primoGradimento_4" {% ifequal form.data.primoGradimento "4" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Accettato</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Accettato</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="e_primoGradimento, e_secondoGradimento, e_contornoGradimento, e_paneGradimento, e_fruttaGradimento" position="above" id="tt_primoGradimento"> 
+Considerare circa 20 bambini campione<br/>
+Ritenere "soddisfatto" un bambino che consuma almeno met&agrave; porzione<br/>
+Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
+Selezionare:<br/>
+<ul>
+<li>"Rifiutato" se la percentuale &egrave; compresa tra 1 e 25%</li>
+<li>"Parzialmente rifiutato" se la percentuale &egrave; compresa tra 26 e 50%</li>
+<li>"Parzialmente accettato" se la percentuale &egrave; compresa tra 51 e 75%</li>
+<li>"Accettato" se la percentuale &egrave; compresa tra 76 e 100%</li>
+</ul>
+</span></div></div>
 </td>
 </tr>
 <tr>
@@ -423,18 +446,18 @@ Secondo Piatto
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
+<div class="ss-form-entry" id="l_secondoInizioDist"><label class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
+<div class="ss-form-entry" id="l_secondoFineDist"><label class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="entry_14"></label>
 <input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_secondoCottura">Cottura
+<div class="ss-form-entry" id="l_secondoCottura"><label class="ss-q-title" for="e_secondoCottura">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
@@ -445,7 +468,7 @@ Secondo Piatto
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_secondoTemperatura">Temperatura
+<div class="ss-form-entry" id="l_secondoTemperatura"><label class="ss-q-title" for="e_secondoTemperatura">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
@@ -480,7 +503,7 @@ Secondo Piatto
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
+<div class="ss-form-entry" id="e_secondoGradimento"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
@@ -499,7 +522,7 @@ Contorno
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_cc_1">Condito al momento
+<div class="ss-form-entry" id="l_contornoCondito"><label class="ss-q-title" for="e_cc_1">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
@@ -509,7 +532,7 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title"for="entry_15">Cottura
+<div class="ss-form-entry" id="l_contornoCottura"><label class="ss-q-title"for="entry_15">Cottura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Scarsa</td>
@@ -520,7 +543,7 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_16">Temperatura
+<div class="ss-form-entry" id="l_contornoTemperatura"><label class="ss-q-title" for="entry_16">Temperatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Freddo</td>
@@ -555,7 +578,7 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
+<div class="ss-form-entry" id="e_contornoGradimento"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
@@ -576,8 +599,9 @@ Contorno
 <span class="ss-required-asterisk">*</span></label>
 <select dojoType="dijit.form.FilteringSelect" required="true" name="paneTipo" value="{{form.data.paneTipo}}" id="e_paneTipo">
 <option value="Integrale">Integrale</option>
-<option value="Farina 0/00">Farina 0/00</option>
-<option value="Farina 1/2">Farina 1/2</option>
+<option value="Farina 0/00">Farina 0/00 (bianco)</option>
+<option value="Farina 1/2">Farina 1/2 (semola)</option>
+<option value="Non definito">Non definito</option>
 </select></div></div>
 </td>
 <td>
@@ -618,7 +642,7 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
+<div class="ss-form-entry" id="e_paneGradimento"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
@@ -638,7 +662,11 @@ Contorno
 <span class="ss-required-asterisk">*</span></label>
 <select dojoType="dijit.form.ComboBox" required="true" name="fruttaTipo" value="{{form.data.fruttaTipo}}" id="e_fruttaTipo">
 <option>Mele</option>
+<option>Anguria</option>
 <option>Arance</option>
+<option>Mandarini</option>
+<option>Banane</option>
+<option>Kiwi</option>
 <option>Pere</option>
 <option>Uva</option>
 <option>Altro (specificare)</option>
@@ -664,7 +692,7 @@ Contorno
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
+<div class="ss-form-entry" id="e_fruttaGradimento"><label class="ss-q-title" for="entry_18">Gradimento dei bambini
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
@@ -708,7 +736,7 @@ Contorno
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_finePasto">Ora di fine pasto
+<div class="ss-form-entry" id="l_finePasto"><label class="ss-q-title" for="e_finePasto">Ora di fine pasto
 <span class="ss-required-asterisk">*</span></label>
 <input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
 </td>
@@ -718,7 +746,8 @@ Contorno
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_numeroPastiTotale">Numero Pasti serviti
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="numeroPastiTotale" value="{{form.data.numeroPastiTotale}}" class="ss-q-short" id="e_numeroPastiTotale" style="width: 100px;" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:1000,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 1000"/></div></div>
+<input type="text" name="numeroPastiTotale" value="{{form.data.numeroPastiTotale}}" class="ss-q-short" id="e_numeroPastiTotale" style="width: 100px;" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:1000,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 1000"/><span style="display:none;" dojoType="dijit.Tooltip" connectId="e_numeroPastiTotale" position="above" id="tt_numeroPastiTotale"> 
+Indicare il numero di pasti serviti complessivamente, ai bambini e agli adulti, comprese eventuali diete speciali.</span></div></div>
 </td>
 <td>
 <div class="errorbox-good">
@@ -730,7 +759,8 @@ Contorno
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_numeroPastiSpeciali">Numero Pasti speciali serviti
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="numeroPastiSpeciali" value="{{form.data.numeroPastiSpeciali}}" class="ss-q-short" id="e_numeroPastiSpeciali" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:1000,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 1000"/></div></div>
+<input type="text" name="numeroPastiSpeciali" value="{{form.data.numeroPastiSpeciali}}" class="ss-q-short" id="e_numeroPastiSpeciali" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:1000,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 1000"/><span style="display:none;" dojoType="dijit.Tooltip" connectId="e_numeroPastiSpeciali" position="above" id="tt_numeroPastiSpeciali"> 
+Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.</span></div></div>
 </td>
 </tr>
 <tr>
@@ -738,33 +768,37 @@ Contorno
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_numeroAddetti">Numero addetti alla distribuzione
 <span class="ss-required-asterisk">*</span></label>	
-<input type="text" name="numeroAddetti" value="{{form.data.numeroAddetti}}" class="ss-q-short" id="e_numeroAddetti" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:100,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 100"/></div></div>
+<input type="text" name="numeroAddetti" value="{{form.data.numeroAddetti}}" class="ss-q-short" id="e_numeroAddetti" style="width: 100px;" dojoType="dijit.form.NumberTextBox" constraints="{min:0,max:100,places:0}" required= "true" invalidMessage= "Inserire un valore compreso tra 0 e 100"/></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Smaltimento rifiuti
+<div class="ss-form-entry" id="l_smaltimento"><label class="ss-q-title" for="entry_42">Smaltimento rifiuti
 <span class="ss-required-asterisk">*</span></label>
-<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<table border="0" cellpadding="4" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Scarso</td>
 <td class="ss-scalerow"><input type="radio" name="smaltimentoRifiuti" value="1" id="group_41_1" {% ifequal form.data.smaltimentoRifiuti "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="smaltimentoRifiuti" value="2" id="group_41_2" {% ifequal form.data.smaltimentoRifiuti "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="smaltimentoRifiuti" value="3" id="group_41_3" {% ifequal form.data.smaltimentoRifiuti "3" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="smaltimentoRifiuti" value="4" id="group_41_4" {% ifequal form.data.smaltimentoRifiuti "4" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="smaltimentoRifiuti" value="5" id="group_41_5" {% ifequal form.data.smaltimentoRifiuti "5" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Ottimo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Ottimo</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_smaltimento" position="above" id="tt_smaltimento"> 
+Lo smaltimento rifiuti &egrave; a carico di MilanoRistorazione e ha ingenti criticit&agrave; igienico-sanitarie.<br>
+Specificare:<ul>
+<li>Scarso - Evidenti problemi igienici (es. cassonetti della spazzatura facilmente raggiungibili dai bambini)</li>
+<li>Mediocre - Potenziali problemi igienici (es. pulizia del locale che contiene i cassonetti giudicata inadeguata)</li>
+<li>Sufficiente - Nessun problema igienico ma scarsa attenzione alla raccolta differenziata</li>
+<li>Ottimo - Nessun problema igienico e raccolta differenziata ottimizzata</li>
+</ul></span></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_43">Giudizio Globale sul Cibo
+<div class="ss-form-entry" id="l_giudizio"><label class="ss-q-title" for="entry_43">Giudizio Globale sul cibo
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Scarso</td>
+<tr><td class="ss-scalerow ss-leftlabel">Insufficiente</td>
 <td class="ss-scalerow"><input type="radio" name="giudizioGlobale" value="1" id="group_43_1" {% ifequal form.data.giudizioGlobale "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="giudizioGlobale" value="2" id="group_43_2" {% ifequal form.data.giudizioGlobale "2" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="giudizioGlobale" value="3" id="group_43_3" {% ifequal form.data.giudizioGlobale "3" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="giudizioGlobale" value="4" id="group_43_4" {% ifequal form.data.giudizioGlobale "4" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="giudizioGlobale" value="5" id="group_43_5" {% ifequal form.data.giudizioGlobale "5" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">Ottimo</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">Buono</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -773,7 +807,7 @@ Contorno
 <div class="ss-form-entry"><label class="ss-q-title" for="e_note">Note
 </label>
 <label class="ss-q-help" for="entry_13"></label>
-<textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.note}}
+<textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}
 </textarea></div></div>
 </td>
 </tr>
