@@ -50,7 +50,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.4.0.7 - 2009.06.23"
+    template_values["version"] = "0.4.1.8 - 2009.07.13"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -67,12 +67,19 @@ class MainPage(BasePage):
 
     news = memcache.get("news")
     if not news:
-      news = py.feedparser.parse("http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml")
+      news_all = py.feedparser.parse("http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml")
+      news = []
+      i = 0
+      for n in news_all.entries:
+        if i >= 2 :
+          break
+        i = i + 1
+        news.append(n)
       memcache.add("news",news)
       
     stats = self.getStats()
     template_values["stats"] = stats[0]
-    template_values["news"] = news.entries
+    template_values["news"] = news
     
     self.getBase(template_values)
 

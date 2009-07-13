@@ -313,7 +313,8 @@ class CMAdminCommissarioHandler(BasePage):
         
         commissioni = ""
         for c in commissario.commissioni():
-          commissioni = commissioni + c.nome + "<br/>"
+          commissioni = commissioni + c.nome + " - " + c.tipoScuola + "<br/>"
+          
         data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissioni, "stato":stato, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
 
       # Loading it into gviz_api.DataTable
