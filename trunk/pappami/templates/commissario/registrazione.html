@@ -24,6 +24,12 @@ dojo.byId("e_cm").value != ""){
     alert('Inserire tutti i dati richiesti');
     return false;
 }
+
+function add() {
+    cm_all = dojo.byId("cm_all");
+    cm_sel = dojo.byId("cm_sel");
+    cm_sel.
+}
 </script>
 <table width="100%">
 <tr>
@@ -34,18 +40,6 @@ dojo.byId("e_cm").value != ""){
 <label class="ss-q-help" for="e_n"></label>
 <input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="" class="ss-q-short" id="e_n"></div></div>
 </td>
-<td rowspan="3">
-<div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_cm">Commissione
-<span class="ss-required-asterisk">*</span></label>
-<SELECT name="commissione" id="e_cm" multiple="yes">{% for c in commissioni %}
-<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
-</SELECT><span dojoType="dijit.Tooltip" connectId="e_cm" position="above" id="tt_cm"> 
-Selezionare una o pi&ugrave Commissioni Mensa</span> 
-</div></div>
-</td>
-</tr>
-<tr>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
@@ -55,9 +49,26 @@ Selezionare una o pi&ugrave Commissioni Mensa</span>
 </td>
 </tr>
 <tr>
-<td>
+<td colspan="2">
 <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_2">email</label>{{user.email}}</div></div>
+<div class="ss-form-entry"><label class="ss-q-title" for="e_cm">Commissione
+<span class="ss-required-asterisk">*</span></label>
+<SELECT name="commissione" id="e_cm" style="width:20em; height: 20em;">{% for c in commissioni %}
+<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
+</SELECT>
+<div>
+<button onclick="add()">Aggiungi selezionata</button><br/>
+<button onclick="remove()">Togli selezione</button>
+<button onclick="removeAll()">Togli tutti</button>
+</div>
+<SELECT name="commissione" id="e_cm" multiple="yes" style="width:20em; height: 20em;">{% for c in commissioni %}
+{% ifequal commissione.key c.key %}
+<OPTION value="{{c.key}}">{{c.nome}} - {{c.tipoScuola}}</OPTION>
+{% endifequal %}
+{% endfor %}
+</SELECT><span dojoType="dijit.Tooltip" connectId="e_cm" position="above" id="tt_cm"> 
+Selezionare una o pi&ugrave Commissioni Mensa</span> 
+</div></div>
 </td>
 </tr>
 <tr>
