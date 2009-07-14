@@ -135,7 +135,7 @@ div.versionadded span.title, div.versionchanged span.title { font-weight: bold; 
 
 /* BILLBOARDS */
 
-#billboard { background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/table_background_off.jpg) repeat-x left top;  }
+#billboard { background:url(/img/table_background_off.png) repeat-x left top;  }
 #billboard h2 { margin:0; }
 #generic #billboard { display:none; }
 #homepage #billboard {  }
@@ -253,7 +253,7 @@ margin:1em auto;padding:1em}
 td.ss-leftlabel{text-align:right;padding-left:0;font-size:0.8em;}td.ss-rightlabel{text-align:left;padding-right:0;font-size:0.8em;}
 
 .table_separator {
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/table_background_off.jpg) repeat-x left top;
+background:url(/img/table_background_off.png) repeat-x left top;
 border-bottom:1px solid #b7bdc5;
 border-top:1px solid #999999;
 color:##444444;
@@ -279,7 +279,7 @@ outline:none;
 height:21px;
 padding:3px 6px 3px;
 border:1px solid #bcc7d4;
-background:#fff url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
+background:#fff url(/img/title-bg.gif) repeat-x left bottom;
 text-decoration:none}
 
 .btn:hover{
