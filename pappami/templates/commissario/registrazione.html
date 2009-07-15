@@ -3,6 +3,44 @@ dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.Tooltip");
+
+
+function alreadySelected() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    for( i=0;i<cm_sel.options.length;i++) {
+        if(cm_all.options[cm_all.selectedIndex].value == cm_sel.options[i].value ) {
+            alert(cm_all.options[cm_all.selectedIndex].innerHTML + " già aggiunta");
+            return true;
+        }
+    }
+    return false;
+}
+
+function add() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    if(cm_all.selectedIndex >= 0 && !alreadySelected()) {
+        var oOption = document.createElement('OPTION');
+        cm_sel.add(oOption);
+        oOption.innerHTML = cm_all.options[cm_all.selectedIndex].innerHTML;
+        oOption.value = cm_all.options[cm_all.selectedIndex].value;
+    }
+}
+function remove() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    if(cm_sel.selectedIndex >= 0) {
+        cm_sel.remove(cm_sel.selectedIndex);
+    }
+}
+function removeAll() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    while(cm_sel.options.length) {
+        cm_sel.remove(cm_sel.options.length-1);
+    }
+}
 </script>
 <style>
 #subwrap {width: 64em;}
@@ -15,20 +53,16 @@ dojo.require("dijit.Tooltip");
 <BR>
 <FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
+cm_sel = dojo.byId("e_cm_sel");
+for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
 if(this.validate()&&
 dojo.byId("e_n").value != "" &&
 dojo.byId("e_c").value != "" &&
-dojo.byId("e_cm").value != ""){
+dojo.byId("e_cm_sel").value != ""){
     return true;
 } else {
     alert('Inserire tutti i dati richiesti');
     return false;
-}
-
-function add() {
-    cm_all = dojo.byId("cm_all");
-    cm_sel = dojo.byId("cm_sel");
-    cm_sel.
 }
 </script>
 <table width="100%">
@@ -53,21 +87,21 @@ function add() {
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_cm">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<SELECT name="commissione" id="e_cm" style="width:20em; height: 20em;">{% for c in commissioni %}
+<table><tr><td>
+<SELECT name="commissione_all" id="e_cm_all" style="width:24em;">{% for c in commissioni %}
 <OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
-</SELECT>
-<div>
-<button onclick="add()">Aggiungi selezionata</button><br/>
-<button onclick="remove()">Togli selezione</button>
-<button onclick="removeAll()">Togli tutti</button>
-</div>
-<SELECT name="commissione" id="e_cm" multiple="yes" style="width:20em; height: 20em;">{% for c in commissioni %}
+</SELECT><br/>
+<a class="btn" style="width:120px;" href="javascript:add();">Aggiungi</a>
+<a class="btn" style="width:120px;" href="javascript:remove();">Togli selezione</a>
+<a class="btn" style="width:120px;" href="javascript:removeAll();">Togli tutti</a><br/><br/><br/>
+<SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em;">{% for c in commissioni %}
 {% ifequal commissione.key c.key %}
 <OPTION value="{{c.key}}">{{c.nome}} - {{c.tipoScuola}}</OPTION>
 {% endifequal %}
 {% endfor %}
 </SELECT><span dojoType="dijit.Tooltip" connectId="e_cm" position="above" id="tt_cm"> 
 Selezionare una o pi&ugrave Commissioni Mensa</span> 
+</td></tr></table>
 </div></div>
 </td>
 </tr>
