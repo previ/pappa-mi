@@ -181,6 +181,12 @@ class CMSupportoHandler(BasePage):
     template_values["content"] = "supporto.html"
     self.getBase(template_values)
 
+class CMCondizioniHandler(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "condizioni.inc"
+    self.getBase(template_values)
 
 class CMStatsHandler(BasePage):
 
@@ -350,7 +356,8 @@ application = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
   ('/menu', CMMenuHandler),
   ('/commissioni', CMCommissioneHandler),
-  ('/supporto', CMSupportoHandler)
+  ('/supporto', CMSupportoHandler),
+  ('/condizioni', CMCondizioniHandler)
 ], debug=True)
 
 def main():
