@@ -3,6 +3,7 @@ from google.appengine.ext import db
 from google.appengine.tools.bulkloader import Loader, Exporter
 from py.model import *
 
+
 class CommissioneLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Commissione',
@@ -64,24 +65,20 @@ class CommissioneExporter(Exporter):
 
 class NonconfExporter(Exporter):
   def __init__(self):
+    
     Exporter.__init__(self, 'Nonconformita',
-                    [('commissione', str, None), 
-                     ('commissario', str, None),
+                    [('commissione', lambda x: x.nome, None), 
+                     ('commissario', lambda x: x.user.email(), None),
                      ('dataNonconf', str, None),
                      ('turno', str, None),
                      ('tipo', str, None),
                      ('richiestaCampionatura', str, None),
-                     ('note', convert_note, None),
+                     ('note', lambda x: x.encode('utf-8'), ""),
                      ('creato_da', str, None),
                      ('creato_il', str, ""),
                      ('modificato_da', str, ""),
                      ('modificato_il', str, ""),
                      ('stato', str, "")
                      ])
-def convert_note(val): 
-  if val != None:
-    return unicode(val, 'utf-8')
-  else:
-    return unicode("", 'utf-8')
 
 exporters = [CommissioneExporter, NonconfExporter]
