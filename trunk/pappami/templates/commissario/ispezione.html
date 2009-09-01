@@ -175,7 +175,7 @@ Valori possibili: Scarsa, Mediocre, Sufficiente, Buona
 <td>
 </td>
 </tr>
-<tr>
+<tr id="l_capitolato">
 <td colspan="2">
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Le derrate alimentari corrispondono a quanto previsto nel capitolato d'appalto e nel men&ugrave in vigore?
@@ -183,7 +183,7 @@ Valori possibili: Scarsa, Mediocre, Sufficiente, Buona
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_capitolato">
+<div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaRispettoCapitolato" value="1" id="e_aarc_1" {% ifequal form.data.aaRispettoCapitolato "1" %}CHECKED{%endifequal%}/></td> 
@@ -226,15 +226,15 @@ Indicare "No" anche nel caso in cui il Capitolato d'Appalto (i termini del contr
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
-<tr>
+<tr id="l_acqua">
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">L'acqua servita non proviene dai servizi igienici
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">L'acqua servita proviene dalla cucina o dispensa
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_acqua">
+<div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaAcqua" value="1" id="e_aaac_1" {% ifequal form.data.aaAcqua "1" %}CHECKED{%endifequal%}/></td> 
@@ -244,7 +244,7 @@ Nel Manuale di autocontrollo di MilanoRistorazione &egrave; espressamente vietat
 </span></div></div>
 </td>
 </tr>
-<tr>
+<tr id="l_scaldaVivande">
 <td colspan="2">
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Ci sono sistemi di mantenimento della temperatura (ad esempio carrelli termici o scaldavivande)
@@ -252,7 +252,7 @@ Nel Manuale di autocontrollo di MilanoRistorazione &egrave; espressamente vietat
 </td>
 <td align="center">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_scaldaVivande">
+<div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaScaldaVivande" value="1" id="e_ncsv_1" {% ifequal form.data.aaScaldaVivande "1" %}CHECKED{%endifequal%}/></td> 
@@ -265,7 +265,7 @@ Le scatole termiche di trasporto ("termobox") non sono equiparabili a carrelli o
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Lavastoviglie presente
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Servizio in modalit&agrave; self service
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -273,25 +273,26 @@ Le scatole termiche di trasporto ("termobox") non sono equiparabili a carrelli o
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="1" id="e_nclp_1" {% ifequal form.data.aaLavastovigliePresente "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="aaLavastovigliePresente" value="0" id="e_nclp_2" {% ifequal form.data.aaLavastovigliePresente "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="aaSelfService" value="1" id="e_nclp_1" {% ifequal form.data.aaSelfService "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="aaSelfService" value="0" id="e_nclp_2" {% ifequal form.data.aaSelfService "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
-<tr>
-<td colspan="2">
+<tr id="l_tabellaEsposta">>
+<td colspan="2" >
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Tabella dietetica (Men&ugrave;) esposta
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Tabella dietetica e Men&ugrave; esposti
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
-<br/> <div class="errorbox-good">
+<br/> <div class="errorbox-good"
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
 <td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="1" id="e_ncte_1" {% ifequal form.data.aaTabellaEsposta "1" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow"><input type="radio" name="aaTabellaEsposta" value="0" id="e_ncte_2" {% ifequal form.data.aaTabellaEsposta "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_tabellaEsposta" position="above" id="tt_tabellaEsposta">Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: "pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate". <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera
+</span></div></div>
 </td>
 </tr>
 <tr>
