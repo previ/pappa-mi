@@ -163,7 +163,7 @@ dojo.require("dijit.form.Button");
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">L'acqua servita non proviene dai servizi igienici
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">L'acqua servita proviene dalla cucina o dispensa
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -195,7 +195,7 @@ dojo.require("dijit.form.Button");
 <tr>
 <td colspan="2">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Lavastoviglie presente
+<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Servizio in modalit&agrave; self service
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
@@ -203,8 +203,8 @@ dojo.require("dijit.form.Button");
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="aaLavastovigliePresente" value="1" id="e_nclp_1" {% ifequal isp.aaLavastovigliePresente 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="aaLavastovigliePresente" value="0" id="e_nclp_2" {% ifequal isp.aaLavastovigliePresente 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="aaSelfService" value="1" id="e_nclp_1" {% ifequal isp.aaSelfService 1 %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="aaSelfService" value="0" id="e_nclp_2" {% ifequal isp.aaSelfService 0 %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>

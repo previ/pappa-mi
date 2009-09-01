@@ -101,7 +101,7 @@ class Ispezione(db.Model):
   aaTermichePulite = db.IntegerProperty()
   aaAcqua = db.IntegerProperty()
   aaScaldaVivande = db.IntegerProperty()  
-  aaLavastovigliePresente = db.IntegerProperty()
+  aaSelfService = db.IntegerProperty()
   aaTabellaEsposta = db.IntegerProperty()
   
   ricicloStoviglie = db.IntegerProperty()
@@ -196,13 +196,15 @@ class Nonconformita(db.Model):
   _tipi = {1:"Cambiamenti di menu",
            2:"Cibo avanzato oltre 30%",
            3:"Quantita insufficiente di una vivanda",
-           4:"Stoviglie in numero insufficiente",
+           4:"Tavoli o apparecchiatura tavoli non adeguata",
            5:"Arredi e attrezzature inadeguate della sala di rigoverno",
            6:"Inadeguata pulizia dei locali",
-           7:"Mancata consegna diete speciali",
+           7:"Errata / mancata consegna o distribuzione delle diete speciali",
            8:"Ritardo o anticipo nella consegna delle termiche",
            9:"Corpo estraneo",
            10:"Temperatura non conforme alla legge",
+           11:"Temperatura della dieta sanitaria giudicata inadeguata",
+           12:"Inadeguato smaltimento della spazzatura",
            99:"Altro"}
   def tipi(self):
     return self._tipi
