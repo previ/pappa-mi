@@ -1,4 +1,5 @@
 import datetime
+import base64
 from google.appengine.ext import db
 from google.appengine.tools.bulkloader import Loader, Exporter
 from py.model import *
@@ -33,7 +34,7 @@ class NonconfLoader(Loader):
                      ('turno', str),
                      ('tipo', str),
                      ('richiestaCampionatura', str),
-                     ('note', str),
+                     ('note', lambda x: base64.decode(x),
                      ('creato_da', str),
                      ('creato_il', str),
                      ('modificato_da', str),
@@ -73,12 +74,19 @@ class NonconfExporter(Exporter):
                      ('turno', str, None),
                      ('tipo', str, None),
                      ('richiestaCampionatura', str, None),
-                     ('note', lambda x: x.encode('utf-8'), ""),
+                     #('note', lambda x: x.encode('utf-8'), ""),
+                     ('note', convert_note, ""),
                      ('creato_da', str, None),
                      ('creato_il', str, ""),
                      ('modificato_da', str, ""),
                      ('modificato_il', str, ""),
                      ('stato', str, "")
                      ])
+def convert_note(x):
+  if x != None :
+    return base64.b64encode(x.encode('utf-8'))
+  else:
+    return base64.b64encode("")
+
 
 exporters = [CommissioneExporter, NonconfExporter]
