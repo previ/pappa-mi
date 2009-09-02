@@ -27,8 +27,8 @@ class IspezioneForm(djangoforms.ModelForm):
       raise newforms.ValidationError("L'ispezione deve essere fatta in un giorno feriale")
 
     age = (date.today() - cleaned_data.get("dataIspezione")).days
-    #if age > 15 :
-    #  raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 15 giorni o oltre")
+    if age > 15 :
+      raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 15 giorni o oltre")
 
     if age < 0 :
       raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
