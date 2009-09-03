@@ -28,8 +28,8 @@ class CommissioneLoader(Loader):
 class NonconfLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Nonconformita',
-                    [('commissione', lambda x: db.Key.from_path('Commissione',x)),
-                     ('commissario', lambda x: db.Key.from_path('Commissario',x)),
+                    [('commissione', lambda x: Commissione.get_by_id(x)),
+                     ('commissario', lambda x: Commissario.get_by_id(x)),
                      ('dataNonconf', str),
                      ('turno', str),
                      ('tipo', str),
