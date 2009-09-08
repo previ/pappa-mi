@@ -2,6 +2,7 @@ import datetime
 import base64
 from google.appengine.ext import db
 from google.appengine.tools.bulkloader import Loader, Exporter
+from google.appengine.api import users
 from py.model import *
 
 
@@ -28,18 +29,18 @@ class CommissioneLoader(Loader):
 class NonconfLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Nonconformita',
-                    [('commissione', lambda x: Commissione.get_by_id(x)),
-                     ('commissario', lambda x: Commissario.get_by_id(x)),
-                     ('dataNonconf', str),
-                     ('turno', str),
-                     ('tipo', str),
-                     ('richiestaCampionatura', str),
-                     ('note', lambda x: base64.decode(x),
-                     ('creato_da', str),
-                     ('creato_il', str),
-                     ('modificato_da', str),
-                     ('modificato_il', str),
-                     ('stato', str)
+                    [('commissione', lambda x: Commissione.get_by_id(int(x))),
+                     ('commissario', lambda x: Commissario.get_by_id(int(x))),
+                     ('dataNonconf', lambda x: datetime.strptime(x, "%Y-%m-%d").date()),
+                     ('turno', int),
+                     ('tipo', int),
+                     ('richiestaCampionatura', int),
+                     ('note', decode_note),
+                     ('creato_da', lambda x: users.User(x)),
+                     ('creato_il', lambda x: datetime.strptime(x.split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                     ('modificato_da', lambda x: users.User(x)),
+                     ('modificato_il', lambda x: datetime.strptime(x.split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                     ('stato', decode_int)
                      ])
     self.alias_old_names()    
 
@@ -74,7 +75,6 @@ class NonconfExporter(Exporter):
                      ('turno', str, None),
                      ('tipo', str, None),
                      ('richiestaCampionatura', str, None),
-                     #('note', lambda x: x.encode('utf-8'), ""),
                      ('note', convert_note, ""),
                      ('creato_da', str, None),
                      ('creato_il', str, ""),
@@ -88,5 +88,14 @@ def convert_note(x):
   else:
     return base64.b64encode("")
 
+def decode_note(x):
+  denote = base64.b64decode(x).decode('utf-8')
+  return denote
 
+def decode_int(x):
+  if x != 'None' :
+    return int(x)
+  else:
+    return None
+  
 exporters = [CommissioneExporter, NonconfExporter]
