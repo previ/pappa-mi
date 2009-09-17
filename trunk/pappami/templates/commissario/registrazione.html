@@ -21,7 +21,11 @@ function onSelComm() {
     cm_sel = dojo.byId("e_cm_sel");
     if(cm_all.selectedIndex > 0 && !alreadySelected()) {
         var oOption = document.createElement('OPTION');
-        cm_sel.add(oOption);
+        try {
+            cm_sel.add(oOption, null);
+        } catch(ex) {
+            cm_sel.add(oOption);
+        }        
         oOption.innerHTML = cm_all.options[cm_all.selectedIndex].innerHTML;
         oOption.value = cm_all.options[cm_all.selectedIndex].value;
     }

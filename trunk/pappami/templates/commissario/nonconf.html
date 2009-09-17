@@ -92,8 +92,8 @@ Non Conformit&agrave Gravi
 <option value="8"{% ifequal form.data.tipo "8" %} selected{% endifequal %}>Ritardo o anticipo nella consegna delle termiche</option>
 <option value="9"{% ifequal form.data.tipo "9" %} selected{% endifequal %}>Corpo estraneo</option>
 <option value="10"{% ifequal form.data.tipo "10" %} selected{% endifequal %}>Temperatura non conforme alla legge</option>
-<option value="10"{% ifequal form.data.tipo "11" %} selected{% endifequal %}>Temperatura della dieta sanitaria giudicata inadeguata</option>
-<option value="10"{% ifequal form.data.tipo "12" %} selected{% endifequal %}>Inadeguato smaltimento della spazzatura</option>
+<option value="11"{% ifequal form.data.tipo "11" %} selected{% endifequal %}>Temperatura della dieta sanitaria giudicata inadeguata</option>
+<option value="12"{% ifequal form.data.tipo "12" %} selected{% endifequal %}>Inadeguato smaltimento della spazzatura</option>
 <option value="99"{% ifequal form.data.tipo "99" %} selected{% endifequal %}>Altro</option>
 </select></div></div>
 </td>
@@ -114,7 +114,7 @@ Non Conformit&agrave Gravi
 <div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Note
 </label>
 <label class="ss-q-help" for="e_note"></label>
-<textarea name="note" rows="8" cols="120" class="ss-q-long" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; " dojoType="dijit.form.Textarea">{{form.data.note}}
+<textarea name="note" rows="8" cols="120" class="ss-q-long" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}
 </textarea></div></div>
 </td>
 </tr>

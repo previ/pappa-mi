@@ -33,27 +33,6 @@ class IspezioneForm(djangoforms.ModelForm):
     if age < 0 :
       raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
 
-    t1 = cleaned_data.get("arrivoTermiche")
-    t2 = cleaned_data.get("aperturaTermiche")
-    t3 = cleaned_data.get("primoInizioDist")
-    t4 = cleaned_data.get("primoFineDist")
-    t5 = cleaned_data.get("secondoInizioDist")
-    t6 = cleaned_data.get("secondoFineDist")
-    t7 = cleaned_data.get("finePasto")
-    
-    if t1 > t2 :
-      raise newforms.ValidationError("L'ora di apertura termiche deve essere successiva all'ora di arrivo termiche")
-    if t2 > t3 :
-      raise newforms.ValidationError("L'ora di inizio distribuzione primo piatto deve essere successiva all'ora di apertura termiche")
-    if t3 > t4 :
-      raise newforms.ValidationError("L'ora di fine distribuzione primo piatto deve essere successiva all'ora di inizio distribuzione primo piatto")
-    if t4 > t5 :
-      raise newforms.ValidationError("L'ora di inizio distribuzione secondo piatto deve essere successiva all'ora di fine distribuzione primo piatto")
-    if t5 > t6 :
-      raise newforms.ValidationError("L'ora di fine distribuzione secondo piatto deve essere successiva all'ora di inizio distribuzione secondo piatto")
-    if t6 > t7 :
-      raise newforms.ValidationError("L'ora di fine pasto deve essere successiva all'ora di fine distribuzione secondo piatto")
-
     # Always return the full collection of cleaned data.
     return cleaned_data
     

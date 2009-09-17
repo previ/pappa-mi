@@ -50,7 +50,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.4.2.9 - 2009.09.02"
+    template_values["version"] = "0.4.3.10 - 2009.09.17"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
