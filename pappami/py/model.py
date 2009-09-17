@@ -116,11 +116,9 @@ class Ispezione(db.Model):
   puliziaCentroCottura = db.IntegerProperty()
   puliziaRefettorio = db.IntegerProperty()
 
-  arrivoTermiche = db.TimeProperty()
-  aperturaTermiche = db.TimeProperty()
+  arrivoDist = db.IntegerProperty()
 
-  primoInizioDist = db.TimeProperty()
-  primoFineDist = db.TimeProperty()
+  primoDist = db.IntegerProperty()
   primoPrevisto = db.StringProperty(default="")
   primoEffettivo = db.StringProperty(default="")
   primoCondito = db.IntegerProperty()
@@ -130,8 +128,7 @@ class Ispezione(db.Model):
   primoAssaggio = db.IntegerProperty()
   primoGradimento = db.IntegerProperty()
 
-  secondoInizioDist = db.TimeProperty()
-  secondoFineDist = db.TimeProperty()
+  secondoDist = db.IntegerProperty()
   secondoPrevisto = db.StringProperty(default="")
   secondoEffettivo = db.StringProperty(default="")
   secondoCottura = db.IntegerProperty()
@@ -162,7 +159,7 @@ class Ispezione(db.Model):
   fruttaGradimento = db.IntegerProperty()
   fruttaMaturazione = db.IntegerProperty()
 
-  finePasto = db.TimeProperty()
+  durataPasto = db.IntegerProperty()
 
   lavaggioFinale = db.IntegerProperty()
   smaltimentoRifiuti = db.IntegerProperty()

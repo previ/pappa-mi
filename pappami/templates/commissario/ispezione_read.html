@@ -68,17 +68,17 @@ dojo.require("dijit.form.Button");
 </td>
 </tr>
 <tr>
-<td>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
-</LABEL>
-{{isp.arrivoTermiche|time:"H:i"}}</DIV></DIV>
-</td>
-<td>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
-</LABEL>
-{{isp.aperturaTermiche|time:"H:i"}}</DIV></DIV>
+<td colspan="3">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry" id="l_arrivoDist"><label class="ss-q-title" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione
+<span class="ss-required-asterisk">*</span></label>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="arrivoDist" value="1" id="e_ad_1" {% ifequal isp.arrivoDist 1 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="arrivoDist" value="2" id="e_ad_2" {% ifequal isp.arrivoDist 2 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="arrivoDist" value="3" id="e_ad_3" {% ifequal isp.arrivoDist 3 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_arrivoDist" position="above" id="tt_pulizia"> 
+In caso di scuola dotata di Centro Cucina selezionare "&lt; 10 min"</span></div></div>
 </td>
 </tr>
 <tr>
@@ -278,15 +278,16 @@ dojo.require("dijit.form.Button");
 </tr>
 <tr>
 <td>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
-</LABEL>
-{{isp.primoInizioDist|time:"H:i"}}</DIV></DIV>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_primoFineDist">Fine distribuzione
-</LABEL>
-{{isp.primoFineDist|time:"H:i"}}</DIV></DIV>
-<div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry" id="l_primoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
+<span class="ss-required-asterisk">*</span></label>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="primoDist" value="1" id="e_pd_1" {% ifequal isp.primoDist 1 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="primoDist" value="2" id="e_pd_2" {% ifequal isp.primoDist 2 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="primoDist" value="3" id="e_pd_3" {% ifequal isp.primoDist 3 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table></div></div>
+<br/><div class="ss-form-entry"><label class="ss-q-title" for="entry_42">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
@@ -360,15 +361,15 @@ Secondo Piatto
 </tr>
 <tr>
 <td>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
-</LABEL>
-{{isp.secondoInizioDist|time:"H:i"}}</DIV></DIV>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
-</LABEL>
-<LABEL class="ss-q-help" for="entry_14"></LABEL>
-{{isp.secondoFineDist|time:"H:i"}}</DIV></DIV>
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry" id="l_primoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
+<span class="ss-required-asterisk">*</span></label>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="secondoDist" value="1" id="e_pd_1" {% ifequal isp.secondoDist 1 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="secondoDist" value="2" id="e_pd_2" {% ifequal isp.secondoDist 2 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="secondoDist" value="3" id="e_pd_3" {% ifequal isp.secondoDist 3 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table></div></div>
 </td>
 <td>
 <BR> <DIV class="errorbox-good">
@@ -631,11 +632,15 @@ Fine Pasto
 </tr>
 <tr>
 <td>
-<BR> <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_finePasto">Ora di fine pasto
-</LABEL>
-{{isp.finePasto|time:"H:i"}}</DIV></DIV>
-</td>
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry" id="l_durataPasto"><label class="ss-q-title" for="entry_15">Durata complessiva pasto
+<span class="ss-required-asterisk">*</span></label>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 30 min</td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="durataPasto" value="1" id="e_pd_1" {% ifequal isp.durataPasto 1 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="durataPasto" value="2" id="e_pd_2" {% ifequal isp.durataPasto 2 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="yes" name="durataPasto" value="3" id="e_pd_3" {% ifequal isp.durataPasto 3 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 60 min</td></tr></tbody></table></div></div></td>
 </tr>
 <tr>
 <td>

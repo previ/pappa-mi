@@ -127,19 +127,17 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 </td>
 </tr>
 <tr>
-<td>
+<td colspan="3">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_arrivoTermiche"><label class="ss-q-title" for="e_arrivoTermiche">Arrivo Termiche
+<div class="ss-form-entry" id="l_arrivoDist"><label class="ss-q-title" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="arrivoTermiche" value="{{form.data.arrivoTermiche}}" class="ss-q-short" id="e_arrivoTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_arrivoTermiche, l_aperturaTermiche, l_primoInizioDist, l_primoFineDist, l_secondoInizioDist, l_secondoFineDist, l_finePasto" position="above" id="tt_arrivoTermiche"> 
-Inserire ora e minunti (es. 13:30)
-</span></div></div>
-</td>
-<td>
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_aperturaTermiche"><label class="ss-q-title" for="e_aperturaTermiche">Apertura Termiche
-<span class="ss-required-asterisk">*</span></label>
-<input type="text" name="aperturaTermiche" value="{{form.data.aperturaTermiche}}" class="ss-q-short" id="e_aperturaTermiche" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" name="arrivoDist" value="1" id="e_ad_1" {% ifequal form.data.arrivoDist "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="arrivoDist" value="2" id="e_ad_2" {% ifequal form.data.arrivoDist "2" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="arrivoDist" value="3" id="e_ad_3" {% ifequal form.data.arrivoDist "3" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_arrivoDist" position="above" id="tt_tesmpoDist"> 
+In caso di scuola dotata di Centro Cucina selezionare "&lt; 10 min"</span></div></div>
 </td>
 </tr>
 <tr>
@@ -350,14 +348,15 @@ Le scatole termiche di trasporto ("termobox") non sono equiparabili a carrelli o
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_primoInizioDist"><label class="ss-q-title" for="e_primoInizioDist">Inizio distribuzione
+<div class="ss-form-entry" id="l_primoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="primoInizioDist" value="{{form.data.primoInizioDist}}" class="ss-q-short" id="e_primoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_primoFineDist"><label class="ss-q-title" for="e_primoFineDist">Fine distribuzione
-<span class="ss-required-asterisk">*</span></label>
-<input type="text" name="primoFineDist" value="{{form.data.primoFineDist}}" class="ss-q-short" id="e_primoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
-<br/> <div class="errorbox-good">
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" name="primoDist" value="1" id="e_pd_1" {% ifequal form.data.primoDist "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="primoDist" value="2" id="e_pd_2" {% ifequal form.data.primoDist "2" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="primoDist" value="3" id="e_pd_3" {% ifequal form.data.primoDist "3" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table></div></div>
+<br/><div class="errorbox-good">
 <div class="ss-form-entry" id="l_primoCondito"><label class="ss-q-title" for="entry_42">Condito al momento
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
@@ -447,14 +446,14 @@ Secondo Piatto
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_secondoInizioDist"><label class="ss-q-title" for="e_secondoInizioDist">Inizio distribuzione
+<div class="ss-form-entry" id="l_secondoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="secondoInizioDist" value="{{form.data.secondoInizioDist}}" class="ss-q-short" id="e_secondoInizioDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_secondoFineDist"><label class="ss-q-title" for="e_secondoFineDist">Fine distribuzione
-<span class="ss-required-asterisk">*</span></label>
-<label class="ss-q-help" for="entry_14"></label>
-<input type="text" name="secondoFineDist" value="{{form.data.secondoFineDist}}" class="ss-q-short" id="e_secondoFineDist" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="1" id="e_pd_1" {% ifequal form.data.secondoDist "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="2" id="e_pd_2" {% ifequal form.data.secondoDist "2" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="3" id="e_pd_3" {% ifequal form.data.secondoDist "3" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table></div></div>
 </td>
 <td>
 <br/> <div class="errorbox-good">
@@ -737,9 +736,15 @@ Contorno
 <tr>
 <td>
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry" id="l_finePasto"><label class="ss-q-title" for="e_finePasto">Ora di fine pasto
+<div class="ss-form-entry" id="l_durataPasto"><label class="ss-q-title" for="entry_15">Durata complessiva pasto
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" name="finePasto" value="{{form.data.finePasto}}" class="ss-q-short" id="e_finePasto" dojoType="custom.form.TimeTextBox" trim="true" required="true" constraints="{timePattern:'HH:mm', clickableIncrement:'T00:05:00', visibleIncrement:'T00:15:00', visibleRange:'T01:00:00', min:'T10:00:00', max:'T15:00:00'}"/></div></div>
+<table border="0" cellpadding="5" cellspacing="0"><tbody>
+<tr><td class="ss-scalerow ss-leftlabel">&lt; 30 min</td>
+<td class="ss-scalerow"><input type="radio" name="durataPasto" value="1" id="e_pd_1" {% ifequal form.data.durataPasto "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="durataPasto" value="2" id="e_pd_2" {% ifequal form.data.durataPasto "2" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="durataPasto" value="3" id="e_pd_3" {% ifequal form.data.durataPasto "3" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">&gt; 60 min</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_durataPasto" position="above" id="tt_durataPasto"> 
+Considerare il tempo intercorso dall'inizio della distribuzione alla fine del pasto dell'ultimo bambino</span></div></div>
 </td>
 </tr>
 <tr>
