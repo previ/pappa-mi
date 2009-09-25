@@ -227,3 +227,48 @@ class Statistiche:
 
   ncTotali = int(0)
   ncRichiestaCampionatura = int(0)
+
+class StatisticheIspezioni(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  centro = db.ReferenceProperty(CentroCucina)
+  
+  dataInizio = db.DateProperty()
+  datafine = db.DateProperty()
+
+  numeroSchede = int(0)
+
+  puliziaCentroMedia = db.FloatProperty()
+  puliziaCentroDist1 = db.FloatProperty()
+  puliziaCentroDist2 = db.FloatProperty()
+  puliziaCentroDist3 = db.FloatProperty()
+  puliziaCentroDist4 = db.FloatProperty()
+
+  puliziaRefettorioMedia = db.FloatProperty()
+  puliziaRefettorioDist1 = db.FloatProperty()
+  puliziaRefettorioDist2 = db.FloatProperty()
+  puliziaRefettorioDist3 = db.FloatProperty()
+  puliziaRefettorioDist4 = db.FloatProperty()
+
+  primoCotturaDist1 = db.FloatProperty()
+  primoCotturaDist2 = db.FloatProperty()
+  primoCotturaDist3 = db.FloatProperty()
+
+  primoTempDist1 = db.FloatProperty()
+  primoTempDist2 = db.FloatProperty()
+  primoTempDist3 = db.FloatProperty()
+
+  primoQantDist1 = db.FloatProperty()
+  primoQantDist2 = db.FloatProperty()
+  primoQantDist3 = db.FloatProperty()
+  
+  primoAssaggio = db.FloatProperty()
+  primoTempDist1 = db.FloatProperty()
+  primoTempDist2 = db.FloatProperty()
+  primoTempDist3 = db.FloatProperty()
+
+  primoGrad = db.FloatProperty()
+  primoGradDist1 = db.FloatProperty()
+  primoGradDist2 = db.FloatProperty()
+  primoGradDist3 = db.FloatProperty()
+  primoGradDist4 = db.FloatProperty()
+  

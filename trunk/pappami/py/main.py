@@ -289,13 +289,15 @@ class CMMenuHandler(webapp.RequestHandler):
 
       #logging.info("data: %s", data)
 
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", Commissione.get(self.request.get("commissione")).tipoScuola).order("-validitaDa")
+      offset = Commissione.get(self.request.get("commissione")).centroCucina.menuOffset
+                           
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
 
       #logging.info("len %d" , menus.count())
 
       for m in menus:
         #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-        if(((((data-m.validitaDa).days) / 7)%4+1) == m.settimana):
+        if((((((data-m.validitaDa).days) / 7)%4)+offset) == m.settimana):
           menu = m
           break
       
