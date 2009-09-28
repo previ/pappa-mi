@@ -50,7 +50,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.4.3.10 - 2009.09.17"
+    template_values["version"] = "0.4.4.11 - 2009.09.28"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -180,7 +180,7 @@ class CMSupportoHandler(BasePage):
     template_values = dict()
     template_values["content"] = "supporto.html"
     self.getBase(template_values)
-
+    
 class CMCondizioniHandler(BasePage):
   
   def get(self):
@@ -289,15 +289,18 @@ class CMMenuHandler(webapp.RequestHandler):
 
       #logging.info("data: %s", data)
 
-      offset = Commissione.get(self.request.get("commissione")).centroCucina.menuOffset
-                           
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
-
+      c = Commissione.get(self.request.get("commissione"))
+      cc = c.centroCucina
+      offset = cc.menuOffset
+      if offset == None:
+        offset = 0
+        
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", c.tipoScuola).order("-validitaDa")
       #logging.info("len %d" , menus.count())
 
       for m in menus:
         #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-        if((((((data-m.validitaDa).days) / 7)%4)+offset) == m.settimana):
+        if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
           menu = m
           break
       

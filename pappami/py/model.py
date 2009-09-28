@@ -15,6 +15,7 @@ class CentroCucina(db.Model):
   telefono = db.StringProperty()
   fax = db.StringProperty()
   email = db.EmailProperty()
+  menuOffset = db.IntegerProperty()
 
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
