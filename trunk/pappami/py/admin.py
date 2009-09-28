@@ -225,6 +225,13 @@ class CMAdminHandler(BasePage):
   def get(self):    
     if self.request.get("cmd") == "flush":
       memcache.flush_all()
+
+    if self.request.get("cmd") == "offset":
+      ccs = CentroCucina.all()
+      for cc in ccs:
+        if cc.menuOffset == None:
+          cc.menuOffset = None
+          cc.put()
       
     template_values = {
       'content_left': 'admin/leftbar.html',
