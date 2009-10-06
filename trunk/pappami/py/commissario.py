@@ -60,7 +60,11 @@ class CMCommissarioHandler(BasePage):
                        "key": ("string", "")}
         
         data_nc = list()
-        for nc in Nonconformita.all().filter("commissario",commissario).order("-dataNonconf"):
+        ncs = Nonconformita.all()
+        if not users.is_current_user_admin():
+          ncs = ncs.filter("commissario",commissario)
+        
+        for nc in ncs.order("-dataNonconf"):
           data_nc.append({"commissione": str(nc.commissione.nome), "dataNonconf": nc.dataNonconf, "turno": str(nc.turno), "tipo": nc.tipoNome(), 
                        "key":"<a class='btn' href='/commissario/nonconf?cmd=open&key="+str(nc.key())+"'>Apri</a>"})
   
@@ -87,7 +91,12 @@ class CMCommissarioHandler(BasePage):
                        "key": ("string", "")}
         
         data = list()
-        for ispezione in Ispezione.all().filter("commissario",commissario).order("-dataIspezione"):
+        isps = Ispezione.all()
+        
+        if not users.is_current_user_admin():
+          isps = isps.filter("commissario",commissario)
+
+        for ispezione in isps.order("-dataIspezione"):
           data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "turno": ispezione.turno, "primo": str(ispezione.primoAssaggio) + " " + str(ispezione.primoGradimento), "secondo": str(ispezione.secondoAssaggio) + " " + str(ispezione.secondoGradimento), "contorno":str(ispezione.contornoAssaggio) + " " + str(ispezione.contornoGradimento), "frutta":str(ispezione.fruttaAssaggio) + " " + str(ispezione.fruttaGradimento), "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
   
         # Loading it into gviz_api.DataTable
