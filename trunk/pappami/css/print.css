@@ -12,7 +12,7 @@ body { font-size:10pt; background: white; color: black; }
 
 /* Fix widths */
 #container .ss-form-container { width:22cm; }
-#subwrap, #content-main { width:20cm; float:none; }
+#subwrap, #content-main { width:22cm; float:none; }
 
 /* Formatting and display fixes */
 #content { border-top:none; }
