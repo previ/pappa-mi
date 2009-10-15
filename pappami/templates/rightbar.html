@@ -2,7 +2,13 @@
 <h2>Le Commissioni</h2>
 {%if test%}
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxR-kkwChykYW7WKcP9E61FIpqtdnBTu75SoRIRFZtvbJ_a6sG3HegmbSw" type="text/javascript"></script>
-{%else%}<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>{%endif%}
+{%else%}
+{%if pappamiit%}
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxS90IAS8DNkLP3Leqt60hzHNb7APhQzsOmsQoCLiIdm5MQOnJhzFeiOZg" type="text/javascript"></script>
+{%else%}
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAUP4yJ8rq-bFQY7ZrtdvTQxRgWPZBKFIi4bT6qAD2oj5D-9d1VxSvfotcLV_kHqzVYNQxMt2W-p7t3w" type="text/javascript"></script>
+{%endif%}
+{%endif%}
     <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/mapiconmaker/1.0/src/mapiconmaker.js" type="text/javascript"></script> 
     <script type="text/javascript">
     //<![CDATA[

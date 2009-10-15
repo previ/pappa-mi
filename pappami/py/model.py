@@ -272,4 +272,49 @@ class StatisticheIspezioni(db.Model):
   primoGradDist2 = db.FloatProperty()
   primoGradDist3 = db.FloatProperty()
   primoGradDist4 = db.FloatProperty()
+
+  secondoCotturaDist1 = db.FloatProperty()
+  secondoCotturaDist2 = db.FloatProperty()
+  secondoCotturaDist3 = db.FloatProperty()
+
+  secondoTempDist1 = db.FloatProperty()
+  secondoTempDist2 = db.FloatProperty()
+  secondoTempDist3 = db.FloatProperty()
+
+  secondoQantDist1 = db.FloatProperty()
+  secondoQantDist2 = db.FloatProperty()
+  secondoQantDist3 = db.FloatProperty()
   
+  secondoAssaggio = db.FloatProperty()
+  secondoTempDist1 = db.FloatProperty()
+  secondoTempDist2 = db.FloatProperty()
+  secondoTempDist3 = db.FloatProperty()
+
+  secondoGrad = db.FloatProperty()
+  secondoGradDist1 = db.FloatProperty()
+  secondoGradDist2 = db.FloatProperty()
+  secondoGradDist3 = db.FloatProperty()
+  secondoGradDist4 = db.FloatProperty()
+
+  secondoCotturaDist1 = db.FloatProperty()
+  secondoCotturaDist2 = db.FloatProperty()
+  secondoCotturaDist3 = db.FloatProperty()
+
+  secondoTempDist1 = db.FloatProperty()
+  secondoTempDist2 = db.FloatProperty()
+  secondoTempDist3 = db.FloatProperty()
+
+  secondoQantDist1 = db.FloatProperty()
+  secondoQantDist2 = db.FloatProperty()
+  secondoQantDist3 = db.FloatProperty()
+  
+  secondoAssaggio = db.FloatProperty()
+  secondoTempDist1 = db.FloatProperty()
+  secondoTempDist2 = db.FloatProperty()
+  secondoTempDist3 = db.FloatProperty()
+
+  secondoGrad = db.FloatProperty()
+  secondoGradDist1 = db.FloatProperty()
+  secondoGradDist2 = db.FloatProperty()
+  secondoGradDist3 = db.FloatProperty()
+  secondoGradDist4 = db.FloatProperty()
