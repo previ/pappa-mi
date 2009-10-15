@@ -36,6 +36,10 @@ DATE_FORMAT = "%Y-%m-%d"
 
 class BasePage(webapp.RequestHandler):
   def getBase(self, template_values):
+    
+    #if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1:
+    #  self.redirect("www.pappa-mi.it")
+        
     user = users.get_current_user()
     if user:
       url = users.create_logout_url("/")
@@ -45,6 +49,9 @@ class BasePage(webapp.RequestHandler):
       url_linktext = 'Login'
     if self.request.url.find("test") != -1 :
       template_values["test"] = "true"
+    if self.request.url.find("www.pappa-mi.it") != -1 :
+      template_values["pappamiit"] = "true"
+
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
