@@ -50,7 +50,7 @@
 
     function createMarker(stores) {
       var store = stores[0];
-      var newIcon = MapIconMaker.createMarkerIcon({width: 32, height: 32, primaryColor: "#0000ff"});
+      var newIcon = MapIconMaker.createMarkerIcon({width: 16, height: 16, primaryColor: "#0000ff"});
       var marker = new GMarker(store.latlng, {icon: newIcon});
       /*var html = "<b>" + store.name + "</b> <br/>" + store.address;
       GEvent.addListener(marker, 'click', function() {
@@ -60,7 +60,7 @@
     }
 
     function createClusteredMarker(stores) {
-      var newIcon = MapIconMaker.createMarkerIcon({width: 44, height: 44, primaryColor: "#0000ff"});
+      var newIcon = MapIconMaker.createMarkerIcon({width: 24, height: 24, primaryColor: "#0000ff"});
       var marker = new GMarker(stores[0].latlng, {icon: newIcon});
       var html = "";
       for (var i = 0; i < stores.length; i++) {

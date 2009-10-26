@@ -1,8 +1,15 @@
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
+</script><script>
 google.load('visualization', '1', {packages:['table']});
 
-google.setOnLoadCallback(drawTable);
+//google.setOnLoadCallback(drawTable);
+dojo.addOnLoad(drawTable);
 
 function drawTable() {
   var table = new google.visualization.Table(document.getElementById('ispezioni'));
@@ -12,6 +19,92 @@ function drawTable() {
 }
 </script>
 <H1 class="ss-form-title">Elenco Schede Ispezione</H1>
+<div dojoType="dijit.form.DropDownButton">
+<span>Filtra dati</span>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
+<form dojoType="dijit.form.Form" action="/commissario" method="get" id="form0">
+<input type="hidden" name="cmd" value="apply"></input>
+<input type="hidden" name="tab" value="isp"></input>
+<table>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_me">Inserite da me</LABEL>
+<input type="CHECKBOX" name="me" value="on" id="e_me"{% ifequal me "on" %} CHECKED{% endifequal %}></input></td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
+<SELECT name="cm" id="e_tipo">
+<OPTION value="">Tutte</OPTION>{% for c in commissioni %}
+<option value="{{c.key}}"{% ifequal cm.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</option>{% endfor %}
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
+<SELECT name="anno" id="e_aa">
+<OPTION value="">Tutti</OPTION>
+<OPTION value="2008"{% ifequal anno "2008" %} selected{% endifequal %}>2008-2009</OPTION>
+<OPTION value="2009"{% ifequal anno "2009" %} selected{% endifequal %}>2009-2010</OPTION>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit" onclick="">Applica</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+<div dojoType="dijit.form.DropDownButton">
+<span>Legenda</span>
+<div dojoType="dijit.TooltipDialog" id="legendDlg" title="Legenda">
+<table>
+<tr>
+<td>
+<b>Assaggio</b><br>
+<img src="img/icoasg1.png"> Non Accettabile<br>
+<img src="img/icoasg2.png"> Normale<br>
+<img src="img/icoasg3.png"> Gradevole
+</td>
+<td>
+<b>Gradimento</b><br>
+<img src="img/icogra1.png"> Rifiutato<br>
+<img src="img/icogra2.png"> Parzialmente rifiutato<br>
+<img src="img/icogra3.png"> Parzialmente accettato<br>
+<img src="img/icogra4.png"> Accettato
+</td>
+<td>
+<b>Cottura</b><br>
+<img src="img/icocot1.png"> Scarsa<br>
+<img src="img/icocot2.png"> Giusta<br>
+<img src="img/icocot3.png"> Eccessiva
+</td>
+<td>
+<b>Temperatura</b><br>
+<img src="img/icotmp1.png"> Freddo<br>
+<img src="img/icotmp2.png"> Giusta<br>
+<img src="img/icotmp3.png"> Caldo
+</td>
+<td>
+<b>Quantit&agrave;</b><br>
+<img src="img/icoqta1.png"> Scarso<br>
+<img src="img/icoqta2.png"> Suffciente<br>
+<img src="img/icoqta3.png"> Abbondante
+</td>
+<td>
+<b>Maturazione</b><br>
+<img src="img/icomat1.png"> Acerba<br>
+<img src="img/icomat2.png"> Giusta<br>
+<img src="img/icomat3.png"> Matura
+</td>
+</tr>
+</table>
+</div>
+</div>
 <div id="ispezioni"></div>
 <div class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/ispezione" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Ispezione</B></B></B></B></A>

@@ -1,5 +1,11 @@
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-<script>
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
+</script><script>
 google.load('visualization', '1', {packages:['table']});
 
 google.setOnLoadCallback(drawTable);
@@ -13,6 +19,46 @@ function drawTable() {
 
 </script>
 <H1 class="ss-form-title">Elenco Schede Non Conformit&agrave</H1>
+<div dojoType="dijit.form.DropDownButton">
+<span>Filtra dati</span>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
+<form dojoType="dijit.form.Form" action="/commissario" method="get" id="form0">
+<input type="hidden" name="cmd" value="apply"></input>
+<input type="hidden" name="tab" value="nc"></input>
+<table>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_me">Inserite da me</LABEL>
+<input type="CHECKBOX" name="me" value="on" id="e_me"{% ifequal me "on" %} CHECKED{% endifequal %}></input></td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
+<SELECT name="cm" id="e_tipo">
+<OPTION value="">Tutte</OPTION>{% for c in commissioni %}
+<option value="{{c.key}}"{% ifequal cm.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</option>{% endfor %}
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
+<SELECT name="anno" id="e_aa">
+<OPTION value="">Tutti</OPTION>
+<OPTION value="2008"{% ifequal anno "2008" %} selected{% endifequal %}>2008-2009</OPTION>
+<OPTION value="2009"{% ifequal anno "2009" %} selected{% endifequal %}>2009-2010</OPTION>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit" onclick="">Applica</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
 <div id="nonconf"></div>
 <div class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformit&agrave</B></B></B></B></A>

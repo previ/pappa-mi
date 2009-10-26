@@ -57,11 +57,17 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.4.4.11 - 2009.09.28"
+    template_values["version"] = "0.5.0.12 - 2009.10.26"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
-
+  def getCommissioni(self):
+    commissioni = memcache.get("commissioni")
+    if commissioni == None:
+      commissioni = Commissione.all().order("nome");
+      memcache.add("commissioni", commissioni)
+    return commissioni
+  
 class MainPage(BasePage):
   
   def get(self):
