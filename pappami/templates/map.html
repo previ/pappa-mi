@@ -135,10 +135,14 @@ dojo.require("dijit.ProgressBar");
       school.style.cursor = "hand";
       var html = "<b>" + store.name + " - " + store.type + "</b> <br/>" + store.address + "";
       school.innerHTML = html;
-      if(school.addEventListener)       
+      if(school.addEventListener) {
         school.addEventListener("click", function(){
         marker.openInfoWindow(html);
-        }, false);
+        }, false); } else {
+        school.attachEvent("onclick", function(){
+        marker.openInfoWindow(html);
+        });
+      }
       list.appendChild(school);
     }
     

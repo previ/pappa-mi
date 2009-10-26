@@ -50,6 +50,9 @@ class CMCommissarioHandler(BasePage):
         'content_left': 'commissario/leftbar.html',
         'tab': tab
         }
+      anno=self.request.get("anno")
+      me=self.request.get("me")
+      cm=self.request.get("cm")
       if tab == "nc":
         
         # Creating the data
@@ -60,9 +63,22 @@ class CMCommissarioHandler(BasePage):
                        "key": ("string", "")}
         
         data_nc = list()
+
         ncs = Nonconformita.all()
-        if not users.is_current_user_admin():
+
+        if me == "on":
           ncs = ncs.filter("commissario",commissario)
+
+        if anno != "":
+          dataInizio = date(year=int(anno), month=9, day=1)
+          dataFine = date(year=int(anno)+1, month=9, day=1)
+          ncs = ncs.filter("dataNonconf >=",dataInizio)      
+          ncs = ncs.filter("dataNonconf <",dataFine)      
+        
+        if cm != "":
+          template_values['cm'] = Commissione.get(cm)
+          ncs = ncs.filter("commissione",Commissione.get(cm))
+        
         
         for nc in ncs.order("-dataNonconf"):
           data_nc.append({"commissione": str(nc.commissione.nome), "dataNonconf": nc.dataNonconf, "turno": str(nc.turno), "tipo": nc.tipoNome(), 
@@ -76,6 +92,9 @@ class CMCommissarioHandler(BasePage):
         nonconf = data_table_nc.ToJSon(columns_order=("commissione", "dataNonconf", "turno", "tipo", "key"), order_by="dataNonconf")
         template_values['content'] = 'commissario/nonconfs.html'
         template_values['nonconf'] = nonconf
+        template_values['me'] = me
+        template_values['commissioni'] = self.getCommissioni()       
+        template_values['anno'] = anno
 
       else:
 
@@ -83,6 +102,7 @@ class CMCommissarioHandler(BasePage):
         description = {"commissione": ("string", "Commissione"),
                        "dataIspezione": ("date", "Data"),
                        "turno": ("string", "Turno"),
+                       #"complessivo": ("string", "Glob"),
                        "primo": ("string", "Primo"),
                        "secondo": ("string", "Secondo"),
                        "contorno": ("string", "Contorno"),
@@ -93,11 +113,28 @@ class CMCommissarioHandler(BasePage):
         data = list()
         isps = Ispezione.all()
         
-        if not users.is_current_user_admin():
+        if me == "on" or tab == "":
           isps = isps.filter("commissario",commissario)
+          me = "on"
 
+        if anno != "":
+          dataInizio = date(year=int(anno), month=9, day=1)
+          dataFine = date(year=int(anno)+1, month=9, day=1)
+          isps = isps.filter("dataIspezione >=",dataInizio)      
+          isps = isps.filter("dataIspezione <",dataFine)      
+        
+        if cm != "":
+          template_values['cm'] = Commissione.get(cm)
+          isps = isps.filter("commissione",Commissione.get(cm))
+          
         for ispezione in isps.order("-dataIspezione"):
-          data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "turno": ispezione.turno, "primo": str(ispezione.primoAssaggio) + " " + str(ispezione.primoGradimento), "secondo": str(ispezione.secondoAssaggio) + " " + str(ispezione.secondoGradimento), "contorno":str(ispezione.contornoAssaggio) + " " + str(ispezione.contornoGradimento), "frutta":str(ispezione.fruttaAssaggio) + " " + str(ispezione.fruttaGradimento), "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
+          data.append({"commissione": str(ispezione.commissione.nome), "dataIspezione": ispezione.dataIspezione, "turno": ispezione.turno, 
+                       #"complessivo": "<img src='img/icon" + str(ispezione.giudizioGlobale) + ".png'/>", 
+                       "primo": "<img src='img/icoasg" + str(ispezione.primoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.primoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" + str(ispezione.primoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.primoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.primoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "secondo": "<img src='img/icoasg" + str(ispezione.secondoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.secondoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" +str(ispezione.secondoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.secondoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.secondoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "contorno": "<img src='img/icoasg" + str(ispezione.contornoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.contornoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" + str(ispezione.contornoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.contornoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.contornoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "frutta": "<img src='img/icoasg" + str(ispezione.fruttaAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.fruttaGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icomat" + str(ispezione.fruttaMaturazione) + ".png' title='Maturazione'/>" + "<img src='img/icoqta" + str(ispezione.fruttaQuantita) + ".png' title='Quantit&agrave;'/>", 
+                       "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
   
         # Loading it into gviz_api.DataTable
         data_table = DataTable(description)
@@ -108,13 +145,16 @@ class CMCommissarioHandler(BasePage):
       
         template_values['content'] = 'commissario/ispezioni.html'
         template_values['ispezioni'] = ispezioni
+        template_values['me'] = me
+        template_values['commissioni'] = self.getCommissioni()       
+        template_values['anno'] = anno
 
       self.getBase(template_values)
-      
+        
 class CMRegistrazioneHandler(BasePage):
   
   def get(self): 
-    commissioni = Commissione.all().order("nome")
+    commissioni = self.getCommissioni()
 
     template_values = {
       'commissioni': commissioni,     
