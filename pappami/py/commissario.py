@@ -292,7 +292,7 @@ class CMIspezioneHandler(BasePage):
         isp.commissario = commissario
    
         preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
-        logging.info(preview)
+        #logging.info(preview)
         memcache.add(preview, isp, 3600)
     
         template_values = {
