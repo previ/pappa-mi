@@ -88,6 +88,7 @@ class MainPage(BasePage):
           break
         i = i + 1
         news.append(n)
+        
       memcache.add("news",news)
       
     stats = self.getStats()
@@ -331,7 +332,7 @@ class CMMapHandler(webapp.RequestHandler):
       markers = memcache.get("markers_all")
       if(markers == None):
           
-        commissioni = Commissione.all()
+        commissioni = Commissione.all().order("nome");
           
         markers = "<markers>\n"
         try:
