@@ -27,8 +27,8 @@ class IspezioneForm(djangoforms.ModelForm):
       raise newforms.ValidationError("L'ispezione deve essere fatta in un giorno feriale")
 
     age = (date.today() - cleaned_data.get("dataIspezione")).days
-    if age > 60 :
-      raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
+    #if age > 60 :
+    #  raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
       raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
@@ -54,8 +54,8 @@ class NonconformitaForm(djangoforms.ModelForm):
       raise newforms.ValidationError(u"La scheda di Non Conformita' deve essere fatta in un giorno feriale")
 
     age = (date.today() - cleaned_data.get("dataNonconf")).days
-    if age > 60 :
-      raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
+    #if age > 60 :
+    #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
       raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date successive alla data odierna")
