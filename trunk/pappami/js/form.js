@@ -7,15 +7,16 @@ function validateradio() {
 	var radio = radios[0];
 	var first;
 	for(var x = 0; x < radios.length; x++){
-		//console.log(radio.name + radios[x].checked);
+		console.log(radio.name + radios[x].checked);
 		if( radio.name != radios[x].name ) {
 			if( value == false ) {
 				var e = radio;
-				while(e.getAttribute("className") != "errorbox-good" && 
-				      e.getAttribute("className") != "errorbox-bad" && 
+				while(e.className != "errorbox-good" && 
+				      e.className != "errorbox-bad" && 
 				      e.parentNode) {
 				      e = e.parentNode;
 				}
+				e.setAttribute("class", "errorbox-bad");
 				e.setAttribute("className", "errorbox-bad");
 				if(first == undefined) first = radio;
 			}
@@ -26,7 +27,8 @@ function validateradio() {
 	}
 	if( value == false ) {
 		var e = radio;
-		while(e.getAttribute("className") != "errorbox-good" && e.getAttribute("className") != "errorbox-bad") e = e.parentNode;
+		while(e.className != "errorbox-good" && e.className != "errorbox-bad") e = e.parentNode;
+		e.setAttribute("class", "errorbox-bad");
 		e.setAttribute("className", "errorbox-bad");
 		if(first == undefined) first = radio;
 	}
