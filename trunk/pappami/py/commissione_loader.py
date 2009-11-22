@@ -69,8 +69,8 @@ class NonconfExporter(Exporter):
   def __init__(self):
     
     Exporter.__init__(self, 'Nonconformita',
-                    [('commissione', lambda x: x.nome, None), 
-                     ('commissario', lambda x: x.user.email(), None),
+                    [('commissione', lambda x: Commissione.get(x).nome, None), 
+                     ('commissario', lambda x: Commissario.get(x).user.email(), None),
                      ('dataNonconf', str, None),
                      ('turno', str, None),
                      ('tipo', str, None),
@@ -82,6 +82,85 @@ class NonconfExporter(Exporter):
                      ('modificato_il', str, ""),
                      ('stato', str, "")
                      ])
+class IspezioneExporter(Exporter):
+  def __init__(self):
+    
+    Exporter.__init__(self, 'Ispezione',
+                    [('commissione', lambda x: Commissione.get(x).nome, None), 
+                     ('commissario', lambda x: Commissario.get(x).user.email(), None),
+                     ('dataIspezione', str, None),
+                     ('turno', str, None),                    
+                     ('aaRispettoCapitolato', str, None),
+                     ('aaTavoliApparecchiati', str, None),
+                     ('aaTermichePulite', str, None),
+                     ('aaAcqua', str, None),
+                     ('aaScaldaVivande', str, None),
+                     ('aaSelfService', str, None),
+                     ('aaTabellaEsposta', str, None),
+                     ('ricicloStoviglie', str, None),
+                     ('ricicloPosate', str, None),
+                     ('ricicloBicchieri', str, None),
+                     ('numeroPastiTotale', str, None),
+                     ('numeroPastiBambini', str, None),
+                     ('numeroPastiSpeciali', str, None),
+                     ('numeroAddetti', str, None),
+                     ('puliziaCentroCottura', str, None),
+                     ('puliziaRefettorio', str, None),
+                     ('arrivoDist', str, None),
+                     ('primoDist', str, None),
+                     ('primoPrevisto', encode, None),
+                     ('primoEffettivo', encode, None),
+                     ('primoCondito', str, None),
+                     ('primoCottura', str, None),
+                     ('primoTemperatura', str, None),
+                     ('primoQuantita', str, None),
+                     ('primoAssaggio', str, None),
+                     ('primoGradimento', str, None),
+                     ('secondoDist', str, None),
+                     ('secondoPrevisto', encode, None),
+                     ('secondoEffettivo', encode, None),
+                     ('secondoCottura', str, None),
+                     ('secondoTemperatura', str, None),
+                     ('secondoQuantita', str, None),
+                     ('secondoAssaggio', str, None),
+                     ('secondoGradimento', str, None),
+                     ('contornoPrevisto', encode, None),
+                     ('contornoEffettivo', encode, None),
+                     ('contornoCondito', str, None),
+                     ('contornoCottura', str, None),
+                     ('contornoTemperatura', str, None),
+                     ('contornoQuantita', str, None),
+                     ('contornoAssaggio', str, None),
+                     ('contornoGradimento', str, None),
+                     ('paneTipo', encode, None),
+                     ('paneServito', str, None),
+                     ('paneQuantita', str, None),
+                     ('paneAssaggio', str, None),
+                     ('paneGradimento', str, None),
+                     ('fruttaTipo', encode, None),
+                     ('fruttaServita', encode, None),
+                     ('fruttaQuantita', str, None),
+                     ('fruttaAssaggio', str, None),
+                     ('fruttaGradimento', str, None),
+                     ('fruttaMaturazione', str, None),
+                     ('durataPasto', str, None),
+                     ('lavaggioFinale', str, None),
+                     ('smaltimentoRifiuti', str, None),
+                     ('giudizioGlobale', str, None),
+                     ('note', convert_note, ""),
+                     ('creato_da', str, None),
+                     ('creato_il', str, ""),
+                     ('modificato_da', str, ""),
+                     ('modificato_il', str, ""),
+                     ('stato', str, "")
+                     ])
+  
+def encode(x):
+  if x != None :
+    return x.encode('utf-8')
+  else:
+    return ""
+    
 def convert_note(x):
   if x != None :
     return base64.b64encode(x.encode('utf-8'))
@@ -98,4 +177,4 @@ def decode_int(x):
   else:
     return None
   
-exporters = [CommissioneExporter, NonconfExporter]
+exporters = [CommissioneExporter, NonconfExporter, IspezioneExporter]
