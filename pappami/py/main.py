@@ -290,9 +290,7 @@ class CMStatsHandler(BasePage):
     s = self.getStats()
 
     template_values = dict()
-    template_values["content"] = "stats.html"
-    template_values["stats"] = s[0]
-    template_values["statsMese"] = s[1]
+    template_values["content"] = "statistiche.html"
     self.getBase(template_values)
 
     
