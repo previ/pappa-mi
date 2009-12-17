@@ -31,9 +31,9 @@ djConfig={
     <h1 id="logo-txt"><a href="/">Pappa-Mi</a> {%if test%}Test{%endif%}</h1>
     <ul id="nav-global">
 	<li><a href="/">Home</a></li>
-	<li><a href="/stats">Statistiche</a></li>
 	<li><a href="http://sites.google.com/site/progettopappami/allegati">Documenti</a></li>
 	{% if user and commissario %}
+	<li><a href="/stats">Statistiche</a></li>
 	<li><a href="/commissario">Area Commissari</a></li>
 	{% endif %}
 	{% if user and not commissario %}
