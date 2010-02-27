@@ -286,8 +286,13 @@ class CMStatsHandler(BasePage):
     
     return [stats, statsMese]
   
+  @login_required
   def get(self):
     s = self.getStats()
+    user = users.get_current_user()
+    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+    if(commissario is None):
+      self.redirect("/")
 
     template_values = dict()
     template_values["content"] = "statistiche.html"
