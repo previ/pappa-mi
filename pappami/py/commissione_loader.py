@@ -61,7 +61,7 @@ class CommissioneExporter(Exporter):
                      ('fax', str, ""),
                      ('zona', str, ""),
                      ('distretto', str, ""),
-                     ('centroCucina', lambda x: x.key().name(), ""),
+                     ('centroCucina', lambda x: x.name(), ""),
                      ('geo', lambda x: str(x.lat)+":"+str(x.lon), "0.0:0.0")
                      ])
 

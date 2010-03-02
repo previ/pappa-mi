@@ -18,6 +18,7 @@
 import os
 import cgi
 import logging
+import urllib
 from datetime import datetime, date, time
 import wsgiref.handlers
 
@@ -220,6 +221,71 @@ class CMAdminCommissioneHandler(BasePage):
       }
       self.getBase(template_values)
 
+class CMAdminCommissioneDataHandler(BasePage):
+
+  def get(self):    
+      tq = urllib.unquote(self.request.get("tq"))
+      #logging.info(tq)
+      query = tq[:tq.find("limit")]
+      #logging.info(query)
+      
+      orderby = "nome"
+      if(query.find("by") > 0):
+        orderby = query[query.find("`"):query.rfind("`")].strip("` ")
+      if(query.find("desc") > 0):
+        orderby = "-" + orderby
+      
+      #logging.info(orderby)
+      
+      params = tq[tq.find("limit"):].split()
+      #logging.info(params)
+      limit = int(params[1])
+      offset = int(params[3])
+      
+      if params[3] >= 0:
+        offset = int(params[3])
+      else:
+        offset = 0
+        
+      if offset > 0:
+        prev = offset - 10
+      else:
+        prev = None
+      next = offset + 10
+      
+      # Creating the data
+      description = {"nome": ("string", "Commissione"),
+                     "nomeScuola": ("string", "Scuola"),
+                     "tipoScuola": ("string", "Tipo"),
+                     "strada": ("string", "Indirizzo"),
+                     "distretto": ("string", "Dist."),
+                     "zona": ("string", "Zona"),
+                     "geo": ("string", "Geo"),
+                     "comando": ("string", "")}
+      
+      commissioni = Commissione.all()
+      if self.request.get("tipoScuola") :
+        commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
+      if self.request.get("centroCucina") :
+        commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
+      if self.request.get("nome") :
+        commissioni = commissioni.filter("nome>=", self.request.get("nome"))
+        commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
+
+      data = list()
+      try:
+        for commissione in commissioni.order(orderby).fetch(limit, offset):
+          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipoScuola": commissione.tipoScuola, "strada": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
+      except db.Timeout:
+        errmsg = "Timeout"
+        
+      # Loading it into gviz_api.DataTable
+      data_table = DataTable(description)
+      data_table.LoadData(data)
+
+      # Creating a JSon string
+      self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipoScuola", "strada", "distretto", "zona", "geo", "comando"))+",version: '0.5'})")
+  
 class CMAdminHandler(BasePage):
 
   def get(self):    
@@ -341,6 +407,7 @@ class CMAdminCommissarioHandler(BasePage):
     
 application = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
+  ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
   ('/admin/menu', CMAdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
