@@ -114,49 +114,6 @@ class CMAdminCommissioneHandler(BasePage):
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
       user = users.get_current_user()
-      if self.request.get("offset"):
-        offset = int(self.request.get("offset"))
-      else:
-        offset = 0
-        
-      if offset > 0:
-        prev = offset - 10
-      else:
-        prev = None
-      next = offset + 10
-      
-      # Creating the data
-      description = {"nome": ("string", "Commissione"),
-                     "nomeScuola": ("string", "Scuola"),
-                     "tipo": ("string", "Tipo"),
-                     "indirizzo": ("string", "Indirizzo"),
-                     "distretto": ("string", "Dist."),
-                     "zona": ("string", "Zona"),
-                     "geo": ("string", "Geo"),
-                     "comando": ("string", "")}
-      
-      commissioni = Commissione.all()
-      if self.request.get("tipoScuola") :
-        commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
-      if self.request.get("centroCucina") :
-        commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
-      if self.request.get("nome") :
-        commissioni = commissioni.filter("nome>=", self.request.get("nome"))
-        commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
-
-      data = list()
-      try:
-        for commissione in commissioni.order("nome").fetch(10, offset):
-          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
-      except db.Timeout:
-        errmsg = "Timeout"
-        
-      # Loading it into gviz_api.DataTable
-      data_table = DataTable(description)
-      data_table.LoadData(data)
-
-      # Creating a JSon string
-      gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
 
       centriCucina = CentroCucina.all().order("nome")
 
@@ -164,16 +121,69 @@ class CMAdminCommissioneHandler(BasePage):
         'content_left': 'admin/leftbar.html',
         'content': 'admin/commissioni.html',
         'centriCucina': centriCucina,
-        'gvizdata': gvizdata,
-        'prev': prev,
-        'next': next,
-        'tipoScuola': self.request.get("tipoScuola"),
-        'centroCucina': self.request.get("centroCucina"),
-        'zona': self.request.get("zona"),
-        'distretto': self.request.get("distretto"),
-        'nome': self.request.get("nome")
       }
       self.getBase(template_values)
+      
+      #if self.request.get("offset"):
+        #offset = int(self.request.get("offset"))
+      #else:
+        #offset = 0
+        
+      #if offset > 0:
+        #prev = offset - 10
+      #else:
+        #prev = None
+      #next = offset + 10
+      
+      ## Creating the data
+      #description = {"nome": ("string", "Commissione"),
+                     #"nomeScuola": ("string", "Scuola"),
+                     #"tipo": ("string", "Tipo"),
+                     #"indirizzo": ("string", "Indirizzo"),
+                     #"distretto": ("string", "Dist."),
+                     #"zona": ("string", "Zona"),
+                     #"geo": ("string", "Geo"),
+                     #"comando": ("string", "")}
+      
+      #commissioni = Commissione.all()
+      #if self.request.get("tipoScuola") :
+        #commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
+      #if self.request.get("centroCucina") :
+        #commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
+      #if self.request.get("nome") :
+        #commissioni = commissioni.filter("nome>=", self.request.get("nome"))
+        #commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
+
+      #data = list()
+      #try:
+        #for commissione in commissioni.order("nome").fetch(10, offset):
+          #data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
+      #except db.Timeout:
+        #errmsg = "Timeout"
+        
+      ## Loading it into gviz_api.DataTable
+      #data_table = DataTable(description)
+      #data_table.LoadData(data)
+
+      ## Creating a JSon string
+      #gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
+
+      #centriCucina = CentroCucina.all().order("nome")
+
+      #template_values = {
+        #'content_left': 'admin/leftbar.html',
+        #'content': 'admin/commissioni.html',
+        #'centriCucina': centriCucina,
+        #'gvizdata': gvizdata,
+        #'prev': prev,
+        #'next': next,
+        #'tipoScuola': self.request.get("tipoScuola"),
+        #'centroCucina': self.request.get("centroCucina"),
+        #'zona': self.request.get("zona"),
+        #'distretto': self.request.get("distretto"),
+        #'nome': self.request.get("nome")
+      #}
+      #self.getBase(template_values)
 
   def post(self):    
     if( self.request.get("cmd") == "save" ):
@@ -234,6 +244,16 @@ class CMAdminCommissioneDataHandler(BasePage):
         orderby = query[query.find("`"):query.rfind("`")].strip("` ")
       if(query.find("desc") > 0):
         orderby = "-" + orderby
+
+      tipoScuola = None;
+      if(query.find("tipoScuola") >= 0):
+        tipoScuola = query[(query.find("tipoScuola ") + len("tipoScuola ")):]
+        tipoScuola = tipoScuola[:tipoScuola.find(" ")]
+
+      centroCucina = None;
+      if(query.find("centroCucina") >= 0):
+        centroCucina = query[(query.find("centroCucina ") + len("centroCucina ")):]
+        centroCucina = centroCucina[:centroCucina.find(" ")]
       
       #logging.info(orderby)
       
@@ -264,10 +284,10 @@ class CMAdminCommissioneDataHandler(BasePage):
                      "comando": ("string", "")}
       
       commissioni = Commissione.all()
-      if self.request.get("tipoScuola") :
-        commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
-      if self.request.get("centroCucina") :
-        commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
+      if tipoScuola :
+        commissioni = commissioni.filter("tipoScuola", tipoScuola)
+      if centroCucina :
+        commissioni = commissioni.filter("centroCucina", CentroCucina.get(centroCucina))
       if self.request.get("nome") :
         commissioni = commissioni.filter("nome>=", self.request.get("nome"))
         commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
@@ -284,7 +304,7 @@ class CMAdminCommissioneDataHandler(BasePage):
       data_table.LoadData(data)
 
       # Creating a JSon string
-      self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipoScuola", "strada", "distretto", "zona", "geo", "comando"))+",version: '0.5'})")
+      self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipoScuola", "strada", "distretto", "zona", "geo", "comando"))+",version: '0.6'})")
   
 class CMAdminHandler(BasePage):
 
@@ -332,10 +352,15 @@ class CMAdminCommissarioHandler(BasePage):
       commissario.put()
       
       if commissario.stato == 1:
-        if self.request.url.find("test") != -1:
-          url = "test-pappa-mi.appspot.com"
-        else:
-          url = "pappa-mi.appspot.com"
+        
+        host = self.getHost()
+        
+        #if self.request.url.find("test") != -1:
+          #url = "test-pappa-mi.appspot.com"
+        #elif self.request.url.find("www.pappa-mi.it") != -1:
+          #url = "www.pappa-mi.it"
+        #else:
+          #url = "pappa-mi.appspot.com"        
 
         message = mail.EmailMessage()
         message.sender = "aiuto.pappami@gmail.com"
@@ -346,7 +371,7 @@ class CMAdminCommissarioHandler(BasePage):
         
         Ora puoi accedere all'applicazione utilizzando il seguente link:
         
-        http://"""  + url + """/commissario
+        http://"""  + host + """/commissario
         
         e iniziare a inserire le schede di valutazione e di non conformita'
         

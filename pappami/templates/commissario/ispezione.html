@@ -9,6 +9,32 @@ dojo.require("dijit.form.Button");
 dojo.require("dijit.form.FilteringSelect");
 dojo.require("custom.form.TimeTextBox");
 </script>
+<script type="text/javascript">
+var piattounico = false;
+var oldDisp_1 = "";
+var oldDisp_2 = "";
+var oldDisp_3 = "";
+dojo.addOnLoad(onMenuChanged);
+
+function onMenuChanged() {
+	if(dojo.byId("e_primoEffettivo").value == dojo.byId("e_secondoEffettivo").value ) {
+		oldDisp_1 = dojo.byId("s_secondo_1").style.display;
+		oldDisp_2 = dojo.byId("s_secondo_2").style.display;
+		oldDisp_3 = dojo.byId("s_secondo_3").style.display;
+		dojo.byId("s_secondo_1").style.display = "none";
+		dojo.byId("s_secondo_2").style.display = "none";
+		dojo.byId("s_secondo_3").style.display = "none";
+		dojo.byId("s_primo").innerHTML = "Primo e Secondo Piatto (Piatto unico)";
+		piattounico = true;
+	} else {
+		dojo.byId("s_secondo_1").style.display = oldDisp_1;
+		dojo.byId("s_secondo_2").style.display = oldDisp_2;
+		dojo.byId("s_secondo_3").style.display = oldDisp_3;
+		dojo.byId("s_primo").innerHTML = "Primo Piatto";
+		piattounico = false;
+	}
+}
+</script>
 <script src="/js/form.js" type="text/javascript"></script>
 <div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Raccolta dati Ispezioni</h1>
 <p/>
@@ -25,9 +51,29 @@ dojo.require("custom.form.TimeTextBox");
 </div>
 {% endif %}<form dojoType="dijit.form.Form" action="/commissario/ispezione" method="post" id="form0">
 <script type="dojo/method" event="onSubmit">
+if(piattounico) {
+	dojo.byId("e_sd_1").checked = dojo.byId("e_pd_1").checked;
+	dojo.byId("e_sd_2").checked = dojo.byId("e_pd_2").checked;
+	dojo.byId("e_sd_3").checked = dojo.byId("e_pd_3").checked;
+	dojo.byId("e_secondoCottura_1").checked = dojo.byId("e_primoCottura_1").checked;
+	dojo.byId("e_secondoCottura_2").checked = dojo.byId("e_primoCottura_2").checked;
+	dojo.byId("e_secondoCottura_3").checked = dojo.byId("e_primoCottura_3").checked;
+	dojo.byId("e_secondoTemperatura_1").checked = dojo.byId("e_primoTemperatura_1").checked;
+	dojo.byId("e_secondoTemperatura_2").checked = dojo.byId("e_primoTemperatura_2").checked;
+	dojo.byId("e_secondoTemperatura_3").checked = dojo.byId("e_primoTemperatura_3").checked;
+	dojo.byId("e_secondoQuantita_1").checked = dojo.byId("e_primoQuantita_1").checked;
+	dojo.byId("e_secondoQuantita_2").checked = dojo.byId("e_primoQuantita_2").checked;
+	dojo.byId("e_secondoQuantita_3").checked = dojo.byId("e_primoQuantita_3").checked;
+	dojo.byId("e_secondoAssaggio_1").checked = dojo.byId("e_primoAssaggio_1").checked;
+	dojo.byId("e_secondoAssaggio_2").checked = dojo.byId("e_primoAssaggio_2").checked;
+	dojo.byId("e_secondoAssaggio_3").checked = dojo.byId("e_primoAssaggio_3").checked;
+	dojo.byId("e_secondoGradimento_1").checked = dojo.byId("e_primoGradimento_1").checked;
+	dojo.byId("e_secondoGradimento_2").checked = dojo.byId("e_primoGradimento_2").checked;
+	dojo.byId("e_secondoGradimento_3").checked = dojo.byId("e_primoGradimento_3").checked;
+	dojo.byId("e_secondoGradimento_4").checked = dojo.byId("e_primoGradimento_4").checked;
+}
 dojo.byId("e_submit").disabled = true;
 dojo.byId("e_annulla").disabled = true;
-enableAll("nc");
 if(this.validate()&&validateradio()){
     return true;
 } else {
@@ -108,14 +154,14 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_primoEffettivo">Primo
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.TextBox" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo"/>
+<input type="text" dojoType="dijit.form.TextBox" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo" onchange="onMenuChanged()"/>
 </div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoEffettivo">Secondo
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.TextBox" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo"/>
+<input type="text" dojoType="dijit.form.TextBox" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
 </div></div>
 </td>
 <td>
@@ -341,10 +387,7 @@ Le scatole termiche di trasporto ("termobox") non sono equiparabili a carrelli o
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
-<tr>
-<th class="table_separator" colspan="3">Primo Piatto
-</th>
-</tr>
+<tr><th class="table_separator" colspan="3" id="s_primo">Primo Piatto</th></tr>
 <tr>
 <td>
 <br/> <div class="errorbox-good">
@@ -438,21 +481,21 @@ Selezionare:<br/>
 </span></div></div>
 </td>
 </tr>
-<tr>
+<tr id="s_secondo_1">
 <th colspan="3" class="table_separator">
 Secondo Piatto
 </th>
 </tr>
-<tr>
+<tr id="s_secondo_2">
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry" id="l_secondoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">&lt; 10 min</td>
-<td class="ss-scalerow"><input type="radio" name="secondoDist" value="1" id="e_pd_1" {% ifequal form.data.secondoDist "1" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow"><input type="radio" name="secondoDist" value="2" id="e_pd_2" {% ifequal form.data.secondoDist "2" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow"><input type="radio" name="secondoDist" value="3" id="e_pd_3" {% ifequal form.data.secondoDist "3" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="1" id="e_sd_1" {% ifequal form.data.secondoDist "1" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="2" id="e_sd_2" {% ifequal form.data.secondoDist "2" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" name="secondoDist" value="3" id="e_sd_3" {% ifequal form.data.secondoDist "3" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">&gt; 20 min</td></tr></tbody></table></div></div>
 </td>
 <td>
@@ -478,7 +521,7 @@ Secondo Piatto
 <td class="ss-scalerow ss-rightlabel">Caldo</td></tr></tbody></table></div></div>
 </td>
 </tr>
-<tr>
+<tr id="s_secondo_3">
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_secondoQuantita">Quantit&agrave
@@ -507,10 +550,10 @@ Secondo Piatto
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Rifiutato</td>
-<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="1" id="group_18_1" {% ifequal form.data.secondoGradimento "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="2" id="group_18_2" {% ifequal form.data.secondoGradimento "2" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="3" id="group_18_3" {% ifequal form.data.secondoGradimento "3" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="4" id="group_18_4" {% ifequal form.data.secondoGradimento "4" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="1" id="e_secondoGradimento_1" {% ifequal form.data.secondoGradimento "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="2" id="e_secondoGradimento_2" {% ifequal form.data.secondoGradimento "2" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="3" id="e_secondoGradimento_3" {% ifequal form.data.secondoGradimento "3" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" name="secondoGradimento" value="4" id="e_secondoGradimento_4" {% ifequal form.data.secondoGradimento "4" %}CHECKED{%endifequal%}/></td> 
 <td class="ss-scalerow ss-rightlabel">Accettato</td></tr></tbody></table></div></div>
 </td>
 </tr>

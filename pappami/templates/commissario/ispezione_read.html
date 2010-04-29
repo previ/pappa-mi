@@ -2,12 +2,24 @@
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.Button");
 </script>
+<script type="text/javascript">
+var piattounico = false;
+dojo.addOnLoad(onMenuChanged);
+
+function onMenuChanged() {
+	if("{{isp.primoEffettivo}}" == "{{isp.secondoEffettivo}}" ) {
+		dojo.byId("s_secondo_1").style.display = "none";
+		dojo.byId("s_secondo_2").style.display = "none";
+		dojo.byId("s_secondo_3").style.display = "none";
+		dojo.byId("s_primo").innerHTML = "Primo e Secondo Piatto (Piatto unico)";
+		piattounico = true;
+	} else {
+		piattounico = false;
+	}
+}
+</script>
 <DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
-<P>
-<P>
-<BR>
-<BR>
-<table width="100%">
+<table>
 <tr>
 <td colspan="3">
 <BR> <DIV class="errorbox-good">
@@ -271,7 +283,7 @@ dojo.require("dijit.form.Button");
 </td>
 </tr>
 <tr>
-<th class="table_separator" colspan="3">Primo Piatto
+<th class="table_separator" colspan="3" id="s_primo">Primo Piatto
 </th>
 </tr>
 <tr>
@@ -352,12 +364,12 @@ dojo.require("dijit.form.Button");
 <TD class="ss-scalerow ss-rightlabel">Accettato</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 </tr>
-<tr>
+<tr id="s_secondo_1">
 <td colspan="3" class="table_separator">
 Secondo Piatto
 </td>
 </tr>
-<tr>
+<tr id="s_secondo_2">
 <td>
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry" id="l_primoDist"><label class="ss-q-title" for="entry_15">Durata distribuzione
@@ -392,7 +404,7 @@ Secondo Piatto
 <TD class="ss-scalerow ss-rightlabel">Caldo</TD></TR></TBODY></TABLE></DIV></DIV>
 </td>
 </tr>
-<tr>
+<tr id="s_secondo_3">
 <td>
 <BR> <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="e_secondoQuantita">Quantit&agrave
@@ -717,8 +729,17 @@ return true;
 <P>
 </form>
 {% else %}
+<form action="/commissario/ispezione" method="POST">
+<script type="dojo/method" event="onSubmit">
+dojo.byId("e_submit").disabled = true;
+dojo.byId("e_annulla").disabled = true;
+return true;
+</script>
+<input type="hidden" name="cmd" value="copy">
+<input type="hidden" name="key" value="{{isp.key}}">
 <P align="center">
-<button dojoType="dijit.form.Button" onclick="location.href='/commissario';return false;">Pagina precedente</button>
+<button dojoType="dijit.form.Button" onclick="location.href='/commissario';return false;">Pagina precedente</button>{%if cancopy %}<button type="submit" dojoType="dijit.form.Button">Crea copia</button>{% endif %}
 <P>
+</form>
 {% endif %}
 </DIV>

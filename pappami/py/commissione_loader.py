@@ -49,7 +49,8 @@ loaders = [CommissioneLoader, NonconfLoader]
 class CommissioneExporter(Exporter):
   def __init__(self):
     Exporter.__init__(self, 'Commissione',
-                    [('nome', str, None), 
+                    [('__key__', str, None), 
+                     ('nome', str, None), 
                      ('nomeScuola', str, None),
                      ('codiceScuola', str, None),
                      ('tipoScuola', str, None),
@@ -86,7 +87,8 @@ class IspezioneExporter(Exporter):
   def __init__(self):
     
     Exporter.__init__(self, 'Ispezione',
-                    [('commissione', lambda x: Commissione.get(x).nome, None), 
+                    [('commissione', str, None), 
+                     ('commissione', lambda x: Commissione.get(x).nome, None), 
                      ('commissario', lambda x: Commissario.get(x).user.email(), None),
                      ('dataIspezione', str, None),
                      ('turno', str, None),                    
