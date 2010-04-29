@@ -236,85 +236,99 @@ class StatisticheIspezioni(db.Model):
   dataInizio = db.DateProperty()
   datafine = db.DateProperty()
 
-  numeroSchede = int(0)
-
-  puliziaCentroMedia = db.FloatProperty()
-  puliziaCentroDist1 = db.FloatProperty()
-  puliziaCentroDist2 = db.FloatProperty()
-  puliziaCentroDist3 = db.FloatProperty()
-  puliziaCentroDist4 = db.FloatProperty()
-
-  puliziaRefettorioMedia = db.FloatProperty()
-  puliziaRefettorioDist1 = db.FloatProperty()
-  puliziaRefettorioDist2 = db.FloatProperty()
-  puliziaRefettorioDist3 = db.FloatProperty()
-  puliziaRefettorioDist4 = db.FloatProperty()
-
-  primoCotturaDist1 = db.FloatProperty()
-  primoCotturaDist2 = db.FloatProperty()
-  primoCotturaDist3 = db.FloatProperty()
-
-  primoTempDist1 = db.FloatProperty()
-  primoTempDist2 = db.FloatProperty()
-  primoTempDist3 = db.FloatProperty()
-
-  primoQantDist1 = db.FloatProperty()
-  primoQantDist2 = db.FloatProperty()
-  primoQantDist3 = db.FloatProperty()
+  numeroSchede = db.IntegerProperty()
   
-  primoAssaggio = db.FloatProperty()
-  primoTempDist1 = db.FloatProperty()
-  primoTempDist2 = db.FloatProperty()
-  primoTempDist3 = db.FloatProperty()
+  nomeValore = db.StringProperty()
 
-  primoGrad = db.FloatProperty()
-  primoGradDist1 = db.FloatProperty()
-  primoGradDist2 = db.FloatProperty()
-  primoGradDist3 = db.FloatProperty()
-  primoGradDist4 = db.FloatProperty()
+  totaleSomma = db.IntegerProperty()
+  valoreSomma1 = db.IntegerProperty()
+  valoreSomma2 = db.IntegerProperty()
+  valoreSomma3 = db.IntegerProperty()
+  valoreSomma4 = db.IntegerProperty()
+  valoreSomma5 = db.IntegerProperty()
 
-  secondoCotturaDist1 = db.FloatProperty()
-  secondoCotturaDist2 = db.FloatProperty()
-  secondoCotturaDist3 = db.FloatProperty()
-
-  secondoTempDist1 = db.FloatProperty()
-  secondoTempDist2 = db.FloatProperty()
-  secondoTempDist3 = db.FloatProperty()
-
-  secondoQantDist1 = db.FloatProperty()
-  secondoQantDist2 = db.FloatProperty()
-  secondoQantDist3 = db.FloatProperty()
+class StatisticheIspezioniOld(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  centro = db.ReferenceProperty(CentroCucina)
   
-  secondoAssaggio = db.FloatProperty()
-  secondoTempDist1 = db.FloatProperty()
-  secondoTempDist2 = db.FloatProperty()
-  secondoTempDist3 = db.FloatProperty()
-
-  secondoGrad = db.FloatProperty()
-  secondoGradDist1 = db.FloatProperty()
-  secondoGradDist2 = db.FloatProperty()
-  secondoGradDist3 = db.FloatProperty()
-  secondoGradDist4 = db.FloatProperty()
-
-  secondoCotturaDist1 = db.FloatProperty()
-  secondoCotturaDist2 = db.FloatProperty()
-  secondoCotturaDist3 = db.FloatProperty()
-
-  secondoTempDist1 = db.FloatProperty()
-  secondoTempDist2 = db.FloatProperty()
-  secondoTempDist3 = db.FloatProperty()
-
-  secondoQantDist1 = db.FloatProperty()
-  secondoQantDist2 = db.FloatProperty()
-  secondoQantDist3 = db.FloatProperty()
+  dataInizio = db.DateProperty()
+  datafine = db.DateProperty()
   
-  secondoAssaggio = db.FloatProperty()
-  secondoTempDist1 = db.FloatProperty()
-  secondoTempDist2 = db.FloatProperty()
-  secondoTempDist3 = db.FloatProperty()
+  nomeValore = db.StringProperty()
 
-  secondoGrad = db.FloatProperty()
-  secondoGradDist1 = db.FloatProperty()
-  secondoGradDist2 = db.FloatProperty()
-  secondoGradDist3 = db.FloatProperty()
-  secondoGradDist4 = db.FloatProperty()
+  numeroSchede = db.IntegerProperty()
+
+  puliziaRefettorioMedia = db.IntegerProperty()
+  puliziaRefettorioSomma1 = db.IntegerProperty()
+  puliziaRefettorioSomma2 = db.IntegerProperty()
+  puliziaRefettorioSomma3 = db.IntegerProperty()
+  puliziaRefettorioSomma4 = db.IntegerProperty()
+  
+  primoCotturaSomma1 = db.IntegerProperty()
+  primoCotturaSomma2 = db.IntegerProperty()
+  primoCotturaSomma3 = db.IntegerProperty()
+
+  primoTempSomma1 = db.IntegerProperty()
+  primoTempSomma2 = db.IntegerProperty()
+  primoTempSomma3 = db.IntegerProperty()
+
+  primoQantSomma1 = db.IntegerProperty()
+  primoQantSomma2 = db.IntegerProperty()
+  primoQantSomma3 = db.IntegerProperty()
+  
+  primoAssaggio = db.IntegerProperty()
+  primoTempSomma1 = db.IntegerProperty()
+  primoTempSomma2 = db.IntegerProperty()
+  primoTempSomma3 = db.IntegerProperty()
+
+  primoGrad = db.IntegerProperty()
+  primoGradSomma1 = db.IntegerProperty()
+  primoGradSomma2 = db.IntegerProperty()
+  primoGradSomma3 = db.IntegerProperty()
+  primoGradSomma4 = db.IntegerProperty()
+
+  secondoCotturaSomma1 = db.IntegerProperty()
+  secondoCotturaSomma2 = db.IntegerProperty()
+  secondoCotturaSomma3 = db.IntegerProperty()
+
+  secondoTempSomma1 = db.IntegerProperty()
+  secondoTempSomma2 = db.IntegerProperty()
+  secondoTempSomma3 = db.IntegerProperty()
+
+  secondoQantSomma1 = db.IntegerProperty()
+  secondoQantSomma2 = db.IntegerProperty()
+  secondoQantSomma3 = db.IntegerProperty()
+  
+  secondoAssaggio = db.IntegerProperty()
+  secondoTempSomma1 = db.IntegerProperty()
+  secondoTempSomma2 = db.IntegerProperty()
+  secondoTempSomma3 = db.IntegerProperty()
+
+  secondoGrad = db.IntegerProperty()
+  secondoGradSomma1 = db.IntegerProperty()
+  secondoGradSomma2 = db.IntegerProperty()
+  secondoGradSomma3 = db.IntegerProperty()
+  secondoGradSomma4 = db.IntegerProperty()
+
+  secondoCotturaSomma1 = db.IntegerProperty()
+  secondoCotturaSomma2 = db.IntegerProperty()
+  secondoCotturaSomma3 = db.IntegerProperty()
+
+  secondoTempSomma1 = db.IntegerProperty()
+  secondoTempSomma2 = db.IntegerProperty()
+  secondoTempSomma3 = db.IntegerProperty()
+
+  secondoQantSomma1 = db.IntegerProperty()
+  secondoQantSomma2 = db.IntegerProperty()
+  secondoQantSomma3 = db.IntegerProperty()
+  
+  secondoAssaggio = db.IntegerProperty()
+  secondoTempSomma1 = db.IntegerProperty()
+  secondoTempSomma2 = db.IntegerProperty()
+  secondoTempSomma3 = db.IntegerProperty()
+
+  secondoGrad = db.IntegerProperty()
+  secondoGradSomma1 = db.IntegerProperty()
+  secondoGradSomma2 = db.IntegerProperty()
+  secondoGradSomma3 = db.IntegerProperty()
+  secondoGradSomma4 = db.IntegerProperty()

@@ -3,13 +3,17 @@ dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.Tooltip");
-
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojo.parser");
+</script>
+<script>
 function alreadySelected() {
-    cm_all = dojo.byId("e_cm_all");
+    cm_all = dijit.byId("e_cm_all");
     cm_sel = dojo.byId("e_cm_sel");
     for( i=0;i<cm_sel.options.length;i++) {
-        if(cm_all.options[cm_all.selectedIndex].value == cm_sel.options[i].value ) {
-            alert(cm_all.options[cm_all.selectedIndex].innerHTML + " gia' aggiunta");
+        if(cm_all.attr("value") == cm_sel.options[i].value ) {
+            alert(cm_all.innerHTML + " gia' aggiunta");
             return true;
         }
     }
@@ -17,17 +21,18 @@ function alreadySelected() {
 }
 
 function onSelComm() {
-    cm_all = dojo.byId("e_cm_all");
+    cm_all = dijit.byId("e_cm_all");
     cm_sel = dojo.byId("e_cm_sel");
-    if(cm_all.selectedIndex > 0 && !alreadySelected()) {
+
+    if(cm_all.attr("value") != "" && !alreadySelected()) {
         var oOption = document.createElement('OPTION');
         try {
             cm_sel.add(oOption, null);
         } catch(ex) {
             cm_sel.add(oOption);
         }        
-        oOption.innerHTML = cm_all.options[cm_all.selectedIndex].innerHTML;
-        oOption.value = cm_all.options[cm_all.selectedIndex].value;
+        oOption.innerHTML = cm_all.attr('displayedValue');
+        oOption.value = cm_all.attr("value");
     }
 }
 function onRem() {
@@ -90,17 +95,19 @@ dojo.byId("e_cm_sel").value != ""){
 </tr>
 <tr>
 <td colspan="2">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Commissione
 <span class="ss-required-asterisk">*</span></label>
 <table><tr><td>
-<SELECT name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
+<input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
+searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
+
+<!--SELECT name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
 <OPTION value="">Selezionare...</OPTION>{% for c in commissioni %}
 <OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
-</SELECT><br/><br/>
-<!--a class="btn" style="width:120px;" href="javascript:add();">Aggiungi</a>
-<a class="btn" style="width:120px;" href="javascript:remove();">Togli selezione</a>
-<a class="btn" style="width:120px;" href="javascript:removeAll();">Togli tutti</a><br/><br/><br/-->
+</SELECT--><br/><br/>
+
 <SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">{% for c in commissioni %}
 {% ifequal commissione.key c.key %}
 <OPTION value="{{c.key}}">{{c.nome}} - {{c.tipoScuola}}</OPTION>

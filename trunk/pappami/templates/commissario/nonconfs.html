@@ -1,43 +1,79 @@
-<script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.Button");
 dojo.require("dijit.Dialog");
 dojo.require("dijit.Tooltip");
-</script><script>
-google.load('visualization', '1', {packages:['table']});
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+</script>
+<script src="/js/form.js" type="text/javascript"></script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script src="/js/gviz.js" type="text/javascript"></script>
+<script>
+    google.load('visualization', '1', {'packages' : ['table']});
+    dojo.addOnLoad(init);    
 
-google.setOnLoadCallback(drawTable);
+    var query, options, container, whereClause;
 
-function drawTable() {
-  var table_nc = new google.visualization.Table(document.getElementById('nonconf'));
-  var data_nc = new google.visualization.DataTable({{nonconf}}, 0.5);
-  new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(data_nc, 1);
-  table_nc.draw(data_nc, {allowHtml: true, showRowNumber: false, page: 'enable'});
-}
+    function init() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
+      query = new google.visualization.Query('/commissario/getdata');
+      container = document.getElementById("nonconf");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";}              
+                 };
+      var me = dojo.byId("e_me");
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(cookie) {
+        var p = cookie.split(",");
+        me.checked = (p[0] == "true");
+        cm.attr("value", p[1]);
+        anno.value=p[2];
+      }
+      display="none";
+      setQuery();
+      display="inline";
+    }
 
+    function sendAndDraw() {
+      query.abort();
+      var tableQueryWrapper = new TableQueryWrapper(query, container, options);
+      tableQueryWrapper.setWhereQueryClause(whereClause);
+      tableQueryWrapper.sendAndDraw();
+      dojo.byId("d_loading").style.display = display;
+    } 
+
+    function setQuery() {
+        var me = dojo.byId("e_me");
+        var cm = dijit.byId("e_cm");
+        var anno = dojo.byId("e_aa");
+        whereClause = "from nc" + " me " + (me.checked?"on":"") + " commissione " + cm.value + " anno " + anno.value;
+        createCookie("pappa-mi-ctx", me.checked + "," + cm.attr("value") + "," + anno.value, 10);
+        sendAndDraw();        
+    } 
 </script>
 <H1 class="ss-form-title">Elenco Schede Non Conformit&agrave</H1>
 <div dojoType="dijit.form.DropDownButton">
 <span>Filtra dati</span>
-<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
-<form dojoType="dijit.form.Form" action="/commissario" method="get" id="form0">
-<input type="hidden" name="cmd" value="apply"></input>
-<input type="hidden" name="tab" value="nc"></input>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati"
+    execute="setQuery();">
+<!--form dojoType="dijit.form.Form" action="/commissario" method="get" id="form0"-->
 <table>
 <tr>
 <td>
 <LABEL class="ss-q-title" for="e_me">Inserite da me</LABEL>
-<input type="CHECKBOX" name="me" value="on" id="e_me"{% ifequal me "on" %} CHECKED{% endifequal %}></input></td>
+<input type="CHECKBOX" name="me" value="on" id="e_me"></input></td>
 </tr>
 <tr>
 <td>
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
 <LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
-<SELECT name="cm" id="e_tipo">
-<OPTION value="">Tutte</OPTION>{% for c in commissioni %}
-<option value="{{c.key}}"{% ifequal cm.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</option>{% endfor %}
-</SELECT>
+<input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
+searchAttr="nome" name="cm" id="e_cm">
 </td>
 </tr>
 <tr>
@@ -45,21 +81,22 @@ function drawTable() {
 <LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
 <SELECT name="anno" id="e_aa">
 <OPTION value="">Tutti</OPTION>
-<OPTION value="2008"{% ifequal anno "2008" %} selected{% endifequal %}>2008-2009</OPTION>
-<OPTION value="2009"{% ifequal anno "2009" %} selected{% endifequal %}>2009-2010</OPTION>
+<OPTION value="2008">2008-2009</OPTION>
+<OPTION value="2009">2009-2010</OPTION>
 </select>
 </td>
 </tr>
 <tr>
 <td>
-<button dojoType="dijit.form.Button" type="submit" onclick="">Applica</button>
+<button dojoType="dijit.form.Button" type="submit">Applica</button>
 </td>
 </tr>
 </table>
-</form>
+<!--/form-->
 </div>
 </div>
 <div id="nonconf"></div>
 <div class="goog-ws-half-width goog-ws-left">
 <A id="test-list-page-add-button" href="/commissario/nonconf" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Non Conformit&agrave</B></B></B></B></A>
 </div>
+<div id="d_loading" style="display:none; opacity:0.9; text-align: center; border-style:solid; border-width:1px; background-color: white; width: 300px; height: 60px; position:absolute; top: 160px; left: 400px;"><br><img src="/img/loading.gif" style = "margin:auto;" alt="loading"/></div>

@@ -39,6 +39,7 @@ var TableQueryWrapper = function(query, container, options) {
   this.query = query;
   this.sortQueryClause = '';
   this.pageQueryClause = '';
+  this.whereQueryClause = '';
   this.container = container;
   this.currentDataTable = null;
 
@@ -61,6 +62,8 @@ var TableQueryWrapper = function(query, container, options) {
   this.tableOptions = options;
   this.currentPageIndex = 0;
   this.setPageQueryClause(0);
+  this.callbackPre = options['callPre'];
+  this.callbackPost = options['callPost'];
 };
 
 
@@ -71,7 +74,8 @@ var TableQueryWrapper = function(query, container, options) {
  */
 TableQueryWrapper.prototype.sendAndDraw = function() {
   this.query.abort();
-  var queryClause = this.sortQueryClause + ' ' + this.pageQueryClause;
+  var queryClause = this.whereQueryClause + ' ' + this.sortQueryClause + ' ' + this.pageQueryClause;
+
   this.query.setQuery(queryClause);
   this.table.setSelection([]);
   var self = this;
@@ -87,13 +91,20 @@ TableQueryWrapper.prototype.handleResponse = function(response) {
         response.getDetailedMessage(), {'showInTooltip': false});
   } else {
     this.currentDataTable = response.getDataTable();
+    for(i=0;i<this.currentDataTable.getNumberOfColumns();i++) {
+      if(this.currentDataTable.getColumnType(i) == "date")
+        new google.visualization.DateFormat({pattern: 'dd/MM/yyyy'}).format(this.currentDataTable, i);    
+    }
     this.table.draw(this.currentDataTable, this.tableOptions);
   }
+  if(this.callbackPost) this.callbackPost();
 };
 
 
 /** Handles a sort event with the given properties. Will page to page=0. */
 TableQueryWrapper.prototype.handleSort = function(properties) {
+  if(this.callbackPre) this.callbackPre();
+
   var columnIndex = properties['column'];
   var isAscending = properties['ascending'];
   this.tableOptions['sortColumn'] = columnIndex;
@@ -108,6 +119,8 @@ TableQueryWrapper.prototype.handleSort = function(properties) {
 
 /** Handles a page event with the given properties. */
 TableQueryWrapper.prototype.handlePage = function(properties) {
+  if(this.callbackPre) this.callbackPre();
+
   var localTableNewPage = properties['page']; // 1, -1 or 0
   var newPage = 0;
   if (localTableNewPage != 0) {
@@ -126,7 +139,7 @@ TableQueryWrapper.prototype.handlePage = function(properties) {
  * Returns true if a new page query clause was set, false otherwise.
  */
 TableQueryWrapper.prototype.setPageQueryClause = function(pageIndex) {
-  var pageSize = this.pageSize;
+  var pageSize = this.pageSize;  
 
   if (pageIndex < 0) {
     return false;
@@ -141,11 +154,23 @@ TableQueryWrapper.prototype.setPageQueryClause = function(pageIndex) {
   var newStartRow = this.currentPageIndex * pageSize;
   // Get the pageSize + 1 so that we can know when the last page is reached.
   this.pageQueryClause = 'limit ' + (pageSize + 1) + ' offset ' + newStartRow;
+
   // Note: row numbers are 1-based yet dataTable rows are 0-based.
   this.tableOptions['firstRowNumber'] = newStartRow + 1;
   return true;
 };
 
+
+/**
+ * Sets the pageQueryClause and table options for a new page request.
+ * In case the next page is requested - checks that another page exists
+ * based on the previous request.
+ * Returns true if a new page query clause was set, false otherwise.
+ */
+TableQueryWrapper.prototype.setWhereQueryClause = function(whereQueryClause) {
+  this.whereQueryClause = whereQueryClause;    
+  return true;
+};
 
 /** Performs a shallow clone of the given object. */
 TableQueryWrapper.clone = function(obj) {

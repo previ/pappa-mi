@@ -57,7 +57,7 @@ class BasePage(webapp.RequestHandler):
     template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.5.1.13 - 2009.11.12"
+    template_values["version"] = "0.6.0.14 - 2010.04.27"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -67,6 +67,13 @@ class BasePage(webapp.RequestHandler):
       commissioni = Commissione.all().order("nome");
       memcache.add("commissioni", commissioni)
     return commissioni
+  
+  def getHost(self):
+    host = self.request.url[len("http://"):]
+    host = host[:host.find("/")]
+    logging.info("host: " + host)
+    return host
+
   
 class MainPage(BasePage):
   
@@ -203,101 +210,6 @@ class CMCondizioniHandler(BasePage):
     template_values = dict()
     template_values["content"] = "condizioni.inc"
     self.getBase(template_values)
-
-class CMStatsHandler(BasePage):
-
-  def getStats(self):
-
-    stats = memcache.get("stats")
-    statsMese = memcache.get("statsMese")
-    if(stats is None):
-      stats = Statistiche()
-      statsMese = Statistiche()
-
-      for c in Commissione.all() :
-        if c.numCommissari > 0:
-          stats.numeroCommissioni = stats.numeroCommissioni + 1
-          
-      for isp in Ispezione.all().order("-dataIspezione"):
-        stats.numeroSchede = stats.numeroSchede + 1;
-        
-        stats.primoAssaggio = stats.primoAssaggio + isp.primoAssaggio
-        stats.primoGradimento = stats.primoGradimento + isp.primoGradimento
-        stats.secondoAssaggio = stats.secondoAssaggio + isp.secondoAssaggio
-        stats.secondoGradimento = stats.secondoGradimento + isp.secondoGradimento
-        stats.contornoAssaggio = stats.contornoAssaggio + isp.contornoAssaggio
-        stats.contornoGradimento = stats.contornoGradimento + isp.contornoGradimento
-  
-        stats.puliziaRefettorio = stats.puliziaRefettorio + isp.puliziaRefettorio
-        stats.smaltimentoRifiuti = stats.smaltimentoRifiuti + isp.smaltimentoRifiuti
-        stats.giudizioGlobale = stats.giudizioGlobale + isp.giudizioGlobale
-  
-        #if isp.ncPresenti() :
-          #stats.ncTotali = stats.ncTotali + 1
-           
-        #if isp.ncRichiestaCampionatura:
-          #stats.ncRichiestaCampionatura = stats.ncRichiestaCampionatura + 1 
-  
-        if( datetime.now().date() - isp.dataIspezione < timedelta(days = 30)):
-          statsMese.numeroSchede = statsMese.numeroSchede + 1;
-        
-          statsMese.primoAssaggio = statsMese.primoAssaggio + isp.primoAssaggio
-          statsMese.primoGradimento = statsMese.primoGradimento + isp.primoGradimento
-          statsMese.secondoAssaggio = statsMese.secondoAssaggio + isp.secondoAssaggio
-          statsMese.secondoGradimento = statsMese.secondoGradimento + isp.secondoGradimento
-          statsMese.contornoAssaggio = statsMese.contornoAssaggio + isp.contornoAssaggio
-          statsMese.contornoGradimento = statsMese.contornoGradimento + isp.contornoGradimento
-  
-          statsMese.puliziaRefettorio = statsMese.puliziaRefettorio + isp.puliziaRefettorio
-          statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti + isp.smaltimentoRifiuti
-          statsMese.giudizioGlobale = statsMese.giudizioGlobale + isp.giudizioGlobale
-
-          #if isp.ncPresenti() :
-            #statsMese.ncTotali = statsMese.ncTotali + 1
-
-      if stats.numeroSchede > 0 :
-        stats.primoAssaggio = stats.primoAssaggio / stats.numeroSchede
-        stats.primoGradimento = stats.primoGradimento / stats.numeroSchede
-        stats.secondoAssaggio = stats.secondoAssaggio / stats.numeroSchede
-        stats.secondoGradimento = stats.secondoGradimento / stats.numeroSchede
-        stats.contornoAssaggio = stats.contornoAssaggio / stats.numeroSchede
-        stats.contornoGradimento = stats.contornoGradimento / stats.numeroSchede
-  
-        stats.puliziaRefettorio = stats.puliziaRefettorio / stats.numeroSchede
-        stats.lavaggioFinale = stats.lavaggioFinale / stats.numeroSchede
-        stats.smaltimentoRifiuti = stats.smaltimentoRifiuti / stats.numeroSchede
-        stats.giudizioGlobale = stats.giudizioGlobale / stats.numeroSchede
-  
-      if statsMese.numeroSchede > 0 :
-        statsMese.primoAssaggio = statsMese.primoAssaggio / statsMese.numeroSchede
-        statsMese.primoGradimento = statsMese.primoGradimento / statsMese.numeroSchede
-        statsMese.secondoAssaggio = statsMese.secondoAssaggio / statsMese.numeroSchede
-        statsMese.secondoGradimento = statsMese.secondoGradimento / statsMese.numeroSchede
-        statsMese.contornoAssaggio = statsMese.contornoAssaggio / statsMese.numeroSchede
-        statsMese.contornoGradimento = statsMese.contornoGradimento / statsMese.numeroSchede
-  
-        statsMese.puliziaRefettorio = statsMese.puliziaRefettorio / statsMese.numeroSchede
-        statsMese.lavaggioFinale = statsMese.lavaggioFinale / statsMese.numeroSchede
-        statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti / statsMese.numeroSchede
-        statsMese.giudizioGlobale = statsMese.giudizioGlobale / statsMese.numeroSchede
-    
-      memcache.add("stats", stats)
-      memcache.add("statsMese", statsMese)
-    
-    return [stats, statsMese]
-  
-  @login_required
-  def get(self):
-    s = self.getStats()
-    user = users.get_current_user()
-    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-    if(commissario is None):
-      self.redirect("/")
-
-    template_values = dict()
-    template_values["content"] = "statistiche.html"
-    self.getBase(template_values)
-
     
 class CMMenuHandler(webapp.RequestHandler):
   
@@ -374,17 +286,19 @@ class CMMapHandler(webapp.RequestHandler):
       #logging.info(markers)
       self.response.out.write(markers)
 
-application = webapp.WSGIApplication([
+
+def main():
+  debug = os.environ['HTTP_HOST'].startswith('localhost')   
+
+  application = webapp.WSGIApplication([
   ('/', MainPage),
   ('/map', CMMapHandler),
-  ('/stats', CMStatsHandler),
   ('/menu', CMMenuHandler),
   ('/commissioni', CMCommissioneHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler)
-], debug=True)
-
-def main():
+  ], debug=debug)
+  
   wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
