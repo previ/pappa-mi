@@ -86,11 +86,11 @@ class MainPage(BasePage):
     template_values["content_extra"] = "extra.html"
 
     news = memcache.get("news")
+    i = 0
     if news is None:
-      news_all = py.feedparser.parse("http://groups.google.it/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml")
+      news_all = py.feedparser.parse("http://groups.google.com/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml")
       logging.debug(news_all)
       news = []
-      i = 0
       for n in news_all.entries:
         logging.debug(n)
         if i >= 2 :
@@ -103,6 +103,9 @@ class MainPage(BasePage):
     stats = self.getStats()
     template_values["stats"] = stats[0]
     template_values["news"] = news
+
+    if(len(news)>0):
+      template_values["newsMsg"] = news[0]
     
     self.getBase(template_values)
 

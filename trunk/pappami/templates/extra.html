@@ -1,3 +1,21 @@
+<script src="/js/form.js" type="text/javascript"></script>
+<script type="text/javascript">
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.Dialog");
+    dojo.addOnLoad(function(){
+    datea = "{{newsMsg.updated_parsed}}".replace(")","").replace("(","").split(",");
+    updated = new Date(datea[0],datea[1] - 1,datea[2],datea[3],datea[4],datea[5]);
+    cookie = readCookie("pappa-mi-lastlogon");
+    var lastlogon;
+    if(cookie) {
+      lastlogon = new Date(cookie);
+    }
+    if(lastlogon==undefined || updated > lastlogon) {
+      dijit.byId("newsDlg").show();
+    }
+    createCookie("pappa-mi-lastlogon", new Date(), 10);
+    })
+</script>
 <div id="content-extra" class="sidebar">	
 <h2>Ultime novit&agrave;</h2>
 {%for item in news%}
@@ -6,4 +24,9 @@
 <p>{{item.summary}}</p>
 {%endfor%}
 <a href="http://groups.google.it/group/pappami-aggiornamenti">Annunci precedenti</a>
+</div>
+<div id="newsDlg" dojoType="dijit.Dialog" title="{{newsMsg.title}}" style="width: 500px; display:none;">
+{{newsMsg.summary}} <br/>
+<center><button dojoType="dijit.form.Button" onClick="dijit.byId('newsDlg').hide();"
+type="button">Chiudi</button></center>
 </div>
