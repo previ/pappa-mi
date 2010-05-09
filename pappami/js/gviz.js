@@ -37,6 +37,7 @@ var TableQueryWrapper = function(query, container, options) {
 
   this.table = new google.visualization.Table(container);
   this.query = query;
+  this.sortableCols = '';
   this.sortQueryClause = '';
   this.pageQueryClause = '';
   this.whereQueryClause = '';
@@ -64,6 +65,7 @@ var TableQueryWrapper = function(query, container, options) {
   this.setPageQueryClause(0);
   this.callbackPre = options['callPre'];
   this.callbackPost = options['callPost'];
+  this.sortableCols = options['sortableColumns'];
 };
 
 
@@ -103,7 +105,6 @@ TableQueryWrapper.prototype.handleResponse = function(response) {
 
 /** Handles a sort event with the given properties. Will page to page=0. */
 TableQueryWrapper.prototype.handleSort = function(properties) {
-  if(this.callbackPre) this.callbackPre();
 
   var columnIndex = properties['column'];
   var isAscending = properties['ascending'];
@@ -111,15 +112,16 @@ TableQueryWrapper.prototype.handleSort = function(properties) {
   this.tableOptions['sortAscending'] = isAscending;
   // dataTable exists since the user clicked the table.
   var colID = this.currentDataTable.getColumnId(columnIndex);
-  this.sortQueryClause = 'order by `' + colID + (!isAscending ? '` desc' : '`');
-  // Calls sendAndDraw internally.
-  this.handlePage({'page': 0});
+  if( this.sortableCols.indexOf(colID) >= 0) {
+    this.sortQueryClause = 'order by `' + colID + (!isAscending ? '` desc' : '`');
+    // Calls sendAndDraw internally.
+    this.handlePage({'page': 0});
+  }
 };
 
 
 /** Handles a page event with the given properties. */
 TableQueryWrapper.prototype.handlePage = function(properties) {
-  if(this.callbackPre) this.callbackPre();
 
   var localTableNewPage = properties['page']; // 1, -1 or 0
   var newPage = 0;
@@ -127,6 +129,7 @@ TableQueryWrapper.prototype.handlePage = function(properties) {
     newPage = this.currentPageIndex + localTableNewPage;
   }
   if (this.setPageQueryClause(newPage)) {
+    if(this.callbackPre) this.callbackPre();
     this.sendAndDraw();
   }
 };

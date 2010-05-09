@@ -10,10 +10,10 @@
     if(cookie) {
       lastlogon = new Date(cookie);
     }
-    if(lastlogon==undefined || updated > lastlogon) {
+    if((lastlogon==undefined || updated > lastlogon)) {
       dijit.byId("newsDlg").show();
     }
-    createCookie("pappa-mi-lastlogon", new Date(), 10);
+    createCookie("pappa-mi-lastlogon", new Date(), 365);
     })
 </script>
 <div id="content-extra" class="sidebar">	

@@ -22,7 +22,8 @@ dojo.require("dojo.data.ItemFileReadStore");
       container = document.getElementById("nonconf");
       options = {'pageSize': 10, 
                  'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
-                 'callPost': function() {dojo.byId("d_loading").style.display = "none";}              
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data turno tipo'
                  };
       var me = dojo.byId("e_me");
       var cm = dijit.byId("e_cm");
@@ -33,9 +34,10 @@ dojo.require("dojo.data.ItemFileReadStore");
         me.checked = (p[0] == "true");
         cm.attr("value", p[1]);
         anno.value=p[2];
+        whereClause = "from nc" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
       }
       display="none";
-      setQuery();
+      sendAndDraw();
       display="inline";
     }
 
