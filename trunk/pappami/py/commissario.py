@@ -168,6 +168,7 @@ class CMCommissarioDataHandler(BasePage):
           dataFine = date(year=int(anno)+1, month=9, day=1)
           ncs = ncs.filter("dataNonconf >=",dataInizio)      
           ncs = ncs.filter("dataNonconf <",dataFine)      
+          ncs.order("dataNonconf")
         
         if cm != "":
           ncs = ncs.filter("commissione",Commissione.get(cm))
@@ -211,10 +212,11 @@ class CMCommissarioDataHandler(BasePage):
           dataFine = date(year=int(anno)+1, month=9, day=1)
           isps = isps.filter("dataIspezione >=",dataInizio)      
           isps = isps.filter("dataIspezione <",dataFine)      
+          isps.order("dataIspezione")
         
         if cm != "":
           isps = isps.filter("commissione",Commissione.get(cm))
-          
+
         if(orderby.find("data") != -1):
           orderby = orderby + "Ispezione"
         for ispezione in isps.order(orderby).fetch(limit, offset):

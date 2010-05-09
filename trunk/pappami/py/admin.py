@@ -19,6 +19,7 @@ import os
 import cgi
 import logging
 import urllib
+from google.appengine.api import urlfetch
 from datetime import datetime, date, time
 import wsgiref.handlers
 
@@ -312,6 +313,18 @@ class CMAdminHandler(BasePage):
     if self.request.get("cmd") == "flush":
       memcache.flush_all()
 
+    if self.request.get("cmd") == "flushnews":
+      #url = "http://groups.google.com/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"
+      #result = urlfetch.fetch(url)
+      #if result.status_code == 200:
+        #logging.info("ok")
+        #logging.info(result.content)
+      #else:
+        #logging.info("error")
+        #logging.info(result.status_code)
+        #logging.info(result.content)
+      memcache.delete("news")
+
     if self.request.get("cmd") == "offset":
       ccs = CentroCucina.all()
       for cc in ccs:
@@ -381,7 +394,11 @@ class CMAdminCommissarioHandler(BasePage):
         """
           
         message.send()
-
+        
+        memcache.delete("markers")
+        memcache.delete("markers_all")
+        memcache.delete("stats")
+        memcache.delete("statsMese")
       
       self.redirect("/admin/commissario")
     

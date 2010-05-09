@@ -1,4 +1,4 @@
-application: pappa-mi
+application: test-pappa-mi
 version: 1
 runtime: python
 api_version: 1
@@ -35,6 +35,10 @@ handlers:
 - url: /(.*\.(gif|png|jpg))
   static_files: static/\1
   upload: static/(.*\.(gif|png|jpg))
+
+- url: /favicon.ico
+  static_files: img/favicon.ico
+  upload: img/favicon.ico
 
 - url: /commissario/.*
   script: py/commissario.py
