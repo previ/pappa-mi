@@ -16,25 +16,6 @@ var oldDisp_2 = "";
 var oldDisp_3 = "";
 dojo.addOnLoad(onMenuChanged);
 //dojo.addOnLoad(function(){alert("loaded")});
-
-function onMenuChanged() {
-	if(dojo.byId("e_primoEffettivo").value == dojo.byId("e_secondoEffettivo").value ) {
-		oldDisp_1 = dojo.byId("s_secondo_1").style.display;
-		oldDisp_2 = dojo.byId("s_secondo_2").style.display;
-		oldDisp_3 = dojo.byId("s_secondo_3").style.display;
-		dojo.byId("s_secondo_1").style.display = "none";
-		dojo.byId("s_secondo_2").style.display = "none";
-		dojo.byId("s_secondo_3").style.display = "none";
-		dojo.byId("s_primo").innerHTML = "Primo e Secondo Piatto (Piatto unico)";
-		piattounico = true;
-	} else {
-		dojo.byId("s_secondo_1").style.display = oldDisp_1;
-		dojo.byId("s_secondo_2").style.display = oldDisp_2;
-		dojo.byId("s_secondo_3").style.display = oldDisp_3;
-		dojo.byId("s_primo").innerHTML = "Primo Piatto";
-		piattounico = false;
-	}
-}
 </script>
 <script src="/js/form.js" type="text/javascript"></script>
 <div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Raccolta dati Ispezioni</h1>

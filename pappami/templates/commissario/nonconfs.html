@@ -23,7 +23,7 @@ dojo.require("dojo.data.ItemFileReadStore");
       options = {'pageSize': 10, 
                  'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
                  'callPost': function() {dojo.byId("d_loading").style.display = "none";},
-                 'sortableColumns': 'commissione data turno tipo'
+                 'sortableColumns': 'commissione data tipo'
                  };
       var me = dojo.byId("e_me");
       var cm = dijit.byId("e_cm");

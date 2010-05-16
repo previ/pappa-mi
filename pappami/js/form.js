@@ -56,6 +56,7 @@ function validateradio() {
 	                dojo.byId('e_primoEffettivo').value = menu[0];
 	                dojo.byId('e_secondoEffettivo').value = menu[1];
 	                dojo.byId('e_contornoEffettivo').value = menu[2];
+			onMenuChanged();
 	        },
 	        error: function(data){
 	                console.debug("Errore: ", data);
@@ -64,7 +65,26 @@ function validateradio() {
 	};
 	dojo.xhrGet(kw);
   }
-  
+
+  function onMenuChanged() {
+	if(dojo.byId("e_primoEffettivo").value != "" && dojo.byId("e_primoEffettivo").value == dojo.byId("e_secondoEffettivo").value ) {
+		oldDisp_1 = dojo.byId("s_secondo_1").style.display;
+		oldDisp_2 = dojo.byId("s_secondo_2").style.display;
+		oldDisp_3 = dojo.byId("s_secondo_3").style.display;
+		dojo.byId("s_secondo_1").style.display = "none";
+		dojo.byId("s_secondo_2").style.display = "none";
+		dojo.byId("s_secondo_3").style.display = "none";
+		dojo.byId("s_primo").innerHTML = "Primo e Secondo Piatto (Piatto unico)";
+		piattounico = true;
+	} else {
+		dojo.byId("s_secondo_1").style.display = oldDisp_1;
+		dojo.byId("s_secondo_2").style.display = oldDisp_2;
+		dojo.byId("s_secondo_3").style.display = oldDisp_3;
+		dojo.byId("s_primo").innerHTML = "Primo Piatto";
+		piattounico = false;
+	}
+}
+
 function setAll(prefix, value) {
   var radios = dojo.query('INPUT[type=radio][name^='+prefix+']');
   for(var x = 0; x < radios.length; x++){

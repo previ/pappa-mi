@@ -17,16 +17,20 @@
     })
 </script>
 <div id="content-extra" class="sidebar">	
+<div style="height:460px; overflow:hidden;">
 <h2>Ultime novit&agrave;</h2>
 {%for item in news%}
 <h3><a href="{{item.link}}">{{item.title}}</a></h3>
 <p class="date"></p>
-<p>{{item.summary}}</p>
+{% for i in item.content %}
+<p>{{i.value}}</p>
 {%endfor%}
-<a href="http://groups.google.it/group/pappami-aggiornamenti">Annunci precedenti</a>
+{%endfor%}
+</div>
+<a href="http://blog.pappa-mi.it/">Annunci precedenti</a>
 </div>
 <div id="newsDlg" dojoType="dijit.Dialog" title="{{newsMsg.title}}" style="width: 500px; display:none;">
-{{newsMsg.summary}} <br/>
+{{newsMsg.value}} <br/>
 <center><button dojoType="dijit.form.Button" onClick="dijit.byId('newsDlg').hide();"
 type="button">Chiudi</button></center>
 </div>
