@@ -413,6 +413,7 @@ class CMAdminCommissarioHandler(BasePage):
                      "email": ("string", "Email"),
                      "commissioni": ("string", "Commissioni"),
                      "stato": ("string", "Stato"),
+                     "ultimo_accesso_il": ("string", "Ultimo accesso"),
                      "comando": ("string", "Azione")}
       
       data = list()
@@ -430,14 +431,14 @@ class CMAdminCommissarioHandler(BasePage):
         for c in commissario.commissioni():
           commissioni = commissioni + c.nome + " - " + c.tipoScuola + "<br/>"
           
-        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissioni, "stato":stato, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
+        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissioni, "stato":stato, "ultimo_accesso_il":commissario.ultimo_accesso_il, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
 
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)
       data_table.LoadData(data)
 
       # Creating a JSon string
-      json = data_table.ToJSon(columns_order=("nome", "cognome", "email", "commissioni", "stato", "comando"), order_by="cognome")
+      json = data_table.ToJSon(columns_order=("nome", "cognome", "email", "commissioni", "stato", "ultimo_accesso_il", "comando"), order_by="cognome")
 
  
       template_values = {

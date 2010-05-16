@@ -86,6 +86,9 @@ class CMCommissioniDataHandler(BasePage):
       
     self.response.out.write(']}')
 
+    expires_date = datetime.utcnow() + timedelta(20)
+    expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
+    self.response.headers.add_header("Expires", expires_str)
     #data_table.LoadData(data)
 
     logging.info("OK")
@@ -255,7 +258,7 @@ class CMRegistrazioneHandler(BasePage):
   
   def post(self):
     user = users.get_current_user()
-    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+    commissario = Commissario.all().filter("user", user).get()
     if(commissario == None):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 0)
       commissario.put()

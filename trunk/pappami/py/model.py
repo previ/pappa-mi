@@ -62,6 +62,8 @@ class Commissario(db.Model):
   nome = db.StringProperty()
   cognome = db.StringProperty()
 
+  ultimo_accesso_il = db.DateTimeProperty(auto_now=True)
+
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)

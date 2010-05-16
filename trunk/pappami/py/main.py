@@ -52,12 +52,19 @@ class BasePage(webapp.RequestHandler):
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
 
+    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+    if( commissario is not None ) :
+      if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=1) ):
+        commissario.ultimo_accesso_il = datetime.now()
+        commissario.put()
+      
+    
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
-    template_values["commissario"] = Commissario.all().filter("user", user).filter("stato", 1).get() is not None
+    template_values["commissario"] = commissario is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.6.0.15 - 2010.05.08"
+    template_values["version"] = "0.6.1.16 - 2010.05.16"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -88,7 +95,8 @@ class MainPage(BasePage):
     news = memcache.get("news")
     i = 0
     if news is None:
-      news_all = py.feedparser.parse(self.request.url + "/js/atom_v1_0_msgs.xml")
+      #news_all = py.feedparser.parse(self.request.url + "/js/atom_v1_0_msgs.xml")
+      news_all = py.feedparser.parse("http://blog.pappa-mi.it/feeds/posts/default")
       logging.debug(news_all)
       news = []
       for n in news_all.entries:
@@ -105,7 +113,7 @@ class MainPage(BasePage):
     template_values["news"] = news
 
     if(len(news)>0):
-      template_values["newsMsg"] = news[0]
+      template_values["newsMsg"] = news[0].content[0]
     
     self.getBase(template_values)
 
@@ -289,12 +297,37 @@ class CMMapHandler(webapp.RequestHandler):
       #logging.info(markers)
       self.response.out.write(markers)
 
+class DocPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "docs.html"
+    template_values["iframesrc"] = "http://docs.pappa-mi.it/allegati"
+    self.getBase(template_values)
+
+class BlogPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "docs.html"
+    template_values["iframesrc"] = "http://pappa-mi.blogspot.com"
+    self.getBase(template_values)
+
+class FbPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "fb.html"
+    self.getBase(template_values)
 
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
   ('/', MainPage),
+  #('/fb', FbPage),
+  ('/docs', DocPage),
+  #('/blog', BlogPage),
   ('/map', CMMapHandler),
   ('/menu', CMMenuHandler),
   ('/commissioni', CMCommissioneHandler),

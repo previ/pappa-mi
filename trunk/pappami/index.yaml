@@ -126,24 +126,6 @@ indexes:
   properties:
   - name: commissario
   - name: dataIspezione
-  - name: turno
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: commissario
-  - name: dataIspezione
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: commissario
-  - name: turno
-
-- kind: Ispezione
-  properties:
-  - name: commissario
-  - name: turno
     direction: desc
 
 - kind: Ispezione
@@ -155,30 +137,6 @@ indexes:
   properties:
   - name: commissione
   - name: dataIspezione
-  - name: turno
-
-- kind: Ispezione
-  properties:
-  - name: commissione
-  - name: dataIspezione
-  - name: turno
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: commissione
-  - name: dataIspezione
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: commissione
-  - name: turno
-
-- kind: Ispezione
-  properties:
-  - name: commissione
-  - name: turno
     direction: desc
 
 - kind: Ispezione
@@ -190,17 +148,6 @@ indexes:
   properties:
   - name: dataIspezione
   - name: commissione
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: dataIspezione
-  - name: turno
-
-- kind: Ispezione
-  properties:
-  - name: dataIspezione
-  - name: turno
     direction: desc
 
 - kind: Menu
@@ -276,21 +223,6 @@ indexes:
   - name: commissario
   - name: commissione
   - name: dataNonconf
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: commissario
-  - name: commissione
-  - name: dataNonconf
-  - name: turno
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: commissario
-  - name: commissione
-  - name: dataNonconf
     direction: desc
 
 - kind: Nonconformita
@@ -334,19 +266,6 @@ indexes:
   properties:
   - name: commissario
   - name: dataNonconf
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: commissario
-  - name: dataNonconf
-  - name: turno
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: commissario
-  - name: dataNonconf
     direction: desc
 
 - kind: Nonconformita
@@ -362,17 +281,6 @@ indexes:
 
 - kind: Nonconformita
   properties:
-  - name: commissario
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: commissario
-  - name: turno
-    direction: desc
-
-- kind: Nonconformita
-  properties:
   - name: commissione
   - name: dataNonconf
 
@@ -393,19 +301,6 @@ indexes:
   properties:
   - name: commissione
   - name: dataNonconf
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: dataNonconf
-  - name: turno
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: dataNonconf
     direction: desc
 
 - kind: Nonconformita
@@ -417,17 +312,6 @@ indexes:
   properties:
   - name: commissione
   - name: tipo
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: turno
     direction: desc
 
 - kind: Nonconformita
@@ -450,15 +334,4 @@ indexes:
   properties:
   - name: dataNonconf
   - name: tipo
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
-  - name: turno
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
-  - name: turno
     direction: desc
