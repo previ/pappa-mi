@@ -37,8 +37,8 @@ DATE_FORMAT = "%Y-%m-%d"
 class BasePage(webapp.RequestHandler):
   def getBase(self, template_values):
     
-    #if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1:
-    #  self.redirect("www.pappa-mi.it")
+    if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1:
+      self.redirect("http://www.pappa-mi.it")
         
     user = users.get_current_user()
     if user:
@@ -78,7 +78,7 @@ class BasePage(webapp.RequestHandler):
   def getHost(self):
     host = self.request.url[len("http://"):]
     host = host[:host.find("/")]
-    logging.info("host: " + host)
+    #logging.info("host: " + host)
     return host
 
   
@@ -100,7 +100,7 @@ class MainPage(BasePage):
       logging.debug(news_all)
       news = []
       for n in news_all.entries:
-        logging.debug(n)
+        #logging.debug(n)
         if i >= 2 :
           break
         i = i + 1
@@ -109,7 +109,7 @@ class MainPage(BasePage):
       memcache.add("news",news)
       
     stats = self.getStats()
-    template_values["stats"] = stats[0]
+    template_values["stats"] = stats
     template_values["news"] = news
 
     if(len(news)>0):
@@ -118,86 +118,15 @@ class MainPage(BasePage):
     self.getBase(template_values)
 
   def getStats(self):
-
     stats = memcache.get("stats")
-    statsMese = memcache.get("statsMese")
     if(stats is None):
       stats = Statistiche()
-      statsMese = Statistiche()
-      
-      for c in Commissione.all() :
-        if c.numCommissari > 0:
-          stats.numeroCommissioni = stats.numeroCommissioni + 1
-
-      for isp in Ispezione.all().order("-dataIspezione"):
-        stats.numeroSchede = stats.numeroSchede + 1;
-        
-        stats.primoAssaggio = stats.primoAssaggio + isp.primoAssaggio
-        stats.primoGradimento = stats.primoGradimento + isp.primoGradimento
-        stats.secondoAssaggio = stats.secondoAssaggio + isp.secondoAssaggio
-        stats.secondoGradimento = stats.secondoGradimento + isp.secondoGradimento
-        stats.contornoAssaggio = stats.contornoAssaggio + isp.contornoAssaggio
-        stats.contornoGradimento = stats.contornoGradimento + isp.contornoGradimento
-  
-        stats.puliziaRefettorio = stats.puliziaRefettorio + isp.puliziaRefettorio
-        stats.smaltimentoRifiuti = stats.smaltimentoRifiuti + isp.smaltimentoRifiuti
-        stats.giudizioGlobale = stats.giudizioGlobale + isp.giudizioGlobale
-  
-        #if isp.ncPresenti() :
-          #stats.ncTotali = stats.ncTotali + 1
-           
-        #if isp.ncRichiestaCampionatura:
-          #stats.ncRichiestaCampionatura = stats.ncRichiestaCampionatura + 1 
-  
-        if( datetime.now().date() - isp.dataIspezione < timedelta(days = 30)):
-          statsMese.numeroSchede = statsMese.numeroSchede + 1;
-        
-          statsMese.primoAssaggio = statsMese.primoAssaggio + isp.primoAssaggio
-          statsMese.primoGradimento = statsMese.primoGradimento + isp.primoGradimento
-          statsMese.secondoAssaggio = statsMese.secondoAssaggio + isp.secondoAssaggio
-          statsMese.secondoGradimento = statsMese.secondoGradimento + isp.secondoGradimento
-          statsMese.contornoAssaggio = statsMese.contornoAssaggio + isp.contornoAssaggio
-          statsMese.contornoGradimento = statsMese.contornoGradimento + isp.contornoGradimento
-  
-          statsMese.puliziaRefettorio = statsMese.puliziaRefettorio + isp.puliziaRefettorio
-          statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti + isp.smaltimentoRifiuti
-          statsMese.giudizioGlobale = statsMese.giudizioGlobale + isp.giudizioGlobale
-
-          #if isp.ncPresenti() :
-            #statsMese.ncTotali = statsMese.ncTotali + 1
-
-      if stats.numeroSchede > 0 :
-        stats.primoAssaggio = stats.primoAssaggio / stats.numeroSchede
-        stats.primoGradimento = stats.primoGradimento / stats.numeroSchede
-        stats.secondoAssaggio = stats.secondoAssaggio / stats.numeroSchede
-        stats.secondoGradimento = stats.secondoGradimento / stats.numeroSchede
-        stats.contornoAssaggio = stats.contornoAssaggio / stats.numeroSchede
-        stats.contornoGradimento = stats.contornoGradimento / stats.numeroSchede
-  
-        stats.puliziaRefettorio = stats.puliziaRefettorio / stats.numeroSchede
-        stats.lavaggioFinale = stats.lavaggioFinale / stats.numeroSchede
-        stats.smaltimentoRifiuti = stats.smaltimentoRifiuti / stats.numeroSchede
-        stats.giudizioGlobale = stats.giudizioGlobale / stats.numeroSchede
-  
-      if statsMese.numeroSchede > 0 :
-        statsMese.primoAssaggio = statsMese.primoAssaggio / statsMese.numeroSchede
-        statsMese.primoGradimento = statsMese.primoGradimento / statsMese.numeroSchede
-        statsMese.secondoAssaggio = statsMese.secondoAssaggio / statsMese.numeroSchede
-        statsMese.secondoGradimento = statsMese.secondoGradimento / statsMese.numeroSchede
-        statsMese.contornoAssaggio = statsMese.contornoAssaggio / statsMese.numeroSchede
-        statsMese.contornoGradimento = statsMese.contornoGradimento / statsMese.numeroSchede
-  
-        statsMese.puliziaRefettorio = statsMese.puliziaRefettorio / statsMese.numeroSchede
-        statsMese.lavaggioFinale = statsMese.lavaggioFinale / statsMese.numeroSchede
-        statsMese.smaltimentoRifiuti = statsMese.smaltimentoRifiuti / statsMese.numeroSchede
-        statsMese.giudizioGlobale = statsMese.giudizioGlobale / statsMese.numeroSchede
-
-      for isp in Nonconformita.all().order("-dataNonconf"):
-        stats.ncTotali = stats.ncTotali + 1
-          
+      stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
+      stats.numeroSchede = Ispezione.all().count()      
+      stats.ncTotali = Nonconformita.all().count()
       memcache.add("stats", stats)
-      memcache.add("statsMese", statsMese)
-    return [stats, statsMese]
+      
+    return stats
 
 class CMCommissioneHandler(BasePage):
     

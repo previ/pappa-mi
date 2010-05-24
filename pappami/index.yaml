@@ -335,3 +335,22 @@ indexes:
   - name: dataNonconf
   - name: tipo
     direction: desc
+
+- kind: StatisticheIspezioni
+  properties:
+  - name: centroCucina
+  - name: commissione
+  - name: dataFine
+    direction: desc
+
+- kind: StatisticheIspezioni
+  properties:
+  - name: centroCucina
+  - name: dataFine
+    direction: desc
+
+- kind: StatisticheIspezioni
+  properties:
+  - name: commissione
+  - name: dataFine
+    direction: desc
