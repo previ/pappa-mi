@@ -31,13 +31,15 @@ dojo.require("dojo.parser");
       var cm = dijit.byId("e_cm");
       var anno = dojo.byId("e_aa");
       cookie = readCookie("pappa-mi-ctx");
-      if(cookie) {
-        var p = cookie.split(",");
-        me.checked = (p[0] == "true");
-        cm.attr("value", p[1]);
-        anno.value=p[2];
-        whereClause = "from isp" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+      if(!cookie) {
+        cookie = "true,,";
       }
+      var p = cookie.split(",");
+      me.checked = (p[0] == "true");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from isp" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+      
       display="none";
       sendAndDraw();        
       display="inline";

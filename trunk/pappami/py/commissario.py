@@ -58,43 +58,41 @@ class CMCommissarioHandler(BasePage):
         template_values['content'] = 'commissario/ispezioni.html'
         template_values['commissioni'] = self.getCommissioni()       
       
-      logging.info("OK")
+      #logging.info("OK")
       self.getBase(template_values)
 
 class CMCommissioniDataHandler(BasePage):
 
   def get(self): 
-    user = users.get_current_user()
-    commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
-
-    description = {"nome": ("string", "Nome"), 
-                   "key": ("string", "Key")}
-    data_table = DataTable(description)
-    
-    cms = self.getCommissioni()
-    
-    self.response.out.write('{"label": "nome", "identifier": "key", "items": [')
-    self.response.out.write('{ "nome": "", "key": ""},')
-
-    #data = list()
-    notfirst = False
-    for cm in cms.order("nome"):
-      if(notfirst) :
-        self.response.out.write(',')
-      notfirst = True
-      self.response.out.write('{ "nome": "' + cm.nome + ' - ' + cm.tipoScuola + '", "key": "' + str(cm.key()) + '"}')
+    buff = memcache.get("cmall")
+    if(buff is None):
+      user = users.get_current_user()
+      commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
+  
+      description = {"nome": ("string", "Nome"), 
+                     "key": ("string", "Key")}
+      data_table = DataTable(description)
       
-    self.response.out.write(']}')
-
+      cms = self.getCommissioni()
+      buff = ""
+      buff = '{"label": "nome", "identifier": "key", "items": ['
+      buff = buff + '{ "nome": "", "key": ""},'
+  
+      
+      notfirst = False
+      for cm in cms.order("nome"):
+        if(notfirst) :
+          buff = buff + ','
+        notfirst = True
+        buff = buff + '{ "nome": "' + cm.nome + ' - ' + cm.tipoScuola + '", "key": "' + str(cm.key()) + '"}'
+        
+      buff = buff + ']}'
+      memcache.add("cmall", buff)
+        
     expires_date = datetime.utcnow() + timedelta(20)
     expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
     self.response.headers.add_header("Expires", expires_str)
-    #data_table.LoadData(data)
-
-    logging.info("OK")
-    # Creating a JSon string
-    #self.response.out.write(data_table.ToJSon(columns_order=("nome", "key")))
-    
+    self.response.out.write(buff)
       
 class CMCommissarioDataHandler(BasePage):
   def get(self): 
@@ -102,9 +100,9 @@ class CMCommissarioDataHandler(BasePage):
     commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
     if( commissario is not None):    
       tq = urllib.unquote(self.request.get("tq"))
-      logging.info(tq)
+      #logging.info(tq)
       query = tq[:tq.find("limit")]
-      logging.info(query)
+      #logging.info(query)
       
       orderby = "-data"
       if(query.find("by") > 0):
@@ -132,10 +130,10 @@ class CMCommissarioDataHandler(BasePage):
         anno = query[(query.find("anno ") + len("anno ")):]
         anno = anno[:anno.find(" ")]
         
-      logging.info(orderby)
+      #logging.info(orderby)
       
       params = tq[tq.find("limit"):].split()
-      logging.info(params)
+      #logging.info(params)
       limit = int(params[1])
       offset = int(params[3])
       
@@ -374,7 +372,7 @@ class CMIspezioneHandler(BasePage):
       commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
 
       for field in form:
-        logging.info(field.name)
+        #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
       
       form.data["commissione"] = isp.commissione
