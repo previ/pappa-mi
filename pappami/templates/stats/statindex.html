@@ -1,0 +1,325 @@
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.layout.StackContainer");
+dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Tooltip");
+</script>
+<style>
+#subwrap {width: 81em;}
+#content-main {width: 80em;}
+div { padding: 0px; }
+.tab_title {text-align:center; font-size:130% }
+</style>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script>
+    google.load('visualization', '1', {'packages' : ['table', 'columnchart', 'barchart', 'linechart', 'piechart']});
+    dojo.addOnLoad(init);
+
+
+    function init() {
+  // Create and populate the data table.
+  var cm_data = new google.visualization.DataTable();
+  cm_data.addColumn('string', 'Tipo Scuola');
+  cm_data.addColumn('number', 'Attive');
+  cm_data.addColumn('number', 'Iscritte');
+  cm_data.addColumn('number', 'Totali');
+  cm_data.addRows(3);
+  cm_data.setCell(0, 0, 'Materna');
+  cm_data.setCell(1, 0, 'Primaria');
+  cm_data.setCell(2, 0, 'Secondaria');
+  cm_data.setCell(0, 1, 10);
+  cm_data.setCell(1, 1, 20);
+  cm_data.setCell(2, 1, 30);
+  cm_data.setCell(0, 2, 20);
+  cm_data.setCell(1, 2, 30);
+  cm_data.setCell(2, 2, 40);
+  cm_data.setCell(0, 3, 199);
+  cm_data.setCell(1, 3, 152);
+  cm_data.setCell(2, 3, 85);
+
+  var dati_ins = new google.visualization.DataTable();
+  dati_ins.addColumn('string', 'Settimane');
+  dati_ins.addColumn('number', 'Schede');
+  dati_ins.addColumn('number', 'Non conformit&agrave;');
+  dati_ins.addRows(12);
+  dati_ins.setCell(0, 0, '1');
+  dati_ins.setCell(1, 0, '2');
+  dati_ins.setCell(2, 0, '3');
+  dati_ins.setCell(3, 0, '4');
+  dati_ins.setCell(4, 0, '5');
+  dati_ins.setCell(5, 0, '6');
+  dati_ins.setCell(6, 0, '7');
+  dati_ins.setCell(7, 0, '8');
+  dati_ins.setCell(8, 0, '9');
+  dati_ins.setCell(9, 0, '10');
+  dati_ins.setCell(10, 0, '11');
+  dati_ins.setCell(11, 0, '12');
+  dati_ins.setCell(0, 1, 20);
+  dati_ins.setCell(1, 1, 30);
+  dati_ins.setCell(2, 1, 40);
+  dati_ins.setCell(3, 1, 14);
+  dati_ins.setCell(4, 1, 24);
+  dati_ins.setCell(5, 1, 43);
+  dati_ins.setCell(6, 1, 21);
+  dati_ins.setCell(7, 1, 34);
+  dati_ins.setCell(8, 1, 22);
+  dati_ins.setCell(9, 1, 34);
+  dati_ins.setCell(10, 1, 33);
+  dati_ins.setCell(11, 1, 23);
+  dati_ins.setCell(0, 2, 15);
+  dati_ins.setCell(1, 2, 25);
+  dati_ins.setCell(2, 2, 35);
+  dati_ins.setCell(3, 2, 24);
+  dati_ins.setCell(4, 2, 34);
+  dati_ins.setCell(5, 2, 13);
+  dati_ins.setCell(6, 2, 31);
+  dati_ins.setCell(7, 2, 24);
+  dati_ins.setCell(8, 2, 12);
+  dati_ins.setCell(9, 2, 24);
+  dati_ins.setCell(10, 2, 23);
+  dati_ins.setCell(11, 2, 13);
+
+  var aa_data = new google.visualization.DataTable();
+  aa_data.addColumn('string', 'Descrizione');
+  aa_data.addColumn('number', '%');
+  aa_data.addRows(10);
+  aa_data.setCell(0, 0, 'Rispetto Capitolato');
+  aa_data.setCell(1, 0, 'Tavoli Apparecchiati');
+  aa_data.setCell(2, 0, 'Termiche Pulite');
+  aa_data.setCell(3, 0, 'Acqua da cucine');
+  aa_data.setCell(4, 0, 'Scalda Vivande');
+  aa_data.setCell(5, 0, 'Self Service');
+  aa_data.setCell(6, 0, 'Tabella Dietetica Esposta');
+  aa_data.setCell(7, 0, 'Riciclo Stoviglie');
+  aa_data.setCell(8, 0, 'Riciclo Posate');
+  aa_data.setCell(9, 0, 'Riciclo Bicchieri');
+  aa_data.setCell(0, 1, 41);
+  aa_data.setCell(1, 1, 98);
+  aa_data.setCell(2, 1, 74);
+  aa_data.setCell(3, 1, 45);
+  aa_data.setCell(4, 1, 76);
+  aa_data.setCell(5, 1, 40);
+  aa_data.setCell(6, 1, 19);
+  aa_data.setCell(7, 1, 52);
+  aa_data.setCell(8, 1, 85);
+  aa_data.setCell(9, 1, 65);
+
+  var nc_data = new google.visualization.DataTable();
+  nc_data.addColumn('string', 'Descrizione');
+  nc_data.addColumn('number', 'num.');
+  nc_data.addColumn('number', '%');
+  nc_data.addRows(12);
+  nc_data.setCell(0, 0, 'Cambiamenti di menu');
+  nc_data.setCell(1, 0, 'Cibo avanzato oltre 30%');
+  nc_data.setCell(2, 0, 'Quantita insufficiente di una vivanda');
+  nc_data.setCell(3, 0, 'Arredi e attrezzature inadeguate della sala di rigoverno');
+  nc_data.setCell(4, 0, 'Inadeguata pulizia dei locali');
+  nc_data.setCell(5, 0, 'Errata / mancata consegna o distribuzione delle diete speciali');
+  nc_data.setCell(6, 0, 'Ritardo o anticipo nella consegna delle termiche');
+  nc_data.setCell(7, 0, 'Corpo estraneo');
+  nc_data.setCell(8, 0, 'Temperatura non conforme alla legge');
+  nc_data.setCell(9, 0, 'Temperatura della dieta sanitaria giudicata inadeguata');
+  nc_data.setCell(10, 0, 'Inadeguato smaltimento della spazzatura');
+  nc_data.setCell(11, 0, 'Altro');
+  nc_data.setCell(0, 1, 41);
+  nc_data.setCell(1, 1, 98);
+  nc_data.setCell(2, 1, 74);
+  nc_data.setCell(3, 1, 45);
+  nc_data.setCell(4, 1, 76);
+  nc_data.setCell(5, 1, 40);
+  nc_data.setCell(6, 1, 19);
+  nc_data.setCell(7, 1, 52);
+  nc_data.setCell(8, 1, 85);
+  nc_data.setCell(9, 1, 65);
+  nc_data.setCell(10, 1, 65);
+  nc_data.setCell(11, 1, 65);
+  nc_data.setCell(0, 2, 41);
+  nc_data.setCell(1, 2, 98);
+  nc_data.setCell(2, 2, 74);
+  nc_data.setCell(3, 2, 45);
+  nc_data.setCell(4, 2, 76);
+  nc_data.setCell(5, 2, 40);
+  nc_data.setCell(6, 2, 19);
+  nc_data.setCell(7, 2, 52);
+  nc_data.setCell(8, 2, 85);
+  nc_data.setCell(9, 2, 65);
+  nc_data.setCell(10, 2, 65);
+  nc_data.setCell(11, 2, 65);
+  
+  var pd_data = new google.visualization.DataTable();
+  pd_data.addColumn("string");
+  pd_data.addColumn("number");
+  pd_data.addRows(3);
+  pd_data.setCell(0, 0, "< 10'");
+  pd_data.setCell(1, 0, "10' < 20'");
+  pd_data.setCell(2, 0, "> 20'");
+  pd_data.setCell(0, 1, 20);
+  pd_data.setCell(1, 1, 30);
+  pd_data.setCell(2, 1, 50);
+
+  var pc_data = new google.visualization.DataTable();
+  pc_data.addColumn("string");
+  pc_data.addColumn("number");
+  pc_data.addRows(3);
+  pc_data.setCell(0, 0, "Scarsa");
+  pc_data.setCell(1, 0, "Giusta");
+  pc_data.setCell(2, 0, "Eccessiva");
+  pc_data.setCell(0, 1, 20);
+  pc_data.setCell(1, 1, 30);
+  pc_data.setCell(2, 1, 50);
+  
+  var pt_data = new google.visualization.DataTable();
+  pt_data.addColumn("string");
+  pt_data.addColumn("number");
+  pt_data.addRows(3);
+  pt_data.setCell(0, 0, "Poca");
+  pt_data.setCell(1, 0, "Corretta");
+  pt_data.setCell(2, 0, "Abbondante");
+  pt_data.setCell(0, 1, 20);
+  pt_data.setCell(1, 1, 30);
+  pt_data.setCell(2, 1, 50);
+
+  var pq_data = new google.visualization.DataTable();
+  pq_data.addColumn("string");
+  pq_data.addColumn("number");
+  pq_data.addRows(3);
+  pq_data.setCell(0, 0, "Inaccettabile");
+  pq_data.setCell(1, 0, "Accettabile");
+  pq_data.setCell(2, 0, "Gradevole");
+  pq_data.setCell(0, 1, 20);
+  pq_data.setCell(1, 1, 30);
+  pq_data.setCell(2, 1, 50);
+
+  var pa_data = new google.visualization.DataTable();
+  pa_data.addColumn("string");
+  pa_data.addColumn("number");
+  pa_data.addRows(3);
+  pa_data.setCell(0, 0, "Freddo");
+  pa_data.setCell(1, 0, "Giusta");
+  pa_data.setCell(2, 0, "Caldo");
+  pa_data.setCell(0, 1, 20);
+  pa_data.setCell(1, 1, 30);
+  pa_data.setCell(2, 1, 50);
+
+  var pg_data = new google.visualization.DataTable();
+  pg_data.addColumn("string");
+  pg_data.addColumn("number");
+  pg_data.addRows(4);
+  pg_data.setCell(0, 0, "< 25%");
+  pg_data.setCell(1, 0, "25% < 50%");
+  pg_data.setCell(2, 0, "50% < 75%");
+  pg_data.setCell(3, 0, ">75%");
+  pg_data.setCell(0, 1, 20);
+  pg_data.setCell(1, 1, 30);
+  pg_data.setCell(2, 1, 15);
+  pg_data.setCell(3, 1, 35);
+  
+  // Create and draw the visualization.
+  new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
+  // Create and draw the visualization.
+  new google.visualization.ColumnChart(document.getElementById('cm_chart')).draw(cm_data, {width: 600, height: 410, is3D: true, title: 'Commissioni'});  
+
+  new google.visualization.LineChart(document.getElementById('dati')).draw(dati_ins, {width: 800, height: 410, is3D: true, title: 'Dati raccolti'});  
+
+  new google.visualization.Table(document.getElementById('aa_table')).draw(aa_data, null);
+  new google.visualization.BarChart(document.getElementById('aa_chart')).draw(aa_data, {width: 600, height: 410, is3D: true, legend: 'none', title: 'Aspetti ambientali'});  
+
+  new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
+  new google.visualization.PieChart(document.getElementById('nc_chart')).draw(nc_data, {width: 600, height: 410, is3D: true, legend: 'right', legendFontSize: '10'});  
+
+  new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pd_chart')).draw(pd_data, {width: 300, height: 110, legend: 'none'});  
+
+  new google.visualization.Table(document.getElementById('pc_table')).draw(pc_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pc_chart')).draw(pc_data, {width: 300, height: 110, legend: 'none'});  
+
+  new google.visualization.Table(document.getElementById('pt_table')).draw(pt_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pt_chart')).draw(pt_data, {width: 300, height: 110, legend: 'none'});  
+
+  new google.visualization.Table(document.getElementById('pq_table')).draw(pq_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pq_chart')).draw(pq_data, {width: 300, height: 110, legend: 'none'});  
+  
+  new google.visualization.Table(document.getElementById('pa_table')).draw(pa_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pa_chart')).draw(pa_data, {width: 300, height: 110, legend: 'none'});  
+
+  new google.visualization.Table(document.getElementById('pg_table')).draw(pg_data, {sort: 'disable'});
+  new google.visualization.ColumnChart(document.getElementById('pg_chart')).draw(pg_data, {width: 300, height: 110, legend: 'none'});  
+    }
+</script>
+<H1>Statistiche</H1>
+<span dojoType="dijit.layout.StackController" containerId="stackContainer" style=""></span>
+<button id="previous" onClick="dijit.byId('stackContainer').back()" dojoType="dijit.form.Button" style="margin:0;">&lt;</button>
+<button id="next" onClick="dijit.byId('stackContainer').forward()" dojoType="dijit.form.Button" style="margin:0;">&gt;</button>
+<div dojoType="dijit.layout.StackContainer" id="stackContainer" style="height: 430px;">
+    <div dojoType="dijit.layout.ContentPane" title="Commissioni">
+        <table width="100%"><tr><td><div id="cm_table" style="width: 300px; height: 300px;"></div></td><td><div id="cm_chart"></div></td></tr></table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Dati inseriti">
+        <div id="dati"></div>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Aspetti ambientali">
+        <table width="100%"><tr><td><div id="aa_table" style="width: 300px; height: 300px;"></div></td><td><div id="aa_chart"></div></td></tr></table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Non conformit&agrave;">
+        <table><tr><td><div id="nc_table"></div></td><td><div id="nc_chart"></div></td></tr></table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Primo">
+        <table>
+        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="pd_table"></div></td><td><div id="pd_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
+        <tr><td><div id="pa_table"></div></td><td><div id="pa_chart"></div></td><td><div id="pg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Secondo">
+    Secondo    
+        <table>
+        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="sd_table"></div></td><td><div id="sd_chart"></div></td><td><div id="sc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="st_table"></div></td><td><div id="st_chart"></div></td><td><div id="sq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
+        <tr><td><div id="sa_table"></div></td><td><div id="sa_chart"></div></td><td><div id="sg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Contorno">
+    Contorno    
+        <table>
+        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td><td><div id="cc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="ct_table"></div></td><td><div id="ct_chart"></div></td><td><div id="cq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
+        <tr><td><div id="ca_table"></div></td><td><div id="ca_chart"></div></td><td><div id="cg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Pane">
+    Pane    
+        <table>
+        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="bd_table"></div></td><td><div id="bd_chart"></div></td><td><div id="bc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="bt_table"></div></td><td><div id="bt_chart"></div></td><td><div id="bq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
+        <tr><td><div id="ba_table"></div></td><td><div id="ba_chart"></div></td><td><div id="bg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Frutta">
+    Frutta    
+        <table>
+        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="fd_table"></div></td><td><div id="fd_chart"></div></td><td><div id="fc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="ft_table"></div></td><td><div id="ft_chart"></div></td><td><div id="fq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
+        <tr><td><div id="fa_table"></div></td><td><div id="fa_chart"></div></td><td><div id="fg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Servizio">
+    Servizio    
+    </div>
+</div>
