@@ -68,6 +68,7 @@ class BasePage(webapp.RequestHandler):
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
+
   def getCommissioni(self):
     commissioni = memcache.get("commissioni")
     if commissioni == None:

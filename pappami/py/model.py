@@ -222,7 +222,7 @@ class Statistiche:
 
 class StatisticheIspezioniNew(db.Model):
   commissione = db.ReferenceProperty(Commissione)
-  centro = db.ReferenceProperty(CentroCucina)
+  centroCucina = db.ReferenceProperty(CentroCucina)
   
   dataInizio = db.DateProperty()
   datafine = db.DateProperty()
@@ -397,9 +397,25 @@ class StatisticheIspezioni(db.Model):
   def primoAssaggioNorm(self):
     return int(self.primoAssaggio * 100 / 3)
 
+  def primoAssaggio1Norm(self):
+    return int(self.primoAssaggio1 * 100 / 1 / self.numeroSchede)
+  def primoAssaggio2Norm(self):
+    return int(self.primoAssaggio2 * 100 / 2 / self.numeroSchede)
+  def primoAssaggio3Norm(self):
+    return int(self.primoAssaggio3 * 100 / 3 / self.numeroSchede)
+
   def primoGradimentoNorm(self):
     return int(self.primoGradimento * 100 / 4)
 
+  def primoGradimento1Norm(self):
+    return int(self.primoGradimento1 * 100 / 1 / self.numeroSchede)
+  def primoGradimento2Norm(self):
+    return int(self.primoGradimento2 * 100 / 2 / self.numeroSchede)
+  def primoGradimento3Norm(self):
+    return int(self.primoGradimento3 * 100 / 3 / self.numeroSchede)
+  def primoGradimento4Norm(self):
+    return int(self.primoGradimento4 * 100 / 4 / self.numeroSchede)
+  
   def secondoCottura1Norm(self):
     return int(self.secondoCottura1 * 100 / 1 / self.numeroSchede)
   def secondoCottura2Norm(self):

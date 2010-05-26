@@ -183,3 +183,77 @@ TableQueryWrapper.clone = function(obj) {
   }
   return newObj;
 };
+
+    var query, options, container, whereClause;
+    var display = "";
+    
+    function initIsp() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
+      query = new google.visualization.Query('/commissario/getdata');
+      container = document.getElementById("ispezioni");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data'
+                 };
+      var me = dojo.byId("e_me");
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      me.checked = (p[0] == "true");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from isp" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+      
+      display="none";
+      sendAndDraw();        
+      display="inline";
+    }
+
+    function initNC() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
+      query = new google.visualization.Query('/commissario/getdata');
+      container = document.getElementById("nonconf");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data tipo'
+                 };
+      var me = dojo.byId("e_me");
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      me.checked = (p[0] == "true");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from nc" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+
+      display="none";
+      sendAndDraw();
+      display="inline";
+    }
+    
+    function sendAndDraw() {
+      query.abort();
+      var tableQueryWrapper = new TableQueryWrapper(query, container, options);
+      tableQueryWrapper.setWhereQueryClause(whereClause);
+      dojo.byId("d_loading").style.display = display;
+      tableQueryWrapper.sendAndDraw();
+    } 
+
+    function setQuery(from) {
+        var me = dojo.byId("e_me");
+        var cm = dijit.byId("e_cm");
+        var anno = dojo.byId("e_aa");
+        whereClause = "from " + from + " me " + (me.checked?"on":"") + " commissione " + cm.value + " anno " + anno.value;
+        createCookie("pappa-mi-ctx", me.checked + "," + cm.attr("value") + "," + anno.value, 10);
+        sendAndDraw();        
+    } 
