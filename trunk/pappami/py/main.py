@@ -239,7 +239,7 @@ class BlogPage(BasePage):
   def get(self):
     template_values = dict()
     template_values["content"] = "docs.html"
-    template_values["iframesrc"] = "http://pappa-mi.blogspot.com"
+    template_values["iframesrc"] = "http://blog.pappa-mi.it/"
     self.getBase(template_values)
 
 class FbPage(BasePage):
