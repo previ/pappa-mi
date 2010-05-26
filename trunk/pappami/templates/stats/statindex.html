@@ -1,4 +1,11 @@
 <script type="text/javascript">
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojo.parser");
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
 dojo.require("dijit.layout.StackContainer");
@@ -13,12 +20,12 @@ div { padding: 0px; }
 .tab_title {text-align:center; font-size:130% }
 </style>
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<!--script src="/stats/getdata" type="text/javascript"></script-->
 <script>
     google.load('visualization', '1.1', {'packages' : ['piechart','linechart','barchart','columnchart']});
     dojo.addOnLoad(init);
 
-
-    function init() {
+function init() {
   // Create and populate the data table.
   var cm_data = new google.visualization.DataTable();
   cm_data.addColumn('string', 'Tipo Scuola');
@@ -224,6 +231,7 @@ div { padding: 0px; }
   pq_data.setCell(1, 3, 35);
   pq_data.setCell(2, 3, 25);
 
+/*  
   var pa_data = new google.visualization.DataTable();
   pa_data.addColumn("string");
   pa_data.addColumn("number", "Non Accettabile");
@@ -242,30 +250,13 @@ div { padding: 0px; }
   pa_data.setCell(0, 3, 30);
   pa_data.setCell(1, 3, 35);
   pa_data.setCell(2, 3, 25);
+*/
+  var pa_data = new google.visualization.DataTable({{pa_table}});
+  var pg_data = new google.visualization.DataTable({{pg_table}});
+  //var pc_data = new google.visualization.DataTable({{pc_table}});
+  //var pt_data = new google.visualization.DataTable({{pt_table}});
+  //var pd_data = new google.visualization.DataTable({{pd_table}});
 
-  var pg_data = new google.visualization.DataTable();
-  pg_data.addColumn("string");
-  pg_data.addColumn("number", "< 25%");
-  pg_data.addColumn("number", "25% < 50%");
-  pg_data.addColumn("number", "50% < 75%");
-  pg_data.addColumn("number", ">75%");
-  pg_data.addRows(3);
-  pg_data.setCell(0, 0, "Tutte");
-  pg_data.setCell(1, 0, "CC Quaranta");
-  pg_data.setCell(2, 0, "CM Muzio - Materna");
-  pg_data.setCell(0, 1, 10);
-  pg_data.setCell(1, 1, 10);
-  pg_data.setCell(2, 1, 15);
-  pg_data.setCell(0, 2, 50);
-  pg_data.setCell(1, 2, 45);
-  pg_data.setCell(2, 2, 50);
-  pg_data.setCell(0, 3, 30);
-  pg_data.setCell(1, 3, 35);
-  pg_data.setCell(2, 3, 25);
-  pg_data.setCell(0, 4, 10);
-  pg_data.setCell(1, 4, 10);
-  pg_data.setCell(2, 4, 10);
-  
   // Create and draw the visualization.
   //new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
   new google.visualization.ColumnChart(document.getElementById('cm_chart')).draw(cm_data, {width: 800, height: 410, is3D: true, title: 'Commissioni'});  
@@ -295,6 +286,7 @@ div { padding: 0px; }
 
   //new google.visualization.Table(document.getElementById('pg_table')).draw(pg_data, {sort: 'disable'});
   new google.visualization.BarChart(document.getElementById('pg_chart')).draw(pg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  
 /*
   new google.visualization.BarChart(document.getElementById('sd_chart')).draw(sd_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
   new google.visualization.BarChart(document.getElementById('sg_chart')).draw(sg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
@@ -323,9 +315,47 @@ div { padding: 0px; }
   new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
   new google.visualization.BarChart(document.getElementById('fs_chart')).draw(fs_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
 */
-    }
+}
+
+function query() {
+    var cm = dijit.byId("e_cm");
+    var anno = dojo.byId("e_aa");
+    loadjsfile("/stats/getdata?cm="+cm.value+"&anno="+anno.value);
+    //init();
+}
 </script>
-<H1>Statistiche</H1>
+<H1 style="display:inline;">Statistiche</H1>
+<div dojoType="dijit.form.DropDownButton"><span>Seleziona l'insieme di dati</span>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
+<form dojoType="dijit.form.Form" action="/stats" method="get" id="form0">
+<table>
+<tr>
+<td>
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
+<LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
+<input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
+searchAttr="nome" name="cm" id="e_cm">
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
+<SELECT name="anno" id="e_aa">
+<OPTION value="2008">2008-2009</OPTION>
+<OPTION value="2009">2009-2010</OPTION>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit">Applica</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+<br/>
 <span dojoType="dijit.layout.StackController" containerId="stackContainer" style=""></span>
 <button id="previous" onClick="dijit.byId('stackContainer').back()" dojoType="dijit.form.Button" style="margin:0;">&lt;</button>
 <button id="next" onClick="dijit.byId('stackContainer').forward()" dojoType="dijit.form.Button" style="margin:0;">&gt;</button>
@@ -345,9 +375,9 @@ div { padding: 0px; }
     <div dojoType="dijit.layout.ContentPane" title="Primo">
         <table>
         <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="pa_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:30|60|90&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td><div id="pa_table">{%if statCM %}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}|{{statCC.primoAssaggioNorm}}|{{statCM.primoAssaggioNorm}}&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%else%}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}&chls=1&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%endif%}</div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
-        <tr><td><div id="pg_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:30|60|90&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
+        <tr><td><div id="pg_table">{%if statCM %}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoGradimentoNorm}}|{{statCC.primoGradimentoNorm}}|{{statCM.primoGradimentoNorm}}&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%else%}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}&chls=1&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%endif%}</div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
         <tr><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pd_chart"></div></td></tr>
         </table>

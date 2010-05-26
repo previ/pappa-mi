@@ -42,7 +42,6 @@ DATE_FORMAT = "%Y-%m-%d"
 class CMStatsHandlerOld(BasePage):
     
   def get(self):
-
     template_values = dict()
     template_values["content"] = "statistiche.html"
     self.getBase(template_values)
@@ -50,10 +49,62 @@ class CMStatsHandlerOld(BasePage):
 class CMStatsHandler(BasePage):
     
   def get(self):
+    cm = None
+    cc = None
+    statCC = None
+    statCM = None
+    stat = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina", None).get()
+    if(self.request.get("cm")):
+      cm = Commissione.get(self.request.get("cm"))
+      cc = cm.centroCucina
+      statCC = StatisticheIspezioni.all().filter("centroCucina",cc).get()
+      statCM = StatisticheIspezioni.all().filter("commissione",cm).get()
 
+    pa_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 25%"),
+               "2": ("number", "25% < 50%"),
+               "3": ("number", "50% < 75%"),
+               "4": ("number", ">75%")}
+
+    pa_data = list()
+    pa_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    if(statCC):
+      pa_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+    if(statCM):
+      pa_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+    
+    pa_table = DataTable(pa_desc)
+    pa_table.LoadData(pa_data)
+
+    pg_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Non Accettabile"),
+               "2": ("number", "Accettabile"),
+               "3": ("number", "Gradevole")}
+
+    pg_data = list()
+    pg_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCC):
+      pg_data.append({"group": (statCC.centroCucina.nome), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCM):
+      pg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    
+    pg_table = DataTable(pg_desc)
+    pg_table.LoadData(pg_data)
+    
     template_values = dict()
     template_values["content"] = "stats/statindex.html"
+    template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["stat"] = stat
+    template_values["statCC"] = statCC
+    template_values["statCM"] = statCM
     self.getBase(template_values)
+
+class CMStatsDataHandler(BasePage):
+    
+  def get(self):
+    path = os.path.join(os.path.dirname(__file__), '../templates/stats/statdata.js')
+    self.response.out.write(template.render(path, template_values))
     
 class CMStatCalcHandler(BasePage):
   def get(self):
@@ -420,7 +471,8 @@ class CMStatsHandlerOld(BasePage):
       
 application = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
-  ('/stats/calc', CMStatCalcHandler)
+  ('/stats/calc', CMStatCalcHandler),
+  ('/stats/getdata', CMStatsDataHandler),
 ], debug=True)
 
 def main():

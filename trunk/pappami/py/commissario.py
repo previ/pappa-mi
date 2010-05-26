@@ -185,7 +185,7 @@ class CMCommissarioDataHandler(BasePage):
         data_table_nc.LoadData(data_nc)
         
         # Creating a JSon string
-        self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table_nc.ToJSon(columns_order=("commissione", "data", "turno", "tipo", "key"))+",version: '0.6'})")
+        self.response.out.write(data_table_nc.ToJSonResponse(columns_order=("commissione", "data", "turno", "tipo", "key")))
 
       else:
 
@@ -234,7 +234,7 @@ class CMCommissarioDataHandler(BasePage):
         data_table.LoadData(data)
   
         # Creating a JSon string
-        self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table.ToJSon(columns_order=("commissione", "data", "turno", "primo", "secondo", "contorno", "frutta", "pasti", "key"))+",version: '0.6'})")
+        self.response.out.write(data_table.ToJSonResponse(columns_order=("commissione", "data", "turno", "primo", "secondo", "contorno", "frutta", "pasti", "key")))
       
 class CMRegistrazioneHandler(BasePage):
   
