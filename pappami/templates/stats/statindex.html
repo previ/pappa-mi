@@ -150,71 +150,121 @@ div { padding: 0px; }
   
   var pd_data = new google.visualization.DataTable();
   pd_data.addColumn("string");
-  pd_data.addColumn("number");
+  pd_data.addColumn("number", "< 10'");
+  pd_data.addColumn("number", "10 < 20'");
+  pd_data.addColumn("number", "> 20'");
   pd_data.addRows(3);
-  pd_data.setCell(0, 0, "< 10'");
-  pd_data.setCell(1, 0, "10' < 20'");
-  pd_data.setCell(2, 0, "> 20'");
+  pd_data.setCell(0, 0, "Tutte");
+  pd_data.setCell(1, 0, "CC Quaranta");
+  pd_data.setCell(2, 0, "CM Muzio - Materna");
   pd_data.setCell(0, 1, 20);
-  pd_data.setCell(1, 1, 30);
-  pd_data.setCell(2, 1, 50);
+  pd_data.setCell(1, 1, 20);
+  pd_data.setCell(2, 1, 25);
+  pd_data.setCell(0, 2, 50);
+  pd_data.setCell(1, 2, 45);
+  pd_data.setCell(2, 2, 50);
+  pd_data.setCell(0, 3, 30);
+  pd_data.setCell(1, 3, 35);
+  pd_data.setCell(2, 3, 25);
 
   var pc_data = new google.visualization.DataTable();
   pc_data.addColumn("string");
-  pc_data.addColumn("number");
+  pc_data.addColumn("number", "Insuff");
+  pc_data.addColumn("number", "Corretta");
+  pc_data.addColumn("number", "Eccessiva");
   pc_data.addRows(3);
-  pc_data.setCell(0, 0, "Scarsa");
-  pc_data.setCell(1, 0, "Giusta");
-  pc_data.setCell(2, 0, "Eccessiva");
+  pc_data.setCell(0, 0, "Tutte");
+  pc_data.setCell(1, 0, "CC Quaranta");
+  pc_data.setCell(2, 0, "CM Muzio - Materna");
   pc_data.setCell(0, 1, 20);
-  pc_data.setCell(1, 1, 30);
-  pc_data.setCell(2, 1, 50);
+  pc_data.setCell(1, 1, 20);
+  pc_data.setCell(2, 1, 25);
+  pc_data.setCell(0, 2, 50);
+  pc_data.setCell(1, 2, 45);
+  pc_data.setCell(2, 2, 50);
+  pc_data.setCell(0, 3, 30);
+  pc_data.setCell(1, 3, 35);
+  pc_data.setCell(2, 3, 25);
   
   var pt_data = new google.visualization.DataTable();
   pt_data.addColumn("string");
-  pt_data.addColumn("number");
+  pt_data.addColumn("number", "Fredda");
+  pt_data.addColumn("number", "Corretta");
+  pt_data.addColumn("number", "Eccessiva");
   pt_data.addRows(3);
-  pt_data.setCell(0, 0, "Poca");
-  pt_data.setCell(1, 0, "Corretta");
-  pt_data.setCell(2, 0, "Abbondante");
+  pt_data.setCell(0, 0, "Tutte");
+  pt_data.setCell(1, 0, "CC Quaranta");
+  pt_data.setCell(2, 0, "CM Muzio - Materna");
   pt_data.setCell(0, 1, 20);
-  pt_data.setCell(1, 1, 30);
-  pt_data.setCell(2, 1, 50);
+  pt_data.setCell(1, 1, 20);
+  pt_data.setCell(2, 1, 25);
+  pt_data.setCell(0, 2, 50);
+  pt_data.setCell(1, 2, 45);
+  pt_data.setCell(2, 2, 50);
+  pt_data.setCell(0, 3, 30);
+  pt_data.setCell(1, 3, 35);
+  pt_data.setCell(2, 3, 25);
 
   var pq_data = new google.visualization.DataTable();
   pq_data.addColumn("string");
-  pq_data.addColumn("number");
+  pq_data.addColumn("number", "Insuff");
+  pq_data.addColumn("number", "Corretta");
+  pq_data.addColumn("number", "Abbandonante");
   pq_data.addRows(3);
-  pq_data.setCell(0, 0, "Inaccettabile");
-  pq_data.setCell(1, 0, "Accettabile");
-  pq_data.setCell(2, 0, "Gradevole");
+  pq_data.setCell(0, 0, "Tutte");
+  pq_data.setCell(1, 0, "CC Quaranta");
+  pq_data.setCell(2, 0, "CM Muzio - Materna");
   pq_data.setCell(0, 1, 20);
-  pq_data.setCell(1, 1, 30);
-  pq_data.setCell(2, 1, 50);
+  pq_data.setCell(1, 1, 20);
+  pq_data.setCell(2, 1, 25);
+  pq_data.setCell(0, 2, 50);
+  pq_data.setCell(1, 2, 45);
+  pq_data.setCell(2, 2, 50);
+  pq_data.setCell(0, 3, 30);
+  pq_data.setCell(1, 3, 35);
+  pq_data.setCell(2, 3, 25);
 
   var pa_data = new google.visualization.DataTable();
   pa_data.addColumn("string");
-  pa_data.addColumn("number");
+  pa_data.addColumn("number", "Non Accettabile");
+  pa_data.addColumn("number", "Accettabile");
+  pa_data.addColumn("number", "Gradevole");
   pa_data.addRows(3);
-  pa_data.setCell(0, 0, "Freddo");
-  pa_data.setCell(1, 0, "Giusta");
-  pa_data.setCell(2, 0, "Caldo");
+  pa_data.setCell(0, 0, "Tutte");
+  pa_data.setCell(1, 0, "CC Quaranta");
+  pa_data.setCell(2, 0, "CM Muzio - Materna");
   pa_data.setCell(0, 1, 20);
-  pa_data.setCell(1, 1, 30);
-  pa_data.setCell(2, 1, 50);
+  pa_data.setCell(1, 1, 20);
+  pa_data.setCell(2, 1, 25);
+  pa_data.setCell(0, 2, 50);
+  pa_data.setCell(1, 2, 45);
+  pa_data.setCell(2, 2, 50);
+  pa_data.setCell(0, 3, 30);
+  pa_data.setCell(1, 3, 35);
+  pa_data.setCell(2, 3, 25);
 
   var pg_data = new google.visualization.DataTable();
   pg_data.addColumn("string");
-  pg_data.addColumn("number");
-  pg_data.addRows(4);
-  pg_data.setCell(0, 0, "< 25%");
-  pg_data.setCell(1, 0, "25% < 50%");
-  pg_data.setCell(2, 0, "50% < 75%");
-  pg_data.setCell(3, 0, ">75%");
-  pg_data.setCell(0, 1, 20);
-  pg_data.setCell(1, 1, 30);
+  pg_data.addColumn("number", "< 25%");
+  pg_data.addColumn("number", "25% < 50%");
+  pg_data.addColumn("number", "50% < 75%");
+  pg_data.addColumn("number", ">75%");
+  pg_data.addRows(3);
+  pg_data.setCell(0, 0, "Tutte");
+  pg_data.setCell(1, 0, "CC Quaranta");
+  pg_data.setCell(2, 0, "CM Muzio - Materna");
+  pg_data.setCell(0, 1, 10);
+  pg_data.setCell(1, 1, 10);
   pg_data.setCell(2, 1, 15);
-  pg_data.setCell(3, 1, 35);
+  pg_data.setCell(0, 2, 50);
+  pg_data.setCell(1, 2, 45);
+  pg_data.setCell(2, 2, 50);
+  pg_data.setCell(0, 3, 30);
+  pg_data.setCell(1, 3, 35);
+  pg_data.setCell(2, 3, 25);
+  pg_data.setCell(0, 4, 10);
+  pg_data.setCell(1, 4, 10);
+  pg_data.setCell(2, 4, 10);
   
   // Create and draw the visualization.
   new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
@@ -229,23 +279,23 @@ div { padding: 0px; }
   new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
   new google.visualization.PieChart(document.getElementById('nc_chart')).draw(nc_data, {width: 600, height: 410, is3D: true, legend: 'right', legendFontSize: '10'});  
 
-  new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pd_chart')).draw(pd_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pd_chart')).draw(pd_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
 
-  new google.visualization.Table(document.getElementById('pc_table')).draw(pc_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pc_chart')).draw(pc_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pc_table')).draw(pc_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pc_chart')).draw(pc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
 
-  new google.visualization.Table(document.getElementById('pt_table')).draw(pt_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pt_chart')).draw(pt_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pt_table')).draw(pt_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pt_chart')).draw(pt_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
 
-  new google.visualization.Table(document.getElementById('pq_table')).draw(pq_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pq_chart')).draw(pq_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pq_table')).draw(pq_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pq_chart')).draw(pq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
   
-  new google.visualization.Table(document.getElementById('pa_table')).draw(pa_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pa_chart')).draw(pa_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pa_table')).draw(pa_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pa_chart')).draw(pa_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
 
-  new google.visualization.Table(document.getElementById('pg_table')).draw(pg_data, {sort: 'disable'});
-  new google.visualization.ColumnChart(document.getElementById('pg_chart')).draw(pg_data, {width: 300, height: 110, legend: 'none'});  
+  //new google.visualization.Table(document.getElementById('pg_table')).draw(pg_data, {sort: 'disable'});
+  new google.visualization.BarChart(document.getElementById('pg_chart')).draw(pg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
     }
 </script>
 <H1>Statistiche</H1>
@@ -267,12 +317,12 @@ div { padding: 0px; }
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Primo">
         <table>
-        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="pd_table"></div></td><td><div id="pd_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
-        <tr><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
-        <tr><td><div id="pa_table"></div></td><td><div id="pa_chart"></div></td><td><div id="pg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="pa_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:45|50|55&%20chls=2,2,6|2,5,5|1,1,1|10|10|10&chxt=x,y&chxl=0:|2.4|1:|Non+Accettabile|Accettabile|Gradevole&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="pg_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:45|50|55&%20chls=2,2,6|2,5,5|1,1,1|10|10|10&chxt=x,y&chxl=0:|2.4|1:|Non+Accettabile|Accettabile|Gradevole&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
+        <tr><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pd_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Secondo">

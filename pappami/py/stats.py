@@ -39,15 +39,22 @@ from py.main import BasePage
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMStatsHandler(BasePage):
+class CMStatsHandlerOld(BasePage):
     
   def get(self):
-    s = self.getStats()
 
     template_values = dict()
     template_values["content"] = "statistiche.html"
     self.getBase(template_values)
 
+class CMStatsHandler(BasePage):
+    
+  def get(self):
+
+    template_values = dict()
+    template_values["content"] = "stats/statindex.html"
+    self.getBase(template_values)
+    
 class CMStatCalcHandler(BasePage):
   def get(self):
     stats = StatisticheIspezioni()
