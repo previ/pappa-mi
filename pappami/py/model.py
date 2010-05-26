@@ -68,6 +68,9 @@ class Commissario(db.Model):
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
+
+  ultimo_accesso_il = db.DateTimeProperty(auto_now=True)
+
   stato = db.IntegerProperty()
   
   def commissioni(self):

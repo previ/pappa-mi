@@ -14,7 +14,7 @@ div { padding: 0px; }
 </style>
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <script>
-    google.load('visualization', '1', {'packages' : ['table', 'columnchart', 'barchart', 'linechart', 'piechart']});
+    google.load('visualization', '1.1', {'packages' : ['piechart','linechart','barchart','columnchart']});
     dojo.addOnLoad(init);
 
 
@@ -42,7 +42,7 @@ div { padding: 0px; }
   var dati_ins = new google.visualization.DataTable();
   dati_ins.addColumn('string', 'Settimane');
   dati_ins.addColumn('number', 'Schede');
-  dati_ins.addColumn('number', 'Non conformit&agrave;');
+  dati_ins.addColumn('number', 'Non conformità');
   dati_ins.addRows(12);
   dati_ins.setCell(0, 0, '1');
   dati_ins.setCell(1, 0, '2');
@@ -267,17 +267,16 @@ div { padding: 0px; }
   pg_data.setCell(2, 4, 10);
   
   // Create and draw the visualization.
-  new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
-  // Create and draw the visualization.
-  new google.visualization.ColumnChart(document.getElementById('cm_chart')).draw(cm_data, {width: 600, height: 410, is3D: true, title: 'Commissioni'});  
+  //new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
+  new google.visualization.ColumnChart(document.getElementById('cm_chart')).draw(cm_data, {width: 800, height: 410, is3D: true, title: 'Commissioni'});  
 
-  new google.visualization.LineChart(document.getElementById('dati')).draw(dati_ins, {width: 800, height: 410, is3D: true, title: 'Dati raccolti'});  
+  new google.visualization.LineChart(document.getElementById('dati')).draw(dati_ins, {width: 900, height: 410, smoothLine: 'true', title: 'Dati raccolti', titleX: 'Settimane', curveType: "function"});  
 
-  new google.visualization.Table(document.getElementById('aa_table')).draw(aa_data, null);
-  new google.visualization.BarChart(document.getElementById('aa_chart')).draw(aa_data, {width: 600, height: 410, is3D: true, legend: 'none', title: 'Aspetti ambientali'});  
+  //new google.visualization.Table(document.getElementById('aa_table')).draw(aa_data, null);
+  new google.visualization.BarChart(document.getElementById('aa_chart')).draw(aa_data, {width: 600, height: 410, legend: 'none', title: 'Aspetti ambientali'});  
 
-  new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
-  new google.visualization.PieChart(document.getElementById('nc_chart')).draw(nc_data, {width: 600, height: 410, is3D: true, legend: 'right', legendFontSize: '10'});  
+  //new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
+  new google.visualization.PieChart(document.getElementById('nc_chart')).draw(nc_data, {width: 800, height: 410, legend: 'right', legendFontSize: '12'});  
 
   //new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
   new google.visualization.BarChart(document.getElementById('pd_chart')).draw(pd_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
@@ -296,6 +295,34 @@ div { padding: 0px; }
 
   //new google.visualization.Table(document.getElementById('pg_table')).draw(pg_data, {sort: 'disable'});
   new google.visualization.BarChart(document.getElementById('pg_chart')).draw(pg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+/*
+  new google.visualization.BarChart(document.getElementById('sd_chart')).draw(sd_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('sg_chart')).draw(sg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('sa_chart')).draw(sa_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('sq_chart')).draw(sq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('st_chart')).draw(st_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('sc_chart')).draw(sc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+
+  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('cg_chart')).draw(cg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('ca_chart')).draw(ca_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('cq_chart')).draw(cq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('ct_chart')).draw(ct_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+
+  new google.visualization.PieChart(document.getElementById('bt_chart')).draw(bt_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('bp_chart')).draw(bp_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('bg_chart')).draw(bg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('ba_chart')).draw(ba_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('bq_chart')).draw(bq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+
+  new google.visualization.PieChart(document.getElementById('ft_chart')).draw(ft_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('fg_chart')).draw(fg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('fa_chart')).draw(fa_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('fq_chart')).draw(fq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('fs_chart')).draw(fs_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+*/
     }
 </script>
 <H1>Statistiche</H1>
@@ -304,23 +331,23 @@ div { padding: 0px; }
 <button id="next" onClick="dijit.byId('stackContainer').forward()" dojoType="dijit.form.Button" style="margin:0;">&gt;</button>
 <div dojoType="dijit.layout.StackContainer" id="stackContainer" style="height: 430px;">
     <div dojoType="dijit.layout.ContentPane" title="Commissioni">
-        <table width="100%"><tr><td><div id="cm_table" style="width: 300px; height: 300px;"></div></td><td><div id="cm_chart"></div></td></tr></table>
+        <table width="100%"><tr><!--td><div id="cm_table" style="width: 300px; height: 300px;"></div></td--><td><div id="cm_chart"></div></td></tr></table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Dati inseriti">
         <div id="dati"></div>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Aspetti ambientali">
-        <table width="100%"><tr><td><div id="aa_table" style="width: 300px; height: 300px;"></div></td><td><div id="aa_chart"></div></td></tr></table>
+        <table width="100%"><tr><!--td><div id="aa_table" style="width: 300px; height: 300px;"></div></td--><td><div id="aa_chart"></div></td></tr></table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Non conformit&agrave;">
-        <table><tr><td><div id="nc_table"></div></td><td><div id="nc_chart"></div></td></tr></table>
+        <table><tr><!--td><div id="nc_table"></div></td--><td><div id="nc_chart"></div></td></tr></table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Primo">
         <table>
         <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="pa_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:45|50|55&%20chls=2,2,6|2,5,5|1,1,1|10|10|10&chxt=x,y&chxl=0:|2.4|1:|Non+Accettabile|Accettabile|Gradevole&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td><div id="pa_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:30|60|90&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
-        <tr><td><div id="pg_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:45|50|55&%20chls=2,2,6|2,5,5|1,1,1|10|10|10&chxt=x,y&chxl=0:|2.4|1:|Non+Accettabile|Accettabile|Gradevole&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
+        <tr><td><div id="pg_table"><img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:30|60|90&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
         <tr><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pd_chart"></div></td></tr>
         </table>
