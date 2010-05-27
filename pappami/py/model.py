@@ -241,6 +241,9 @@ class StatisticheIspezioniNew(db.Model):
 class StatisticheIspezioni(db.Model):
   commissione = db.ReferenceProperty(Commissione)
   centroCucina = db.ReferenceProperty(CentroCucina)
+
+  timePeriod = db.StringProperty() # W, M, Y
+  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
   
   dataInizio = db.DateProperty()
   dataFine = db.DateProperty()
@@ -525,4 +528,18 @@ class StatisticheIspezioni(db.Model):
 
   def smaltimentoRifiutiNorm(self):
     return int(self.smaltimentoRifiuti * 100 / 4)
+
+class StatisticheNonconf(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  centroCucina = db.ReferenceProperty(CentroCucina)
+
+  timePeriod = db.StringProperty() # W, M, Y
+  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
   
+  dataInizio = db.DateProperty()
+  dataFine = db.DateProperty()
+  
+  numeroSchede = db.IntegerProperty(default=0)
+
+  data = {1:db.IntegerProperty(default=0),2:db.IntegerProperty(default=0),3:db.IntegerProperty(default=0),4:db.IntegerProperty(default=0),5:db.IntegerProperty(default=0),6:db.IntegerProperty(default=0),7:db.IntegerProperty(default=0),8:db.IntegerProperty(default=0),9:db.IntegerProperty(default=0),10:db.IntegerProperty(default=0),11:db.IntegerProperty(default=0),12:db.IntegerProperty(default=0),99:db.IntegerProperty(default=0)}
+  #data = db.ListProperty(int, default={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,99:0})
