@@ -270,6 +270,10 @@ class StatisticheIspezioni(db.Model):
   giudizioGlobale2 = db.IntegerProperty(default=0)
   giudizioGlobale3 = db.IntegerProperty(default=0)
   
+  primoDistribuzione1 = db.IntegerProperty(default=0)
+  primoDistribuzione2 = db.IntegerProperty(default=0)
+  primoDistribuzione3 = db.IntegerProperty(default=0)
+
   primoCottura1 = db.IntegerProperty(default=0)
   primoCottura2 = db.IntegerProperty(default=0)
   primoCottura3 = db.IntegerProperty(default=0)
@@ -373,6 +377,13 @@ class StatisticheIspezioni(db.Model):
   fruttaGradimento3 = db.IntegerProperty(default=0)
   fruttaGradimento4 = db.IntegerProperty(default=0)
   
+  def primoDistribuzione1Norm(self):
+    return int(self.primoDistribuzione1 * 100 / 1 / self.numeroSchede)
+  def primoDistribuzione2Norm(self):
+    return int(self.primoDistribuzione2 * 100 / 2 / self.numeroSchede)
+  def primoDistribuzione3Norm(self):
+    return int(self.primoDistribuzione3 * 100 / 3 / self.numeroSchede)
+
   def primoCottura1Norm(self):
     return int(self.primoCottura1 * 100 / 1 / self.numeroSchede)
   def primoCottura2Norm(self):

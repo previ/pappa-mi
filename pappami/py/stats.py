@@ -60,41 +60,105 @@ class CMStatsHandler(BasePage):
       statCC = StatisticheIspezioni.all().filter("centroCucina",cc).get()
       statCM = StatisticheIspezioni.all().filter("commissione",cm).get()
 
-    pa_desc = {"group": ("string", "Gruppo"), 
+    pg_desc = {"group": ("string", "Gruppo"), 
                "1": ("number", "< 25%"),
                "2": ("number", "25% < 50%"),
                "3": ("number", "50% < 75%"),
                "4": ("number", ">75%")}
 
-    pa_data = list()
-    pa_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    pg_data = list()
+    pg_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
     if(statCC):
-      pa_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+      pg_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
     if(statCM):
-      pa_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+      pg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
     
-    pa_table = DataTable(pa_desc)
-    pa_table.LoadData(pa_data)
+    pg_table = DataTable(pg_desc)
+    pg_table.LoadData(pg_data)
 
-    pg_desc = {"group": ("string", "Gruppo"), 
+    pa_desc = {"group": ("string", "Gruppo"), 
                "1": ("number", "Non Accettabile"),
                "2": ("number", "Accettabile"),
                "3": ("number", "Gradevole")}
 
-    pg_data = list()
-    pg_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    pa_data = list()
+    pa_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
     if(statCC):
-      pg_data.append({"group": (statCC.centroCucina.nome), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+      pa_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoAssaggio1Norm(), "2": statCC.primoAssaggio2Norm(), "3": statCC.primoAssaggio3Norm()})
     if(statCM):
-      pg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+      pa_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoAssaggio1Norm(), "2": statCM.primoAssaggio2Norm(), "3": statCM.primoAssaggio3Norm()})
     
-    pg_table = DataTable(pg_desc)
-    pg_table.LoadData(pg_data)
+    pa_table = DataTable(pa_desc)
+    pa_table.LoadData(pa_data)
+
+    pc_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarsa"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Eccessiva")}
+
+    pc_data = list()
+    pc_data.append({"group": ("Tutte"), "1": stat.primoCottura1Norm(), "2": stat.primoCottura2Norm(), "3": stat.primoCottura3Norm()})
+    if(statCC):
+      pc_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoCottura1Norm(), "2": statCC.primoCottura2Norm(), "3": statCC.primoCottura3Norm()})
+    if(statCM):
+      pc_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoCottura1Norm(), "2": statCM.primoCottura2Norm(), "3": statCM.primoCottura3Norm()})
     
+    pc_table = DataTable(pc_desc)
+    pc_table.LoadData(pc_data)
+
+    pt_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Freddo"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Caldo")}
+
+    pt_data = list()
+    pt_data.append({"group": ("Tutte"), "1": stat.primoTemperatura1Norm(), "2": stat.primoTemperatura2Norm(), "3": stat.primoTemperatura3Norm()})
+    if(statCC):
+      pt_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoTemperatura1Norm(), "2": statCC.primoTemperatura2Norm(), "3": statCC.primoTemperatura3Norm()})
+    if(statCM):
+      pt_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoTemperatura1Norm(), "2": statCM.primoTemperatura2Norm(), "3": statCM.primoTemperatura3Norm()})
+    
+    pt_table = DataTable(pt_desc)
+    pt_table.LoadData(pt_data)
+    
+    pq_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarso"),
+               "2": ("number", "Giusta"),
+               "3": ("number", "Abbondante")}
+
+    pq_data = list()
+    pq_data.append({"group": ("Tutte"), "1": stat.primoQuantita1Norm(), "2": stat.primoQuantita2Norm(), "3": stat.primoQuantita3Norm()})
+    if(statCC):
+      pq_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoQuantita1Norm(), "2": statCC.primoQuantita2Norm(), "3": statCC.primoQuantita3Norm()})
+    if(statCM):
+      pq_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoQuantita1Norm(), "2": statCM.primoQuantita2Norm(), "3": statCM.primoQuantita3Norm()})
+    
+    pq_table = DataTable(pq_desc)
+    pq_table.LoadData(pq_data)
+
+    pd_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 10min"),
+               "2": ("number", "10min - 20min"),
+               "3": ("number", "> 20min")}
+
+    pd_data = list()
+    pd_data.append({"group": ("Tutte"), "1": stat.primoDistribuzione1Norm(), "2": stat.primoDistribuzione2Norm(), "3": stat.primoDistribuzione3Norm()})
+    if(statCC):
+      pd_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoDistribuzione1Norm(), "2": statCC.primoDistribuzione2Norm(), "3": statCC.primoDistribuzione3Norm()})
+    if(statCM):
+      pd_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoDistribuzione1Norm(), "2": statCM.primoDistribuzione2Norm(), "3": statCM.primoDistribuzione3Norm()})
+    
+    pd_table = DataTable(pd_desc)
+    pd_table.LoadData(pd_data)
+
     template_values = dict()
     template_values["content"] = "stats/statindex.html"
-    template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["pc_table"] = pc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["pt_table"] = pt_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["pq_table"] = pq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["pd_table"] = pd_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["stat"] = stat
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
