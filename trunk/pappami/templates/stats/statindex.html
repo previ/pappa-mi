@@ -22,7 +22,7 @@ div { padding: 0px; }
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <!--script src="/stats/getdata" type="text/javascript"></script-->
 <script>
-    google.load('visualization', '1.1', {'packages' : ['piechart','linechart','barchart','columnchart']});
+    google.load('visualization', '1.1', {'packages' : ['piechart','linechart','barchart','columnchart', 'table']});
     dojo.addOnLoad(init);
 
 function init() {
@@ -113,47 +113,7 @@ function init() {
   aa_data.setCell(8, 1, 85);
   aa_data.setCell(9, 1, 65);
 
-  var nc_data = new google.visualization.DataTable();
-  nc_data.addColumn('string', 'Descrizione');
-  nc_data.addColumn('number', 'num.');
-  nc_data.addColumn('number', '%');
-  nc_data.addRows(12);
-  nc_data.setCell(0, 0, 'Cambiamenti di menu');
-  nc_data.setCell(1, 0, 'Cibo avanzato oltre 30%');
-  nc_data.setCell(2, 0, 'Quantita insufficiente di una vivanda');
-  nc_data.setCell(3, 0, 'Arredi e attrezzature inadeguate della sala di rigoverno');
-  nc_data.setCell(4, 0, 'Inadeguata pulizia dei locali');
-  nc_data.setCell(5, 0, 'Errata / mancata consegna o distribuzione delle diete speciali');
-  nc_data.setCell(6, 0, 'Ritardo o anticipo nella consegna delle termiche');
-  nc_data.setCell(7, 0, 'Corpo estraneo');
-  nc_data.setCell(8, 0, 'Temperatura non conforme alla legge');
-  nc_data.setCell(9, 0, 'Temperatura della dieta sanitaria giudicata inadeguata');
-  nc_data.setCell(10, 0, 'Inadeguato smaltimento della spazzatura');
-  nc_data.setCell(11, 0, 'Altro');
-  nc_data.setCell(0, 1, 41);
-  nc_data.setCell(1, 1, 98);
-  nc_data.setCell(2, 1, 74);
-  nc_data.setCell(3, 1, 45);
-  nc_data.setCell(4, 1, 76);
-  nc_data.setCell(5, 1, 40);
-  nc_data.setCell(6, 1, 19);
-  nc_data.setCell(7, 1, 52);
-  nc_data.setCell(8, 1, 85);
-  nc_data.setCell(9, 1, 65);
-  nc_data.setCell(10, 1, 65);
-  nc_data.setCell(11, 1, 65);
-  nc_data.setCell(0, 2, 41);
-  nc_data.setCell(1, 2, 98);
-  nc_data.setCell(2, 2, 74);
-  nc_data.setCell(3, 2, 45);
-  nc_data.setCell(4, 2, 76);
-  nc_data.setCell(5, 2, 40);
-  nc_data.setCell(6, 2, 19);
-  nc_data.setCell(7, 2, 52);
-  nc_data.setCell(8, 2, 85);
-  nc_data.setCell(9, 2, 65);
-  nc_data.setCell(10, 2, 65);
-  nc_data.setCell(11, 2, 65);
+  var nc_data = new google.visualization.DataTable({{nc_table}});
   
   var barOptsG = {width: 350, height: 100, isStacked: 'true', legend: 'right', colors: ['#FF0000','#FFFF00','#00CC00','#00FF00']};
   var barOpts = {width: 350, height: 100, isStacked: 'true', legend: 'right', colors: ['#FF0000','#FFFF00','#00FF00']};
@@ -165,10 +125,33 @@ function init() {
   var pq_data = new google.visualization.DataTable({{pq_table}});
   var pd_data = new google.visualization.DataTable({{pd_table}});
 
+  var sa_data = new google.visualization.DataTable({{sa_table}});
+  var sg_data = new google.visualization.DataTable({{sg_table}});
+  var sc_data = new google.visualization.DataTable({{sc_table}});
+  var st_data = new google.visualization.DataTable({{st_table}});
+  var sq_data = new google.visualization.DataTable({{sq_table}});
+  var sd_data = new google.visualization.DataTable({{sd_table}});
+
+  var ca_data = new google.visualization.DataTable({{ca_table}});
+  var cg_data = new google.visualization.DataTable({{cg_table}});
+  var cc_data = new google.visualization.DataTable({{cc_table}});
+  var ct_data = new google.visualization.DataTable({{ct_table}});
+  var cq_data = new google.visualization.DataTable({{cq_table}});
+
+  var ba_data = new google.visualization.DataTable({{ba_table}});
+  var bg_data = new google.visualization.DataTable({{bg_table}});
+  var bq_data = new google.visualization.DataTable({{bq_table}});
+
+  var fa_data = new google.visualization.DataTable({{fa_table}});
+  var fg_data = new google.visualization.DataTable({{fg_table}});
+  var fm_data = new google.visualization.DataTable({{fm_table}});
+  var fq_data = new google.visualization.DataTable({{fq_table}});
+  var fd_data = new google.visualization.DataTable({{fd_table}});
+  
   // Create and draw the visualization.
   //new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
   //new google.visualization.Table(document.getElementById('aa_table')).draw(aa_data, null);
-  //new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
+  new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
   //new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
   //new google.visualization.Table(document.getElementById('pc_table')).draw(pc_data, {sort: 'disable'});
   //new google.visualization.Table(document.getElementById('pt_table')).draw(pt_data, {sort: 'disable'});
@@ -187,35 +170,29 @@ function init() {
   new google.visualization.BarChart(document.getElementById('pa_chart')).draw(pa_data, barOpts);  
   new google.visualization.BarChart(document.getElementById('pg_chart')).draw(pg_data, barOptsG);  
   
-/*
-  new google.visualization.BarChart(document.getElementById('sd_chart')).draw(sd_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('sg_chart')).draw(sg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('sa_chart')).draw(sa_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('sq_chart')).draw(sq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('st_chart')).draw(st_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('sc_chart')).draw(sc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('sd_chart')).draw(sd_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('sc_chart')).draw(sc_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('st_chart')).draw(st_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('sq_chart')).draw(sq_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('sa_chart')).draw(sa_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('sg_chart')).draw(sg_data, barOptsG);  
 
-  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('cg_chart')).draw(cg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('ca_chart')).draw(ca_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('cq_chart')).draw(cq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('ct_chart')).draw(ct_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('ct_chart')).draw(ct_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('cq_chart')).draw(cq_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('ca_chart')).draw(ca_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('cg_chart')).draw(cg_data, barOptsG);  
 
-  new google.visualization.PieChart(document.getElementById('bt_chart')).draw(bt_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('bp_chart')).draw(bp_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('bg_chart')).draw(bg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('ba_chart')).draw(ba_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('bq_chart')).draw(bq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
+  new google.visualization.BarChart(document.getElementById('bq_chart')).draw(bq_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('ba_chart')).draw(ba_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('bg_chart')).draw(bg_data, barOptsG);  
 
-  new google.visualization.PieChart(document.getElementById('ft_chart')).draw(ft_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('fg_chart')).draw(fg_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('fa_chart')).draw(fa_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('fq_chart')).draw(fq_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-  new google.visualization.BarChart(document.getElementById('fs_chart')).draw(fs_data, {width: 350, height: 100, isStacked: 'true', legend: 'right'});  
-*/
+  new google.visualization.BarChart(document.getElementById('fq_chart')).draw(fq_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('fa_chart')).draw(fa_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, barOpts);  
+  new google.visualization.BarChart(document.getElementById('fg_chart')).draw(fg_data, barOptsG);  
 
+  /*
 	var cm = dijit.byId("e_cm");
 	var anno = dojo.byId("e_aa");
 	cookie = readCookie("pappa-mi-ctx");
@@ -225,7 +202,7 @@ function init() {
 	var p = cookie.split(",");
 	cm.attr("value", p[1]);
 	anno.value=p[2];
-    }
+*/    
 
 }
 
@@ -282,7 +259,7 @@ searchAttr="nome" name="cm" id="e_cm">
         <table width="100%"><tr><!--td><div id="aa_table" style="width: 300px; height: 300px;"></div></td--><td><div id="aa_chart"></div></td></tr></table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Non conformit&agrave;">
-        <table><tr><!--td><div id="nc_table"></div></td--><td><div id="nc_chart"></div></td></tr></table>
+        <table><tr><td><div id="nc_table"></div></td><td><div id="nc_chart"></div></td></tr></table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Primo">
         <table>
@@ -291,54 +268,45 @@ searchAttr="nome" name="cm" id="e_cm">
         <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
         <tr><td><div id="pg_table">{%if statCM %}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoGradimentoNorm}}|{{statCC.primoGradimentoNorm}}|{{statCM.primoGradimentoNorm}}&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%else%}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}&chls=1&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%endif%}</div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
-        <tr><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pd_chart"></div></td></tr>
+        <tr><td><div id="pq_table"></div></td><td><div id="pq_chart"></div></td><td></td><td><div id="pd_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Secondo">
-    Secondo    
         <table>
-        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="sd_table"></div></td><td><div id="sd_chart"></div></td><td><div id="sc_table"></div></td><td><div id="pc_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
-        <tr><td><div id="st_table"></div></td><td><div id="st_chart"></div></td><td><div id="sq_table"></div></td><td><div id="pq_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
-        <tr><td><div id="sa_table"></div></td><td><div id="sa_chart"></div></td><td><div id="sg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="sa_table">{%if statCM %}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}|{{statCC.primoAssaggioNorm}}|{{statCM.primoAssaggioNorm}}&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Assaggio"/>{%else%}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}&chls=1&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/>{%endif%}</div></td><td><div id="sa_chart"></div></td><td><div id="sc_table"></div></td><td><div id="sc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="sg_table">{%if statCM %}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoGradimentoNorm}}|{{statCC.primoGradimentoNorm}}|{{statCM.primoGradimentoNorm}}&chls=1|3|5&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|CM|CC|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/>{%else%}<img src="http://chart.apis.google.com/chart?chs=200x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}&chls=1&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/>{%endif%}</div></td><td><div id="sg_chart"></div></td><td><div id="st_table"></div></td><td><div id="st_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
+        <tr><td><div id="sq_table"></div></td><td><div id="sq_chart"></div></td><td><div id="sd_table"></div></td><td><div id="sd_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Contorno">
-    Contorno    
         <table>
-        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td><td><div id="cc_table"></div></td><td><div id="pc_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
-        <tr><td><div id="ct_table"></div></td><td><div id="ct_chart"></div></td><td><div id="cq_table"></div></td><td><div id="pq_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
-        <tr><td><div id="ca_table"></div></td><td><div id="ca_chart"></div></td><td><div id="cg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="ca_table"></div></td><td><div id="ca_chart"></div></td><td><div id="cc_table"></div></td><td><div id="cc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="cg_table"></div></td><td><div id="cg_chart"></div></td><td><div id="ct_table"></div></td><td><div id="ct_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quatit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
+        <tr><td><div id="cq_table"></div></td><td><div id="cq_chart"></div></td><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Pane">
-    Pane    
         <table>
-        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="bd_table"></div></td><td><div id="bd_chart"></div></td><td><div id="bc_table"></div></td><td><div id="pc_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
-        <tr><td><div id="bt_table"></div></td><td><div id="bt_chart"></div></td><td><div id="bq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Tipo</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="bt_table"></div></td><td><div id="bt_chart"></div></td><td><div id="bq_table"></div></td><td><div id="bq_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
-        <tr><td><div id="ba_table"></div></td><td><div id="ba_chart"></div></td><td><div id="bg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        <tr><td><div id="ba_table"></div></td><td><div id="ba_chart"></div></td><td><div id="bg_table"></div></td><td><div id="bg_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Frutta">
-    Frutta    
         <table>
-        <tr><td colspan="2" class="tab_title">Distribuzione</td><td colspan="2" class="tab_title">Cottura</td></tr>
-        <tr><td><div id="fd_table"></div></td><td><div id="fd_chart"></div></td><td><div id="fc_table"></div></td><td><div id="pc_chart"></div></td></tr>
-        <tr><td colspan="2" class="tab_title">Temperatura</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
-        <tr><td><div id="ft_table"></div></td><td><div id="ft_chart"></div></td><td><div id="fq_table"></div></td><td><div id="pq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Maturazione</td><td colspan="2" class="tab_title">Quatit&agrave;</td></tr>
+        <tr><td><div id="fm_table"></div></td><td><div id="fm_chart"></div></td><td><div id="fq_table"></div></td><td><div id="fq_chart"></div></td></tr>
         <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Gradimento</td></tr>
-        <tr><td><div id="fa_table"></div></td><td><div id="fa_chart"></div></td><td><div id="fg_table"></div></td><td><div id="pg_chart"></div></td></tr>
+        <tr><td><div id="fa_table"></div></td><td><div id="fa_chart"></div></td><td><div id="fg_table"></div></td><td><div id="fg_chart"></div></td></tr>
         </table>
     </div>
     <div dojoType="dijit.layout.ContentPane" title="Servizio">
-    Servizio    
     </div>
 </div>

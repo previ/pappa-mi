@@ -151,7 +151,292 @@ class CMStatsHandler(BasePage):
     pd_table = DataTable(pd_desc)
     pd_table.LoadData(pd_data)
 
+    sg_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 25%"),
+               "2": ("number", "25% < 50%"),
+               "3": ("number", "50% < 75%"),
+               "4": ("number", ">75%")}
+
+    sg_data = list()
+    sg_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    if(statCC):
+      sg_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+    if(statCM):
+      sg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+    
+    sg_table = DataTable(sg_desc)
+    sg_table.LoadData(sg_data)
+
+    sa_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Non Accettabile"),
+               "2": ("number", "Accettabile"),
+               "3": ("number", "Gradevole")}
+
+    sa_data = list()
+    sa_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCC):
+      sa_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoAssaggio1Norm(), "2": statCC.primoAssaggio2Norm(), "3": statCC.primoAssaggio3Norm()})
+    if(statCM):
+      sa_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoAssaggio1Norm(), "2": statCM.primoAssaggio2Norm(), "3": statCM.primoAssaggio3Norm()})
+    
+    sa_table = DataTable(sa_desc)
+    sa_table.LoadData(sa_data)
+
+    sc_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarsa"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Eccessiva")}
+
+    sc_data = list()
+    sc_data.append({"group": ("Tutte"), "1": stat.primoCottura1Norm(), "2": stat.primoCottura2Norm(), "3": stat.primoCottura3Norm()})
+    if(statCC):
+      sc_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoCottura1Norm(), "2": statCC.primoCottura2Norm(), "3": statCC.primoCottura3Norm()})
+    if(statCM):
+      sc_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoCottura1Norm(), "2": statCM.primoCottura2Norm(), "3": statCM.primoCottura3Norm()})
+    
+    sc_table = DataTable(sc_desc)
+    sc_table.LoadData(sc_data)
+
+    st_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Freddo"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Caldo")}
+
+    st_data = list()
+    st_data.append({"group": ("Tutte"), "1": stat.primoTemperatura1Norm(), "2": stat.primoTemperatura2Norm(), "3": stat.primoTemperatura3Norm()})
+    if(statCC):
+      st_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoTemperatura1Norm(), "2": statCC.primoTemperatura2Norm(), "3": statCC.primoTemperatura3Norm()})
+    if(statCM):
+      st_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoTemperatura1Norm(), "2": statCM.primoTemperatura2Norm(), "3": statCM.primoTemperatura3Norm()})
+    
+    st_table = DataTable(st_desc)
+    st_table.LoadData(st_data)
+    
+    sq_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarso"),
+               "2": ("number", "Giusta"),
+               "3": ("number", "Abbondante")}
+
+    sq_data = list()
+    sq_data.append({"group": ("Tutte"), "1": stat.primoQuantita1Norm(), "2": stat.primoQuantita2Norm(), "3": stat.primoQuantita3Norm()})
+    if(statCC):
+      sq_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoQuantita1Norm(), "2": statCC.primoQuantita2Norm(), "3": statCC.primoQuantita3Norm()})
+    if(statCM):
+      sq_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoQuantita1Norm(), "2": statCM.primoQuantita2Norm(), "3": statCM.primoQuantita3Norm()})
+    
+    sq_table = DataTable(sq_desc)
+    sq_table.LoadData(sq_data)
+
+    sd_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 10min"),
+               "2": ("number", "10min - 20min"),
+               "3": ("number", "> 20min")}
+
+    sd_data = list()
+    sd_data.append({"group": ("Tutte"), "1": stat.primoDistribuzione1Norm(), "2": stat.primoDistribuzione2Norm(), "3": stat.primoDistribuzione3Norm()})
+    if(statCC):
+      sd_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoDistribuzione1Norm(), "2": statCC.primoDistribuzione2Norm(), "3": statCC.primoDistribuzione3Norm()})
+    if(statCM):
+      sd_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoDistribuzione1Norm(), "2": statCM.primoDistribuzione2Norm(), "3": statCM.primoDistribuzione3Norm()})
+    
+    sd_table = DataTable(sd_desc)
+    sd_table.LoadData(sd_data)
+
+    cg_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 25%"),
+               "2": ("number", "25% < 50%"),
+               "3": ("number", "50% < 75%"),
+               "4": ("number", ">75%")}
+
+    cg_data = list()
+    cg_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    if(statCC):
+      cg_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+    if(statCM):
+      cg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+    
+    cg_table = DataTable(cg_desc)
+    cg_table.LoadData(cg_data)
+
+    ca_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Non Accettabile"),
+               "2": ("number", "Accettabile"),
+               "3": ("number", "Gradevole")}
+
+    ca_data = list()
+    ca_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCC):
+      ca_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoAssaggio1Norm(), "2": statCC.primoAssaggio2Norm(), "3": statCC.primoAssaggio3Norm()})
+    if(statCM):
+      ca_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoAssaggio1Norm(), "2": statCM.primoAssaggio2Norm(), "3": statCM.primoAssaggio3Norm()})
+    
+    ca_table = DataTable(ca_desc)
+    ca_table.LoadData(ca_data)
+
+    cc_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarsa"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Eccessiva")}
+
+    cc_data = list()
+    cc_data.append({"group": ("Tutte"), "1": stat.primoCottura1Norm(), "2": stat.primoCottura2Norm(), "3": stat.primoCottura3Norm()})
+    if(statCC):
+      cc_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoCottura1Norm(), "2": statCC.primoCottura2Norm(), "3": statCC.primoCottura3Norm()})
+    if(statCM):
+      cc_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoCottura1Norm(), "2": statCM.primoCottura2Norm(), "3": statCM.primoCottura3Norm()})
+    
+    cc_table = DataTable(cc_desc)
+    cc_table.LoadData(cc_data)
+
+    ct_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Freddo"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Caldo")}
+
+    ct_data = list()
+    ct_data.append({"group": ("Tutte"), "1": stat.primoTemperatura1Norm(), "2": stat.primoTemperatura2Norm(), "3": stat.primoTemperatura3Norm()})
+    if(statCC):
+      ct_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoTemperatura1Norm(), "2": statCC.primoTemperatura2Norm(), "3": statCC.primoTemperatura3Norm()})
+    if(statCM):
+      ct_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoTemperatura1Norm(), "2": statCM.primoTemperatura2Norm(), "3": statCM.primoTemperatura3Norm()})
+    
+    ct_table = DataTable(ct_desc)
+    ct_table.LoadData(ct_data)
+    
+    cq_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarso"),
+               "2": ("number", "Giusta"),
+               "3": ("number", "Abbondante")}
+
+    cq_data = list()
+    cq_data.append({"group": ("Tutte"), "1": stat.primoQuantita1Norm(), "2": stat.primoQuantita2Norm(), "3": stat.primoQuantita3Norm()})
+    if(statCC):
+      cq_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoQuantita1Norm(), "2": statCC.primoQuantita2Norm(), "3": statCC.primoQuantita3Norm()})
+    if(statCM):
+      cq_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoQuantita1Norm(), "2": statCM.primoQuantita2Norm(), "3": statCM.primoQuantita3Norm()})
+    
+    cq_table = DataTable(cq_desc)
+    cq_table.LoadData(cq_data)
+    
+    bg_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 25%"),
+               "2": ("number", "25% < 50%"),
+               "3": ("number", "50% < 75%"),
+               "4": ("number", ">75%")}
+
+    bg_data = list()
+    bg_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    if(statCC):
+      bg_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+    if(statCM):
+      bg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+    
+    bg_table = DataTable(bg_desc)
+    bg_table.LoadData(bg_data)
+
+    ba_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Non Accettabile"),
+               "2": ("number", "Accettabile"),
+               "3": ("number", "Gradevole")}
+
+    ba_data = list()
+    ba_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCC):
+      ba_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoAssaggio1Norm(), "2": statCC.primoAssaggio2Norm(), "3": statCC.primoAssaggio3Norm()})
+    if(statCM):
+      ba_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoAssaggio1Norm(), "2": statCM.primoAssaggio2Norm(), "3": statCM.primoAssaggio3Norm()})
+    
+    ba_table = DataTable(ba_desc)
+    ba_table.LoadData(ba_data)
+    
+    bq_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarso"),
+               "2": ("number", "Giusta"),
+               "3": ("number", "Abbondante")}
+
+    bq_data = list()
+    bq_data.append({"group": ("Tutte"), "1": stat.primoQuantita1Norm(), "2": stat.primoQuantita2Norm(), "3": stat.primoQuantita3Norm()})
+    if(statCC):
+      bq_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoQuantita1Norm(), "2": statCC.primoQuantita2Norm(), "3": statCC.primoQuantita3Norm()})
+    if(statCM):
+      bq_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoQuantita1Norm(), "2": statCM.primoQuantita2Norm(), "3": statCM.primoQuantita3Norm()})
+    
+    bq_table = DataTable(bq_desc)
+    bq_table.LoadData(bq_data)
+
+    fg_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "< 25%"),
+               "2": ("number", "25% < 50%"),
+               "3": ("number", "50% < 75%"),
+               "4": ("number", ">75%")}
+
+    fg_data = list()
+    fg_data.append({"group": ("Tutte"), "1": stat.primoGradimento1Norm(), "2": stat.primoGradimento2Norm(), "3": stat.primoGradimento3Norm(), "4": stat.primoGradimento4Norm()})
+    if(statCC):
+      fg_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoGradimento1Norm(), "2": statCC.primoGradimento2Norm(), "3": statCC.primoGradimento3Norm(), "4": statCC.primoGradimento4Norm()})
+    if(statCM):
+      fg_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoGradimento1Norm(), "2": statCM.primoGradimento2Norm(), "3": statCM.primoGradimento3Norm(), "4": statCM.primoGradimento4Norm()})
+    
+    fg_table = DataTable(fg_desc)
+    fg_table.LoadData(fg_data)
+
+    fa_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Non Accettabile"),
+               "2": ("number", "Accettabile"),
+               "3": ("number", "Gradevole")}
+
+    fa_data = list()
+    fa_data.append({"group": ("Tutte"), "1": stat.primoAssaggio1Norm(), "2": stat.primoAssaggio2Norm(), "3": stat.primoAssaggio3Norm()})
+    if(statCC):
+      fa_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoAssaggio1Norm(), "2": statCC.primoAssaggio2Norm(), "3": statCC.primoAssaggio3Norm()})
+    if(statCM):
+      fa_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoAssaggio1Norm(), "2": statCM.primoAssaggio2Norm(), "3": statCM.primoAssaggio3Norm()})
+    
+    fa_table = DataTable(fa_desc)
+    fa_table.LoadData(fa_data)
+
+    fm_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Freddo"),
+               "2": ("number", "Corretta"),
+               "3": ("number", "Caldo")}
+
+    fm_data = list()
+    fm_data.append({"group": ("Tutte"), "1": stat.primoTemperatura1Norm(), "2": stat.primoTemperatura2Norm(), "3": stat.primoTemperatura3Norm()})
+    if(statCC):
+      fm_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoTemperatura1Norm(), "2": statCC.primoTemperatura2Norm(), "3": statCC.primoTemperatura3Norm()})
+    if(statCM):
+      fm_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoTemperatura1Norm(), "2": statCM.primoTemperatura2Norm(), "3": statCM.primoTemperatura3Norm()})
+    
+    fm_table = DataTable(fm_desc)
+    fm_table.LoadData(fm_data)
+    
+    fq_desc = {"group": ("string", "Gruppo"), 
+               "1": ("number", "Scarso"),
+               "2": ("number", "Giusta"),
+               "3": ("number", "Abbondante")}
+
+    fq_data = list()
+    fq_data.append({"group": ("Tutte"), "1": stat.primoQuantita1Norm(), "2": stat.primoQuantita2Norm(), "3": stat.primoQuantita3Norm()})
+    if(statCC):
+      fq_data.append({"group": (statCC.centroCucina.nome), "1": statCC.primoQuantita1Norm(), "2": statCC.primoQuantita2Norm(), "3": statCC.primoQuantita3Norm()})
+    if(statCM):
+      fq_data.append({"group": (statCM.commissione.nome + " " + statCM.commissione.tipoScuola), "1": statCM.primoQuantita1Norm(), "2": statCM.primoQuantita2Norm(), "3": statCM.primoQuantita3Norm()})
+    
+    fq_table = DataTable(fq_desc)
+    fq_table.LoadData(fq_data)
+
+    nc_desc = {"tipo": ("string", "Tipo"), 
+               "count": ("number", "Occorrenze")}
+    nc = StatisticheNonconf.all().filter("commissione", None).filter("centroCucina",None).get()
+    nc_data = list()
+    for nd in nc.data:
+      nc_data.append({"tipo": str(nd), "count": nc.data[nd]})
+    nc_table = DataTable(nc_desc)
+    nc_table.LoadData(nc_data)
+    
+    
     template_values = dict()
+    template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
     template_values["content"] = "stats/statindex.html"
     template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
     template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3"))
@@ -159,6 +444,24 @@ class CMStatsHandler(BasePage):
     template_values["pt_table"] = pt_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["pq_table"] = pq_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["pd_table"] = pd_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["sg_table"] = sg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["sa_table"] = sa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["sc_table"] = sc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["st_table"] = st_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["sq_table"] = sq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["sd_table"] = sd_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["cg_table"] = cg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["ca_table"] = ca_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["cc_table"] = cc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["ct_table"] = ct_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["cq_table"] = cq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["bg_table"] = bg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["ba_table"] = ba_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["bq_table"] = bq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["fg_table"] = fg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["fa_table"] = fa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["fm_table"] = fm_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["fq_table"] = fq_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["stat"] = stat
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
@@ -169,9 +472,58 @@ class CMStatsDataHandler(BasePage):
   def get(self):
     path = os.path.join(os.path.dirname(__file__), '../templates/stats/statdata.js')
     self.response.out.write(template.render(path, template_values))
+
+class CMStatNCCalcHandler(BasePage):
+  def get(self):
+    stats = StatisticheNonconf()
+    statCM = StatisticheNonconf()
+    statCC = StatisticheNonconf()
+    statsCM = dict()
+    statsCC = dict()
+
+    stats.dataInizio = datetime.datetime(year=2009, month=9, day=1).date()
+    stats.dataFine = datetime.datetime.now().date()
+    for nc in Nonconformita.all().filter("dataNonconf >", stats.dataInizio):
+      if( nc.commissione.key() not in statsCM ):          
+        statCM = StatisticheNonconf()
+        statCM.dataInizio = stats.dataInizio
+        statCM.dataFine = stats.dataFine
+        statCM.commissione = nc.commissione
+        statsCM[statCM.commissione.key()] = statCM
+      else:
+        statCM = statsCM[nc.commissione.key()]
+        
+      if( nc.commissione.centroCucina.key() not in statsCC ):
+        statCC = StatisticheNonconf()
+        statCC.dataInizio = stats.dataInizio
+        statCC.dataFine = stats.dataFine
+        statCC.centroCucina = nc.commissione.centroCucina
+        statsCC[statCC.centroCucina.key()] = statCC
+      else:
+        statCC = statsCC[nc.commissione.centroCucina.key()]
+
+      self.calc(nc,statCM)
+      self.calc(nc,statCC)
+      self.calc(nc,stats)
+      
+    if stats.numeroSchede > 0 :
+      stats.put()
+      
+    for stat in statsCM.values() :
+      stat.put()
+
+    for stat in statsCC.values() :
+      stat.put()
+      
+  def calc(self, nc, stats):
+    stats.numeroSchede = stats.numeroSchede + 1;
+    count = stats.data[nc.tipo]
+    logging.info(count)
+    stats.data[nc.tipo] = count
     
 class CMStatCalcHandler(BasePage):
   def get(self):
+    
     stats = StatisticheIspezioni()
     statCM = StatisticheIspezioni()
     statCC = StatisticheIspezioni()
@@ -223,6 +575,13 @@ class CMStatCalcHandler(BasePage):
   def calc(self, isp, stats):
     stats.numeroSchede = stats.numeroSchede + 1;
     
+    if(isp.primoDistribuzione == 1):
+      stats.primoDistribuzione1 = stats.primoDistribuzione1 + isp.primoDistribuzione
+    if(isp.primoDistribuzione == 2):
+      stats.primoDistribuzione2 = stats.primoDistribuzione2 + isp.primoDistribuzione
+    if(isp.primoDistribuzione == 3):
+      stats.primoDistribuzione3 = stats.primoDistribuzione3 + isp.primoDistribuzione
+
     if(isp.primoAssaggio == 1):
       stats.primoAssaggio1 = stats.primoAssaggio1 + isp.primoAssaggio
     if(isp.primoAssaggio == 2):
@@ -260,6 +619,13 @@ class CMStatCalcHandler(BasePage):
     if(isp.primoQuantita == 3):
       stats.primoQuantita3 = stats.primoQuantita3 + isp.primoQuantita
       
+    if(isp.secondoDistribuzione == 1):
+      stats.secondoDistribuzione1 = stats.secondoDistribuzione1 + isp.secondoDistribuzione
+    if(isp.secondoDistribuzione == 2):
+      stats.secondoDistribuzione2 = stats.secondoDistribuzione2 + isp.secondoDistribuzione
+    if(isp.secondoDistribuzione == 3):
+      stats.secondoDistribuzione3 = stats.secondoDistribuzione3 + isp.secondoDistribuzione
+
     if(isp.secondoAssaggio == 1):
       stats.secondoAssaggio1 = stats.secondoAssaggio1 + isp.secondoAssaggio
     if(isp.secondoAssaggio == 2):
@@ -422,8 +788,10 @@ class CMStatCalcHandler(BasePage):
       stats.giudizioGlobale3 = stats.giudizioGlobale3 + isp.giudizioGlobale
 
   def comp(self, stats):
+    stats.primoDistribuzione = float(stats.primoDistribuzione1 + stats.primoDistribuzione2 + stats.primoDistribuzione3) / stats.numeroSchede
     stats.primoAssaggio = float(stats.primoAssaggio1 + stats.primoAssaggio2 + stats.primoAssaggio3) / stats.numeroSchede
     stats.primoGradimento = float(stats.primoGradimento1 + stats.primoGradimento2 + stats.primoGradimento3 + stats.primoGradimento4) / stats.numeroSchede
+    stats.secondoDistribuzione = float(stats.secondoDistribuzione1 + stats.secondoDistribuzione2 + stats.secondoDistribuzione3) / stats.numeroSchede
     stats.secondoAssaggio = float(stats.secondoAssaggio1 + stats.secondoAssaggio2 + stats.secondoAssaggio3) / stats.numeroSchede
     stats.secondoGradimento = float(stats.secondoGradimento1 + stats.secondoGradimento2 + stats.secondoGradimento3 + stats.secondoGradimento4) / stats.numeroSchede
     stats.contornoAssaggio = float(stats.contornoAssaggio1 + stats.contornoAssaggio2 + stats.contornoAssaggio3) / stats.numeroSchede
@@ -536,6 +904,7 @@ class CMStatsHandlerOld(BasePage):
 application = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
   ('/stats/calc', CMStatCalcHandler),
+  ('/stats/calcnc', CMStatNCCalcHandler),
   ('/stats/getdata', CMStatsDataHandler),
 ], debug=True)
 

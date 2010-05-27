@@ -62,8 +62,8 @@ class CMFeedIspHandler(BasePage):
         link = "http://www.pappa-mi.it/rss/ispezioni",
         description = "Le ultime Ispezioni inserite dalle Commissioni Mensa di Milano",
         items = isp_items)
-
-      memcache.add("feed_isp", rss.to_xml())     
+      buff = rss.to_xml()
+      memcache.add("feed_isp", buff)
         
         
     expires_date = datetime.utcnow() + timedelta(1)
