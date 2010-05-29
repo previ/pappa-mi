@@ -354,3 +354,10 @@ indexes:
   - name: commissione
   - name: dataFine
     direction: desc
+
+- kind: StatisticheNonconf
+  properties:
+  - name: centroCucina
+  - name: commissione
+  - name: dataInizio
+    direction: desc

@@ -196,6 +196,20 @@ class Nonconformita(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
+  _tipi = {1:0,
+           2:1,
+           3:2,
+           4:3,
+           5:4,
+           6:5,
+           7:6,
+           8:7,
+           9:8,
+           10:9,
+           11:10,
+           12:11,
+           99:12}
+
   _tipi = {1:"Cambiamenti di menu",
            2:"Cibo avanzato oltre 30%",
            3:"Quantita insufficiente di una vivanda",
@@ -247,8 +261,11 @@ class StatisticheIspezioni(db.Model):
   
   dataInizio = db.DateProperty()
   dataFine = db.DateProperty()
-  
-  numeroSchede = db.IntegerProperty(default=0)
+
+  dataCalcolo = db.DateProperty()
+
+  numeroSchede = db.IntegerProperty(default=0) 
+  numeroSchedeSettimana = db.ListProperty(int, default=[0])
 
   puliziaRefettorio = db.FloatProperty(default=0.0)
   puliziaRefettorio1 = db.IntegerProperty(default=0)
@@ -299,6 +316,10 @@ class StatisticheIspezioni(db.Model):
   primoGradimento2 = db.IntegerProperty(default=0)
   primoGradimento3 = db.IntegerProperty(default=0)
   primoGradimento4 = db.IntegerProperty(default=0)
+
+  secondoDistribuzione1 = db.IntegerProperty(default=0)
+  secondoDistribuzione2 = db.IntegerProperty(default=0)
+  secondoDistribuzione3 = db.IntegerProperty(default=0)
 
   secondoCottura1 = db.IntegerProperty(default=0)
   secondoCottura2 = db.IntegerProperty(default=0)
@@ -538,8 +559,34 @@ class StatisticheNonconf(db.Model):
   
   dataInizio = db.DateProperty()
   dataFine = db.DateProperty()
+  dataCalcolo = db.DateProperty()
   
-  numeroSchede = db.IntegerProperty(default=0)
+  numeroNonconf = db.IntegerProperty(default=0)
+  numeroNonconfSettimana = db.ListProperty(int, default=[0])
 
-  data = {1:db.IntegerProperty(default=0),2:db.IntegerProperty(default=0),3:db.IntegerProperty(default=0),4:db.IntegerProperty(default=0),5:db.IntegerProperty(default=0),6:db.IntegerProperty(default=0),7:db.IntegerProperty(default=0),8:db.IntegerProperty(default=0),9:db.IntegerProperty(default=0),10:db.IntegerProperty(default=0),11:db.IntegerProperty(default=0),12:db.IntegerProperty(default=0),99:db.IntegerProperty(default=0)}
-  #data = db.ListProperty(int, default={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,99:0})
+  data = db.ListProperty(int,default=[0,0,0,0,0,0,0,0,0,0,0,0,0])
+  
+  _tipiPos = {1:0,
+           2:1,
+           3:2,
+           4:3,
+           5:4,
+           6:5,
+           7:6,
+           8:7,
+           9:8,
+           10:9,
+           11:10,
+           12:11,
+           99:12}  
+
+  def getData(self, tipo):
+    return self.data[self._tipiPos[tipo]]
+  
+  def incData(self, tipo):
+    self.data[self._tipiPos[tipo]] += 1
+
+  def getTipiPos(self):
+    return self._tipiPos
+
+  
