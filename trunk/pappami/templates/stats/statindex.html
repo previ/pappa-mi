@@ -46,47 +46,7 @@ function init() {
   cm_data.setCell(1, 3, 152);
   cm_data.setCell(2, 3, 85);
 
-  var dati_ins = new google.visualization.DataTable();
-  dati_ins.addColumn('string', 'Settimane');
-  dati_ins.addColumn('number', 'Schede');
-  dati_ins.addColumn('number', 'Non conformita');
-  dati_ins.addRows(12);
-  dati_ins.setCell(0, 0, '1');
-  dati_ins.setCell(1, 0, '2');
-  dati_ins.setCell(2, 0, '3');
-  dati_ins.setCell(3, 0, '4');
-  dati_ins.setCell(4, 0, '5');
-  dati_ins.setCell(5, 0, '6');
-  dati_ins.setCell(6, 0, '7');
-  dati_ins.setCell(7, 0, '8');
-  dati_ins.setCell(8, 0, '9');
-  dati_ins.setCell(9, 0, '10');
-  dati_ins.setCell(10, 0, '11');
-  dati_ins.setCell(11, 0, '12');
-  dati_ins.setCell(0, 1, 20);
-  dati_ins.setCell(1, 1, 30);
-  dati_ins.setCell(2, 1, 40);
-  dati_ins.setCell(3, 1, 14);
-  dati_ins.setCell(4, 1, 24);
-  dati_ins.setCell(5, 1, 43);
-  dati_ins.setCell(6, 1, 21);
-  dati_ins.setCell(7, 1, 34);
-  dati_ins.setCell(8, 1, 22);
-  dati_ins.setCell(9, 1, 34);
-  dati_ins.setCell(10, 1, 33);
-  dati_ins.setCell(11, 1, 23);
-  dati_ins.setCell(0, 2, 15);
-  dati_ins.setCell(1, 2, 25);
-  dati_ins.setCell(2, 2, 35);
-  dati_ins.setCell(3, 2, 24);
-  dati_ins.setCell(4, 2, 34);
-  dati_ins.setCell(5, 2, 13);
-  dati_ins.setCell(6, 2, 31);
-  dati_ins.setCell(7, 2, 24);
-  dati_ins.setCell(8, 2, 12);
-  dati_ins.setCell(9, 2, 24);
-  dati_ins.setCell(10, 2, 23);
-  dati_ins.setCell(11, 2, 13);
+  var dati_ins = new google.visualization.DataTable({{di_table}});
 
   var aa_data = new google.visualization.DataTable();
   aa_data.addColumn('string', 'Descrizione');
@@ -151,7 +111,7 @@ function init() {
   // Create and draw the visualization.
   //new google.visualization.Table(document.getElementById('cm_table')).draw(cm_data, null);
   //new google.visualization.Table(document.getElementById('aa_table')).draw(aa_data, null);
-  new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
+  //new google.visualization.Table(document.getElementById('nc_table')).draw(nc_data, null);
   //new google.visualization.Table(document.getElementById('pd_table')).draw(pd_data, {sort: 'disable'});
   //new google.visualization.Table(document.getElementById('pc_table')).draw(pc_data, {sort: 'disable'});
   //new google.visualization.Table(document.getElementById('pt_table')).draw(pt_data, {sort: 'disable'});

@@ -29,6 +29,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
+from google.appengine.api.labs.taskqueue import Task, Queue
 
 from py.model import *
 from py.form import CommissioneForm
@@ -427,15 +428,26 @@ class CMStatsHandler(BasePage):
 
     nc_desc = {"tipo": ("string", "Tipo"), 
                "count": ("number", "Occorrenze")}
-    nc = StatisticheNonconf.all().filter("commissione", None).filter("centroCucina",None).get()
+    
+    ncstat = StatisticheNonconf.all().filter("commissione", None).filter("centroCucina",None).order("-dataInizio").get()
     nc_data = list()
-    for nd in nc.data:
-      nc_data.append({"tipo": str(nd), "count": nc.data[nd]})
+    nci = Nonconformita();
+    for nd in ncstat.getTipiPos():
+      nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
     nc_table = DataTable(nc_desc)
     nc_table.LoadData(nc_data)
     
+    di_desc = {"time": ("string", "Settimane"), 
+               "schede": ("number", "Schede"),
+               "nonconf": ("number", "Non Conformita")}
+    di_data = list()
+    for w in range(len(ncstat.numeroNonconfSettimana)):
+      di_data.append({"time": w, "schede": stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
+    di_table = DataTable(di_desc)
+    di_table.LoadData(di_data)
     
     template_values = dict()
+    template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
     template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
     template_values["content"] = "stats/statindex.html"
     template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
@@ -473,55 +485,118 @@ class CMStatsDataHandler(BasePage):
     path = os.path.join(os.path.dirname(__file__), '../templates/stats/statdata.js')
     self.response.out.write(template.render(path, template_values))
 
-class CMStatNCCalcHandler(BasePage):
+class CMStatCalcHandler(BasePage):
   def get(self):
+    self.putTask('/admin/stats/calcisp',limit=self.request.get("limit"),offset=self.request.get("offset"))
+    self.putTask('/admin/stats/calcnc',limit=self.request.get("limit"),offset=self.request.get("offset"))
+    
+  def putTask(self, aurl, offset=0, limit=50):
+    task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
+    queue = Queue()
+    queue.add(task)
+    
+class CMStatNCCalcHandler(CMStatCalcHandler):
+  def get(self):
+    
     stats = StatisticheNonconf()
     statCM = StatisticheNonconf()
     statCC = StatisticheNonconf()
     statsCM = dict()
     statsCC = dict()
 
+    limit = int(self.request.get("limit"))
+    logging.info("limit: %s", limit)
+    if limit is None:
+      limit = 0
+    offset = int(self.request.get("offset"))
+    logging.info("offset: %s", offset)
+    if offset is None:
+      offset = 0
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
+    
+    dataInizio = datetime.datetime(year=2009, month=9, day=1).date()    
+    dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
+    dataCalcolo = datetime.datetime.now().date()
+    wtot = (dataFine - dataInizio).days / 7
+
+    logging.info("dataInizio: " + str(dataInizio))
+    logging.info("dataFine: " + str(dataFine))
+    logging.info("wtot: " + str(wtot))
+    
+    for s in StatisticheNonconf.all().filter("dataInizio >=", dataInizio):
+      if s.commissione is None and s.centroCucina is None:
+        stats = s
+      elif s.commissione is None and s.centroCucina is not None:
+        statsCC[s.centroCucina.key()]=s        
+      else:
+        statsCM[s.commissione.key()]=s
+      self.initWeek(s, wtot)
+    
     stats.dataInizio = datetime.datetime(year=2009, month=9, day=1).date()
     stats.dataFine = datetime.datetime.now().date()
-    for nc in Nonconformita.all().filter("dataNonconf >", stats.dataInizio):
-      if( nc.commissione.key() not in statsCM ):          
-        statCM = StatisticheNonconf()
-        statCM.dataInizio = stats.dataInizio
-        statCM.dataFine = stats.dataFine
-        statCM.commissione = nc.commissione
-        statsCM[statCM.commissione.key()] = statCM
-      else:
-        statCM = statsCM[nc.commissione.key()]
-        
-      if( nc.commissione.centroCucina.key() not in statsCC ):
-        statCC = StatisticheNonconf()
-        statCC.dataInizio = stats.dataInizio
-        statCC.dataFine = stats.dataFine
-        statCC.centroCucina = nc.commissione.centroCucina
-        statsCC[statCC.centroCucina.key()] = statCC
-      else:
-        statCC = statsCC[nc.commissione.centroCucina.key()]
+    self.initWeek(stats, wtot)
 
-      self.calc(nc,statCM)
-      self.calc(nc,statCC)
-      self.calc(nc,stats)
+    count = 0
+    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+      if nc.dataNonconf >= dataInizio :
+        if( nc.commissione.key() not in statsCM ):          
+          statCM = StatisticheNonconf()
+          statCM.dataInizio = stats.dataInizio
+          statCM.dataFine = stats.dataFine
+          statCM.commissione = nc.commissione
+          statsCM[statCM.commissione.key()] = statCM
+          self.initWeek(statCM, wtot)
+        else:
+          statCM = statsCM[nc.commissione.key()]
+          
+        if( nc.commissione.centroCucina.key() not in statsCC ):
+          statCC = StatisticheNonconf()
+          statCC.dataInizio = stats.dataInizio
+          statCC.dataFine = stats.dataFine
+          statCC.centroCucina = nc.commissione.centroCucina
+          statsCC[statCC.centroCucina.key()] = statCC
+          self.initWeek(statCC, wtot)
+        else:
+          statCC = statsCC[nc.commissione.centroCucina.key()]
+  
+        self.calcNC(nc,statCM)
+        self.calcNC(nc,statCC)
+        self.calcNC(nc,stats)
+        count += 1
+        if count == limit : break
       
-    if stats.numeroSchede > 0 :
+    if stats.numeroNonconf > 0 :
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stats.put()
       
     for stat in statsCM.values() :
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stat.put()
-      
-  def calc(self, nc, stats):
-    stats.numeroSchede = stats.numeroSchede + 1;
-    count = stats.data[nc.tipo]
-    logging.info(count)
-    stats.data[nc.tipo] = count
     
-class CMStatCalcHandler(BasePage):
+    finish = count < limit    
+    logging.info("finish: " + str(finish))  
+    if not finish:
+      self.putTask("/admin/stats/calcnc", offset + limit)
+
+  def initWeek(self, stat, wtot):
+    for ns in range(len(stat.numeroNonconfSettimana),wtot + 1):
+      stat.numeroNonconfSettimana.append(0)
+
+  def calcNC(self, nc, stats):
+    stats.incData(nc.tipo)
+    stats.numeroNonconf += 1
+    settimana = (nc.dataNonconf - stats.dataInizio).days / 7
+    stats.numeroNonconfSettimana[settimana] += 1
+    
+class CMStatIspCalcHandler(CMStatCalcHandler):
   def get(self):
     
     stats = StatisticheIspezioni()
@@ -530,57 +605,105 @@ class CMStatCalcHandler(BasePage):
     statsCM = dict()
     statsCC = dict()
 
-    #for c in Commissione.all() :
-    #  if c.numCommissari > 0:
-    #    stats.numeroCommissioni = stats.numeroCommissioni + 1
+    limit = int(self.request.get("limit"))
+    logging.info("limit: %s", limit)
+    if limit is None:
+      limit = 0
+    offset = int(self.request.get("offset"))
+    logging.info("offset: %s", offset)
+    if offset is None:
+      offset = 0
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
+    dataInizio = datetime.datetime(year=2009, month=9, day=1).date()    
+    dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
+    dataCalcolo = datetime.datetime.now().date()
+    wtot = (dataFine - dataInizio).days / 7
 
+    logging.info("dataInizio: " + str(dataInizio))
+    logging.info("dataFine: " + str(dataFine))
+    logging.info("wtot: " + str(wtot))
+    
+    for s in StatisticheIspezioni.all().filter("dataInizio >=", dataInizio):
+      if s.commissione is None and s.centroCucina is None:
+        stats = s
+      elif s.commissione is None and s.centroCucina is not None:
+        statsCC[s.centroCucina.key()]=s        
+      else:
+        statsCM[s.commissione.key()]=s
+      self.initWeek(s, wtot)
+    
     stats.dataInizio = datetime.datetime(year=2009, month=9, day=1).date()
     stats.dataFine = datetime.datetime.now().date()
-    for isp in Ispezione.all().filter("dataIspezione >", stats.dataInizio):
-      if( isp.commissione.key() not in statsCM ):          
-        statCM = StatisticheIspezioni()
-        statCM.dataInizio = stats.dataInizio
-        statCM.dataFine = stats.dataFine
-        statCM.commissione = isp.commissione
-        statsCM[statCM.commissione.key()] = statCM
-      else:
-        statCM = statsCM[isp.commissione.key()]
-        
-      if( isp.commissione.centroCucina.key() not in statsCC ):
-        statCC = StatisticheIspezioni()
-        statCC.dataInizio = stats.dataInizio
-        statCC.dataFine = stats.dataFine
-        statCC.centroCucina = isp.commissione.centroCucina
-        statsCC[statCC.centroCucina.key()] = statCC
-      else:
-        statCC = statsCC[isp.commissione.centroCucina.key()]
-        
-      self.calc(isp,statCM)
-      self.calc(isp,statCC)
-      self.calc(isp,stats)
-      
+    self.initWeek(stats, wtot)
+
+    count = 0
+    for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+      if isp.dataIspezione >= dataInizio :
+        if( isp.commissione.key() not in statsCM ):          
+          statCM = StatisticheIspezioni()
+          statCM.dataInizio = stats.dataInizio
+          statCM.dataFine = stats.dataFine
+          statCM.commissione = isp.commissione
+          statsCM[statCM.commissione.key()] = statCM
+          self.initWeek(statCM, wtot)
+        else:
+          statCM = statsCM[isp.commissione.key()]
+  
+        if( isp.commissione.centroCucina.key() not in statsCC ):
+          statCC = StatisticheIspezioni()
+          statCC.dataInizio = stats.dataInizio
+          statCC.dataFine = stats.dataFine
+          statCC.centroCucina = isp.commissione.centroCucina
+          statsCC[statCC.centroCucina.key()] = statCC
+          self.initWeek(statCC, wtot)
+        else:
+          statCC = statsCC[isp.commissione.centroCucina.key()]
+          
+        self.calcIsp(isp,statCM)
+        self.calcIsp(isp,statCC)
+        self.calcIsp(isp,stats)
+        count += 1
+        if count == limit : break
+    
     if stats.numeroSchede > 0 :
       self.comp(stats)
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stats.put()
       
     for stat in statsCM.values() :
       self.comp(stat)
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
       self.comp(stat)
+      if count < limit :  
+        stats.dataCalcolo = dataCalcolo
       stat.put()
-      
-
-  def calc(self, isp, stats):
-    stats.numeroSchede = stats.numeroSchede + 1;
     
-    if(isp.primoDistribuzione == 1):
-      stats.primoDistribuzione1 = stats.primoDistribuzione1 + isp.primoDistribuzione
-    if(isp.primoDistribuzione == 2):
-      stats.primoDistribuzione2 = stats.primoDistribuzione2 + isp.primoDistribuzione
-    if(isp.primoDistribuzione == 3):
-      stats.primoDistribuzione3 = stats.primoDistribuzione3 + isp.primoDistribuzione
+    finish = count < limit    
+    logging.info("finish: " + str(finish))  
+    if not finish:
+      self.putTask("/admin/stats/calcisp", offset + limit)
+
+  def initWeek(self, stat, wtot):
+    for ns in range(len(stat.numeroSchedeSettimana),wtot + 1):
+      stat.numeroSchedeSettimana.append(0)
+
+  def calcIsp(self, isp, stats):
+    stats.numeroSchede += 1;
+    settimana = (isp.dataIspezione - stats.dataInizio).days / 7
+    stats.numeroSchedeSettimana[settimana] += 1
+    
+    if(isp.primoDist == 1):
+      stats.primoDistribuzione1 = stats.primoDistribuzione1 + isp.primoDist
+    if(isp.primoDist == 2):
+      stats.primoDistribuzione2 = stats.primoDistribuzione2 + isp.primoDist
+    if(isp.primoDist == 3):
+      stats.primoDistribuzione3 = stats.primoDistribuzione3 + isp.primoDist
 
     if(isp.primoAssaggio == 1):
       stats.primoAssaggio1 = stats.primoAssaggio1 + isp.primoAssaggio
@@ -619,12 +742,12 @@ class CMStatCalcHandler(BasePage):
     if(isp.primoQuantita == 3):
       stats.primoQuantita3 = stats.primoQuantita3 + isp.primoQuantita
       
-    if(isp.secondoDistribuzione == 1):
-      stats.secondoDistribuzione1 = stats.secondoDistribuzione1 + isp.secondoDistribuzione
-    if(isp.secondoDistribuzione == 2):
-      stats.secondoDistribuzione2 = stats.secondoDistribuzione2 + isp.secondoDistribuzione
-    if(isp.secondoDistribuzione == 3):
-      stats.secondoDistribuzione3 = stats.secondoDistribuzione3 + isp.secondoDistribuzione
+    if(isp.secondoDist == 1):
+      stats.secondoDistribuzione1 = stats.secondoDistribuzione1 + isp.secondoDist
+    if(isp.secondoDist == 2):
+      stats.secondoDistribuzione2 = stats.secondoDistribuzione2 + isp.secondoDist
+    if(isp.secondoDist == 3):
+      stats.secondoDistribuzione3 = stats.secondoDistribuzione3 + isp.secondoDist
 
     if(isp.secondoAssaggio == 1):
       stats.secondoAssaggio1 = stats.secondoAssaggio1 + isp.secondoAssaggio
@@ -788,10 +911,10 @@ class CMStatCalcHandler(BasePage):
       stats.giudizioGlobale3 = stats.giudizioGlobale3 + isp.giudizioGlobale
 
   def comp(self, stats):
-    stats.primoDistribuzione = float(stats.primoDistribuzione1 + stats.primoDistribuzione2 + stats.primoDistribuzione3) / stats.numeroSchede
+    stats.primoDist = float(stats.primoDistribuzione1 + stats.primoDistribuzione2 + stats.primoDistribuzione3) / stats.numeroSchede
     stats.primoAssaggio = float(stats.primoAssaggio1 + stats.primoAssaggio2 + stats.primoAssaggio3) / stats.numeroSchede
     stats.primoGradimento = float(stats.primoGradimento1 + stats.primoGradimento2 + stats.primoGradimento3 + stats.primoGradimento4) / stats.numeroSchede
-    stats.secondoDistribuzione = float(stats.secondoDistribuzione1 + stats.secondoDistribuzione2 + stats.secondoDistribuzione3) / stats.numeroSchede
+    stats.secondoDist = float(stats.secondoDistribuzione1 + stats.secondoDistribuzione2 + stats.secondoDistribuzione3) / stats.numeroSchede
     stats.secondoAssaggio = float(stats.secondoAssaggio1 + stats.secondoAssaggio2 + stats.secondoAssaggio3) / stats.numeroSchede
     stats.secondoGradimento = float(stats.secondoGradimento1 + stats.secondoGradimento2 + stats.secondoGradimento3 + stats.secondoGradimento4) / stats.numeroSchede
     stats.contornoAssaggio = float(stats.contornoAssaggio1 + stats.contornoAssaggio2 + stats.contornoAssaggio3) / stats.numeroSchede
@@ -903,14 +1026,13 @@ class CMStatsHandlerOld(BasePage):
       
 application = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
-  ('/stats/calc', CMStatCalcHandler),
-  ('/stats/calcnc', CMStatNCCalcHandler),
-  ('/stats/getdata', CMStatsDataHandler),
-], debug=True)
+  ('/admin/stats/calc', CMStatCalcHandler),
+  ('/admin/stats/calcisp', CMStatIspCalcHandler),
+  ('/admin/stats/calcnc', CMStatNCCalcHandler),
+  ('/stats/getdata', CMStatsDataHandler)], debug=True)
 
 def main():
   wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
-  main()
-    
+  main()  
