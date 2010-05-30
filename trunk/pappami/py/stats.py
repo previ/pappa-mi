@@ -427,19 +427,16 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         if count == limit : break
     
     if stats.numeroSchede > 0 :
-      self.comp(stats)
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
       stats.put()
       
     for stat in statsCM.values() :
-      self.comp(stat)
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
-      self.comp(stat)
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
       stat.put()
