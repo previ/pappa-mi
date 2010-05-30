@@ -52,7 +52,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       
       template_values = dict()
       template_values["data1"] = data
-      template_values["menu1"] = self.getMenu(data, c)
+      template_values["menu1"] = self.getMenu(self.nextWorkingDay(data - timedelta(1)), c)
       template_values["data2"] = self.nextWorkingDay(data) + timedelta(1)
       template_values["menu2"] = self.getMenu(self.nextWorkingDay(data)+ timedelta(1), c)
       template_values["bgcolor"] = bgcolor
@@ -63,9 +63,9 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       self.response.out.write(template.render(path, template_values))
 
   def nextWorkingDay(self, data):
-    if(data.isoweekday() == 6):
+    if(data.isoweekday() < 6):
       data = data + timedelta(1)
-    if(data.isoweekday() == 7):
+    if(data.isoweekday() < 6):
       data = data + timedelta(1)
     return data
     
