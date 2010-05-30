@@ -52,8 +52,6 @@ class Commissione(db.Model):
   def commissari(self):
     commissari = []
     for cc in CommissioneCommissario.all().filter("commissione", self):
-      #logging.info(cc.key().id())
-      #logging.info(cc.commissario.key().id())
       commissari.append(cc.commissario)
     return commissari
 
@@ -267,288 +265,163 @@ class StatisticheIspezioni(db.Model):
   numeroSchede = db.IntegerProperty(default=0) 
   numeroSchedeSettimana = db.ListProperty(int, default=[0])
 
-  puliziaRefettorio = db.FloatProperty(default=0.0)
-  puliziaRefettorio1 = db.IntegerProperty(default=0)
-  puliziaRefettorio2 = db.IntegerProperty(default=0)
-  puliziaRefettorio3 = db.IntegerProperty(default=0)
-  puliziaRefettorio4 = db.IntegerProperty(default=0)
+  ambiente_names = {"aaRispettoCapitolato":0,"aaTavoliApparecchiati":1,"aaTermichePulite":2,"aaAcqua":3, "aaScaldaVivande":4, "aaSelfService":5, "aaTabellaEsposta":6, "ricicloStoviglie":7, "ricicloPosate":8, "ricicloBicchieri":9}
+  ambiente_desc = ["Rispetto Capitolato","Tavoli Apparecchiati","Termiche Pulite","Acqua da cucina", "Scalda Vivande", "Self Service", "Tabella Dietetica Esposta", "Riciclo Stoviglie", "Riciclo Posate", "Riciclo Bicchieri"]
+  ambiente = db.ListProperty(int,default=[0,0,0,0,0,0,0,0,0,0])
+  arrivoDist = db.ListProperty(int,default=[0,0,0,0])
+  durataPasto = db.ListProperty(int,default=[0,0,0,0])
 
-  puliziaCentroCottura = db.FloatProperty(default=0.0)
-  puliziaCentroCottura1 = db.IntegerProperty(default=0)
-  puliziaCentroCottura2 = db.IntegerProperty(default=0)
-  puliziaCentroCottura3 = db.IntegerProperty(default=0)
-  puliziaCentroCottura4 = db.IntegerProperty(default=0)
-
-  smaltimentoRifiuti = db.FloatProperty(default=0.0)
-  smaltimentoRifiuti1 = db.IntegerProperty(default=0)
-  smaltimentoRifiuti2 = db.IntegerProperty(default=0)
-  smaltimentoRifiuti3 = db.IntegerProperty(default=0)
-  smaltimentoRifiuti4 = db.IntegerProperty(default=0)
-
-  giudizioGlobale = db.FloatProperty(default=0.0)
-  giudizioGlobale1 = db.IntegerProperty(default=0)
-  giudizioGlobale2 = db.IntegerProperty(default=0)
-  giudizioGlobale3 = db.IntegerProperty(default=0)
+  numeroPastiTotale = db.IntegerProperty()
+  numeroPastiBambini = db.IntegerProperty()
+  numeroPastiSpeciali = db.IntegerProperty()
+  numeroAddetti = db.IntegerProperty()
   
-  primoDistribuzione1 = db.IntegerProperty(default=0)
-  primoDistribuzione2 = db.IntegerProperty(default=0)
-  primoDistribuzione3 = db.IntegerProperty(default=0)
+  puliziaRefettorio = db.ListProperty(int,default=[0,0,0,0])
+  puliziaCentroCottura = db.ListProperty(int,default=[0,0,0,0])
+  smaltimentoRifiuti = db.ListProperty(int,default=[0,0,0,0])
 
-  primoCottura1 = db.IntegerProperty(default=0)
-  primoCottura2 = db.IntegerProperty(default=0)
-  primoCottura3 = db.IntegerProperty(default=0)
-
-  primoTemperatura1 = db.IntegerProperty(default=0)
-  primoTemperatura2 = db.IntegerProperty(default=0)
-  primoTemperatura3 = db.IntegerProperty(default=0)
-
-  primoQuantita1 = db.IntegerProperty(default=0)
-  primoQuantita2 = db.IntegerProperty(default=0)
-  primoQuantita3 = db.IntegerProperty(default=0)
-
-  primoAssaggio = db.FloatProperty(default=0.0)
-  primoAssaggio1 = db.IntegerProperty(default=0)
-  primoAssaggio2 = db.IntegerProperty(default=0)
-  primoAssaggio3 = db.IntegerProperty(default=0)
-
-  primoGradimento = db.FloatProperty(default=0.0)
-  primoGradimento1 = db.IntegerProperty(default=0)
-  primoGradimento2 = db.IntegerProperty(default=0)
-  primoGradimento3 = db.IntegerProperty(default=0)
-  primoGradimento4 = db.IntegerProperty(default=0)
-
-  secondoDistribuzione1 = db.IntegerProperty(default=0)
-  secondoDistribuzione2 = db.IntegerProperty(default=0)
-  secondoDistribuzione3 = db.IntegerProperty(default=0)
-
-  secondoCottura1 = db.IntegerProperty(default=0)
-  secondoCottura2 = db.IntegerProperty(default=0)
-  secondoCottura3 = db.IntegerProperty(default=0)
-
-  secondoTemperatura1 = db.IntegerProperty(default=0)
-  secondoTemperatura2 = db.IntegerProperty(default=0)
-  secondoTemperatura3 = db.IntegerProperty(default=0)
-
-  secondoQuantita1 = db.IntegerProperty(default=0)
-  secondoQuantita2 = db.IntegerProperty(default=0)
-  secondoQuantita3 = db.IntegerProperty(default=0)
+  giudizioGlobale = db.ListProperty(int,default=[0,0,0])
   
-  secondoAssaggio = db.FloatProperty(default=0.0)
-  secondoAssaggio1 = db.IntegerProperty(default=0)
-  secondoAssaggio2 = db.IntegerProperty(default=0)
-  secondoAssaggio3 = db.IntegerProperty(default=0)
+  primoCondito = db.ListProperty(int,default=[0,0])
+  primoDist = db.ListProperty(int,default=[0,0,0])
+  primoCottura = db.ListProperty(int,default=[0,0,0])
+  primoTemperatura = db.ListProperty(int,default=[0,0,0])
+  primoQuantita = db.ListProperty(int,default=[0,0,0])
+  primoAssaggio = db.ListProperty(int,default=[0,0,0])
+  primoGradimento = db.ListProperty(int,default=[0,0,0,0])
 
-  secondoGradimento = db.FloatProperty(default=0.0)
-  secondoGradimento1 = db.IntegerProperty(default=0)
-  secondoGradimento2 = db.IntegerProperty(default=0)
-  secondoGradimento3 = db.IntegerProperty(default=0)
-  secondoGradimento4 = db.IntegerProperty(default=0)
-
-  contornoCottura1 = db.IntegerProperty(default=0)
-  contornoCottura2 = db.IntegerProperty(default=0)
-  contornoCottura3 = db.IntegerProperty(default=0)
-
-  contornoTemperatura1 = db.IntegerProperty(default=0)
-  contornoTemperatura2 = db.IntegerProperty(default=0)
-  contornoTemperatura3 = db.IntegerProperty(default=0)
-
-  contornoQuantita1 = db.IntegerProperty(default=0)
-  contornoQuantita2 = db.IntegerProperty(default=0)
-  contornoQuantita3 = db.IntegerProperty(default=0)
+  secondoDist = db.ListProperty(int,default=[0,0,0])
+  secondoCottura = db.ListProperty(int,default=[0,0,0])
+  secondoTemperatura = db.ListProperty(int,default=[0,0,0])
+  secondoQuantita = db.ListProperty(int,default=[0,0,0])
+  secondoAssaggio = db.ListProperty(int,default=[0,0,0])
+  secondoGradimento = db.ListProperty(int,default=[0,0,0,0])
   
-  contornoAssaggio = db.FloatProperty(default=0.0)
-  contornoAssaggio1 = db.IntegerProperty(default=0)
-  contornoAssaggio2 = db.IntegerProperty(default=0)
-  contornoAssaggio3 = db.IntegerProperty(default=0)
+  contornoCondito = db.ListProperty(int,default=[0,0])
+  contornoCottura = db.ListProperty(int,default=[0,0,0])
+  contornoTemperatura = db.ListProperty(int,default=[0,0,0])
+  contornoQuantita = db.ListProperty(int,default=[0,0,0])
+  contornoAssaggio = db.ListProperty(int,default=[0,0,0])
+  contornoGradimento = db.ListProperty(int,default=[0,0,0,0])
 
-  contornoGradimento = db.FloatProperty(default=0.0)
-  contornoGradimento1 = db.IntegerProperty(default=0)
-  contornoGradimento2 = db.IntegerProperty(default=0)
-  contornoGradimento3 = db.IntegerProperty(default=0)
-  contornoGradimento4 = db.IntegerProperty(default=0)
-
-  paneQuantita1 = db.IntegerProperty(default=0)
-  paneQuantita2 = db.IntegerProperty(default=0)
-  paneQuantita3 = db.IntegerProperty(default=0)
+  paneQuantita = db.ListProperty(int,default=[0,0,0])
+  paneAssaggio = db.ListProperty(int,default=[0,0,0])
+  paneGradimento = db.ListProperty(int,default=[0,0,0,0])
+  paneServito = db.ListProperty(int,default=[0,0,0])
   
-  paneAssaggio = db.FloatProperty(default=0.0)
-  paneAssaggio1 = db.IntegerProperty(default=0)
-  paneAssaggio2 = db.IntegerProperty(default=0)
-  paneAssaggio3 = db.IntegerProperty(default=0)
-
-  paneGradimento = db.FloatProperty(default=0.0)
-  paneGradimento1 = db.IntegerProperty(default=0)
-  paneGradimento2 = db.IntegerProperty(default=0)
-  paneGradimento3 = db.IntegerProperty(default=0)
-  paneGradimento4 = db.IntegerProperty(default=0)
-  
-  fruttaMaturazione1 = db.IntegerProperty(default=0)
-  fruttaMaturazione2 = db.IntegerProperty(default=0)
-  fruttaMaturazione3 = db.IntegerProperty(default=0)
-
-  fruttaQuantita1 = db.IntegerProperty(default=0)
-  fruttaQuantita2 = db.IntegerProperty(default=0)
-  fruttaQuantita3 = db.IntegerProperty(default=0)
-  
-  fruttaAssaggio = db.FloatProperty(default=0.0)
-  fruttaAssaggio1 = db.IntegerProperty(default=0)
-  fruttaAssaggio2 = db.IntegerProperty(default=0)
-  fruttaAssaggio3 = db.IntegerProperty(default=0)
-
-  fruttaGradimento = db.FloatProperty(default=0.0)
-  fruttaGradimento1 = db.IntegerProperty(default=0)
-  fruttaGradimento2 = db.IntegerProperty(default=0)
-  fruttaGradimento3 = db.IntegerProperty(default=0)
-  fruttaGradimento4 = db.IntegerProperty(default=0)
-  
-  def primoDistribuzione1Norm(self):
-    return int(self.primoDistribuzione1 * 100 / 1 / self.numeroSchede)
-  def primoDistribuzione2Norm(self):
-    return int(self.primoDistribuzione2 * 100 / 2 / self.numeroSchede)
-  def primoDistribuzione3Norm(self):
-    return int(self.primoDistribuzione3 * 100 / 3 / self.numeroSchede)
-
-  def primoCottura1Norm(self):
-    return int(self.primoCottura1 * 100 / 1 / self.numeroSchede)
-  def primoCottura2Norm(self):
-    return int(self.primoCottura2 * 100 / 2 / self.numeroSchede)
-  def primoCottura3Norm(self):
-    return int(self.primoCottura3 * 100 / 3 / self.numeroSchede)
-
-  def primoTemperatura1Norm(self):
-    return int(self.primoTemperatura1 * 100 / 1 / self.numeroSchede)
-  def primoTemperatura2Norm(self):
-    return int(self.primoTemperatura2 * 100 / 2 / self.numeroSchede)
-  def primoTemperatura3Norm(self):
-    return int(self.primoTemperatura3 * 100 / 3 / self.numeroSchede)
-
-  def primoQuantita1Norm(self):
-    return int(self.primoQuantita1 * 100 / 1 / self.numeroSchede)
-  def primoQuantita2Norm(self):
-    return int(self.primoQuantita2 * 100 / 2 / self.numeroSchede)
-  def primoQuantita3Norm(self):
-    return int(self.primoQuantita3 * 100 / 3 / self.numeroSchede)
+  fruttaMaturazione = db.ListProperty(int,default=[0,0,0])
+  fruttaQuantita = db.ListProperty(int,default=[0,0,0])
+  fruttaAssaggio = db.ListProperty(int,default=[0,0,0])
+  fruttaGradimento = db.ListProperty(int,default=[0,0,0,0])
 
   def primoAssaggioNorm(self):
-    return int(self.primoAssaggio * 100 / 3)
-
-  def primoAssaggio1Norm(self):
-    return int(self.primoAssaggio1 * 100 / 1 / self.numeroSchede)
-  def primoAssaggio2Norm(self):
-    return int(self.primoAssaggio2 * 100 / 2 / self.numeroSchede)
-  def primoAssaggio3Norm(self):
-    return int(self.primoAssaggio3 * 100 / 3 / self.numeroSchede)
-
+    return float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
   def primoGradimentoNorm(self):
-    return int(self.primoGradimento * 100 / 4)
-
-  def primoGradimento1Norm(self):
-    return int(self.primoGradimento1 * 100 / 1 / self.numeroSchede)
-  def primoGradimento2Norm(self):
-    return int(self.primoGradimento2 * 100 / 2 / self.numeroSchede)
-  def primoGradimento3Norm(self):
-    return int(self.primoGradimento3 * 100 / 3 / self.numeroSchede)
-  def primoGradimento4Norm(self):
-    return int(self.primoGradimento4 * 100 / 4 / self.numeroSchede)
-  
-  def secondoCottura1Norm(self):
-    return int(self.secondoCottura1 * 100 / 1 / self.numeroSchede)
-  def secondoCottura2Norm(self):
-    return int(self.secondoCottura2 * 100 / 2 / self.numeroSchede)
-  def secondoCottura3Norm(self):
-    return int(self.secondoCottura3 * 100 / 3 / self.numeroSchede)
-
-  def secondoTemperatura1Norm(self):
-    return int(self.secondoTemperatura1 * 100 / 1 / self.numeroSchede)
-  def secondoTemperatura2Norm(self):
-    return int(self.secondoTemperatura2 * 100 / 2 / self.numeroSchede)
-  def secondoTemperatura3Norm(self):
-    return int(self.secondoTemperatura3 * 100 / 3 / self.numeroSchede)
-
-  def secondoQuantita1Norm(self):
-    return int(self.secondoQuantita1 * 100 / 1 / self.numeroSchede)
-  def secondoQuantita2Norm(self):
-    return int(self.secondoQuantita2 * 100 / 2 / self.numeroSchede)
-  def secondoQuantita3Norm(self):
-    return int(self.secondoQuantita3 * 100 / 3 / self.numeroSchede)
-
+    return float(self.primoGradimento[0]+self.primoGradimento[1]+self.primoGradimento[2]+self.primoGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def secondoAssaggioNorm(self):
-    return int(self.secondoAssaggio * 100 / 3)
-
+    return float(self.secondoAssaggio[0]+self.secondoAssaggio[1]+self.secondoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
   def secondoGradimentoNorm(self):
-    return int(self.secondoGradimento * 100 / 4)
-
-  def contornoCottura1Norm(self):
-    return int(self.contornoCottura1 * 100 / 1 / self.numeroSchede)
-  def contornoCottura2Norm(self):
-    return int(self.contornoCottura2 * 100 / 1 / self.numeroSchede)
-  def contornoCottura3Norm(self):
-    return int(self.contornoCottura3 * 100 / 1 / self.numeroSchede)
-
-  def contornoTemperatura1Norm(self):
-    return int(self.contornoTemperatura1 * 100 / 1 / self.numeroSchede)
-  def contornoTemperatura2Norm(self):
-    return int(self.contornoTemperatura2 * 100 / 2 / self.numeroSchede)
-  def contornoTemperatura3Norm(self):
-    return int(self.contornoTemperatura3 * 100 / 3 / self.numeroSchede)
-
-  def contornoQuantita1Norm(self):
-    return int(self.contornoQuantita1 * 100 / 1 / self.numeroSchede)
-  def contornoQuantita2Norm(self):
-    return int(self.contornoQuantita2 * 100 / 2 / self.numeroSchede)
-  def contornoQuantita3Norm(self):
-    return int(self.contornoQuantita3 * 100 / 3 / self.numeroSchede)
-
+    return float(self.secondoGradimento[0]+self.secondoGradimento[1]+self.secondoGradimento[2]+self.secondoGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def contornoAssaggioNorm(self):
-    return int(self.contornoAssaggio * 100 / 3)
-
+    return float(self.contornoAssaggio[0]+self.contornoAssaggio[1]+self.contornoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
   def contornoGradimentoNorm(self):
-    return int(self.contornoGradimento * 100 / 4)
-  
-  def paneQuantita1Norm(self):
-    return int(self.paneQuantita1 * 100 / 1 / self.numeroSchede)
-  def paneQuantita2Norm(self):
-    return int(self.paneQuantita2 * 100 / 2 / self.numeroSchede)
-  def paneQuantita3Norm(self):
-    return int(self.paneQuantita3 * 100 / 3 / self.numeroSchede)
-
+    return float(self.contornoGradimento[0]+self.contornoGradimento[1]+self.contornoGradimento[2]+self.contornoGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def paneAssaggioNorm(self):
-    return int(self.paneAssaggio * 100 / 3)
-
+    return float(self.paneAssaggio[0]+self.paneAssaggio[1]+self.paneAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
   def paneGradimentoNorm(self):
-    return int(self.paneGradimento * 100 / 4)
-
-  def fruttaMaturazione1Norm(self):
-    return int(self.fruttaMaturazione1 * 100 / 1 / self.numeroSchede)
-  def fruttaMaturazione2Norm(self):
-    return int(self.fruttaMaturazione2 * 100 / 2 / self.numeroSchede)
-  def fruttaMaturazione3Norm(self):
-    return int(self.fruttaMaturazione3 * 100 / 3 / self.numeroSchede)
-
-  def fruttaQuantita1Norm(self):
-    return int(self.fruttaQuantita1 * 100 / 1 / self.numeroSchede)
-  def fruttaQuantita2Norm(self):
-    return int(self.fruttaQuantita2 * 100 / 2 / self.numeroSchede)
-  def fruttaQuantita3Norm(self):
-    return int(self.fruttaQuantita3 * 100 / 3 / self.numeroSchede)
-
+    return float(self.paneGradimento[0]+self.paneGradimento[1]+self.paneGradimento[2]+self.paneGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def fruttaAssaggioNorm(self):
-    return int(self.fruttaAssaggio * 100 / 3)
-
+    return float(self.fruttaAssaggio[0]+self.fruttaAssaggio[1]+self.fruttaAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
   def fruttaGradimentoNorm(self):
-    return int(self.fruttaGradimento * 100 / 4)
-
+    return float(self.fruttaGradimento[0]+self.fruttaGradimento[1]+self.fruttaGradimento[2]+self.fruttaGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def giudizioGlobaleNorm(self):
-    return int(self.giudizioGlobale * 100 / 3)
-
+    return float(self.giudizioGlobale[0]+self.giudizioGlobale[1]+self.giudizioGlobale[2]-self.numeroSchede)/2*100/self.numeroSchede
   def puliziaRefettorioNorm(self):
-    return int(self.puliziaRefettorio * 100 / 4)
-
-  def puliziaCentroCotturaNorm(self):
-    return int(self.puliziaCentroCottura * 100 / 4)
-
+    return float(self.puliziaRefettorio[0]+self.puliziaRefettorio[1]+self.puliziaRefettorio[2]+self.puliziaRefettorio[3]-self.numeroSchede)/3*100/self.numeroSchede
   def smaltimentoRifiutiNorm(self):
-    return int(self.smaltimentoRifiuti * 100 / 4)
+    return float(self.smaltimentoRifiuti[0]+self.puliziaRefettorio[1]+self.puliziaRefettorio[2]+self.puliziaRefettorio[3]-self.numeroSchede)/3*100/self.numeroSchede
+
+  
+  def getNome(self):
+    if self.centroCucina:
+      return self.centroCucina.nome
+    elif self.commissione:
+      return self.commissione.nome
+    else:
+      return "Tutte"
+    
+  def incVal(self, attrname, isp):
+    attr_stat = getattr(self,attrname)
+    attr_isp = getattr(isp,attrname)
+    attr_stat[attr_isp-1] += attr_isp
+
+  def incValSub(self, attrname, subattr, isp):
+    attr_stat = getattr(self,attrname)
+    attr_index = getattr(self,attrname+"_names")[subattr]
+    attr_isp = getattr(isp,subattr)
+    attr_stat[attr_index] += attr_isp
+    
+  def getVals(self, attrname):
+    attr = getattr(self,attrname)
+    return attr
+
+  def getVal(self, attrname, voto):
+    attr = getattr(self,attrname)
+    return attr[voto-1]
+
+  def getNormVal(self, attrname, voto):
+    attr = getattr(self,attrname)
+    return attr[voto-1] * 100 / voto
+      
+  def getNormValMedia(self, attrname):
+    attr = getattr(self,attrname)
+    value = 0
+    for v in attr:
+      val += v 
+    return val * 100 / len(attr)
+
+  _attrs = ["puliziaCentroCottura",
+             "puliziaRefettorio",
+             "arrivoDist",
+             "primoDist",
+             "primoCondito",
+             "primoCottura",
+             "primoTemperatura",
+             "primoQuantita",
+             "primoAssaggio",
+             "primoGradimento",
+             "secondoDist",
+             "secondoCottura",
+             "secondoTemperatura",
+             "secondoQuantita",
+             "secondoAssaggio",
+             "secondoGradimento",
+             "contornoCondito",
+             "contornoCottura",
+             "contornoTemperatura",
+             "contornoQuantita",
+             "contornoAssaggio",
+             "contornoGradimento",
+             "paneServito",
+             "paneQuantita",
+             "paneAssaggio",
+             "paneGradimento",
+             "fruttaQuantita",
+             "fruttaAssaggio",
+             "fruttaGradimento",
+             "fruttaMaturazione",
+             "durataPasto",
+             "smaltimentoRifiuti",
+             "giudizioGlobale"]
+  _attrs_sub = ["ambiente"]
+  
+  def calc(self, isp):  
+    for attr in self._attrs:
+      self.incVal(attr,isp)
+    for attr in self._attrs_sub:
+      for attr_sub in getattr(self,attr+"_names"):
+        self.incValSub(attr, attr_sub, isp)
+  
 
 class StatisticheNonconf(db.Model):
   commissione = db.ReferenceProperty(Commissione)

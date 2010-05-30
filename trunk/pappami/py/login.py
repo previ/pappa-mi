@@ -34,6 +34,11 @@ from google.appengine.ext.webapp import util
 class LoginPage(webapp.RequestHandler):
   
   def get(self):
+    self.redirect("/")
+
+class LoginReqPage(webapp.RequestHandler):
+  
+  def get(self):
     logging.info("called")
     template_values = dict()
     template_values["continue"] = self.request.get("continue")
@@ -53,7 +58,8 @@ def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
-  ('/_ah/login_required', LoginPage),
+  ('/login', LoginPage),
+  ('/_ah/login_required', LoginReqPage),
   ('/_ah/do_login', DoLoginPage)
   ], debug=debug)
   

@@ -53,6 +53,11 @@ indexes:
   - name: tipoScuola
   - name: nome
 
+- kind: Commissione
+  properties:
+  - name: tipoScuola
+  - name: numCommissari
+
 - kind: Ispezione
   properties:
   - name: commissario

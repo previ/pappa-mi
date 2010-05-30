@@ -45,7 +45,7 @@ class BasePage(webapp.RequestHandler):
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
     else:
-      url = users.create_login_url(self.request.uri)
+      url = "/login"
       url_linktext = 'Login'
     if self.request.url.find("test") != -1 :
       template_values["test"] = "true"

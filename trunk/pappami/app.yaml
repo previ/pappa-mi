@@ -1,4 +1,4 @@
-application: test-pappa-mi
+application: pappa-mi
 version: 1
 runtime: python
 api_version: 1
@@ -80,6 +80,16 @@ handlers:
 
 - url: /widget/.*
   script: py/widget.py
+
+- url: /_ah/login_required
+  script: py/login.py
+
+- url: /_ah/do_login
+  script: py/login.py
+
+- url: /login
+  script: py/login.py
+  login: required
   
 - url: .*
   script: py/main.py
