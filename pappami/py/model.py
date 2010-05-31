@@ -67,7 +67,7 @@ class Commissario(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
 
-  ultimo_accesso_il = db.DateTimeProperty(auto_now=True)
+  ultimo_accesso_il = db.DateTimeProperty()
 
   stato = db.IntegerProperty()
   
