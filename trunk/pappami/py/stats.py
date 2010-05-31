@@ -521,11 +521,10 @@ class CMStatCalcHandlerOld(BasePage):
 
       
 application = webapp.WSGIApplication([
-  ('/stats', CMStatsHandler),
+  ('/stats', CMStatsHandlerOld),
   ('/admin/stats/calc', CMStatCalcHandler),
   ('/admin/stats/calcisp', CMStatIspCalcHandler),
-  ('/admin/stats/calcnc', CMStatNCCalcHandler),
-  ('/stats/getdata', CMStatsDataHandler)], debug=True)
+  ('/admin/stats/calcnc', CMStatNCCalcHandler)], debug=True)
 
 def main():
   wsgiref.handlers.CGIHandler().run(application)
