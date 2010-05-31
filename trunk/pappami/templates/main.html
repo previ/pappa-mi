@@ -33,14 +33,20 @@ djConfig={
     <ul id="nav-global">
 	<li><a href="/">Home</a></li>
 	<li><a href="/docs">Documenti</a></li>
-	{% if user and commissario %}
+        {% if commissario or genitore %}	
 	<li><a href="/stats">Statistiche</a></li>
+	{% endif %}
+        {% if commissario %}
 	<li><a href="/commissario">Area Commissari</a></li>
 	{% endif %}
-	{% if user and not commissario %}
-	<li><a href="/commissario/registrazione">Registrazione Nuovo Commissario</a></li>
+        {% if genitore %}
+	<li><a href="/genitore">Area Genitori</a></li>
 	{% endif %}
-	{% if user and commissario %}
+	{% if user and not commissario and not genitore %}
+	<li><a href="/commissario/registrazione">Registrazione<br/> Nuovo Commissario</a></li>
+	<li><a href="/genitore/registrazione">Registrazione<br/> Nuovo Genitore</a></li>
+	{% endif %}
+        {% if commissario or genitore %}	
 	<li><a href="/commissioni">Commissioni</a></li>
 	{% endif %}
 	{% if admin %}
