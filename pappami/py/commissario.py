@@ -42,8 +42,8 @@ class CMCommissarioHandler(BasePage):
 
   def get(self): 
     user = users.get_current_user()
-    commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
-    if( commissario is None):
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
       self.redirect("/commissario/registrazione")
     else:
       tab=self.request.get("tab")
@@ -53,10 +53,11 @@ class CMCommissarioHandler(BasePage):
         }
       if tab == "nc" :
         template_values['content'] = 'commissario/nonconfs.html'
-        template_values['commissioni'] = self.getCommissioni()       
-      else:
+      elif tab == "isp" :
         template_values['content'] = 'commissario/ispezioni.html'
-        template_values['commissioni'] = self.getCommissioni()       
+      else:
+        template_values['content'] = 'commissario/profilo.html'
+        template_values['cmsro'] = commissario
       
       #logging.info("OK")
       self.getBase(template_values)
@@ -64,16 +65,15 @@ class CMCommissarioHandler(BasePage):
 class CMCommissioniDataHandler(BasePage):
 
   def get(self): 
+    user = users.get_current_user()
     buff = memcache.get("cmall")
     if(buff is None):
-      user = users.get_current_user()
-      commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
   
       description = {"nome": ("string", "Nome"), 
                      "key": ("string", "Key")}
       data_table = DataTable(description)
       
-      cms = self.getCommissioni()
+      cms = Commissione.all().order("nome")
       buff = ""
       buff = '{"label": "nome", "identifier": "key", "items": ['
       buff = buff + '{ "nome": "", "key": ""},'
@@ -97,7 +97,7 @@ class CMCommissioniDataHandler(BasePage):
 class CMCommissarioDataHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
-    commissario = db.GqlQuery("SELECT * FROM Commissario WHERE user = :1", user).get()
+    commissario = self.getCommissario(users.get_current_user())
     if( commissario is not None):    
       tq = urllib.unquote(self.request.get("tq"))
       #logging.info(tq)
@@ -174,11 +174,15 @@ class CMCommissarioDataHandler(BasePage):
         if cm != "":
           ncs = ncs.filter("commissione",Commissione.get(cm))
         
+        url_path = "commissario"
+        if commissario.isGenitore():
+          url_path = "genitore"
+          
         if(orderby.find("data") != -1):
           orderby = orderby + "Nonconf"
         for nc in ncs.order(orderby).fetch(limit, offset):
           data_nc.append({"commissione": (nc.commissione.nome + " - " + nc.commissione.tipoScuola), "data": nc.dataNonconf, "turno": str(nc.turno), "tipo": nc.tipoNome(), 
-                       "key":"<a class='btn' href='/commissario/nonconf?cmd=open&key="+str(nc.key())+"'>Apri</a>"})
+                       "key":"<a class='btn' href='/" + url_path + "/nonconf?cmd=open&key="+str(nc.key())+"'>Apri</a>"})
   
         # Loading it into gviz_api.DataTable
         data_table_nc = DataTable(description_nc)
@@ -218,6 +222,10 @@ class CMCommissarioDataHandler(BasePage):
         if cm != "":
           isps = isps.filter("commissione",Commissione.get(cm))
 
+        url_path = "commissario"
+        if commissario.isGenitore():
+          url_path = "genitore"
+          
         if(orderby.find("data") != -1):
           orderby = orderby + "Ispezione"
         for ispezione in isps.order(orderby).fetch(limit, offset):
@@ -227,7 +235,7 @@ class CMCommissarioDataHandler(BasePage):
                        "secondo": "<img src='img/icoasg" + str(ispezione.secondoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.secondoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" +str(ispezione.secondoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.secondoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.secondoQuantita) + ".png' title='Quantit&agrave;'/>",
                        "contorno": "<img src='img/icoasg" + str(ispezione.contornoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.contornoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" + str(ispezione.contornoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.contornoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.contornoQuantita) + ".png' title='Quantit&agrave;'/>",
                        "frutta": "<img src='img/icoasg" + str(ispezione.fruttaAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.fruttaGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icomat" + str(ispezione.fruttaMaturazione) + ".png' title='Maturazione'/>" + "<img src='img/icoqta" + str(ispezione.fruttaQuantita) + ".png' title='Quantit&agrave;'/>", 
-                       "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/commissario/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
+                       "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/" + url_path + "/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
   
         # Loading it into gviz_api.DataTable
         data_table = DataTable(description)
@@ -239,13 +247,9 @@ class CMCommissarioDataHandler(BasePage):
 class CMRegistrazioneHandler(BasePage):
   
   def get(self): 
-    commissioni = self.getCommissioni()
-
-    template_values = {
-      'commissioni': commissioni,     
-    }
+    template_values = dict()
       
-    commissario = Commissario.all().filter("user", users.get_current_user()).get()
+    commissario = self.getCommissario(users.get_current_user())
     if commissario is not None:
       template_values["content"] = "commissario/registrazione_ok.html"
       template_values["cmsro"] = commissario
@@ -256,7 +260,7 @@ class CMRegistrazioneHandler(BasePage):
   
   def post(self):
     user = users.get_current_user()
-    commissario = Commissario.all().filter("user", user).get()
+    commissario = self.getCommissario(users.get_current_user())
     if(commissario == None):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 0)
       commissario.put()
@@ -284,8 +288,8 @@ class CMRegistrazioneHandler(BasePage):
       #url = "pappa-mi.appspot.com"
     
     message = mail.EmailMessage()
-    message.sender = "aiuto.pappami@gmail.com"
-    message.to = "aiuto.pappami@gmail.com"
+    message.sender = "aiuto@pappa-mi.it"
+    message.to = "aiuto@pappa-mi.it"
     message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
     message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
     
@@ -298,12 +302,14 @@ class CMRegistrazioneHandler(BasePage):
 class CMIspezioneHandler(BasePage):
   
   def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
     if( self.request.get("cmd") == "open" ):
       isp = Ispezione.get(self.request.get("key"))
   
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-
       cancopy = None;
       if( isp.commissario.key() == commissario.key()):
         cancopy = True
@@ -322,9 +328,6 @@ class CMIspezioneHandler(BasePage):
      
       form = IspezioneForm(instance=isp)
       
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-
       for field in form:
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
@@ -339,8 +342,6 @@ class CMIspezioneHandler(BasePage):
       }
           
     else:       
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
       isp = Ispezione(commissario = commissario) 
       form = IspezioneForm(instance=isp)
 
@@ -360,6 +361,11 @@ class CMIspezioneHandler(BasePage):
 
   def post(self):    
    
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
     preview = self.request.get("preview")
    
     if( self.request.get("cmd") == "copy" ):
@@ -368,9 +374,6 @@ class CMIspezioneHandler(BasePage):
       isp = Ispezione.get(key)
       form = IspezioneForm(instance=isp)
       
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-
       for field in form:
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
@@ -400,9 +403,6 @@ class CMIspezioneHandler(BasePage):
       else:
         isp = Ispezione()
     
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-
       form = IspezioneForm(data=self.request.POST, instance=isp)
       
       if form.is_valid():
@@ -440,6 +440,11 @@ class CMIspezioneHandler(BasePage):
 class CMNonconfHandler(BasePage):
   
   def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
     if( self.request.get("cmd") == "open" ):
       nc = Nonconformita.get(self.request.get("key"))
   
@@ -456,10 +461,7 @@ class CMNonconfHandler(BasePage):
    
       nc = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("nc"))
-
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
-      
+    
       form = NonconformitaForm(instance=nc)
       
       for field in form:
@@ -478,7 +480,6 @@ class CMNonconfHandler(BasePage):
       self.getBase(template_values)
           
     else:     
-      commissario = Commissario.all().filter("user", users.get_current_user()).filter("stato", 1).get()
   
       nc = Nonconformita(commissario = commissario) 
       form = NonconformitaForm(instance=nc)
@@ -497,6 +498,11 @@ class CMNonconfHandler(BasePage):
 
   def post(self):    
    
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+
+    if commissario is None or not commissario.isCommissario() :
+      return
     preview = self.request.get("preview")
    
     if( preview ):
@@ -517,9 +523,6 @@ class CMNonconfHandler(BasePage):
       form = NonconformitaForm(data=self.request.POST, instance=nc)
       #for field in form:
         #logging.info("%s, %s",field.name, field)
-
-      user = users.get_current_user()
-      commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
 
       if form.is_valid():
         nc = form.save(commit=False)
@@ -550,18 +553,20 @@ class CMNonconfHandler(BasePage):
         }
         
       self.getBase(template_values)
-        
-application = webapp.WSGIApplication([
-  ('/commissario/ispezione', CMIspezioneHandler),
-  ('/commissario/nonconf', CMNonconfHandler),
-  ('/commissario/registrazione', CMRegistrazioneHandler),
-  ('/commissario', CMCommissarioHandler),
-  ('/commissario/getcm', CMCommissioniDataHandler),
-  ('/commissario/getdata', CMCommissarioDataHandler)
-], debug=True)
 
 def main():
-  wsgiref.handlers.CGIHandler().run(application)
+  debug = os.environ['HTTP_HOST'].startswith('localhost')   
+   
+  application = webapp.WSGIApplication([
+    ('/commissario/ispezione', CMIspezioneHandler),
+    ('/commissario/nonconf', CMNonconfHandler),
+    ('/commissario/registrazione', CMRegistrazioneHandler),
+    ('/commissario', CMCommissarioHandler),
+    ('/commissario/getcm', CMCommissioniDataHandler),
+    ('/commissario/getdata', CMCommissarioDataHandler)
+  ], debug=debug)
 
+  wsgiref.handlers.CGIHandler().run(application)
+  
 if __name__ == "__main__":
   main()

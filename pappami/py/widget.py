@@ -52,9 +52,9 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       
       template_values = dict()
       template_values["data1"] = data
-      template_values["menu1"] = self.getMenu(self.nextWorkingDay(data - timedelta(1)), c)
-      template_values["data2"] = self.nextWorkingDay(data) + timedelta(1)
-      template_values["menu2"] = self.getMenu(self.nextWorkingDay(data)+ timedelta(1), c)
+      template_values["menu1"] = self.getMenu(data, c)
+      template_values["data2"] = self.nextWorkingDay(data)
+      template_values["menu2"] = self.getMenu(self.nextWorkingDay(data), c)
       template_values["bgcolor"] = bgcolor
       template_values["fcolor"] = fcolor
       
@@ -64,7 +64,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
 
   def nextWorkingDay(self, data):
     while data.isoweekday() < 6:
-      data = data + timedelta(1)
+      data = data + timedelta(1)      
     return data
     
   def getMenu(self, data, c):
@@ -94,22 +94,31 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     fcolor = self.request.get("fc")
     if(fcolor is None): 
       fcolor = "000000"
-    c = Commissione.get(self.request.get("cm"))
-    if(c is not None):
+    cmk = self.request.get("cm")
+    c = None
+    if cmk:
+      c = Commissione.get(self.request.get("cm"))
       
-      stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).order("-dataFine").get()
+    stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).order("-dataFine").get()
+    statCC = None
+    statCM = None
+    if c:
       statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).order("-dataFine").get()
       statCM = StatisticheIspezioni.all().filter("commissione",c).order("-dataFine").get()
-      
-      template_values = dict()
-      template_values["stats"] = stats
-      template_values["statCC"] = statCC
-      template_values["statCM"] = statCM
-      template_values["bgcolor"] = bgcolor
-      template_values["fcolor"] = fcolor
-      
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/stat.html')
-      self.response.out.write(template.render(path, template_values))
+    
+    template_values = dict()
+    template_values["stats"] = stats
+    template_values["statCC"] = statCC
+    template_values["statCM"] = statCM
+    template_values["bgcolor"] = bgcolor
+    template_values["fcolor"] = fcolor
+    
+    t = ""
+    if self.request.get("t") == c:
+      t = "_c"
+    
+    path = os.path.join(os.path.dirname(__file__), '../templates/widget/stat' + t + '.html')
+    self.response.out.write(template.render(path, template_values))
 
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
