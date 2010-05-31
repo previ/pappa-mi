@@ -189,7 +189,7 @@ TableQueryWrapper.clone = function(obj) {
     
     function initIsp() {
       var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
-      query = new google.visualization.Query('/commissario/getdata');
+      query = new google.visualization.Query("/commissario/getdata");
       container = document.getElementById("ispezioni");
       options = {'pageSize': 10, 
                  'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
@@ -216,7 +216,7 @@ TableQueryWrapper.clone = function(obj) {
 
     function initNC() {
       var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
-      query = new google.visualization.Query('/commissario/getdata');
+      query = new google.visualization.Query("/commissario/getdata");
       container = document.getElementById("nonconf");
       options = {'pageSize': 10, 
                  'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
@@ -235,6 +235,56 @@ TableQueryWrapper.clone = function(obj) {
       cm.attr("value", p[1]);
       anno.value=p[2];
       whereClause = "from nc" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+
+      display="none";
+      sendAndDraw();
+      display="inline";
+    }
+
+    function initIspGen() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/genitore/getcm"});
+      query = new google.visualization.Query("/genitore/getdata");
+      container = document.getElementById("ispezioni");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data'
+                 };
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from isp" + " me " + " commissione " + p[1] + " anno " + p[2];
+      
+      display="none";
+      sendAndDraw();        
+      display="inline";
+    }
+
+    function initNCGen() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/genitore/getcm"});
+      query = new google.visualization.Query("/genitore/getdata");
+      container = document.getElementById("nonconf");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data tipo'
+                 };
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from nc" + " me " + " commissione " + p[1] + " anno " + p[2];
 
       display="none";
       sendAndDraw();
