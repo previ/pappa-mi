@@ -63,9 +63,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       self.response.out.write(template.render(path, template_values))
 
   def nextWorkingDay(self, data):
-    if(data.isoweekday() < 6):
-      data = data + timedelta(1)
-    if(data.isoweekday() < 6):
+    while data.isoweekday() < 6:
       data = data + timedelta(1)
     return data
     
@@ -78,6 +76,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", c.tipoScuola).order("-validitaDa")
     #logging.info("len %d" , menus.count())
 
+    menu = None
     for m in menus:
       #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
       if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
