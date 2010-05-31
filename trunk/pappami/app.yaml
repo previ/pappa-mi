@@ -48,6 +48,14 @@ handlers:
   script: py/commissario.py
   login: required
 
+- url: /genitore/.*
+  script: py/genitore.py
+  login: required
+
+- url: /genitore/*
+  script: py/genitore.py
+  login: required
+  
 - url: /admin/stats/*
   script: py/stats.py
   login: admin  
