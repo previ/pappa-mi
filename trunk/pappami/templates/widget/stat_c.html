@@ -1,41 +1,39 @@
 <html>
-<body style="padding:0px; margin:0px; font-family:verdana; border-spacing:0px; background-color:#eeeeff">
-<table border="0" style="padding:0px; margin:0px; font-family:verdana; font-size:12px; border-spacing:0px; background-color:#eeeeff">
+<body style="padding:0px; margin:0px; font-family:verdana; border-spacing:0px; background-color:#{{bgcolor}}">
+<img src="/img/pappa-mi-logo-big.jpg" width="160" style="position:absolute; left:25px; top:0px; z-index:-1; opacity:0.2;filter:alpha(opacity=20)"/>
+<table border="0" style="padding:0px; margin:0px; font-family:verdana; font-size:12px; border-spacing:0px;">
 <tr>
-<td></td>
-<td>A</td>
-<td>G</td>
+<td><a href="/" target="_new"><img width="32" src="/img/pappa-mi-logo.png" title="Pappa-Mi"/></a></td>
+<td align="center"><img width="32" src="/img/chef.png" title="Assaggio"/></td>
+<td align="center"><img width="32" src="/img/grad.png" title="Gradimento"/></td>
 </tr>
 <tr>
-<td>P</td>
-<td><img src="http://chart.apis.google.com/chart?chs=64x16&cht=gom&chd=t:{{stats.primoAssaggioNorm}},{{statCC.primoAssaggioNorm}},{{statCM.primoAssaggioNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.primoGradimentoNorm}},{{statCC.primoGradimentoNorm}},{{statCM.primoGradimentoNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
+<td><img width="32" src="/img/pasta.png" title="Primo"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.primoAssaggioNorm}}{%if statCC%},{{statCC.primoAssaggioNorm}},{{statCM.primoAssaggioNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.primoGradimentoNorm}}{%if statCC%},{{statCC.primoGradimentoNorm}},{{statCM.primoGradimentoNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 </tr>
 <tr>
-<td>S</td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.secondoAssaggioNorm}},{{statCC.secondoAssaggioNorm}},{{statCM.secondoAssaggioNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.secondoGradimentoNorm}},{{statCC.secondoGradimentoNorm}},{{statCM.secondoGradimentoNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
+<td><img width="32" src="/img/carne.png" title="Secondo"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.secondoAssaggioNorm}}{%if statCC%},{{statCC.secondoAssaggioNorm}},{{statCM.secondoAssaggioNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Assaggio"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.secondoGradimentoNorm}}{%if statCC%},{{statCC.secondoGradimentoNorm}},{{statCM.secondoGradimentoNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/></td>
+<td>
 </tr>
 <tr>
-<td>C</td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.contornoAssaggioNorm}},{{statCC.contornoAssaggioNorm}},{{statCM.contornoAssaggioNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.contornoGradimentoNorm}},{{statCC.contornoGradimentoNorm}},{{statCM.contornoGradimentoNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
+<td><img width="32" src="/img/salad.png" title="Contorno"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.contornoAssaggioNorm}}{%if statCC%},{{statCC.contornoAssaggioNorm}},{{statCM.contornoAssaggioNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Contorno - Assaggio"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.contornoGradimentoNorm}}{%if statCC%},{{statCC.contornoGradimentoNorm}},{{statCM.contornoGradimentoNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
+<td>
 </tr>
 <tr>
-<td>P</td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.paneAssaggioNorm}},{{statCC.paneAssaggioNorm}},{{statCM.paneAssaggioNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.paneGradimentoNorm}},{{statCC.paneGradimentoNorm}},{{statCM.paneGradimentoNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
+<td><img width="32" src="/img/mela.png" title="Frutta"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.fruttaAssaggioNorm}}{%if statCC%},{{statCC.fruttaAssaggioNorm}},{{statCM.fruttaAssaggioNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Assaggio"/></td>
+<td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.fruttaGradimentoNorm}}{%if statCC%},{{statCC.fruttaGradimentoNorm}},{{statCM.fruttaGradimentoNorm}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Gradimento"/></td>
+<td>
 </tr>
 <tr>
-<td>F</td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.fruttaAssaggioNorm}},{{statCC.fruttaAssaggioNorm}},{{statCM.fruttaAssaggioNorm}}& chls=3,2,2|3,2,2|15|10chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-<td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{{stats.fruttaGradimentoNorm}},{{statCC.fruttaGradimentoNorm}},{{statCM.fruttaGradimentoNorm}}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff"></td>
-</tr>
-<tr>
-<td>S</td>
-<td colspan="2"><img src="http://chart.apis.google.com/chart?chs=48x24&cht=gom&chd=t:{{stats.giudizioGlobaleNorm}},{{statCC.giudizioGlobaleNorm}},{{statCM.giudizioGlobaleNorm}}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff">
-<img src="http://chart.apis.google.com/chart?chs=48x24&cht=gom&chd=t:{{stats.puliziaRefettorioNorm}},{{statCC.puliziaRefettorioNorm}},{{statCM.puliziaRefettorioNorm}}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff">
-<img src="http://chart.apis.google.com/chart?chs=48x24&cht=gom&chd=t:{{stats.smaltimentoRifiutiNorm}},{{statCC.smaltimentoRifiutiNorm}},{{statCM.smaltimentoRifiutiNorm}}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,eeeeff">
+<td><img width="32" src="/img/service.png" title="Servizio"/></td>
+<td colspan="5"><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.giudizioGlobaleNorm}}{%if statCC%},{{statCC.giudizioGlobaleNorm}},{{statCM.giudizioGlobaleNorm}}{%endif%}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Giudizio Globale sul cibo"/>
+<img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{{stats.puliziaRefettorioNorm}}{%if statCC%},{{statCC.puliziaRefettorioNorm}},{{statCM.puliziaRefettorioNorm}}{%endif%}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Pulizia Refettorio"/>
 </td>
 </tr>
 </table>

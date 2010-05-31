@@ -55,12 +55,12 @@ function removeAll() {
 #subwrap {width: 64em;}
 #content-main {width: 64em;}
 </style>
-<H1>Registrazione Nuovo Commissario</H1>
+<H1>Registrazione Genitore</H1>
 <P>
 <P>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
 <BR>
-<FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
+<FORM dojoType="dijit.form.Form" action="/genitore/registrazione" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
 cm_sel = dojo.byId("e_cm_sel");
 for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
@@ -95,29 +95,20 @@ dojo.byId("e_cm_sel").value != ""){
 </tr>
 <tr>
 <td colspan="2">
-<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Commissione
 <span class="ss-required-asterisk">*</span></label>
 <table><tr><td>
 <input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
-
-<!--SELECT name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
-<OPTION value="">Selezionare...</OPTION>{% for c in commissioni %}
-<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
-</SELECT--><br/><br/>
-
-<SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">{% for c in commissioni %}
-{% ifequal commissione.key c.key %}
-<OPTION value="{{c.key}}">{{c.nome}} - {{c.tipoScuola}}</OPTION>
-{% endifequal %}
-{% endfor %}
+<br/><br/>
+<SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">
 </SELECT><span dojoType="dijit.Tooltip" connectId="l_cm" position="above" style="display:none;" id="tt_cm"> 
-Aggiungere una o pi&ugrave Commissioni Mensa per cui si desidera registrarsi.<br/><br/>
+Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
 <ul>
-<li>Selezionare una commissione dalla lista per aggiungerla all'elenco, ripetere l'operazione per tutte le Commissioni desiderate</li>
-<li>Fare doppio clic su una Commissione per eliminarla dall'elenco in caso di errore</li>
+<li>Selezionare una Scuola dalla lista per aggiungerlo all'elenco, ripetere l'operazione per tutte le Scuole desiderate</li>
+<li>Fare doppio clic su una Scuola per eliminarla dall'elenco in caso di errore</li>
 </ul></span> 
 </td></tr></table>
 </div></div>
