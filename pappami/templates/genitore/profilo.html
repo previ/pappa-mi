@@ -2,12 +2,10 @@
 dojo.require("dijit.form.Button");
 </script>
 <style>
-#subwrap {width: 64em;}
-#content-main {width: 64em;}
 </style>
-<H1 class="ss-form-title">Registrazione Commissario Completata</H1>
-<p>Grazie per esserti registrato, la tua richiesta è stata inviata allo staff di Pappa-Mi.</p>
-<p>Ricevereai a breve una email di conferma dell'abilitazione. Da quel momento potrai iniziare ad inserire le schede di valutazione e le segnalazioni di non conformita'.
+<H1 class="ss-form-title">I tuoi dati personali</H1>
+<p>In questa pagina puoi controllare i tuoi dati personali.</p>
+<p>Se lo desideri puoi anche cancellare la tua registrazione.</p>
 </p>
 <HR class="ss-email-break" style="display:none;">
 <BR>
@@ -19,7 +17,7 @@ dojo.require("dijit.form.Button");
 </td>
 <td rowspan="3">
 <DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione</LABEL> 
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Scuola</LABEL> 
 {% for c in cmsro.commissioni %}
 {{cm.nome}} - {{cm.tipoScuola}}<br>
 {% endfor %}
@@ -41,5 +39,5 @@ dojo.require("dijit.form.Button");
 </tr>
 </table>
 <P align="center">
-<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Torna a pagina principale</button>
+<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Cancella la mia registrazione</button>
 <P>

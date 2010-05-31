@@ -117,6 +117,7 @@ function init() {
   new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, barOpts);  
   new google.visualization.BarChart(document.getElementById('fg_chart')).draw(fg_data, barOptsG);  
 
+{%if commissario or genitore%}
   var cm = dijit.byId("e_cm");
   var anno = dojo.byId("e_aa");
   cookie = readCookie("pappa-mi-ctx");
@@ -126,23 +127,25 @@ function init() {
   var p = cookie.split(",");
   cm.attr("value", p[1]);
   anno.value=p[2]; 
-  
+{%endif%}    
   dojo.style("d_loading", {display:"none"});
   dojo.style("statContainer", {visibility:"visible"});
 }
 function setQuery(){
+{%if commissario or genitore%}
   var cm = dijit.byId("e_cm");
   var anno = dojo.byId("e_aa");
   createCookie("pappa-mi-ctx", "," + cm.attr("value") + "," + anno.value, 10);
+{%endif%}  
 }
 </script>
-<H1 style="display:inline;">Statistiche</H1>
+<H1 style="display:inline;">Statistiche dal {{stat.dataInizio|date:"d/m/Y"}} al {{stat.dataFine|date:"d/m/Y"}}</H1>
 <div id="d_loading" style="opacity:0.9; text-align: center; border-style:solid; border-width:1px; background-color: white; width: 300px; height: 60px; position:absolute; top: 160px; left: 400px;"><br><img src="/img/loading.gif" style = "margin:auto;" alt="loading"/></div><div id="statContainer" style="margin:0;visibility:hidden;">
 <div dojoType="dijit.form.DropDownButton" id="filtraDati"><span>Seleziona l'insieme di dati</span>
 <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati" >
 <form dojoType="dijit.form.Form" action="/stats" method="post" id="form0" execute="setQuery();">
 <table>
-<tr>
+{%if commissario or genitore%}<tr>
 <td>
 <div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
 <LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
@@ -150,7 +153,7 @@ function setQuery(){
 searchAttr="nome" name="cm" id="e_cm">
 </td>
 </tr>
-<tr>
+{%endif%}<tr>
 <td>
 <LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
 <SELECT name="anno" id="e_aa">
