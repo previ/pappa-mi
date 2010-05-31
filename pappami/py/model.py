@@ -71,6 +71,11 @@ class Commissario(db.Model):
 
   stato = db.IntegerProperty()
   
+  def isCommissario(self):
+    return self.stato == 1
+  def isGenitore(self):
+    return self.stato == 11
+  
   def commissioni(self):
     commissioni = []
     for cc in CommissioneCommissario.all().filter("commissario", self):
@@ -341,6 +346,82 @@ class StatisticheIspezioni(db.Model):
   def smaltimentoRifiutiNorm(self):
     return float(self.smaltimentoRifiuti[0]+self.puliziaRefettorio[1]+self.puliziaRefettorio[2]+self.puliziaRefettorio[3]-self.numeroSchede)/3*100/self.numeroSchede
 
+  def primoQuantita1Norm(self):
+    return float(self.primoQuantita[0])*100/self.numeroSchede
+  def primoQuantita2Norm(self):
+    return float(self.primoQuantita[1])*100/self.numeroSchede/2
+  def primoQuantita3Norm(self):
+    return float(self.primoQuantita[2])*100/self.numeroSchede/3
+  def primoCottura1Norm(self):
+    return float(self.primoCottura[0])*100/self.numeroSchede
+  def primoCottura2Norm(self):
+    return float(self.primoCottura[1])*100/self.numeroSchede/2
+  def primoCottura3Norm(self):
+    return float(self.primoCottura[2])*100/self.numeroSchede/3
+  def primoTemperatura1Norm(self):
+    return float(self.primoTemperatura[0])*100/self.numeroSchede
+  def primoTemperatura2Norm(self):
+    return float(self.primoTemperatura[1])*100/self.numeroSchede/2
+  def primoTemperatura3Norm(self):
+    return float(self.primoTemperatura[2])*100/self.numeroSchede/3
+
+  def secondoQuantita1Norm(self):
+    return float(self.secondoQuantita[0])*100/self.numeroSchede
+  def secondoQuantita2Norm(self):
+    return float(self.secondoQuantita[1])*100/self.numeroSchede/2
+  def secondoQuantita3Norm(self):
+    return float(self.secondoQuantita[2])*100/self.numeroSchede/3
+  def secondoCottura1Norm(self):
+    return float(self.secondoCottura[0])*100/self.numeroSchede
+  def secondoCottura2Norm(self):
+    return float(self.secondoCottura[1])*100/self.numeroSchede/2
+  def secondoCottura3Norm(self):
+    return float(self.secondoCottura[2])*100/self.numeroSchede/3
+  def secondoTemperatura1Norm(self):
+    return float(self.secondoTemperatura[0])*100/self.numeroSchede
+  def secondoTemperatura2Norm(self):
+    return float(self.secondoTemperatura[1])*100/self.numeroSchede/2
+  def secondoTemperatura3Norm(self):
+    return float(self.secondoTemperatura[2])*100/self.numeroSchede/3
+
+  def contornoQuantita1Norm(self):
+    return float(self.contornoQuantita[0])*100/self.numeroSchede
+  def contornoQuantita2Norm(self):
+    return float(self.contornoQuantita[1])*100/self.numeroSchede/2
+  def contornoQuantita3Norm(self):
+    return float(self.contornoQuantita[2])*100/self.numeroSchede/3
+  def contornoCottura1Norm(self):
+    return float(self.contornoCottura[0])*100/self.numeroSchede
+  def contornoCottura2Norm(self):
+    return float(self.contornoCottura[1])*100/self.numeroSchede/2
+  def contornoCottura3Norm(self):
+    return float(self.contornoCottura[2])*100/self.numeroSchede/3
+  def contornoTemperatura1Norm(self):
+    return float(self.contornoTemperatura[0])*100/self.numeroSchede
+  def contornoTemperatura2Norm(self):
+    return float(self.contornoTemperatura[1])*100/self.numeroSchede/2
+  def contornoTemperatura3Norm(self):
+    return float(self.contornoTemperatura[2])*100/self.numeroSchede/3
+
+  def paneQuantita1Norm(self):
+    return float(self.paneQuantita[0])*100/self.numeroSchede
+  def paneQuantita2Norm(self):
+    return float(self.paneQuantita[1])*100/self.numeroSchede/2
+  def paneQuantita3Norm(self):
+    return float(self.paneQuantita[2])*100/self.numeroSchede/3
+  
+  def fruttaQuantita1Norm(self):
+    return float(self.fruttaQuantita[0])*100/self.numeroSchede
+  def fruttaQuantita2Norm(self):
+    return float(self.fruttaQuantita[1])*100/self.numeroSchede/2
+  def fruttaQuantita3Norm(self):
+    return float(self.fruttaQuantita[2])*100/self.numeroSchede/3
+  def fruttaMaturazione1Norm(self):
+    return float(self.fruttaMaturazione[0])*100/self.numeroSchede
+  def fruttaMaturazione2Norm(self):
+    return float(self.fruttaMaturazione[1])*100/self.numeroSchede/2
+  def fruttaMaturazione3Norm(self):
+    return float(self.fruttaMaturazione[2])*100/self.numeroSchede/3
   
   def getNome(self):
     if self.centroCucina:
