@@ -52,16 +52,17 @@ class BasePage(webapp.RequestHandler):
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
 
-    commissario = Commissario.all().filter("user", user).filter("stato", 1).get()
+    commissario = self.getCommissario(user)
     if( commissario is not None ) :
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=1) ):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
+      template_values["commissario"] = commissario.isCommissario()
+      template_values["genitore"] = commissario.isGenitore()
       
     
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
-    template_values["commissario"] = commissario is not None
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["version"] = "0.6.1.16 - 2010.05.16"
@@ -69,6 +70,9 @@ class BasePage(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
 
+  def getCommissario(self,user):
+    return Commissario.all().filter("user", user).get()
+  
   def getCommissioni(self):
     commissioni = memcache.get("commissioni")
     if commissioni == None:

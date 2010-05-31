@@ -376,9 +376,9 @@ class CMAdminCommissarioHandler(BasePage):
           #url = "pappa-mi.appspot.com"        
 
         message = mail.EmailMessage()
-        message.sender = "aiuto.pappami@gmail.com"
+        message.sender = "aiuto@pappa-mi.it"
         message.to = commissario.user.email()
-        message.bcc = "aiuto.pappami@gmail.com"
+        message.bcc = "aiuto@pappa-mi.it"
         message.subject = "Benvenuto in Pappa-Mi"
         message.body = """ La tua richiesta di registrazione come Commissario e' stata confermata.
         
@@ -398,7 +398,6 @@ class CMAdminCommissarioHandler(BasePage):
         memcache.delete("markers")
         memcache.delete("markers_all")
         memcache.delete("stats")
-        memcache.delete("statsMese")
       
       self.redirect("/admin/commissario")
     
@@ -448,16 +447,18 @@ class CMAdminCommissarioHandler(BasePage):
       }
       self.getBase(template_values)
     
-application = webapp.WSGIApplication([
+def main():
+  debug = os.environ['HTTP_HOST'].startswith('localhost')   
+
+  application = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
   ('/admin/menu', CMAdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
-], debug=True)
+  ], debug=debug)
 
-def main():
   wsgiref.handlers.CGIHandler().run(application)
-
+  
 if __name__ == "__main__":
   main()
