@@ -521,7 +521,7 @@ class CMStatCalcHandlerOld(BasePage):
 
       
 application = webapp.WSGIApplication([
-  ('/stats', CMStatsHandlerOld),
+  ('/stats', CMStatsHandler),
   ('/admin/stats/calc', CMStatCalcHandler),
   ('/admin/stats/calcisp', CMStatIspCalcHandler),
   ('/admin/stats/calcnc', CMStatNCCalcHandler)], debug=True)
