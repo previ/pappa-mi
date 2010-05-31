@@ -55,7 +55,7 @@ class CMStatsHandler(BasePage):
       if stat:
         sublist = {"group": stat.getNome()}
         for d in range(0,len(stat.getVals(attr))):
-          sublist[str(d+1)] = stat.getVal(attr,d+1)/(d+1)
+          sublist[str(d+1)] = float(stat.getVal(attr,d+1))/(d+1)*100/stat.numeroSchede
         data.append(sublist)
 
     table = DataTable(desc)
