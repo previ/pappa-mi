@@ -41,7 +41,6 @@ class CMFeedIspHandler(BasePage):
 
   def get(self): 
     buff = memcache.get("feed_isp")
-
     
     if(buff is None):
       isps = Ispezione.all().order("-dataIspezione").fetch(limit=10)
@@ -53,13 +52,13 @@ class CMFeedIspHandler(BasePage):
           note = isp.note
         isp_items.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
                           description = "Ispezione - note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/commissario/ispezione?cmd=open&key="+str(isp.key())),
-                          pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0000")))
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/commissario/ispezione?key="+str(isp.key())),
+                          pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
       rss = py.PyRSS2Gen.RSS2(
         title = "Pappa-Mi - Ispezioni",
-        link = "http://www.pappa-mi.it/rss/ispezioni",
+        link = "http://"+ self.getHost() + "/feed/ispezioni",
         description = "Le ultime Ispezioni inserite dalle Commissioni Mensa di Milano",
         items = isp_items)
       buff = rss.to_xml()
@@ -71,9 +70,41 @@ class CMFeedIspHandler(BasePage):
     self.response.headers.add_header("Expires", expires_str)
     self.response.out.write(buff)
 
+class CMFeedNCHandler(BasePage):
+  def get(self): 
+    buff = memcache.get("feed_nc")
+    
+    if(buff is None):
+      ncs = Nonconformita.all().order("-dataNonconf").fetch(limit=10)
+      nc_items = list()
+
+      for nc in ncs:
+        note = "nessuna"
+        if nc.note is not None:
+          note = nc.note
+        nc_items.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
+                          description = "Non Conformita': " + nc.tipoNome() + " note:" + note,
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/commissario/nonconf?key="+str(nc.key())),
+                          pubDate = nc.dataNonconf.strftime("%a, %d %b %Y %H:%M:%S +0100")))
+      
+
+      rss = py.PyRSS2Gen.RSS2(
+        title = "Pappa-Mi - Non Conformita'",
+        link = "http://"+ self.getHost() +"/feed/nc",
+        description = "Le ultime Non Conformita' inserite dalle Commissioni Mensa di Milano",
+        items = nc_items)
+      buff = rss.to_xml()
+      memcache.add("feed_nc", buff)
+        
+        
+    expires_date = datetime.utcnow() + timedelta(1)
+    expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
+    self.response.headers.add_header("Expires", expires_str)
+    self.response.out.write(buff)
 
 application = webapp.WSGIApplication([
-  ('/feed/ispezione', CMFeedIspHandler)
+  ('/feed/ispezione', CMFeedIspHandler),
+  ('/feed/nc', CMFeedNCHandler)
 ], debug=True)
 
 def main():

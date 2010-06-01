@@ -93,9 +93,10 @@ class MainPage(BasePage):
     template_values = dict()
     template_values["content"] = "public.html"
     template_values["billboard"] = "billboard.html"
-    #template_values["content_left"] = "leftbar.html"
+    template_values["content_left"] = "leftbar.html"
     template_values["content_right"] = "rightbar.html"
     template_values["content_extra"] = "extra.html"
+    template_values["host"] = self.getHost()
 
     news = memcache.get("news")
     i = 0

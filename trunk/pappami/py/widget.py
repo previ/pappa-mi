@@ -45,22 +45,23 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     fcolor = self.request.get("fc")
     if(fcolor is None): 
       fcolor = "000000"
-    c = Commissione.get(self.request.get("cm"))
-    if(c is not None):
+    c = None
+    if self.request.get("cm"):
+      c = Commissione.get(self.request.get("cm"))
           
-      data = datetime.now().date()
-      
-      template_values = dict()
-      template_values["data1"] = data
-      template_values["menu1"] = self.getMenu(data, c)
-      template_values["data2"] = self.nextWorkingDay(data)
-      template_values["menu2"] = self.getMenu(self.nextWorkingDay(data), c)
-      template_values["bgcolor"] = bgcolor
-      template_values["fcolor"] = fcolor
-      
-      
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
-      self.response.out.write(template.render(path, template_values))
+    data = datetime.now().date()
+    
+    template_values = dict()
+    template_values["data1"] = data
+    template_values["menu1"] = self.getMenu(data, c)
+    template_values["data2"] = self.nextWorkingDay(data)
+    template_values["menu2"] = self.getMenu(self.nextWorkingDay(data), c)
+    template_values["bgcolor"] = bgcolor
+    template_values["fcolor"] = fcolor
+    
+    
+    path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
+    self.response.out.write(template.render(path, template_values))
 
   def nextWorkingDay(self, data):
     while data.isoweekday() < 6:
@@ -68,12 +69,12 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     return data
     
   def getMenu(self, data, c):
-    cc = c.centroCucina
-    offset = cc.menuOffset
-    if offset == None:
-      offset = 0
+    offset = 0
+    if c:
+      cc = c.centroCucina
+      offset = cc.menuOffset      
 
-    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", c.tipoScuola).order("-validitaDa")
+    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
     #logging.info("len %d" , menus.count())
 
     menu = None
@@ -114,8 +115,8 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values["fcolor"] = fcolor
     
     t = ""
-    if self.request.get("t") == c:
-      t = "_c"
+    if self.request.get("t") == "c":
+      t = "_" + self.request.get("t")
     
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/stat' + t + '.html')
     self.response.out.write(template.render(path, template_values))

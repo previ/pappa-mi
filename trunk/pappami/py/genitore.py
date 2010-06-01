@@ -137,6 +137,7 @@ class CMIspezioneGenitoreHandler(BasePage):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if commissario is None or not commissario.isGenitore() :
+      self.redirect("/genitore/registrazione")
       return
 
     isp = Ispezione.get(self.request.get("key"))
@@ -162,6 +163,7 @@ class CMNonconfGenitoreHandler(BasePage):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if commissario is None or not commissario.isGenitore() :
+      self.redirect("/genitore/registrazione")
       return
 
     nc = Nonconformita.get(self.request.get("key"))
