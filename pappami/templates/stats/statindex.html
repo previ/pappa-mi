@@ -14,8 +14,6 @@ dojo.require("dijit.form.Button");
 dojo.require("dijit.Tooltip");
 </script>
 <style>
-#subwrap {width: 81em;}
-#content-main {width: 80em;}
 div { padding: 0px; }
 .tab_title {text-align:center; font-size:130% }
 </style>
@@ -157,8 +155,7 @@ searchAttr="nome" name="cm" id="e_cm">
 <td>
 <LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
 <SELECT name="anno" id="e_aa">
-<OPTION value="2008">2008-2009</OPTION>
-<OPTION value="2009">2009-2010</OPTION>
+{%for anno in anni%}<OPTION value="{{anno}}">{{anno}}-{{anno|add:1}}</OPTION>{%endfor%}
 </select>
 </td>
 </tr>

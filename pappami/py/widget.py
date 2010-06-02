@@ -64,9 +64,10 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     self.response.out.write(template.render(path, template_values))
 
   def nextWorkingDay(self, data):
-    while data.isoweekday() < 6:
-      data = data + timedelta(1)      
-    return data
+    dt = data + timedelta(1)
+    while dt.isoweekday() > 5:
+      dt = dt + timedelta(1)      
+    return dt
     
   def getMenu(self, data, c):
     offset = 0

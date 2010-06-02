@@ -265,7 +265,7 @@ class StatisticheIspezioni(db.Model):
   dataInizio = db.DateProperty()
   dataFine = db.DateProperty()
 
-  dataCalcolo = db.DateProperty()
+  dataCalcolo = db.DateTimeProperty()
 
   numeroSchede = db.IntegerProperty(default=0) 
   numeroSchedeSettimana = db.ListProperty(int, default=[0])
@@ -513,7 +513,7 @@ class StatisticheNonconf(db.Model):
   
   dataInizio = db.DateProperty()
   dataFine = db.DateProperty()
-  dataCalcolo = db.DateProperty()
+  dataCalcolo = db.DateTimeProperty()
   
   numeroNonconf = db.IntegerProperty(default=0)
   numeroNonconfSettimana = db.ListProperty(int, default=[0])

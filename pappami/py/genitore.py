@@ -55,11 +55,11 @@ class CMGenitoreHandler(BasePage):
         }
       if tab == "nc" :
         template_values['content'] = 'genitore/nonconfs.html'
-      elif tab == "isp" :
-        template_values['content'] = 'genitore/ispezioni.html'
-      else:
+      elif tab == "ud" :
         template_values['content'] = 'genitore/profilo.html'
         template_values['cmsro'] = commissario
+      else:
+        template_values['content'] = 'genitore/ispezioni.html'
       
       #logging.info("OK")
       self.getBase(template_values)

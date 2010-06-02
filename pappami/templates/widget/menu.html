@@ -10,13 +10,14 @@
 <meta name="keywords" content="Scuola, Milano, Mensa, Commissioni Mensa, Refezione"/>
 <meta name="google-site-verification" content="KnNDo_lamFY34HnzBbuWNRDHCoBJESIaYbPpUxCgQJI" />
 <meta name="description" content="Raccolta dati Commissioni mensa Milano"/>
+<link href="/css/homepage.css" rel="stylesheet" type="text/css" media="screen"/>
 </head>
-<body style="padding:0px; margin:2px; font-family:serif; border-spacing:0px; background-color:#{{bgcolor}}; color:#{{fcolor}};">
+<body style="padding:0px; margin:2px; border-spacing:0px; background: #{{bgcolor}}; background-color:#{{bgcolor}}; color:#{{fcolor}};">
 <!--img src="/img/pappa-mi-logo-big.png" width="160" style="position:absolute; left:25px; top:0px; z-index:-1; opacity:0.2;filter:alpha(opacity=20)"/-->
 <div style="position:absolute; left:0px; top:0px;"><a href="/" target="_new"><img border="0" src="/img/pappa-mi-logo.png" width="20" title="Pappa-Mi"/></a></div>
 <style>
 .mt {font-size:10px;}
-.md {font-size:14px;font-style:italic;}
+.md {font-size:12px;}
 .hidden {display:none;}
 .visible {display:inlide;}
 .cg {cursor: hand;}
@@ -30,7 +31,7 @@ document.getElementById('domani').className = tmp;
 }
 </script>
 <table width="200" border="0" style="margin:0px; border-spacing:0px;" id="oggi" class="visible">
-<tr><td align="center" class="md">{{data1}} <span class="cg" onclick="swapstyle();">Domani</span></td></tr>
+<tr><td align="center" class="md">{{data1|date:"d/m/Y"}} <span class="cg" onclick="swapstyle();">Domani</span></td></tr>
 <tr><td align="center" class="mt">Primo piatto</td></tr>
 <tr><td align="center" class="md">{{menu1.primo}}</td></tr>
 <tr><td align="center" class="mt">Secondo piatto</td></tr>
@@ -41,7 +42,7 @@ document.getElementById('domani').className = tmp;
 <tr><td align="center" class="md">{{menu1.dessert}}</td></tr>
 </table>
 <table width="200" border="0" style="margin:0px; border-spacing:0px;" id="domani" class="hidden">
-<tr><td align="center" class="md"><span class="cg" onclick="swapstyle();">Ieri</span> {{data2}}</td></tr>
+<tr><td align="center" class="md"><span class="cg" onclick="swapstyle();">Ieri</span> {{data2|date:"d/m/Y"}}</td></tr>
 <tr><td align="center" class="mt">Primo piatto</td></tr>
 <tr><td align="center" class="md">{{menu2.primo}}</td></tr>
 <tr><td align="center" class="mt">Secondo piatto</td></tr>

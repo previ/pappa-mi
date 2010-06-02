@@ -53,11 +53,11 @@ class CMCommissarioHandler(BasePage):
         }
       if tab == "nc" :
         template_values['content'] = 'commissario/nonconfs.html'
-      elif tab == "isp" :
-        template_values['content'] = 'commissario/ispezioni.html'
-      else:
+      elif tab == "ud" :
         template_values['content'] = 'commissario/profilo.html'
         template_values['cmsro'] = commissario
+      else:
+        template_values['content'] = 'commissario/ispezioni.html'
       
       #logging.info("OK")
       self.getBase(template_values)
