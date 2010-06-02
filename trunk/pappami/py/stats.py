@@ -70,12 +70,29 @@ class CMStatsHandler(BasePage):
     cc = None
     statCC = None
     statCM = None
-    stat = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina", None).get()
+
+    logging.info("anno: " + self.request.get("anno"))
+    
+    now = datetime.datetime.now().date()
+    anno = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      anno = anno - 1
+    if self.request.get("anno"):
+      anno = int(self.request.get("anno"))
+
+    anni = list()
+    sts = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina", None)
+    for st in sts:
+      anni.append(st.timeId)
+      
+
+    stat = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",None).filter("centroCucina", None).get()
+      
     if(self.request.get("cm")):
       cm = Commissione.get(self.request.get("cm"))
       cc = cm.centroCucina
-      statCC = StatisticheIspezioni.all().filter("centroCucina",cc).get()
-      statCM = StatisticheIspezioni.all().filter("commissione",cm).get()
+      statCC = StatisticheIspezioni.all().filter("timeId", anno).filter("centroCucina",cc).get()
+      statCM = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",cm).get()
     stats = [stat,statCC,statCM]
     
     z_desc = {"group": ("string", "Gruppo"), 
@@ -197,6 +214,7 @@ class CMStatsHandler(BasePage):
     cm_table.LoadData(cm_data)
     
     template_values = dict()
+    template_values["anni"] = anni
     template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
     template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "attive", "iscritte", "totali"))
     template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
@@ -256,27 +274,32 @@ class CMStatCalcHandler(BasePage):
 class CMStatNCCalcHandler(CMStatCalcHandler):
   def get(self):
     
-    stats = StatisticheNonconf()
-    statCM = StatisticheNonconf()
-    statCC = StatisticheNonconf()
+    stats = None
+    statCM = None
+    statCC = None
     statsCM = dict()
     statsCC = dict()
 
-    limit = int(self.request.get("limit"))
-    logging.info("limit: %s", limit)
-    if limit is None:
-      limit = 0
-    offset = int(self.request.get("offset"))
+    limit = 50
+    #logging.info("limit: %s", limit)
+    if self.request.get("limit"):
+      limit = int(self.request.get("limit"))
     #logging.info("offset: %s", offset)
-    if offset is None:
-      offset = 0
-    #logging.info("limit: %d", limit)
-    #logging.info("offset: %d", offset)
+    offset = 0
+    if self.request.get("offset"):
+      offset = int(self.request.get("offset"))
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
     
-    dataInizio = datetime.datetime(year=2009, month=9, day=1).date()    
+    now = datetime.datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+    dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
     dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
-    dataCalcolo = datetime.datetime.now().date()
-    stats.dataCalcolo = dataInizio;
+    dataCalcolo = datetime.datetime.now()
+    timeId=year
+    timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
     #logging.info("dataInizio: " + str(dataInizio))
@@ -290,20 +313,28 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
         statsCC[s.centroCucina.key()]=s        
       else:
         statsCM[s.commissione.key()]=s
+      s.dataFine = dataFine
       self.initWeek(s, wtot)
     
-    stats.dataInizio = datetime.datetime(year=2009, month=9, day=1).date()
-    stats.dataFine = datetime.datetime.now().date()
-    self.initWeek(stats, wtot)
+    if stats is None:
+      stats = StatisticheNonconf()
+      stats.dataInizio = dataInizio
+      stats.dataFine = dataFine
+      stats.timeId=timeId
+      stats.timePeriod = timePeriod
+      self.initWeek(stats, wtot)
 
     count = 0
-    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+    # carica gli elementi creati successivamente all'ultimo calcolo
+    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
       if nc.dataNonconf >= dataInizio :
         if( nc.commissione.key() not in statsCM ):          
           statCM = StatisticheNonconf()
           statCM.dataInizio = stats.dataInizio
           statCM.dataFine = stats.dataFine
           statCM.commissione = nc.commissione
+          statCM.timeId=timeId
+          statCM.timePeriod = statCM.timePeriod
           statsCM[statCM.commissione.key()] = statCM
           self.initWeek(statCM, wtot)
         else:
@@ -314,6 +345,8 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
           statCC.dataInizio = stats.dataInizio
           statCC.dataFine = stats.dataFine
           statCC.centroCucina = nc.commissione.centroCucina
+          statCC.timeId=timeId
+          statCC.timePeriod = statCM.timePeriod
           statsCC[statCC.centroCucina.key()] = statCC
           self.initWeek(statCC, wtot)
         else:
@@ -332,12 +365,12 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       
     for stat in statsCM.values() :
       if count < limit :  
-        stats.dataCalcolo = dataCalcolo
+        stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
-        stats.dataCalcolo = dataCalcolo
+        stat.dataCalcolo = dataCalcolo
       stat.put()
     
     finish = count < limit    
@@ -358,32 +391,40 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
 class CMStatIspCalcHandler(CMStatCalcHandler):
   def get(self):
     
-    stats = StatisticheIspezioni()
-    statCM = StatisticheIspezioni()
-    statCC = StatisticheIspezioni()
+    stats = None
+    statCM = None
+    statCC = None
     statsCM = dict()
     statsCC = dict()
 
-    limit = int(self.request.get("limit"))
+    limit = 50
+    #logging.info("limit: %s", limit)
+    if self.request.get("limit"):
+      limit = int(self.request.get("limit"))
+    #logging.info("offset: %s", offset)
+    offset = 0
+    if self.request.get("offset"):
+      offset = int(self.request.get("offset"))
 
-    if limit is None:
-      limit = 0
-    offset = int(self.request.get("offset"))
-
-    if offset is None:
-      offset = 0
     logging.info("limit: %d", limit)
     logging.info("offset: %d", offset)
-    dataInizio = datetime.datetime(year=2009, month=9, day=1).date()    
+
+    now = datetime.datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+    dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
     dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
-    dataCalcolo = datetime.datetime.now().date()
-    stats.dataCalcolo = dataInizio;
+    dataCalcolo = datetime.datetime.now()
+    timeId=year
+    timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
     #logging.info("dataInizio: " + str(dataInizio))
     #logging.info("dataFine: " + str(dataFine))
     #logging.info("wtot: " + str(wtot))
     
+    # carica gli elementi creati successivamente all'ultimo calcolo
     for s in StatisticheIspezioni.all().filter("dataInizio >=", dataInizio):
       if s.commissione is None and s.centroCucina is None:
         stats = s
@@ -391,11 +432,17 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         statsCC[s.centroCucina.key()]=s        
       else:
         statsCM[s.commissione.key()]=s
+      s.dataFine = dataFine
       self.initWeek(s, wtot)
+
     
-    stats.dataInizio = datetime.datetime(year=2009, month=9, day=1).date()
-    stats.dataFine = datetime.datetime.now().date()
-    self.initWeek(stats, wtot)
+    if stats is None:
+      stats = StatisticheIspezioni()
+      stats.dataInizio = dataInizio
+      stats.dataFine = dataFine
+      stats.timeId=timeId
+      stats.timePeriod = timePeriod
+      self.initWeek(stats, wtot)
 
     count = 0
     for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
@@ -404,6 +451,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
           statCM = StatisticheIspezioni()
           statCM.dataInizio = stats.dataInizio
           statCM.dataFine = stats.dataFine
+          statCM.timeId=timeId
+          statCM.timePeriod = statCM.timePeriod
           statCM.commissione = isp.commissione
           statsCM[statCM.commissione.key()] = statCM
           self.initWeek(statCM, wtot)
@@ -414,6 +463,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
           statCC = StatisticheIspezioni()
           statCC.dataInizio = stats.dataInizio
           statCC.dataFine = stats.dataFine
+          statCC.timeId=timeId
+          statCC.timePeriod = statCM.timePeriod
           statCC.centroCucina = isp.commissione.centroCucina
           statsCC[statCC.centroCucina.key()] = statCC
           self.initWeek(statCC, wtot)

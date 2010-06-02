@@ -46,13 +46,9 @@ class LoginReqPage(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), '../templates/login_required.html')
     self.response.out.write(template.render(path, template_values))
 
-class DoLoginPage(webapp.RequestHandler):
-  
   def post(self):
-    self.redirect("/_ah/login_redir?claimid=" + self.request.get("federated_identity") + "&" + "continue=" + self.request.get("continue"))
-
-  def get(self):
-    self.redirect("/_ah/login_redir?claimid=" + self.request.get("federated_identity") + "&" + "continue=" + self.request.get("continue"))
+    self.redirect("/_ah/login_redir?claimid=" + self.request.get("openid_identifier") + "&" + "continue=" + self.request.get("continue"))
+    
 
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
@@ -60,7 +56,7 @@ def main():
   application = webapp.WSGIApplication([
   ('/login', LoginPage),
   ('/_ah/login_required', LoginReqPage),
-  ('/_ah/do_login', DoLoginPage)
+  ('/_ah/login_required', LoginReqPage)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

@@ -1,5 +1,5 @@
-application: pappa-mi
-version: 1
+application: test-pappa-mi
+version: beta
 runtime: python
 api_version: 1
 
@@ -92,7 +92,7 @@ handlers:
 - url: /_ah/login_required
   script: py/login.py
 
-- url: /_ah/do_login
+- url: /_ah/login_required
   script: py/login.py
 
 - url: /login

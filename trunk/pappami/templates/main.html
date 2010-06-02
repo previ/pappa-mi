@@ -28,7 +28,8 @@ djConfig={
 <body id="homepage" class="nihilo">
 <div id="container">
  <div id="header">
-    <h1 id="logo"><a href="/"><img src="/img/pappa-mi-logo.png" alt="Pappa-Mi"/></a></h1>
+   {%if user%}<div id="logon_user" style="position:absolute; top:0px;right:0px; z-index:2;">Ciao, {{user.email}}</div>{%endif%}
+   <h1 id="logo"><a href="/"><img src="/img/pappa-mi-logo.png" alt="Pappa-Mi"/></a></h1>
     <h1 id="logo-txt"><a href="/">Pappa-Mi</a> {%if test%}Test{%endif%}</h1>
     <ul id="nav-global">
 	<li><a href="/">Home</a></li>
@@ -63,19 +64,23 @@ djConfig={
  <div id="columnwrap">
   <div id="subwrap">
 {% include content_left %}
-   <div id="content-main">
+<!-- END #content-left -->
+<div id="content-main">
 {% include content %}
    </div>
 <!-- END #content-main -->
 {% include content_right %}
 <!-- END #content-related -->
-  </div>
 <!-- END #subwrap -->
 {% include content_extra %}
 <!-- END #content-extra -->
- </div>
+   </div>
+  </div>
+<!-- END #subwrap -->
+</div>
 <!-- END #colwrap -->
 </div>
+<!-- END #container -->
 <div id="footer">
 <p>Pappa-Mi versione {{version}} - <a href="/condizioni">Condizioni del Servizio</a>
 </p>
