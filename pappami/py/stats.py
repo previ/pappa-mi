@@ -263,8 +263,17 @@ class CMStatsDataHandler(BasePage):
 
 class CMStatCalcHandler(BasePage):
   def get(self):
-    self.putTask('/admin/stats/calcisp',limit=self.request.get("limit"),offset=self.request.get("offset"))
-    self.putTask('/admin/stats/calcnc',limit=self.request.get("limit"),offset=self.request.get("offset"))
+    limit = 50
+    if self.request.get("limit"):
+      limit = int(self.request.get("limit"))
+    offset = 0
+    if self.request.get("offset"):
+      offset = int(self.request.get("offset"))
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
+
+    self.putTask('/admin/stats/calcisp',limit=limit,offset=offset)
+    self.putTask('/admin/stats/calcnc',limit=limit,offset=offset)
     
   def putTask(self, aurl, offset=0, limit=50):
     task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
@@ -327,7 +336,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     count = 0
     # carica gli elementi creati successivamente all'ultimo calcolo
     for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
-      if nc.dataNonconf >= dataInizio :
+      if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine:
         if( nc.commissione.key() not in statsCM ):          
           statCM = StatisticheNonconf()
           statCM.dataInizio = stats.dataInizio
@@ -446,7 +455,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
 
     count = 0
     for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
-      if isp.dataIspezione >= dataInizio :
+      if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
         if( isp.commissione.key() not in statsCM ):          
           statCM = StatisticheIspezioni()
           statCM.dataInizio = stats.dataInizio
