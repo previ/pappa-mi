@@ -3,13 +3,15 @@
 <head>
     <title>Autenticazione PappaMi</title>
     <link rel="stylesheet" type="text/css" media="screen" href="/css/openid.css" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.openid.js"></script>
+<script type="text/javascript">  $(function() { $("form.openid:eq(0)").openid(); });</script>
     <!-- jQuery OpenID Plugin 1.1 Copyright 2009 Jarrett Vance http://jvance.com/pages/jQueryOpenIdPlugin.xhtml -->
 </head>
 <body>
 <style>
 body {	padding: 0px;	margin: 0px auto;	background: url('/img/background.jpg') no-repeat top center;}
 #container {	margin: 0 auto !important; height: 100% auto; }
-
 </style>
 <div id="container" style="width:640px;	margin: 50 auto;">
 <h1>Autenticazione Pappa-Mi</h1>
@@ -54,9 +56,6 @@ body {	padding: 0px;	margin: 0px auto;	background: url('/img/background.jpg') no
   <input type="submit" value="Login" /></div> 
   </fieldset> 
 </form>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="/js/jquery.openid.js"></script>
-<script type="text/javascript">  $(function() { $("form.openid:eq(0)").openid(); });</script>
 </div>
 </body>
 </html>
