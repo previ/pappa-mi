@@ -107,7 +107,7 @@ class MainPage(BasePage):
       news = []
       for n in news_all.entries:
         #logging.debug(n)
-        if i >= 2 :
+        if i >= 4 :
           break
         i = i + 1
         news.append(n)
@@ -255,6 +255,13 @@ class FbPage(BasePage):
     template_values["content"] = "fb.html"
     self.getBase(template_values)
 
+class ChiSiamoPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "chi.html"
+    self.getBase(template_values)
+    
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
@@ -263,6 +270,7 @@ def main():
   #('/fb', FbPage),
   ('/docs', DocPage),
   #('/blog', BlogPage),
+  ('/chi', ChiSiamoPage),
   ('/map', CMMapHandler),
   ('/menu', CMMenuHandler),
   ('/commissioni', CMCommissioneHandler),
