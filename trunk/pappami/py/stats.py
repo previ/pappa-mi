@@ -333,6 +333,9 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       stats.timePeriod = timePeriod
       self.initWeek(stats, wtot)
 
+    if stats.dataCalcolo is None:
+      stats.dataCalcolo = dataInizio
+      
     count = 0
     # carica gli elementi creati successivamente all'ultimo calcolo
     for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
@@ -453,6 +456,9 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       stats.timePeriod = timePeriod
       self.initWeek(stats, wtot)
 
+    if stats.dataCalcolo is None:
+      stats.dataCalcolo = dataInizio
+
     count = 0
     for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
       if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
@@ -493,12 +499,12 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       
     for stat in statsCM.values() :
       if count < limit :  
-        stats.dataCalcolo = dataCalcolo
+        stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
-        stats.dataCalcolo = dataCalcolo
+        stat.dataCalcolo = dataCalcolo
       stat.put()
     
     finish = count < limit    
