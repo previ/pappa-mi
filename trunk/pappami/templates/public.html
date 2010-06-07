@@ -1,13 +1,52 @@
 <style>#content-main {width: 40%;}</style>
+<script>
+dojo.addOnLoad(function(){
+dojo.style("sc_1", {visibility:"visible"});
+});
+</script>
 <h1 class="ss-form-title">Benvenuti in Pappa-Mi</h1>
-<div style="height:420px; overflow:hidden;"> 
-<h2>Ultime novit&agrave;</h2> 
-{%for item in news%}
+<span dojoType="dijit.layout.StackController" containerId="sc_1"></span>
+<div dojoType="dijit.layout.StackContainer" id="sc_1" style="height: 460px;visibility:hidden"">
+  <div dojoType="dijit.layout.ContentPane" title="Pappa-Mi Blog">
+    <div style="height:460px;overflow:hidden;">
+<h2><a href="{{news_pappami_alt}}">Altro da Pappa-Mi</a></h2> 
+{%for item in news_pappami%}
 <h3><a href="{{item.link}}">{{item.title}}</a></h3> 
 <p class="date"></p> 
 {% for i in item.content %}
 <p>{{i.value}}</p> 
 {%endfor%}
 {%endfor%}
-</div> 
-<a href="http://blog.pappa-mi.it/">Annunci precedenti</a> 
+    </div>
+  </div>
+  <div dojoType="dijit.layout.ContentPane" title="dal Web" id="web" >
+<script src="/js/jquery.zrssfeed.js" type="text/javascript"></script>
+<script src="/js/jquery.vticker.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+	$('#tickerweb').rssfeed('http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast', {limit: 5, header: false });
+});
+</script> 
+<div style="height:460px;overflow:hidden;"><div id="tickerweb"></div></div>    
+{% comment %}
+<div style="height:460px;overflow:hidden;">
+{%for item in news_web%} 
+<h3><a href="{{item.link}}">{{item.title}}</a></h3> 
+<p class="date"></p> 
+<p>{{item.summary}}</p> 
+{%endfor%}
+    </div>
+{% endcomment %}
+</div>
+  <div dojoType="dijit.layout.ContentPane" title="Calendario">
+    <div style="height:460px;overflow:hidden;">
+{%for item in news_cal%}
+<h3><a href="{{item.link}}">{{item.title}}</a></h3> 
+<p class="date"></p> 
+{% for i in item.content %}
+<p>{{i.value}}</p> 
+{%endfor%}
+{%endfor%}
+  </div>
+</div>
+</div>
