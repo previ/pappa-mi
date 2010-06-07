@@ -83,10 +83,7 @@ class CMFeedIspNCHandler(BasePage):
         note = "nessuna"
         if isp.note is not None:
           note = isp.note
-        items.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
-                          description = "Ispezione - note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/ispezione?key="+str(isp.key())),
-                          pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
+        items.append((isp.dataIspezione, isp, None))
       
 
       ncs = Nonconformita.all().order("-dataNonconf").fetch(limit=5)
@@ -94,18 +91,32 @@ class CMFeedIspNCHandler(BasePage):
         note = "nessuna"
         if nc.note is not None:
           note = nc.note
-        items.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
+        items.append((nc.dataNonconf, None, nc))
+
+
+      items =  sorted(items, key=lambda item: item[0], reverse=True)
+      feeditems = list()
+      for i in items:
+        if( i[1] ):
+          isp = i[1]
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
+                            description = "Ispezione - note:" + note,
+                            guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/ispezione?key="+str(isp.key())),
+                            pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
+        else:
+          nc = i[2]
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
                           description = "Non Conformita': " + nc.tipoNome() + " note:" + note,
                           guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nonconf?key="+str(nc.key())),
                           pubDate = nc.dataNonconf.strftime("%a, %d %b %Y %H:%M:%S +0100")))
 
       
       rss = py.PyRSS2Gen.RSS2(
-        title = "Pappa-Mi - Ispezioni",
+        title = "Pappa-Mi - Ispezioni e Non conformità",
         link = "http://"+ self.getHost() + "/feed/ispnc",
         description = "Le ultime rilevazioni delle Commissioni Mensa di Milano",
-        
-        items = sorted(items, key=lambda rssitem: py.PyRSS2Gen.RSSItem.pubDate))
+        items = feeditems)
+      
       buff = rss.to_xml()
       memcache.add("feed_ispnc", buff)
         
@@ -149,7 +160,7 @@ class CMFeedNCHandler(BasePage):
 
 application = webapp.WSGIApplication([
   ('/feed/ispezioni', CMFeedIspHandler),
-  ('/feed/ispnc2', CMFeedIspNCHandler),
+  ('/feed/ispnc', CMFeedIspNCHandler),
   ('/feed/nc', CMFeedNCHandler)
 ], debug=True)
 

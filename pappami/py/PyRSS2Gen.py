@@ -311,6 +311,7 @@ class RSS2(WriteXmlMixin):
         if items is None:
             items = []
         self.items = items
+        
 
     def publish(self, handler):
         handler.startElement("rss", self.rss_attrs)
