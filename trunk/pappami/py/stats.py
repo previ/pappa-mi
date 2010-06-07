@@ -334,7 +334,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       self.initWeek(stats, wtot)
 
     if stats.dataCalcolo is None:
-      stats.dataCalcolo = dataInizio
+      stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
       
     count = 0
     # carica gli elementi creati successivamente all'ultimo calcolo
@@ -457,7 +457,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       self.initWeek(stats, wtot)
 
     if stats.dataCalcolo is None:
-      stats.dataCalcolo = dataInizio
+      stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
 
     count = 0
     for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):

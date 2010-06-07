@@ -88,6 +88,26 @@ class BasePage(webapp.RequestHandler):
 
   
 class MainPage(BasePage):
+
+  _news = {"news_pappami":"http://blog.pappa-mi.it/feeds/posts/default",
+          "news_web": "http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast",
+          "news_cal": "http://www.google.com/calendar/feeds/aiuto%40pappa-mi.it/public/basic"}
+  def getNews(self,name):
+    news = memcache.get(name)
+    i = 0
+    if news is None:
+      news_all = py.feedparser.parse(self._news[name])
+      #logging.debug(news_all)
+      news = []
+      for n in news_all.entries:
+        #logging.debug(n)
+        if i >= 4 :
+          break
+        i = i + 1
+        news.append(n)
+        
+      memcache.add("news_pappami",news)
+    return news
   
   def get(self):
     template_values = dict()
@@ -97,29 +117,16 @@ class MainPage(BasePage):
     template_values["content_right"] = "rightbar.html"
     template_values["content_extra"] = "extra.html"
     template_values["host"] = self.getHost()
-
-    news = memcache.get("news")
-    i = 0
-    if news is None:
-      #news_all = py.feedparser.parse(self.request.url + "/js/atom_v1_0_msgs.xml")
-      news_all = py.feedparser.parse("http://blog.pappa-mi.it/feeds/posts/default")
-      logging.debug(news_all)
-      news = []
-      for n in news_all.entries:
-        #logging.debug(n)
-        if i >= 4 :
-          break
-        i = i + 1
-        news.append(n)
-        
-      memcache.add("news",news)
-      
+  
     stats = self.getStats()
     template_values["stats"] = stats
-    template_values["news"] = news
+    template_values["news_pappami"] = self.getNews("news_pappami")
+    template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
+    template_values["news_web"] = self.getNews("news_web")
+    template_values["news_cal"] = self.getNews("news_cal")
 
-    if(len(news)>0):
-      template_values["newsMsg"] = news[0].content[0]
+    if(len(self.getNews("news_pappami"))>0):
+      template_values["newsMsg"] = self.getNews("news_pappami")[0].content[0]
     
     self.getBase(template_values)
 
