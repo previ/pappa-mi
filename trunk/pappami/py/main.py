@@ -51,7 +51,7 @@ class BasePage(webapp.RequestHandler):
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
-
+      
     commissario = self.getCommissario(user)
     if( commissario is not None ) :
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=1) ):
@@ -61,14 +61,12 @@ class BasePage(webapp.RequestHandler):
       template_values["genitore"] = commissario.isGenitore()
       logging.info("commissario: " + str(commissario.isCommissario()))
       logging.info("genitore: " + str(commissario.isGenitore()))
-
-      
     
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "0.6.1.16 - 2010.05.16"
+    template_values["version"] = "1.0.0.17 - 2010.06.08"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
