@@ -33,7 +33,7 @@ a:hover { color:blue; }
 #nav-global { position:absolute; margin:0; bottom:0; right:0; font-family:"Arial",sans-serif; white-space:nowrap; }
 #nav-global li { display:block; float:left; list-style-type:none; margin:0; padding:0; }
 #nav-global a { display:block; float:left; padding:38px 16px 10px 16px; background:#eff3f6; }
-#homepage #nav-homepage a, #overview #nav-overview a, #download #nav-download a, #documentation #nav-documentation a, #weblog #nav-weblog a, #community #nav-community a, #blogroll #nav-blogroll a, #code #nav-code a { color:black; background:##eff3f6; }
+#homepage #nav-homepage a, #overview #nav-overview a, #download #nav-download a, #documentation #nav-documentation a, #weblog #nav-weblog a, #community #nav-community a, #blogroll #nav-blogroll a, #code #nav-code a { color:black; background:#eff3f6; }
 #nav-global a:hover { color:#ffffff; background:#d2d9e3; }
 
 /* COLUMNS */

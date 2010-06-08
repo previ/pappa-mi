@@ -37,9 +37,30 @@ from py.main import BasePage
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
-
+    
 class CMCommissarioHandler(BasePage):
+  def getMenu(self, data, cm): 
+    menu = list();
 
+    #logging.info("data: %s", data)
+
+    cc = cm.centroCucina
+    offset = cc.menuOffset
+    if offset == None:
+      offset = 0
+      
+    # settimana corrente
+    menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
+    logging.info("len %d" , menus.count())
+
+    for m in menus:
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
+        menu.append(m)
+        logging.info("m" + m.primo)
+
+    return menu
+
+  
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -56,6 +77,28 @@ class CMCommissarioHandler(BasePage):
       elif tab == "ud" :
         template_values['content'] = 'commissario/profilo.html'
         template_values['cmsro'] = commissario
+      elif tab == "mn" :
+        cm = self.request.get("cm")
+        if(cm):
+          cm = Commissione.get(cm)
+        else:
+          cm = commissario.commissioni()[0]
+        date = self.request.get("data")
+        if date:
+          date = datetime.strptime(date,DATE_FORMAT).date()
+        else:
+          date = datetime.now().date()
+        
+        date1 = date - timedelta(datetime.now().isoweekday() - 1)
+        date2 = date1 + timedelta(7)
+        template_values['content'] = 'menu.html'
+        template_values['menu1'] = self.getMenu(date1, cm )
+        template_values['menu2'] = self.getMenu(date2, cm )
+        template_values['data'] = date
+        template_values['data1'] = date1
+        template_values['data2'] = date2
+        template_values['cm'] = cm
+        template_values['action'] = self.request.path
       else:
         template_values['content'] = 'commissario/ispezioni.html'
       
