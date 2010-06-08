@@ -98,6 +98,12 @@ indexes:
   - name: validitaDa
     direction: desc
 
+- kind: Menu
+  properties:
+  - name: tipoScuola
+  - name: validitaDa
+    direction: desc
+
 - kind: Nonconformita
   properties:
   - name: commissario

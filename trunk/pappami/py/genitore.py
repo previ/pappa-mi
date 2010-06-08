@@ -41,6 +41,27 @@ TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
 class CMGenitoreHandler(BasePage):
+  def getMenu(self, data, cm): 
+    menu = list();
+
+    #logging.info("data: %s", data)
+
+    cc = cm.centroCucina
+    offset = cc.menuOffset
+    if offset == None:
+      offset = 0
+      
+    # settimana corrente
+    menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
+    logging.info("len %d" , menus.count())
+
+    for m in menus:
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
+        menu.append(m)
+        logging.info("m" + m.primo)
+
+    return menu
+    
 
   def get(self): 
     user = users.get_current_user()
@@ -57,6 +78,11 @@ class CMGenitoreHandler(BasePage):
         template_values['content'] = 'genitore/nonconfs.html'
       elif tab == "ud" :
         template_values['content'] = 'genitore/profilo.html'
+        template_values['cmsro'] = commissario
+      elif tab == "mn" :
+        template_values['content'] = 'menu.html'
+        template_values['menu1'] = self.getMenu(datetime.now().date(), commissario.commissioni()[0] )
+        template_values['menu2'] = self.getMenu((datetime.now() + timedelta(1)).date(), commissario.commissioni()[0] )
         template_values['cmsro'] = commissario
       else:
         template_values['content'] = 'genitore/ispezioni.html'
@@ -177,6 +203,22 @@ class CMNonconfGenitoreHandler(BasePage):
 
     self.getBase(template_values)
 
+class CMNonconfGenitoreHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isGenitore() :
+      self.redirect("/genitore/registrazione")
+      return
+
+    template_values = {
+      'content': 'menu.html',
+      'content_left': 'genitore/leftbar.html'
+      }
+
+    self.getBase(template_values)
+    
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 

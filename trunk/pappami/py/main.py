@@ -59,6 +59,9 @@ class BasePage(webapp.RequestHandler):
         commissario.put()
       template_values["commissario"] = commissario.isCommissario()
       template_values["genitore"] = commissario.isGenitore()
+      logging.info("commissario: " + str(commissario.isCommissario()))
+      logging.info("genitore: " + str(commissario.isGenitore()))
+
       
     
     template_values["user"] = user
@@ -71,7 +74,14 @@ class BasePage(webapp.RequestHandler):
     self.response.out.write(template.render(path, template_values))
 
   def getCommissario(self,user):
-    return Commissario.all().filter("user", user).get()
+    if(user):
+      logging.info("user email: " + user.email() + " id: " + user.user_id())
+    commissario = Commissario.all().filter("user = ", users.get_current_user()).get()
+    #query = db.GqlQuery("SELECT * FROM Commissario WHERE user = USER(:usr)", usr = users.get_current_user().email())
+    #commissario = query.get()
+    if(commissario):
+      logging.info("commissario: " + commissario.nome)
+    return commissario
   
   def getCommissioni(self):
     commissioni = memcache.get("commissioni")
@@ -85,7 +95,6 @@ class BasePage(webapp.RequestHandler):
     host = host[:host.find("/")]
     #logging.info("host: " + host)
     return host
-
   
 class MainPage(BasePage):
 

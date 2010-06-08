@@ -1,0 +1,25 @@
+<style>
+.mt {font-size:10px;}
+.md {font-size:12px;}
+.hidden {display:none;}
+.visible {display:inlide;}
+.cg {cursor: hand;}
+a {text-decoration:none;}
+.day {float:left;}
+</style>
+<div class="day">
+<div class="md">Data</div>
+<div class="md">Primo piatto</div>
+<div class="md">Secondo piatto</div>
+<div class="md">Contorno</div>
+<div class="md">Dessert</div>
+</div>
+{%for m in menu1%}
+<div class="day">
+<div class="md">{{data1|date:"d/m/Y"}}</div>
+<div class="md">{{m.primo}}</div>
+<div class="md">{{m.secondo}}</div>
+<div class="md">{{m.contorno}}</div>
+<div class="md">{{m.dessert}}</div>
+</div>
+{%endfor%}
