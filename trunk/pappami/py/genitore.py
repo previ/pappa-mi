@@ -115,7 +115,7 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     
     Ora puoi accedere all'area a te riservata:
     
-    Schede Isepzione e Non Conformità
+    Schede Ispezione e Non Conformita'
     http://"""  + host + """/genitore
 
     Dati statistici di tutte le Commissioni
