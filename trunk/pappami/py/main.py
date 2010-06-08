@@ -72,9 +72,10 @@ class BasePage(webapp.RequestHandler):
     self.response.out.write(template.render(path, template_values))
 
   def getCommissario(self,user):
+    commissario = None
     if(user):
       logging.info("user email: " + user.email() + " id: " + user.user_id())
-    commissario = Commissario.all().filter("user = ", users.get_current_user()).get()
+      commissario = Commissario.all().filter("user = ", users.User(users.get_current_user().email())).get()
     #query = db.GqlQuery("SELECT * FROM Commissario WHERE user = USER(:usr)", usr = users.get_current_user().email())
     #commissario = query.get()
     if(commissario):
