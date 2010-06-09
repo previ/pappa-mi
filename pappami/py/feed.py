@@ -112,7 +112,7 @@ class CMFeedIspNCHandler(BasePage):
 
       
       rss = py.PyRSS2Gen.RSS2(
-        title = "Pappa-Mi - Ispezioni e Non conformità",
+        title = "Pappa-Mi - Ispezioni e Non conformita'",
         link = "http://"+ self.getHost() + "/feed/ispnc",
         description = "Le ultime rilevazioni delle Commissioni Mensa di Milano",
         items = feeditems)
