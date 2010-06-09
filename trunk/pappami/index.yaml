@@ -242,6 +242,18 @@ indexes:
   - name: dataFine
     direction: desc
 
+- kind: StatisticheIspezioni
+  properties:
+  - name: centroCucina
+  - name: dataFine
+    direction: desc
+
+- kind: StatisticheIspezioni
+  properties:
+  - name: commissione
+  - name: dataFine
+    direction: desc
+
 - kind: StatisticheNonconf
   properties:
   - name: centroCucina

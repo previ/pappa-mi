@@ -64,7 +64,7 @@ class CMGenitoreHandler(BasePage):
         if count >=5 :
           break
 
-    return menu
+    return sorted(menu, key=lambda menu: menu.giorno)
     
 
   def get(self): 
