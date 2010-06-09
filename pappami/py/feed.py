@@ -158,6 +158,7 @@ class CMFeedNCHandler(BasePage):
     self.response.headers.add_header("Expires", expires_str)
     self.response.out.write(buff)
 
+    
 application = webapp.WSGIApplication([
   ('/feed/ispezioni', CMFeedIspHandler),
   ('/feed/ispnc', CMFeedIspNCHandler),

@@ -3,11 +3,11 @@
 body {padding: 0px;margin: 0px auto;background: url('/img/background.jpg') no-repeat top center; color:black;}
 /*body { margin:0; padding:0; background:#305aac; color:black; }*/
  
-#container { margin: 0 auto !important; height: 100% auto; }
+#container { margin: 0 auto;  height: 100% auto; }
 /*#container { position:relative; min-width:68em; max-width:100em; margin:0; padding:0; top:0px; left:0px;}*/
 body, th, td { font:12px/1.4em Verdana,sans-serif; }
 
-#homepage #container { max-width:100em; min-width:80em; margin:0; padding:0;}
+#homepage #container { max-width:100em; min-width:80em;}
 #footer { margin: 0 auto !important; padding-left:10px; max-width:1200px; min-width:80em; }
 
 /* LINKS */
@@ -42,8 +42,8 @@ a:hover { color:blue; }
 #subwrap { background:#d0d6e2; width:100%; float:left; padding-bottom:10px; }
 #content-main { float:left; width:100%; background:white; color:black; padding-bottom:0px; }
 #generic #content-main, #code #content-main { width:100%; }
-#content-main * { margin-left:22px; margin-right:24px; }
-#content-main * * { margin-left:0; margin-right:0; }
+#content-main { margin-left:22px; margin-right:24px; }
+#content-main { margin-left:0; margin-right:0; }
 .sidebar { font-size:92%; }
 .sidebar * { margin-left:14px; margin-right:14px; }
 .sidebar * * { margin-left:0; margin-right:0; }

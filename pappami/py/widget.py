@@ -60,7 +60,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     template_values["fcolor"] = fcolor
     
     
-    path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
+    path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu2.html')
     self.response.out.write(template.render(path, template_values))
 
   def nextWorkingDay(self, data):
@@ -75,6 +75,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       cc = c.centroCucina
       offset = cc.menuOffset      
 
+    logging.info(offset)
     menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
     #logging.info("len %d" , menus.count())
 
@@ -85,7 +86,20 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
         menu = m
         break
     return menu
-      
+
+  def getMenuOffset(self, data, offset):
+
+    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
+    #logging.info("len %d" , menus.count())
+
+    menu = None
+    for m in menus:
+      #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
+        menu = m
+        break
+    return menu
+  
 class CMStatWidgetHandler(webapp.RequestHandler):
   
   def get(self): 
@@ -100,13 +114,18 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     c = None
     if cmk:
       c = Commissione.get(self.request.get("cm"))
-      
-    stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).order("-dataFine").get()
+
+    now = datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+
+    stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
     statCC = None
     statCM = None
     if c:
-      statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).order("-dataFine").get()
-      statCM = StatisticheIspezioni.all().filter("commissione",c).order("-dataFine").get()
+      statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
+      statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
     
     template_values = dict()
     template_values["stats"] = stats
