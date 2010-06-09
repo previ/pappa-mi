@@ -53,10 +53,13 @@ class CMCommissarioHandler(BasePage):
     menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
     logging.info("len %d" , menus.count())
 
+    count = 0
     for m in menus:
       if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
         menu.append(m)
         logging.info("m" + m.primo)
+        if count >=5 :
+          break
 
     return menu
 
