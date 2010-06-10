@@ -92,8 +92,6 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
 
     menu = sorted(menu, key=lambda menu: menu.settimana)
 
-    if len(menu) == 1:
-      menu = menu[0]
     return menu
   
 class CMStatWidgetHandler(webapp.RequestHandler):
