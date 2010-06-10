@@ -19,7 +19,8 @@ dojo.require("dojo.parser");
 a {text-decoration:none;}
 .dayheader {float:left;font-size:12px;width:130px; margin-left:2px; margin-right:2px;background: #d2d9e3;}
 .day1 {background: #ffffff;float:left;font-size:12px;width:125px; margin-left:2px; margin-right:2px;}
-.day2 {background: #eff3f6;float:left;font-size:12px;width:125px; margin-left:2px; margin-right:2px;}
+.day2 {background: #efefef;float:left;font-size:12px;width:125px; margin-left:2px; margin-right:2px;}
+.today {background: #eff3f6;float:left;font-size:12px;width:125px; margin-left:2px; margin-right:2px;}
 </style>
 <H1 class="ss-form-title">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</H1>
 <div dojoType="dijit.form.DropDownButton">
@@ -59,7 +60,7 @@ searchAttr="nome" name="cm" id="e_cm">
 <div class="md">Dessert</div>
 </div>
 {%for m in menu1%}
-<div class="day1">
+<div class="{%if m.today%}today{%else%}day1{%endif%}">
 <div class="md">{{m.getData}}</div>
 <div class="md">{{m.primo}}</div>
 <div class="md">{{m.secondo}}</div>

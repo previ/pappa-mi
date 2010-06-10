@@ -100,6 +100,8 @@ class Menu(db.Model):
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):
     return self._giorni[self.giorno-1]
+  def today(self):
+    return datetime.now().date().isoweekday() == self.giorno
   
 class Ispezione(db.Model):
       

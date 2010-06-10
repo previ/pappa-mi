@@ -101,17 +101,17 @@ class CMStatWidgetHandler(webapp.RequestHandler):
   def get(self): 
 
     bgcolor = self.request.get("bc")
-    if(bgcolor is None): 
+    if(bgcolor == ""): 
       bgcolor = "eeeeff"
     fcolor = self.request.get("fc")
-    if(fcolor is None): 
+    if(fcolor == ""): 
       fcolor = "000000"
 
     template_values = dict()
-    self.createStat(request,template_values)
-    
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
+    
+    self.createStat(self.request,template_values)
     
     t = ""
     if self.request.get("t") == "c":
@@ -125,7 +125,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
   def createStat(self,request,template_values):
     cmk = request.get("cm")
     c = None
-    if cmk:
+    if cmk != "":
       c = Commissione.get(request.get("cm"))
 
     now = datetime.now().date()
@@ -134,13 +134,13 @@ class CMStatWidgetHandler(webapp.RequestHandler):
       year = year - 1
 
     stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
+    logging.info(stats.primoAssaggioNorm())
     statCC = None
     statCM = None
     if c:
       statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
       statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
     
-    template_values = dict()
     template_values["stats"] = stats
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM

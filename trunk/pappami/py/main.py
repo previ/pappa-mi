@@ -134,7 +134,7 @@ class MainPage(BasePage):
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"
     
-    template_values["stats"] = stats
+    template_values["stat"] = stats
     template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
     template_values["news_web"] = self.getNews("news_web")
@@ -142,7 +142,7 @@ class MainPage(BasePage):
 
     if(len(self.getNews("news_pappami"))>0):
       template_values["newsMsg"] = self.getNews("news_pappami")[0].content[0]
-    
+
     self.getBase(template_values)
 
   def getStats(self):
