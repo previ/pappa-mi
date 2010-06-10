@@ -1,43 +1,123 @@
 ﻿<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.Button");
+dojo.require("dijit.Tooltip");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojo.parser");
 </script>
-<style>
-</style>
-<H1 class="ss-form-title">I tuoi dati personali</H1>
-<p>In questa pagina puoi controllare i tuoi dati personali.</p>
-<p>Se lo desideri puoi anche cancellare la tua registrazione.</p>
-</p>
-<HR class="ss-email-break" style="display:none;">
+<script>
+function alreadySelected() {
+    cm_all = dijit.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    for( i=0;i<cm_sel.options.length;i++) {
+        if(cm_all.attr("value") == cm_sel.options[i].value ) {
+            alert(cm_all.innerHTML + " gia' aggiunta");
+            return true;
+        }
+    }
+    return false;
+}
+
+function onSelComm() {
+    cm_all = dijit.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+
+    if(cm_all.attr("value") != "" && !alreadySelected()) {
+        var oOption = document.createElement('OPTION');
+        try {
+            cm_sel.add(oOption, null);
+        } catch(ex) {
+            cm_sel.add(oOption);
+        }        
+        oOption.innerHTML = cm_all.attr('displayedValue');
+        oOption.value = cm_all.attr("value");
+    }
+}
+function onRem() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    if(cm_sel.selectedIndex >= 0) {
+        cm_sel.remove(cm_sel.selectedIndex);
+    }
+}
+
+function removeAll() {
+    cm_all = dojo.byId("e_cm_all");
+    cm_sel = dojo.byId("e_cm_sel");
+    while(cm_sel.options.length) {
+        cm_sel.remove(cm_sel.options.length-1);
+    }
+}
+</script>
+<H1>Registrazione Genitore</H1>
+<P>
+<P>
+<span class="ss-required-asterisk">* Campo obbligatorio</span>
 <BR>
+<FORM dojoType="dijit.form.Form" action="/genitore/registrazione" method="POST" id="form_0">
+<script type="dojo/method" event="onSubmit">
+cm_sel = dojo.byId("e_cm_sel");
+for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
+if(this.validate()&&
+dojo.byId("e_n").value != "" &&
+dojo.byId("e_c").value != "" &&
+dojo.byId("e_cm_sel").value != ""){
+    dojo.byId("e_submit").disabled = true;
+    dojo.byId("e_annulla").disabled = true;
+    return true;
+} else {
+    alert('Inserire tutti i dati richiesti');
+    return false;
+}
+</script>
 <table width="100%">
 <tr>
 <td>
-<DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome</LABEL>{{cmsro.nome}}</DIV></DIV>
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_n">Nome
+<span class="ss-required-asterisk">*</span></label>
+<label class="ss-q-help" for="e_n"></label>
+<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="" class="ss-q-short" id="e_n"></div></div>
 </td>
-<td rowspan="3">
-<DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Scuola</LABEL> 
-{% for c in cmsro.commissioni %}
-{{c.nome}}<br>
-{% endfor %}
-</DIV></DIV>
+<td>
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
+<span class="ss-required-asterisk">*</span></label>
+<label class="ss-q-help" for="e_c"></label>
+<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="" class="ss-q-short" id="e_c"></div></div>
 </td>
 </tr>
 <tr>
-<td>
-<DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Cognome</LABEL>{{cmsro.cognome}}
-</DIV></DIV>
+<td colspan="2">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
+<div class="errorbox-good">
+<div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
+<span class="ss-required-asterisk">*</span></label>
+<table><tr><td>
+<input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
+searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
+<br/><br/>
+<SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">
+</SELECT><span dojoType="dijit.Tooltip" connectId="l_cm" position="above" style="display:none;" id="tt_cm"> 
+Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
+<ul>
+<li>Selezionare una Scuola dalla lista per aggiungerlo all'elenco, ripetere l'operazione per tutte le Scuole desiderate</li>
+<li>Fare doppio clic su una Scuola per eliminarla dall'elenco in caso di errore</li>
+</ul></span> 
+</td></tr></table>
+</div></div>
 </td>
 </tr>
-<tr>
-<td>
-<DIV class="errorbox-good">
-<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">email</LABEL>{{cmsro.user.email}}</DIV></DIV>
+{%if not cmsro%}<tr>
+<td colspan="2">
+<a href="/condizioni" target="_new">Leggi le condizioni del servizio</a>
 </td>
 </tr>
-</table>
-<P align="center">
-<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Cancella la mia registrazione</button>
-<P>
+{%endif%}<tr>
+<td align="center" colspan="2">
+<button type="submit" id="e_submit">{%if not cmsro%}Accetta e invia richiesta{%endif%}{%if cmsro%}Salva{%endif%}</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
+</td>
+</tr>
+</table></FORM>
