@@ -28,6 +28,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 import py.feedparser
+from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 
 from py.model import *
 
@@ -127,6 +128,12 @@ class MainPage(BasePage):
     template_values["host"] = self.getHost()
   
     stats = self.getStats()
+    
+    CMMenuWidgetHandler().createMenu(self.request,template_values)
+    CMStatWidgetHandler().createStat(self.request,template_values)
+    template_values["bgcolor"] = "eeeeff"
+    template_values["fgcolor"] = "000000"
+    
     template_values["stats"] = stats
     template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
@@ -155,6 +162,7 @@ class CMCommissioneHandler(BasePage):
   def get(self):
     template_values = dict()
     template_values["content"] = "map.html"
+    template_values["limit"] = 500
     template_values["centriCucina"] = CentroCucina.all().order("nome")
     self.getBase(template_values)
 

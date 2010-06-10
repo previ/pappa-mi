@@ -14,76 +14,10 @@
 <link href="../style.css" rel="stylesheet" type="text/css" />
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">google.load("jquery", "1.4.2", {uncompressed:true});</script>
-<script type="text/javascript" src="/js/jquery.jcarousel.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/css/jcarousel.css" />
-<script type="text/javascript">
-
-function mycarousel_initCallback(carousel)
-{
-    // Disable autoscrolling if the user clicks the prev or next button.
-    carousel.buttonNext.bind('click', function() {
-        carousel.startAuto(0);
-    });
-
-    carousel.buttonPrev.bind('click', function() {
-        carousel.startAuto(0);
-    });
-
-    // Pause autoscrolling if the user moves with the cursor over the clip.
-    carousel.clip.hover(function() {
-        carousel.stopAuto();
-    }, function() {
-        carousel.startAuto();
-    });
-};
-
-jQuery(document).ready(function() {
-    jQuery('#menu').jcarousel({
-		vertical: true,
-		scroll: 1,
-        auto: 2,
-        wrap: 'last',
-		buttonNextHTML: '<div></div>',
-		buttonPrevHTML: '<div></div>',
-        initCallback: mycarousel_initCallback
-    });
-});
-
-</script>
 </head>
 <body style="padding:0px; margin:2px; border-spacing:0px; background: #{{bgcolor}}; background-color:#{{bgcolor}}; color:#{{fcolor}};">
 <!--img src="/img/pappa-mi-logo-big.png" width="160" style="position:absolute; left:25px; top:0px; z-index:-1; opacity:0.2;filter:alpha(opacity=20)"/-->
 <div style="position:absolute; left:0px; top:0px;"><a href="/" target="_new"><img border="0" src="/img/pappa-mi-logo.png" width="20" title="Pappa-Mi"/></a></div>
-<style>
-.mt {font-size:10px;}
-.md {font-size:12px;}
-a {text-decoration:none;}
-</style>
-<ul id="menu" class="jcarousel-skin-tango">
-    <li><div><table width="200" border="0" style="margin:0px; border-spacing:0px;">
-<tr><td align="center" class="md">{{data1|date:"d/m/Y"}}</td></tr>
-<tr><td align="center" class="mt">Primo piatto</td></tr>
-<tr><td align="center" class="md">{{menu1.primo}}</td></tr>
-<tr><td align="center" class="mt">Secondo piatto</td></tr>
-<tr><td align="center" class="md">{{menu1.secondo}}</td></tr>
-<tr><td align="center" class="mt">Contorno</td></tr>
-<tr><td align="center" class="md">{{menu1.contorno}}</td></tr>
-<tr><td align="center" class="mt">Dessert</td></tr>
-<tr><td align="center" class="md">{{menu1.dessert}}</td></tr>
-</table></div></li>
-<li><div><table width="100%" border="0" style="margin:0px; border-spacing:0px;">
-<tr><td align="center" class="md">{{data2|date:"d/m/Y"}}</td></tr>
-<tr><td align="center" class="mt">Primo piatto</td></tr>
-<tr><td align="center" class="md">{{menu2.primo}}</td></tr>
-<tr><td align="center" class="mt">Secondo piatto</td></tr>
-<tr><td align="center" class="md">{{menu2.secondo}}</td></tr>
-<tr><td align="center" class="mt">Contorno</td></tr>
-<tr><td align="center" class="md">{{menu2.contorno}}</td></tr>
-<tr><td align="center" class="mt">Dessert</td></tr>
-<tr><td align="center" class="md">{{menu2.dessert}}</td></tr>
-</table>
-</div></li>
-  </ul>
-
+{%include "menu.html"%}
 </body>
 </html>

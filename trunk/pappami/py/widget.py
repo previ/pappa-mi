@@ -45,24 +45,27 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     fcolor = self.request.get("fc")
     if(fcolor is None): 
       fcolor = "000000"
-    c = None
-    if self.request.get("cm"):
-      c = Commissione.get(self.request.get("cm"))
-          
-    data = datetime.now().date()
-    
+
     template_values = dict()
-    template_values["data1"] = data
-    template_values["menu1"] = self.getMenu(data, c)
-    template_values["data2"] = self.nextWorkingDay(data)
-    template_values["menu2"] = self.getMenu(self.nextWorkingDay(data), c)
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
-    
+    self.createMenu(self.request,template_values)
     
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu2.html')
     self.response.out.write(template.render(path, template_values))
 
+  def createMenu(self,request,template_values):
+    menu = Menu();
+
+    c = None
+    if request.get("cm"):
+      c = Commissione.get(request.get("cm"))
+          
+    data = datetime.now().date()
+    
+    template_values["data"] = data
+    template_values["menu"] = self.getMenu(data, c)
+    
   def nextWorkingDay(self, data):
     dt = data + timedelta(1)
     while dt.isoweekday() > 5:
@@ -70,7 +73,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     return dt
     
   def getMenu(self, data, c):
-    offset = 0
+    offset = -1
     if c:
       cc = c.centroCucina
       offset = cc.menuOffset      
@@ -79,25 +82,18 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
     #logging.info("len %d" , menus.count())
 
-    menu = None
+    menu = list()
     for m in menus:
       #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
-        menu = m
-        break
-    return menu
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
+        menu.append(m)
+        if((offset == -1 and len(menu) >=4) or (offset >=0 )):
+          break
 
-  def getMenuOffset(self, data, offset):
+    menu = sorted(menu, key=lambda menu: menu.settimana)
 
-    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
-    #logging.info("len %d" , menus.count())
-
-    menu = None
-    for m in menus:
-      #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
-        menu = m
-        break
+    if len(menu) == 1:
+      menu = menu[0]
     return menu
   
 class CMStatWidgetHandler(webapp.RequestHandler):
@@ -110,10 +106,27 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     fcolor = self.request.get("fc")
     if(fcolor is None): 
       fcolor = "000000"
-    cmk = self.request.get("cm")
+
+    template_values = dict()
+    self.createStat(request,template_values)
+    
+    template_values["bgcolor"] = bgcolor
+    template_values["fcolor"] = fcolor
+    
+    t = ""
+    if self.request.get("t") == "c":
+      t = "_" + self.request.get("t")
+
+    template_values["wcontent"] = "stat" + t + ".html"
+    
+    path = os.path.join(os.path.dirname(__file__), '../templates/widget/wstat.html')
+    self.response.out.write(template.render(path, template_values))
+
+  def createStat(self,request,template_values):
+    cmk = request.get("cm")
     c = None
     if cmk:
-      c = Commissione.get(self.request.get("cm"))
+      c = Commissione.get(request.get("cm"))
 
     now = datetime.now().date()
     year = now.year
@@ -131,16 +144,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values["stats"] = stats
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
-    template_values["bgcolor"] = bgcolor
-    template_values["fcolor"] = fcolor
     
-    t = ""
-    if self.request.get("t") == "c":
-      t = "_" + self.request.get("t")
-    
-    path = os.path.join(os.path.dirname(__file__), '../templates/widget/stat' + t + '.html')
-    self.response.out.write(template.render(path, template_values))
-
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
