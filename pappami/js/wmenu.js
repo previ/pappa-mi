@@ -21,8 +21,8 @@ jQuery(document).ready(function() {
     jQuery('#menu').jcarousel({
 		vertical: true,
 		scroll: 1,
-        auto: 2,
-        wrap: 'last',
+        auto: 5,
+        wrap: 'both',
 		buttonNextHTML: '<div></div>',
 		buttonPrevHTML: '<div></div>',
         initCallback: mycarousel_initCallback
