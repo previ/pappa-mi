@@ -105,6 +105,8 @@ class CMGenitoreHandler(BasePage):
         template_values['data2'] = date2
         template_values['cm'] = cm
         template_values['action'] = self.request.path
+      elif tab == "cm" :
+        template_values['content'] = 's.html'
       else:
         template_values['content'] = 'genitore/ispezioni.html'
       
