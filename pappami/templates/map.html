@@ -28,6 +28,8 @@ dojo.require("dijit.ProgressBar");
     var gmap;
     var iLast;
     var locArray;
+    var limit = {{limit}};
+    var offset = 0;
 
     function drawMap(data) {
         if( !xml ) xml = GXml.parse(data);
@@ -40,7 +42,9 @@ dojo.require("dijit.ProgressBar");
         var f_cc = dojo.byId("e_cc").value;
         var f_type = dojo.byId("e_tipo").value;
         var f_numcm = dojo.byId("e_numcm").value;
-        for (var i = 0; i < markers.length; i++) {
+        if(markers.length<limit) lmt = markers.length
+        else lmt = limit - 1
+        for (var i = 0; i < lmt; i++) {
           var name = markers[i].getAttribute("nome");
           var address = markers[i].getAttribute("indirizzo");
           var type = markers[i].getAttribute("tipo");
@@ -58,6 +62,9 @@ dojo.require("dijit.ProgressBar");
             locations[latlngHash].push(store);
           }
         }
+        if( markers.length < limit)
+          GDownloadUrl("/map?cmd=all&offset="+offset, drawMap);
+          offset += markers.length;
         iLast = 0;
         locArray = [];
         var i = 0;
