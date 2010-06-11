@@ -56,7 +56,7 @@ function removeAll() {
 <P>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
 <BR>
-<FORM dojoType="dijit.form.Form" action="/genitore/registrazione" method="POST" id="form_0">
+<FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
 cm_sel = dojo.byId("e_cm_sel");
 for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
@@ -79,19 +79,19 @@ dojo.byId("e_cm_sel").value != ""){
 <div class="ss-form-entry"><label class="ss-q-title" for="e_n">Nome
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="e_n"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="" class="ss-q-short" id="e_n"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="{{cmsro.nome}}" class="ss-q-short" id="e_n"></div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="e_c"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="" class="ss-q-short" id="e_c"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="{{cmsro.cognome}}" class="ss-q-short" id="e_c"></div></div>
 </td>
 </tr>
 <tr>
 <td colspan="2">
-<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
 <span class="ss-required-asterisk">*</span></label>
@@ -101,9 +101,9 @@ searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" oncha
 <br/><br/>
 <SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">
 </SELECT><span dojoType="dijit.Tooltip" connectId="l_cm" position="above" style="display:none;" id="tt_cm"> 
-Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
+Aggiungere una o pi&ugrave Commissioni per cui si desidera registrarsi.<br/><br/>
 <ul>
-<li>Selezionare una Scuola dalla lista per aggiungerlo all'elenco, ripetere l'operazione per tutte le Scuole desiderate</li>
+<li>Selezionare una Commissione dalla lista per aggiungerlo all'elenco, ripetere l'operazione per tutte le Scuole desiderate</li>
 <li>Fare doppio clic su una Scuola per eliminarla dall'elenco in caso di errore</li>
 </ul></span> 
 </td></tr></table>
@@ -117,7 +117,7 @@ Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
 </tr>
 {%endif%}<tr>
 <td align="center" colspan="2">
-<button type="submit" id="e_submit">{%if not cmsro%}Accetta e invia richiesta{%endif%}{%if cmsro%}Salva{%endif%}</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
+<button type="submit" id="e_submit">Salva</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table></FORM>

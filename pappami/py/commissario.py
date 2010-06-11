@@ -345,6 +345,28 @@ class CMRegistrazioneHandler(BasePage):
     """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key())
 
     message.send()
+
+class CMProfiloCommissarioHandler(BasePage):
+  
+  def post(self):
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if(commissario):
+      commissario.nome = self.request.get("nome")
+      commissario.cognome = self.request.get("cognome")
+      commissario.put()
+      for cc in CommissioneCommissario.all().filter("commissario",commissario):
+        cc.delete()
+      for c_key in self.request.get_all("commissione"):
+        commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
+        commissioneCommissario.put()
+   
+    template_values = {
+      'content_left': 'commissario/leftbar.html',
+      'content': 'commissario/profilo.html',
+      'cmsro': commissario
+    }
+    self.getBase(template_values)
       
 class CMIspezioneHandler(BasePage):
   
