@@ -61,16 +61,15 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     if request.get("cm"):
       c = Commissione.get(request.get("cm"))
           
-    data = datetime.now().date()
+    data = self.workingDay(datetime.now().date())
     
     template_values["data"] = data
     template_values["menu"] = self.getMenu(data, c)
     
-  def nextWorkingDay(self, data):
-    dt = data + timedelta(1)
-    while dt.isoweekday() > 5:
-      dt = dt + timedelta(1)      
-    return dt
+  def workingDay(self, data):
+    while data.isoweekday() > 5:
+      data += timedelta(1)      
+    return data
     
   def getMenu(self, data, c):
     offset = -1

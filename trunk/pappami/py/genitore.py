@@ -208,6 +208,9 @@ class CMIspezioneGenitoreHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
+    if commissario is not None and commissario.isCommissario() :
+      self.redirect("/commissario/ispezione?cmd=open&key="+self.request.get("key"))
+      return
     if commissario is None or not commissario.isGenitore() :
       self.redirect("/genitore/registrazione")
       return
@@ -234,6 +237,9 @@ class CMNonconfGenitoreHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
+    if commissario is not None and commissario.isCommissario() :
+      self.redirect("/commissario/nonconf?cmd=open&key="+self.request.get("key"))
+      return
     if commissario is None or not commissario.isGenitore() :
       self.redirect("/genitore/registrazione")
       return
@@ -249,21 +255,6 @@ class CMNonconfGenitoreHandler(BasePage):
 
     self.getBase(template_values)
 
-class CMNonconfGenitoreHandler(BasePage):
-  
-  def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if commissario is None or not commissario.isGenitore() :
-      self.redirect("/genitore/registrazione")
-      return
-
-    template_values = {
-      'content': 'menu.html',
-      'content_left': 'genitore/leftbar.html'
-      }
-
-    self.getBase(template_values)
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   

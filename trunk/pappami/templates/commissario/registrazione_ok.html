@@ -7,7 +7,8 @@ dojo.require("dijit.form.Button");
 </style>
 <H1 class="ss-form-title">Registrazione Commissario Completata</H1>
 <p>Grazie per esserti registrato, la tua richiesta è stata inviata allo staff di Pappa-Mi.</p>
-<p>Ricevereai a breve una email di conferma dell'abilitazione. Da quel momento potrai iniziare ad inserire le schede di valutazione e le segnalazioni di non conformita'.
+<p>Riceverai a breve una email di conferma dell'abilitazione.</p>
+<p>Da quel momento potrai iniziare ad inserire le schede di valutazione e le segnalazioni di non conformita'.
 </p>
 <HR class="ss-email-break" style="display:none;">
 <BR>
@@ -20,7 +21,7 @@ dojo.require("dijit.form.Button");
 <td rowspan="3">
 <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione</LABEL> 
-{% for c in cmsro.commissioni %}
+{% for cm in cmsro.commissioni %}
 {{cm.nome}} - {{cm.tipoScuola}}<br>
 {% endfor %}
 </DIV></DIV>

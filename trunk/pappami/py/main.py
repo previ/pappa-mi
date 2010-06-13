@@ -177,7 +177,7 @@ class CMCondizioniHandler(BasePage):
   
   def get(self):
     template_values = dict()
-    template_values["content"] = "condizioni.inc"
+    template_values["content"] = "condizioni.html"
     self.getBase(template_values)
     
 class CMMenuHandler(webapp.RequestHandler):

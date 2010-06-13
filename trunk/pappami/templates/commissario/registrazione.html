@@ -102,12 +102,7 @@ dojo.byId("e_cm_sel").value != ""){
 <table><tr><td>
 <input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
-
-<!--SELECT name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
-<OPTION value="">Selezionare...</OPTION>{% for c in commissioni %}
-<OPTION value="{{c.key}}"{% ifequal commissione.key c.key %} selected{% endifequal %}>{{c.nome}} - {{c.tipoScuola}}</OPTION>{% endfor %}
-</SELECT--><br/><br/>
-
+<br/><br/>
 <SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">{% for c in commissioni %}
 {% ifequal commissione.key c.key %}
 <OPTION value="{{c.key}}">{{c.nome}} - {{c.tipoScuola}}</OPTION>
@@ -124,8 +119,7 @@ Aggiungere una o pi&ugrave Commissioni Mensa per cui si desidera registrarsi.<br
 </td>
 </tr>
 <tr>
-<td colspan="2">
-{%include "condizioni.html" %}</td>
+<td colspan="2"><a href="/condizioni" target="_new">Leggi le condizioni del servizio</a></td>
 </tr>
 <tr>
 <td align="center" colspan="2">

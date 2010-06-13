@@ -158,11 +158,18 @@ class CMFeedNCHandler(BasePage):
     self.response.headers.add_header("Expires", expires_str)
     self.response.out.write(buff)
 
+class CMFeedHandler(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "feed.html"
+    self.getBase(template_values)
     
 application = webapp.WSGIApplication([
   ('/feed/ispezioni', CMFeedIspHandler),
   ('/feed/ispnc', CMFeedIspNCHandler),
-  ('/feed/nc', CMFeedNCHandler)
+  ('/feed/nc', CMFeedNCHandler),
+  ('/feed', CMFeedHandler)  
 ], debug=True)
 
 def main():

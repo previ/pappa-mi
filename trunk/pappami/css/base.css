@@ -1,6 +1,6 @@
 /* SETUP */
 
-body {padding: 0px;margin: 0px auto;background: url('/img/background.jpg') no-repeat top center; color:black;}
+body {padding: 0px;margin: 0px auto;background: url(http://themes.googleusercontent.com/image?id=1f6tOf2ErnlU3K0NbIDS1on08DFGdohvo2vAUfWBDP7HQcTMBAoan9iZe-cPJwr8RRoJG) no-repeat fixed top center; background-color:#3986c8; color:#303030;}
 /*body { margin:0; padding:0; background:#305aac; color:black; }*/
  
 #container { margin: 0 auto;  height: 100% auto; }
@@ -40,7 +40,7 @@ a:hover { color:blue; }
 
 #columnwrap { background:#eff3f6; padding-bottom:0px; }
 #subwrap { background:#d0d6e2; width:100%; float:left; padding-bottom:10px; }
-#content-main { float:left; width:100%; background:white; color:black; padding-bottom:0px; }
+#content-main { float:left; background:white; color:black; padding-bottom:0px; }
 #generic #content-main, #code #content-main { width:100%; }
 #content-main { margin-left:22px; margin-right:24px; }
 #content-main { margin-left:0; margin-right:0; }
@@ -48,14 +48,13 @@ a:hover { color:blue; }
 .sidebar * { margin-left:14px; margin-right:14px; }
 .sidebar * * { margin-left:0; margin-right:0; }
 #content-nav { float:left; width:20%; }
-#content-extra { float:left; width:20%; font-size:75%; }
-#content-related { float:left; width:20%;}
+#content-extra { float:left; width:19%; font-size:75%; }
+#content-related { float:left; width:19%;}
 #content-secondary { clear:both; margin-left:0; margin-right:0; margin-top:15px; margin-bottom:-10px; padding:10px 24px; color:black; }
 .subcol-primary, .subcol-secondary { width:40%; float:left; padding-bottom:1.2em; }
 .subcol-primary { margin-right:1%; }
 
 /* CONTENT */
-
 h1,h2,h3 { margin-top:.8em; font-family:"Arial",sans-serif; font-weight:normal; }
 h1 { font-size:218%; margin-top:.6em; margin-bottom:.6em; color:#999999; line-height:1.1em; }
 h2 { font-size:150%; margin-top:1em; margin-bottom:.2em; line-height:1.2em; color:#999999 }
