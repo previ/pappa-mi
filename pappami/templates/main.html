@@ -34,6 +34,7 @@ djConfig={
     <h1 id="logo-txt"><a href="/">Pappa-Mi</a> {%if test%}Test{%endif%}</h1>
     <ul id="nav-global">
 	<li><a href="/">Home</a></li>
+	<li><a href="http://blog.pappa-mi.it" target="_new">blog</a></li>
 	<li><a href="/chi">Chi siamo</a></li>
 	<li><a href="/docs">Documenti</a></li>
         {% if commissario or genitore %}	
@@ -44,7 +45,7 @@ djConfig={
 	{% endif %}
         {% if genitore %}
 	<li><a href="/genitore">Area Genitori</a></li>
-	{% endif %}
+	{% endif %}	
 	{% if user and not commissario and not genitore %}
 	<li><a href="/commissario/registrazione">Registrazione<br/> Nuovo Commissario</a></li>
 	<li><a href="/genitore/registrazione">Registrazione<br/> Nuovo Genitore</a></li>
@@ -55,9 +56,7 @@ djConfig={
 	{% if admin %}
 	<li><a href="/admin">Gestione Sistema</a></li>
 	{% endif %}
-	{% if user %}
-	<li><a href="/supporto">Supporto</a></li>
-	{% endif %}
+	<li><a href="/supporto">Aiuto</a></li>
 	<li><a href="{{url}}">{{url_linktext}}</a></li>
   </ul>
  </div>

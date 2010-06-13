@@ -62,7 +62,7 @@ dojo.require("dijit.ProgressBar");
             locations[latlngHash].push(store);
           }
         }
-        if( markers.length < limit)
+        if( markers.length == limit-1)
           GDownloadUrl("/map?cmd=all&offset="+offset, drawMap);
           offset += markers.length;
         iLast = 0;

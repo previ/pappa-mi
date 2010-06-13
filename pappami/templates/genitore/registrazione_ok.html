@@ -4,8 +4,9 @@ dojo.require("dijit.form.Button");
 <style>
 </style>
 <H1 class="ss-form-title">Registrazione Genitore Completata</H1>
-<p>Grazie per esserti registrato, la tua richiesta è stata inviata allo staff di Pappa-Mi.</p>
-<p>Ricevereai a breve una email di conferma dell'abilitazione.
+<p>Grazie per esserti registrato !</p>
+<p>Di seguito trovi il riepilogo dei dati da te inseriti, che potrai cambiare in qualsiasi momento accedendo alla pagina <a href="/genitore?tab=ud">Profilo Utente</a></p>
+<p>Puoi iniziare a consultare i dati contenuti in Pappa-Mi tramite il link <a href="/genitore">Area Genitori</a>
 </p>
 <HR class="ss-email-break" style="display:none;">
 <BR>
@@ -18,7 +19,7 @@ dojo.require("dijit.form.Button");
 <td rowspan="3">
 <DIV class="errorbox-good">
 <DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Scuola</LABEL> 
-{% for c in cmsro.commissioni %}
+{% for cm in cmsro.commissioni %}
 {{cm.nome}} - {{cm.tipoScuola}}<br>
 {% endfor %}
 </DIV></DIV>
