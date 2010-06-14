@@ -125,6 +125,8 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     template_values = dict()
       
     commissario = self.getCommissario(users.get_current_user())
+    if commissario is not None and not commissario.isGenitore():
+      self.redirect("/")
     if commissario is not None:
       template_values["content"] = "genitore/registrazione_ok.html"
       template_values["cmsro"] = commissario
@@ -198,6 +200,7 @@ class CMProfiloGenitoreHandler(BasePage):
     template_values = {
       'content_left': 'genitore/leftbar.html',
       'content': 'genitore/profilo.html',
+      'saved': True,      
       'cmsro': commissario
     }
     self.getBase(template_values)

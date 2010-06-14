@@ -120,7 +120,12 @@ Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
 <a href="/condizioni" target="_new">Leggi le condizioni del servizio</a>
 </td>
 </tr>
-{%endif%}<tr>
+{%endif%}
+{%if saved%}<tr>
+<td align="center" colspan="2">
+I dati sono stati salvati.
+</td></tr>{%endif%}
+<tr>
 <td align="center" colspan="2">
 <button type="submit" id="e_submit">Salva</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
 </td>
