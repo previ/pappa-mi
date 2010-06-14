@@ -297,7 +297,9 @@ class CMRegistrazioneHandler(BasePage):
     template_values = dict()
       
     commissario = self.getCommissario(users.get_current_user())
-    if commissario is not None:
+    if commissario is not None and not commissario.isRegCommissario:
+      self.redirect("/")
+    if commissario is not None and commissario.isRegCommissario:
       template_values["content"] = "commissario/registrazione_ok.html"
       template_values["cmsro"] = commissario
     else:
@@ -364,6 +366,7 @@ class CMProfiloCommissarioHandler(BasePage):
     template_values = {
       'content_left': 'commissario/leftbar.html',
       'content': 'commissario/profilo.html',
+      'saved': True,
       'cmsro': commissario
     }
     self.getBase(template_values)
@@ -630,6 +633,7 @@ def main():
     ('/commissario/ispezione', CMIspezioneHandler),
     ('/commissario/nonconf', CMNonconfHandler),
     ('/commissario/registrazione', CMRegistrazioneHandler),
+    ('/commissario/profilo', CMProfiloCommissarioHandler),
     ('/commissario', CMCommissarioHandler),
     ('/commissario/getcm', CMCommissioniDataHandler),
     ('/commissario/getdata', CMCommissarioDataHandler)

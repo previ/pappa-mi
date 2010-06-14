@@ -303,7 +303,10 @@ TableQueryWrapper.clone = function(obj) {
         var me = dojo.byId("e_me");
         var cm = dijit.byId("e_cm");
         var anno = dojo.byId("e_aa");
-        whereClause = "from " + from + " me " + (me.checked?"on":"") + " commissione " + cm.value + " anno " + anno.value;
-        createCookie("pappa-mi-ctx", me.checked + "," + cm.attr("value") + "," + anno.value, 10);
+        mechecked =false;
+        if(me) mechecked = me.checked;
+        
+        whereClause = "from " + from + " me " + (mechecked?"on":"") + " commissione " + cm.value + " anno " + anno.value;
+        createCookie("pappa-mi-ctx", mechecked + "," + cm.attr("value") + "," + anno.value, 10);
         sendAndDraw();        
     } 

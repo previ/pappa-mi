@@ -44,10 +44,10 @@ class BasePage(webapp.RequestHandler):
     user = users.get_current_user()
     if user:
       url = users.create_logout_url("/")
-      url_linktext = 'Logout'
+      url_linktext = 'Esci'
     else:
       url = "/login"
-      url_linktext = 'Login'
+      url_linktext = 'Accedi'
     if self.request.url.find("test") != -1 :
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :

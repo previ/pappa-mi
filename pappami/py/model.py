@@ -60,6 +60,8 @@ class Commissario(db.Model):
   nome = db.StringProperty()
   cognome = db.StringProperty()
 
+  emailComunicazioni = db.StringProperty()
+  
   ultimo_accesso_il = db.DateTimeProperty()
 
   creato_da = db.UserProperty(auto_current_user_add=True)
@@ -75,6 +77,12 @@ class Commissario(db.Model):
     return self.stato == 1
   def isGenitore(self):
     return self.stato == 11
+  def isRegistering(self):
+    return self.stato == 11 or self.stato == 0
+  def isRegCommissario(self):
+    return self.stato == 0
+  def isRegGenitore(self):
+    return self.stato == 10
   
   def commissioni(self):
     commissioni = []

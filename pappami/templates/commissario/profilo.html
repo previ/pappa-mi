@@ -51,12 +51,12 @@ function removeAll() {
     }
 }
 </script>
-<H1>Registrazione Genitore</H1>
+<H1>I tuoi dati</H1>
 <P>
 <P>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
 <BR>
-<FORM dojoType="dijit.form.Form" action="/commissario/registrazione" method="POST" id="form_0">
+<FORM dojoType="dijit.form.Form" action="/commissario/profilo" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
 cm_sel = dojo.byId("e_cm_sel");
 for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
@@ -100,6 +100,11 @@ dojo.byId("e_cm_sel").value != ""){
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
 <br/><br/>
 <SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">
+{%if cmsro%}
+{%for cm in cmsro.commissioni%}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>
+{%endfor%}
+{%endif%}
 </SELECT><span dojoType="dijit.Tooltip" connectId="l_cm" position="above" style="display:none;" id="tt_cm"> 
 Aggiungere una o pi&ugrave Commissioni per cui si desidera registrarsi.<br/><br/>
 <ul>
@@ -116,7 +121,11 @@ Aggiungere una o pi&ugrave Commissioni per cui si desidera registrarsi.<br/><br/
 </td>
 </tr>
 {%endif%}<tr>
+{%if saved%}<tr>
 <td align="center" colspan="2">
+I dati sono stati salvati.
+</td></tr>{%endif%}
+<tr><td align="center" colspan="2">
 <button type="submit" id="e_submit">Salva</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
