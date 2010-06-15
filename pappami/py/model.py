@@ -1,5 +1,6 @@
 from datetime import date, datetime, time, timedelta
 import logging
+import fpformat
 
 from google.appengine.ext import db
 
@@ -334,7 +335,7 @@ class StatisticheIspezioni(db.Model):
   fruttaGradimento = db.ListProperty(int,default=[0,0,0,0])
 
   def primoAssaggioNorm(self):
-    return float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede
+    return fpformat.fix(float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede,2)
   def primoGradimentoNorm(self):
     return float(self.primoGradimento[0]+self.primoGradimento[1]+self.primoGradimento[2]+self.primoGradimento[3]-self.numeroSchede)/3*100/self.numeroSchede
   def secondoAssaggioNorm(self):
