@@ -137,11 +137,11 @@ class CMStatsHandler(BasePage):
                "2": ("number", "Corretta"),
                "3": ("number", "Matura")}
     
-    gg_table = self.getTable(stats,"giudizioGlobale",g_desc)
+    gg_table = self.getTable(stats,"giudizioGlobale",a_desc)
     zr_table = self.getTable(stats,"puliziaRefettorio",z_desc)
     zc_table = self.getTable(stats,"puliziaCentroCottura",z_desc)
     sr_table = self.getTable(stats,"smaltimentoRifiuti",z_desc)
-    dp_table = self.getTable(stats,"durataPasto",z_desc)
+    dp_table = self.getTable(stats,"durataPasto",d_desc)
 
     pg_table = self.getTable(stats,"primoGradimento",g_desc)
     pa_table = self.getTable(stats,"primoAssaggio",a_desc)
@@ -219,11 +219,11 @@ class CMStatsHandler(BasePage):
     template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "attive", "iscritte", "totali"))
     template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
     template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
-    template_values["zr_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["zc_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["sr_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["dp_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["gg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["zr_table"] = zr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["zc_table"] = zc_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["sr_table"] = sr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+    template_values["dp_table"] = dp_table.ToJSon(columns_order=("group", "1", "2", "3"))
+    template_values["gg_table"] = gg_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
     template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["pc_table"] = pc_table.ToJSon(columns_order=("group", "1", "2", "3"))
