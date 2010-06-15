@@ -35,6 +35,7 @@ from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
 from py.main import BasePage
+import fpformat
 
 
 TIME_FORMAT = "T%H:%M:%S"
@@ -55,7 +56,7 @@ class CMStatsHandler(BasePage):
       if stat:
         sublist = {"group": stat.getNome()}
         for d in range(0,len(stat.getVals(attr))):
-          sublist[str(d+1)] = float(stat.getVal(attr,d+1))/(d+1)*100/stat.numeroSchede
+          sublist[str(d+1)] = fpformat.fix(float(stat.getVal(attr,d+1))/(d+1)*100/stat.numeroSchede,2)
         data.append(sublist)
 
     table = DataTable(desc)
