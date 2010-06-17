@@ -180,6 +180,13 @@ class CMCondizioniHandler(BasePage):
     template_values = dict()
     template_values["content"] = "condizioni.html"
     self.getBase(template_values)
+
+class CMRegistrazioneHandler(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "registrazione.html"
+    self.getBase(template_values)
     
 class CMMenuHandler(webapp.RequestHandler):
   
@@ -299,7 +306,8 @@ def main():
   ('/menu', CMMenuHandler),
   ('/commissioni', CMCommissioneHandler),
   ('/supporto', CMSupportoHandler),
-  ('/condizioni', CMCondizioniHandler)
+  ('/condizioni', CMCondizioniHandler),
+  ('/registrazione', CMRegistrazioneHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

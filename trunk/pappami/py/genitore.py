@@ -87,8 +87,11 @@ class CMGenitoreHandler(BasePage):
         cm = self.request.get("cm")
         if(cm):
           cm = Commissione.get(cm)
-        else:
+        elif len(commissario.commissioni()) > 0:
           cm = commissario.commissioni()[0]
+        else:
+          cm = Commissione.all().get()
+          
         date = self.request.get("data")
         if date:
           date = datetime.strptime(date,DATE_FORMAT).date()

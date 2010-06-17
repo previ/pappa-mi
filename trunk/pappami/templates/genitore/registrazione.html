@@ -53,14 +53,14 @@ function removeAll() {
 }
 </script>
 <H1>Registrazione Genitore</H1>
-<P>
-<P>
-<span class="ss-required-asterisk">* Campo obbligatorio</span>
+<P>Non è obbligatorio indicare Nome, Cognome e Scuola, però se ci dici chi sei a quali scuole sei più interessato ci permetti di avvertirti sulle novità delle Scuole di tuo interesse.</P>
+<span class="ss-required-asterisk"></span>
 <BR>
 <FORM dojoType="dijit.form.Form" action="/genitore/registrazione" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
 cm_sel = dojo.byId("e_cm_sel");
 for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
+/*
 if(this.validate()&&
 dojo.byId("e_n").value != "" &&
 dojo.byId("e_c").value != "" &&
@@ -72,22 +72,23 @@ dojo.byId("e_cm_sel").value != ""){
     alert('Inserire tutti i dati richiesti');
     return false;
 }
+*/
 </script>
 <table width="100%">
 <tr>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_n">Nome
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <label class="ss-q-help" for="e_n"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="" class="ss-q-short" id="e_n"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="false" style="width:20em;" name="nome" value="" class="ss-q-short" id="e_n"></div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <label class="ss-q-help" for="e_c"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="" class="ss-q-short" id="e_c"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="false" style="width:20em;" name="cognome" value="" class="ss-q-short" id="e_c"></div></div>
 </td>
 </tr>
 <tr>
