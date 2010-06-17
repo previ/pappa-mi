@@ -131,7 +131,6 @@ class CMStatWidgetHandler(webapp.RequestHandler):
       year = year - 1
 
     stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
-    logging.info(stats.primoAssaggioNorm())
     statCC = None
     statCM = None
     if c:

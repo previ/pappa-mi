@@ -1,14 +1,14 @@
 /* SETUP */
 
-body {padding: 0px;margin: 0px auto;background: url(http://themes.googleusercontent.com/image?id=1f6tOf2ErnlU3K0NbIDS1on08DFGdohvo2vAUfWBDP7HQcTMBAoan9iZe-cPJwr8RRoJG) no-repeat fixed top center; background-color:#3986c8; color:#303030;}
+body {padding: 0px;margin: 0px auto;background: url('http://themes.googleusercontent.com/image?id=1f6tOf2ErnlU3K0NbIDS1on08DFGdohvo2vAUfWBDP7HQcTMBAoan9iZe-cPJwr8RRoJG') no-repeat fixed top center; background-color:#3986c8; color:#303030;}
 /*body { margin:0; padding:0; background:#305aac; color:black; }*/
  
-#container { margin: 0 auto;  height: 100% auto; }
+#container { margin: 0 auto;  height: 100% auto; max-width:1280px; min-width:1024px;}
 /*#container { position:relative; min-width:68em; max-width:100em; margin:0; padding:0; top:0px; left:0px;}*/
 body, th, td { font:12px/1.4em Verdana,sans-serif; }
 
-#homepage #container { max-width:100em; min-width:80em;}
-#footer { margin: 0 auto !important; padding-left:10px; max-width:1200px; min-width:80em; }
+#homepage { max-width:1280px; min-width:1024px;}
+#footer { margin: 0 auto; padding-left:10px; max-width:1280px; min-width:1024px;}
 
 /* LINKS */
 

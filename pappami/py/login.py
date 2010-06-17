@@ -30,11 +30,15 @@ from google.appengine.ext.webapp.util import login_required
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
+from py.main import BasePage
 
-class LoginPage(webapp.RequestHandler):
+class LoginPage(BasePage):
   
   def get(self):
-    self.redirect("/")
+    if not self.getCommissario(users.get_current_user()):
+      self.redirect("/registrazione")
+    else:
+      self.redirect("/")
 
 class LoginReqPage(webapp.RequestHandler):
   
