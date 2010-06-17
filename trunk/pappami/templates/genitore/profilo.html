@@ -54,13 +54,13 @@ function removeAll() {
 <H1>I tuoi dati</H1>
 <P>
 <P>
-<span class="ss-required-asterisk">* Campo obbligatorio</span>
+<!--span class="ss-required-asterisk">* Campo obbligatorio</span-->
 <BR>
 <FORM dojoType="dijit.form.Form" action="/genitore/profilo" method="POST" id="form_0">
 <script type="dojo/method" event="onSubmit">
 cm_sel = dojo.byId("e_cm_sel");
 for(var i=0;i<cm_sel.options.length;i++) cm_sel.options[i].selected = true;
-if(this.validate()&&
+if(this.validate())/*&&
 dojo.byId("e_n").value != "" &&
 dojo.byId("e_c").value != "" &&
 dojo.byId("e_cm_sel").options.length != ""){
@@ -70,23 +70,24 @@ dojo.byId("e_cm_sel").options.length != ""){
 } else {
     alert('Inserire tutti i dati richiesti: Nome e Cognome e almeno una Scuola');
     return false;
-}
+}*/
+return true;
 </script>
 <table width="100%">
 <tr>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_n">Nome
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <label class="ss-q-help" for="e_n"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="{{cmsro.nome}}" class="ss-q-short" id="e_n"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="false" style="width:20em;" name="nome" value="{{cmsro.nome}}" class="ss-q-short" id="e_n"></div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <label class="ss-q-help" for="e_c"></label>
-<input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="{{cmsro.cognome}}" class="ss-q-short" id="e_c"></div></div>
+<input type="text" dojoType="dijit.form.TextBox" required="false" style="width:20em;" name="cognome" value="{{cmsro.cognome}}" class="ss-q-short" id="e_c"></div></div>
 </td>
 </tr>
 <tr>
@@ -94,7 +95,7 @@ dojo.byId("e_cm_sel").options.length != ""){
 <div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <table><tr><td>
 <input dojoType="dijit.form.FilteringSelect" value="{{cmsro.nome}}" store="cmStore"
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
@@ -115,12 +116,6 @@ Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
 </div></div>
 </td>
 </tr>
-{%if not cmsro%}<tr>
-<td colspan="2">
-<a href="/condizioni" target="_new">Leggi le condizioni del servizio</a>
-</td>
-</tr>
-{%endif%}
 {%if saved%}<tr>
 <td align="center" colspan="2">
 I dati sono stati salvati.

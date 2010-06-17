@@ -1,4 +1,4 @@
-<style>#content-main {width: 59%; margin-left: 20%;margin-right: 20%;padding:10px;}</style>
+<style>#content-main {width: 60em; margin-left: 10em;margin-right: 10em;padding:1em;}</style>
 <script type="text/javascript">
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.TextBox");
@@ -53,7 +53,7 @@ function removeAll() {
 }
 </script>
 <H1>Registrazione Genitore</H1>
-<P>Non è obbligatorio indicare Nome, Cognome e Scuola, però se ci dici chi sei a quali scuole sei più interessato ci permetti di avvertirti sulle novità delle Scuole di tuo interesse.</P>
+<P>Non è obbligatorio indicare Nome, Cognome e Scuola, però se ci dici chi sei e a quali scuole sei più interessato ci permetti di avvertirti sulle novità di tuo interesse.</P>
 <span class="ss-required-asterisk"></span>
 <BR>
 <FORM dojoType="dijit.form.Form" action="/genitore/registrazione" method="POST" id="form_0">
@@ -96,7 +96,7 @@ dojo.byId("e_cm_sel").value != ""){
 <div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Commissione
-<span class="ss-required-asterisk">*</span></label>
+<span class="ss-required-asterisk"></span></label>
 <table><tr><td>
 <input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
