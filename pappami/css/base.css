@@ -39,7 +39,8 @@ a:hover { color:blue; }
 /* COLUMNS */
 
 #columnwrap { padding-bottom:0px;}
-#subwrap { background:#d0d6e2; width:82em; float:left; padding-bottom:2px; }
+/*#subwrap { background:#d0d6e2; width:82em; float:left; padding-bottom:2px; }*/
+#subwrap { background:url(/img/back_transp.png); width:82em; float:left; padding-bottom:2px; }
 #content-main { float:left; background:white; color:black; padding-bottom:0px; width:82em;}
 #generic #content-main, #code #content-main { width:31em; }
 /*#content-main { margin-left:22px; margin-right:24px; }*/

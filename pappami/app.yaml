@@ -94,6 +94,7 @@ handlers:
 
 - url: /getwidget/.*
   script: py/main.py
+  login: required
   
 - url: /_ah/login_required
   script: py/login.py
