@@ -47,14 +47,13 @@ function genWidget() {
 </tr>
 <tr>
 <td colspan="2">
-<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
-<div class="errorbox-good">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm"></div>
+<div class="errorbox-good"></div>
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
 <span class="ss-required-asterisk"></span></label>
-<table><tr><td>
 <input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
 searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
-<br/><br/>
+<br/><br/></div>
 </td>
 </tr>
 <tr>
@@ -63,8 +62,6 @@ Larghezza: <input type="text" id="e_width" value="200"><br/>
 Altezza: <input type="text" id="e_height" value="260"><br/>
 Colore primo piano: <input type="text" id="e_fgcolor" value="00000"><br/>
 Colore sfondo: <input type="text" id="e_bgcolor" value="ffffff"><br/>
-</td></tr></table>
-</div></div>
 </td>
 </tr>
 <tr>
@@ -81,3 +78,4 @@ Anteprima
 <div id="e_widget"></div>
 </td>
 </tr>
+</table>
