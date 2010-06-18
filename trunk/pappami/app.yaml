@@ -88,7 +88,13 @@ handlers:
 
 - url: /widget/.*
   script: py/widget.py
+  
+- url: /widget/*
+  script: py/widget.py
 
+- url: /getwidget/.*
+  script: py/main.py
+  
 - url: /_ah/login_required
   script: py/login.py
 
