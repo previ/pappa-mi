@@ -298,6 +298,7 @@ class CMWidgetHandler(BasePage):
   def get(self):
     template_values = dict()
     template_values["content"] = "widget/widgetindex.html"
+    template_values["host"] = self.getHost()
     self.getBase(template_values)
     
 def main():
