@@ -141,8 +141,8 @@ class MainPage(BasePage):
     template_values["news_web"] = self.getNews("news_web")
     template_values["news_cal"] = self.getNews("news_cal")
 
-    if(len(self.getNews("news_pappami"))>0):
-      template_values["newsMsg"] = self.getNews("news_pappami")[0].content[0]
+    #if(len(self.getNews("news_pappami"))>0):
+    #  template_values["newsMsg"] = self.getNews("news_pappami")[0].content[0]
 
     self.getBase(template_values)
 

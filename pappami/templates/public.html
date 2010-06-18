@@ -10,13 +10,15 @@ dojo.style("sc_1", {visibility:"visible"});
 <div dojoType="dijit.layout.StackContainer" id="sc_1" style="height: 460px;visibility:hidden"">
   <div dojoType="dijit.layout.ContentPane" title="Pappa-Mi Blog">
     <div style="height:460px;overflow:hidden;">
-<h2><a href="{{news_pappami_alt}}">Dal Blog di Pappa-Mi</a></h2> 
 {%for item in news_pappami%}
 <h3><a href="{{item.link}}">{{item.title}}</a></h3> 
 <p class="date"></p> 
-{% for i in item.content %}
+{{item.summary}}
+{% comment %}
+{% for i in item.summary %}
 <p>{{i.value}}</p> 
 {%endfor%}
+{% endcomment %}
 {%endfor%}
     </div>
   </div>

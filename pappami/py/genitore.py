@@ -83,7 +83,11 @@ class CMGenitoreHandler(BasePage):
       elif tab == "ud" :
         template_values['content'] = 'genitore/profilo.html'
         template_values['cmsro'] = commissario
-      elif tab == "mn" :
+      elif tab == "cm" :
+        template_values['content'] = 's.html'
+      elif tab == "isp" :
+        template_values['content'] = 'genitore/ispezioni.html'
+      else:
         cm = self.request.get("cm")
         if(cm):
           cm = Commissione.get(cm)
@@ -108,10 +112,6 @@ class CMGenitoreHandler(BasePage):
         template_values['data2'] = date2
         template_values['cm'] = cm
         template_values['action'] = self.request.path
-      elif tab == "cm" :
-        template_values['content'] = 's.html'
-      else:
-        template_values['content'] = 'genitore/ispezioni.html'
       
       #logging.info("OK")
       self.getBase(template_values)

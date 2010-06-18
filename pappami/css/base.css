@@ -1,6 +1,6 @@
 /* SETUP */
 
-body {padding: 0px;margin: 0px auto;background: url('http://themes.googleusercontent.com/image?id=1f6tOf2ErnlU3K0NbIDS1on08DFGdohvo2vAUfWBDP7HQcTMBAoan9iZe-cPJwr8RRoJG') no-repeat fixed top center; background-color:#3986c8; color:#303030;}
+body {padding: 0px;margin: 0px auto;background: url('/img/background.jpg') no-repeat fixed top center; background-color:#3986c8; color:#303030;}
 /*body { margin:0; padding:0; background:#305aac; color:black; }*/
  
 #container { margin: 0 auto;  height: 100% auto; max-width:82em; width: 82em; min-width:82em;}
@@ -140,7 +140,7 @@ div.versionadded span.title, div.versionchanged span.title { font-weight: bold; 
 
 /* BILLBOARDS */
 
-#billboard { background:url(/img/table_background_off.png) repeat-x left top;  }
+#billboard { background:url(/img/table_background_off.png) repeat-x left top; }
 #billboard h2 { margin:0; }
 #generic #billboard { display:none; }
 #homepage #billboard {  }

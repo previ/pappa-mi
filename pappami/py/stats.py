@@ -201,13 +201,11 @@ class CMStatsHandler(BasePage):
     di_table.LoadData(di_data)
 
     cm_desc = {"tipo": ("string", "Tipo Scuola"), 
-               "attive": ("number", "Attive"),
                "iscritte": ("number", "Iscritte"),
                "totali": ("number", "Totali")}
     cm_data = list()
     for cm_t in ["Materna", "Primaria", "Secondaria"]:
-      cm_data.append({"tipo": cm_t, "attive": Commissione.all().filter("numCommissari >", 0).filter("tipoScuola", cm_t).count(), 
-                                    "iscritte": Commissione.all().filter("numCommissari >", 0).filter("tipoScuola", cm_t).count(), 
+      cm_data.append({"tipo": cm_t, "iscritte": Commissione.all().filter("numCommissari >", 0).filter("tipoScuola", cm_t).count(), 
                                     "totali": Commissione.all().filter("tipoScuola", cm_t).count()})
     cm_table = DataTable(cm_desc)
     cm_table.LoadData(cm_data)
@@ -215,7 +213,7 @@ class CMStatsHandler(BasePage):
     template_values = dict()
     template_values["anni"] = anni
     template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
-    template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "attive", "iscritte", "totali"))
+    template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "iscritte", "totali"))
     template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
     template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
     template_values["zr_table"] = zr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
