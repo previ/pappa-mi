@@ -67,7 +67,7 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.0.17 - 2010.06.08"
+    template_values["version"] = "1.0.0.18 - 2010.06.18"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
