@@ -292,6 +292,13 @@ class ChiSiamoPage(BasePage):
     template_values = dict()
     template_values["content"] = "chi.html"
     self.getBase(template_values)
+
+class CMWidgetHandler(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "widget/widgetindex.html"
+    self.getBase(template_values)
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
@@ -307,7 +314,8 @@ def main():
   ('/commissioni', CMCommissioneHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
-  ('/registrazione', CMRegistrazioneHandler)
+  ('/registrazione', CMRegistrazioneHandler),
+  ('/getwidget', CMWidgetHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

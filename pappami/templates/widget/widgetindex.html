@@ -1,0 +1,53 @@
+<style>
+#content-main { width:80em; padding:1em;}
+</style>
+<h2>Widget di Pappa-Mi</h2>
+<p>Le informazioni conmtenute in Pappa-Mi possono essere mostrate direttamente nel tuo sito o blog tramite "widget"</p>
+<p>In questo momento esistono i seguenti tipi di widget:</p>
+<ul>
+<li>Cosa si Mangia: Il menu del giorno</li>
+<li>Come si mangia: I valori medi delle misure di qualità dei pasti e del servizio</li>
+</ul>
+<p>I widget possono riportare il valore comuni a tutte le scuole oppure specifici per una scuola.</p>
+<p></p>
+<h2>Personalizza il tuo widget</h2>
+<table width="100%">
+<tr>
+<td>
+<select id="wtype">
+<option value="menu">Menu del giorno</option>
+<option value="stat">Qualit&agraveM dei pasti</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
+<div class="errorbox-good">
+<div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
+<span class="ss-required-asterisk"></span></label>
+<table><tr><td>
+<input dojoType="dijit.form.FilteringSelect" value="{{cmsro.nome}}" store="cmStore"
+searchAttr="nome" name="commissione_all" id="e_cm_all" style="width:24em;" onchange="onSelComm();">
+<br/><br/>
+<SELECT name="commissione" id="e_cm_sel" multiple="yes" style="width:24em; height:6em;" ondblclick="onRem();">
+{%if cmsro%}
+{%for cm in cmsro.commissioni%}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>
+{%endfor%}
+{%endif%}
+</SELECT><span dojoType="dijit.Tooltip" connectId="l_cm" position="above" style="display:none;" id="tt_cm"> 
+Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
+<ul>
+<li>Selezionare una Scuola dalla lista per aggiungerlo all'elenco, ripetere l'operazione per tutte le Scuole desiderate</li>
+<li>Fare doppio clic su una Scuola per eliminarla dall'elenco in caso di errore</li>
+</ul></span> 
+</td></tr></table>
+</div></div>
+</td>
+</tr>
+<tr>
+<td>
+<textarea id="widget" width="60"></textarea>
+</td>
+</tr>
