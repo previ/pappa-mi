@@ -10,8 +10,8 @@
 .rssFeed
 {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 90%;
-	margin: 2em 3em;
+	font-size: 100%;
+	margin: 0.5em 0.5em;
 }
 .rssFeed a
 {
@@ -26,7 +26,7 @@
 
 .rssHeader { padding: 0.2em 0; }
 
-.rssBody { border: 1px solid #999; }
+.rssBody { border: 0px solid #999; }
 .rssBody ul { list-style: none; }
 .rssBody ul, .rssRow, .rssRow h4, .rssRow p
 {
@@ -43,5 +43,5 @@
 	margin: 0.2em 0 0.4em 0;
 }
 
-.odd { background-color: #e8e8fc; }
-.even { background-color: #d4d4e8; }
+.odd {  }
+.even {  }
