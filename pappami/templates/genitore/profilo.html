@@ -91,7 +91,7 @@ return true;
 </td>
 </tr>
 <tr>
-<td colspan="2">
+<td>
 <div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
@@ -115,6 +115,7 @@ Aggiungere una o pi&ugrave Scuole per cui si desidera registrarsi.<br/><br/>
 </td></tr></table>
 </div></div>
 </td>
+<td><input name="emailalert" {%if cmsro.emailComunicazioni%}checked{%endif%} type="checkbox">Avvisami via mail se ci sono novit&agrave;</input></td>
 </tr>
 {%if saved%}<tr>
 <td align="center" colspan="2">

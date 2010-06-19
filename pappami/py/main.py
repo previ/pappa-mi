@@ -129,9 +129,14 @@ class MainPage(BasePage):
     template_values["host"] = self.getHost()
   
     stats = self.getStats()
+
+    c = None
+    if self.getCommissario(users.get_current_user()):
+      if len(self.getCommissario(users.get_current_user()).commissioni()) > 0:
+        c = self.getCommissario(users.get_current_user()).commissioni()[0]        
     
-    CMMenuWidgetHandler().createMenu(self.request,template_values)
-    CMStatWidgetHandler().createStat(self.request,template_values)
+    CMMenuWidgetHandler().createMenu(self.request,c,template_values)
+    CMStatWidgetHandler().createStat(self.request,c,template_values)
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"
     
@@ -157,16 +162,68 @@ class MainPage(BasePage):
       
     return stats
 
-class CMCommissioneHandler(BasePage):
-    
-  @login_required
-  def get(self):
-    template_values = dict()
+class CMCommissioniHandler(BasePage):
+      
+  def getBase(self,template_values):
     template_values["content"] = "map.html"
     template_values["limit"] = 500
     template_values["centriCucina"] = CentroCucina.all().order("nome")
-    self.getBase(template_values)
+    template_values['action'] = self.request.path
+    super(CMCommissioniHandler,self).getBase(template_values)
 
+class CMMenuHandler(BasePage):
+  def getMenu(self, data, cm): 
+    menu = list();
+
+    #logging.info("data: %s", data)
+
+    cc = cm.centroCucina
+    offset = cc.menuOffset
+    if offset == None:
+      offset = 0
+      
+    # settimana corrente
+    menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
+    logging.info("len %d" , menus.count())
+
+    count = 0
+    for m in menus:
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
+        menu.append(m)
+        logging.info("m" + m.primo)
+        count += 1
+        if count >=5 :
+          break
+
+    return sorted(menu, key=lambda menu: menu.giorno)
+      
+  def getBase(self,template_values):
+    cm = None
+    commissario = self.getCommissario(users.get_current_user())
+    if self.request.get("cm") != "":
+      cm = Commissione.get(self.request.get("cm"))
+    elif commissario and len(commissario.commissioni()) :
+      cm = commissario.commissioni()[0]
+    else:
+      cm = Commissione.all().get()
+    date = self.request.get("data")
+    if date:
+      date = datetime.strptime(date,DATE_FORMAT).date()
+    else:
+      date = datetime.now().date()
+    
+    date1 = date - timedelta(datetime.now().isoweekday() - 1)
+    date2 = date1 + timedelta(7)
+    template_values['content'] = 'menu.html'
+    template_values['menu1'] = self.getMenu(date1, cm )
+    template_values['menu2'] = self.getMenu(date2, cm )
+    template_values['data'] = date
+    template_values['data1'] = date1
+    template_values['data2'] = date2
+    template_values['cm'] = cm
+    template_values['action'] = self.request.path
+    super(CMMenuHandler,self).getBase(template_values)    
+    
 class CMSupportoHandler(BasePage):
   
   def get(self):
@@ -188,7 +245,7 @@ class CMRegistrazioneHandler(BasePage):
     template_values["content"] = "registrazione.html"
     self.getBase(template_values)
     
-class CMMenuHandler(webapp.RequestHandler):
+class CMMenuDataHandler(webapp.RequestHandler):
   
   def get(self): 
     if( self.request.get("cmd") == "getbydate" ):
@@ -219,7 +276,7 @@ class CMMenuHandler(webapp.RequestHandler):
       self.response.out.write(menu.contorno)
       self.response.out.write("\n")
         
-class CMMapHandler(webapp.RequestHandler):
+class CMMapDataHandler(webapp.RequestHandler):
   
   def get(self): 
     if self.request.get("cmd") == "all":
@@ -310,9 +367,8 @@ def main():
   ('/docs', DocPage),
   #('/blog', BlogPage),
   ('/chi', ChiSiamoPage),
-  ('/map', CMMapHandler),
-  ('/menu', CMMenuHandler),
-  ('/commissioni', CMCommissioneHandler),
+  ('/map', CMMapDataHandler),
+  ('/menu', CMMenuDataHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
   ('/registrazione', CMRegistrazioneHandler),

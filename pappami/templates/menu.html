@@ -14,8 +14,6 @@ dojo.require("dojo.parser");
 <style>
 .mt {font-size:10px;}
 .md {font-size:8pt;height:50px; margin:2px;}
-.hidden {display:none;}
-.visible {display:inlide;}
 .cg {cursor: hand;}
 a {text-decoration:none;}
 .dayheader {float:left;font-size:12px;width:130px; margin-left:2px; margin-right:2px;background: #d2d9e3;}
@@ -31,6 +29,7 @@ a {text-decoration:none;}
 <form dojoType="dijit.form.Form" action="{{action}}" method="get" id="form0">
 <input type="hidden" name="tab" value="mn">
 <table>
+<tr>
 <td>
 <div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
 <LABEL class="ss-q-title" for="e_cm">Scuole</LABEL>
@@ -52,7 +51,9 @@ searchAttr="nome" name="cm" id="e_cm">
 </form>
 </div>
 </div>
-<div>
+<table>
+<tr>
+<td>
 <div class="dayheader">
 <div class="md">Dal {{data1|date:"d/m/Y"}}</div>
 <div class="md">Primo piatto</div>
@@ -69,8 +70,10 @@ searchAttr="nome" name="cm" id="e_cm">
 <div class="md">{{m.dessert}}</div>
 </div>
 {%endfor%}
-</div>
-<div>
+</td>
+</tr>
+<tr>
+<td>
 <div class="dayheader">
 <div class="md">Dal {{data2|date:"d/m/Y"}}</div>
 <div class="md">Primo piatto</div>
@@ -87,4 +90,6 @@ searchAttr="nome" name="cm" id="e_cm">
 <div class="md">{{m.dessert}}</div>
 </div>
 {%endfor%}
-</div>
+</td>
+</tr>
+</table>
