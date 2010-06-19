@@ -1,96 +1,30 @@
 .jcarousel-skin-tango .jcarousel-container {
-    border: 1px solid #346F97;
-}
-
-.jcarousel-skin-tango .jcarousel-container-horizontal {
-    width: 160px;
-    padding: 20px 40px;
+    border: 0px solid #346F97;
 }
 
 .jcarousel-skin-tango .jcarousel-container-vertical {
-    height: 180px;
+    width: 170px;    
+    height: 190px;
     padding: 5px;
 }
 
-.jcarousel-skin-tango .jcarousel-clip-horizontal {
-    width:  245px;
-    height: 75px;
-}
-
 .jcarousel-skin-tango .jcarousel-clip-vertical {
-    width: 170px;
-    height: 180px;
+    width: 170px; /*must be container */
+    height: 190px; /*must be container */
 }
 
 .jcarousel-skin-tango .jcarousel-item {
-    /*width: 180px;*/
-    height: 180px;
-}
-
-.jcarousel-skin-tango .jcarousel-item-horizontal {
-    margin-right: 10px;
+    width: 160px;  /*must be container - 2Xpadding */
+    height: 180px; /*must be container - 2Xpadding */
 }
 
 .jcarousel-skin-tango .jcarousel-item-vertical {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 
 .jcarousel-skin-tango .jcarousel-item-placeholder {
     background: #fff;
     color: #000;
-}
-
-/**
- *  Horizontal Buttons
- */
-.jcarousel-skin-tango .jcarousel-next-horizontal {
-    position: absolute;
-    top: 43px;
-    right: 5px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background: transparent url(next-horizontal.png) no-repeat 0 0;
-}
-
-.jcarousel-skin-tango .jcarousel-next-horizontal:hover {
-    background-position: -32px 0;
-}
-
-.jcarousel-skin-tango .jcarousel-next-horizontal:active {
-    background-position: -64px 0;
-}
-
-.jcarousel-skin-tango .jcarousel-next-disabled-horizontal,
-.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:hover,
-.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:active {
-    cursor: default;
-    background-position: -96px 0;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-horizontal {
-    position: absolute;
-    top: 43px;
-    left: 5px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background: transparent url(prev-horizontal.png) no-repeat 0 0;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-horizontal:hover {
-    background-position: -32px 0;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-horizontal:active {
-    background-position: -64px 0;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal,
-.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:hover,
-.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:active {
-    cursor: default;
-    background-position: -96px 0;
 }
 
 /**
@@ -100,7 +34,7 @@
     position: absolute;
     bottom: 0px;
     left: 0px;
-    width: 100%;
+    width: 180px;
     height: 10px;
     cursor: pointer;
     background: #cfcfcf;
@@ -125,7 +59,7 @@
     position: absolute;
     top: 0px;
     left: 0px;
-    width: 100%;
+    width: 180px;
     height: 10px;
     cursor: pointer;
     background: #cfcfcf;

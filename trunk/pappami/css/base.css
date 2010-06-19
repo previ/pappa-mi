@@ -3,11 +3,11 @@
 body {padding: 0px;margin: 0px auto;background: url('/img/background.jpg') no-repeat fixed top center; background-color:#3986c8; color:#303030;}
 /*body { margin:0; padding:0; background:#305aac; color:black; }*/
  
-#container { margin: 0 auto;  height: 100% auto; max-width:82em; width: 82em; min-width:82em;}
+#container { margin: 0 auto;  height: 100% auto; max-width:100em; min-width:82em; width: 82em; }
 /*#container { position:relative; min-width:68em; max-width:82em; width: 82em; margin:0; padding:0; top:0px; left:0px;}*/
 body, th, td { font:12px/1.4em Verdana,sans-serif; }
 
-#homepage { max-width:82em; width: 82em; min-width:82em;}
+#homepage { max-width:100em; width: 82em; min-width:82em;}
 #footer { margin: 0 auto; padding-left:10px; max-width:82em; width: 82em; min-width:82em;}
 
 /* LINKS */
@@ -40,17 +40,17 @@ a:hover { color:blue; }
 
 #columnwrap { padding-bottom:0px;}
 /*#subwrap { background:#d0d6e2; width:82em; float:left; padding-bottom:2px; }*/
-#subwrap { background:url(/img/back_transp.png); width:82em; float:left; padding-bottom:2px; }
-#content-main { float:left; background:white; color:black; padding-bottom:0px; width:82em;}
-#generic #content-main, #code #content-main { width:31em; }
+#subwrap { background:url(/img/back_transp.png); width:100%; float:left; padding-bottom:2px; }
+#content-main { float:left; background:white; color:black; padding-bottom:0px; width:31em;}
+#generic #content-main, #code #content-main {  }
 /*#content-main { margin-left:22px; margin-right:24px; }*/
 #content-main { margin-left:0; margin-right:0; }
-.sidebar { font-size:92%; }
-.sidebar * { margin-left:14px; margin-right:14px; }
+.sidebar { }
+.sidebar * { margin-left:5px; margin-right:5px; }
 .sidebar * * { margin-left:0; margin-right:0; }
-#content-nav { float:left; width:18em; }
-#content-extra { float:left; width:18em; font-size:75%;}
-#content-related { float:left; width:18em;}
+#content-nav { float:left; width:17em; }
+#content-extra { float:left; width:17em;}
+#content-related { float:left; width:17em;}
 #content-secondary { clear:both; margin-left:0; margin-right:0; margin-top:15px; margin-bottom:-10px; padding:10px 24px; color:black; }
 .subcol-primary, .subcol-secondary { width:40%; float:left; padding-bottom:1.2em; }
 .subcol-primary { margin-right:1%; }
