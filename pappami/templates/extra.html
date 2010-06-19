@@ -26,7 +26,7 @@ dojo.require("dijit.layout.ContentPane");
 <script type="text/javascript">
 $(document).ready(function () {
 	$('#ticker1').rssfeed('http://{{host}}/feed/ispnc').ajaxStop(function() {
-	  $('#ticker1 div.rssBody').vTicker({ showItems: 4, header: false });
+	  $('#ticker1 div.rssBody').vTicker({ showItems: 5, header: false });
 	});	
 });
 </script>

@@ -41,7 +41,7 @@ a:hover { color:blue; }
 #columnwrap { padding-bottom:0px;}
 /*#subwrap { background:#d0d6e2; width:82em; float:left; padding-bottom:2px; }*/
 #subwrap { background:url(/img/back_transp.png); width:100%; float:left; padding-bottom:2px; }
-#content-main { float:left; background:white; color:black; padding-bottom:0px; width:31em;}
+#content-main { float:left; background:white; color:black; padding-bottom:0px; width:30em;}
 #generic #content-main, #code #content-main {  }
 /*#content-main { margin-left:22px; margin-right:24px; }*/
 #content-main { margin-left:0; margin-right:0; }
