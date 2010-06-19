@@ -33,39 +33,14 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.main import BasePage
-from py.commissario import CMCommissioniDataHandler
-from py.commissario import CMCommissarioDataHandler
+from py.main import BasePage, CMCommissioniHandler, CMMenuHandler
+from py.stats import CMStatsHandler
+from py.commissario import CMCommissioniDataHandler, CMCommissarioDataHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMGenitoreHandler(BasePage):
-  def getMenu(self, data, cm): 
-    menu = list();
-
-    #logging.info("data: %s", data)
-
-    cc = cm.centroCucina
-    offset = cc.menuOffset
-    if offset == None:
-      offset = 0
-      
-    # settimana corrente
-    menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
-    logging.info("len %d" , menus.count())
-
-    count = 0
-    for m in menus:
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
-        menu.append(m)
-        logging.info("m" + m.primo)
-        count += 1
-        if count >=5 :
-          break
-
-    return sorted(menu, key=lambda menu: menu.giorno)
-    
+class CMGenitoreHandler(BasePage): 
 
   def get(self): 
     user = users.get_current_user()
@@ -73,53 +48,25 @@ class CMGenitoreHandler(BasePage):
     if commissario is None or not commissario.isGenitore() :
       self.redirect("/genitore/registrazione")
     else:
-      tab=self.request.get("tab")
-      template_values = {
-        'content_left': 'genitore/leftbar.html',
-        'tab': tab
-        }
-      if tab == "nc" :
-        template_values['content'] = 'genitore/nonconfs.html'
-      elif tab == "ud" :
-        template_values['content'] = 'genitore/profilo.html'
-        template_values['cmsro'] = commissario
-      elif tab == "cm" :
-        template_values['content'] = 's.html'
-      elif tab == "isp" :
-        template_values['content'] = 'genitore/ispezioni.html'
-      else:
-        cm = self.request.get("cm")
-        if(cm):
-          cm = Commissione.get(cm)
-        elif len(commissario.commissioni()) > 0:
-          cm = commissario.commissioni()[0]
-        else:
-          cm = Commissione.all().get()
-          
-        date = self.request.get("data")
-        if date:
-          date = datetime.strptime(date,DATE_FORMAT).date()
-        else:
-          date = datetime.now().date()
-        
-        date1 = date - timedelta(datetime.now().isoweekday() - 1)
-        date2 = date1 + timedelta(7)
-        template_values['content'] = 'menu.html'
-        template_values['menu1'] = self.getMenu(date1, cm )
-        template_values['menu2'] = self.getMenu(date2, cm )
-        template_values['data'] = date
-        template_values['data1'] = date1
-        template_values['data2'] = date2
-        template_values['cm'] = cm
-        template_values['action'] = self.request.path
-      
-      #logging.info("OK")
-      self.getBase(template_values)
-    
+      self.redirect("/genitore/menu")
 class CMGenitoreDataHandler(CMCommissarioDataHandler):
   def dummy(self):
-    self
-      
+    a
+  
+class CMIspezioniGenitoreHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "genitore/leftbar.html"
+    template_values['content'] = 'genitore/ispezioni.html'
+    self.getBase(template_values)
+
+class CMNonconfsGenitoreHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "genitore/leftbar.html"
+    template_values['content'] = 'genitore/nonconfs.html'
+    self.getBase(template_values)
+    
 class CMRegistrazioneGenitoreHandler(BasePage):
   
   def get(self): 
@@ -143,6 +90,7 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     if(commissario == None):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 11)
+      commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
@@ -186,6 +134,15 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     message.send()
 
 class CMProfiloGenitoreHandler(BasePage):
+  def get(self):
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    template_values = {
+      'content_left': 'genitore/leftbar.html',
+      'content': 'genitore/profilo.html',
+      'cmsro': commissario
+    }
+    self.getBase(template_values)
   
   def post(self):
     user = users.get_current_user()
@@ -193,6 +150,7 @@ class CMProfiloGenitoreHandler(BasePage):
     if(commissario):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
+      commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
         cc.delete()
@@ -261,15 +219,47 @@ class CMNonconfGenitoreHandler(BasePage):
 
     self.getBase(template_values)
 
+class CMGenitoreCommissioniHandler(CMCommissioniHandler):
+  def get(self):
+    logging.info("CMCommissioniHandler.get")
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    self.getBase(template_values)
+    
+      
+class CMGenitoreStatsHandler(CMStatsHandler):
+  def post(self):
+    return self.get()
+
+  def get(self):
+    logging.info("CMCommissarioStatsHandler.get")
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    self.getBase(template_values)
+
+class CMGenitoreMenuHandler(CMMenuHandler):
+  def post(self):
+    return self.get()
+
+  def get(self):
+    logging.info("CMGenitoreMenuHandler.get")
+    template_values = dict()
+    template_values["content_left"] = "genitore/leftbar.html"
+    self.getBase(template_values)
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
+    ('/genitore/isp', CMIspezioniGenitoreHandler),
+    ('/genitore/nc', CMNonconfsGenitoreHandler),
     ('/genitore/ispezione', CMIspezioneGenitoreHandler),
     ('/genitore/nonconf', CMNonconfGenitoreHandler),
     ('/genitore/registrazione', CMRegistrazioneGenitoreHandler),
     ('/genitore/profilo', CMProfiloGenitoreHandler),
+    ('/genitore/stats', CMGenitoreStatsHandler),
+    ('/genitore/commissioni', CMGenitoreCommissioniHandler),
+    ('/genitore/menu', CMGenitoreMenuHandler),
     ('/genitore', CMGenitoreHandler),
     ('/genitore/getcm', CMCommissioniDataHandler),
     ('/genitore/getdata', CMGenitoreDataHandler)

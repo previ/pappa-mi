@@ -49,18 +49,21 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     template_values = dict()
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
+
+    if request.get("cm"):
+      c = Commissione.get(request.get("cm"))
+    elif self.getCommissario(users.get_current_user()):
+      if len(self.getCommissario(users.get_current_user()).commissioni()):
+        c = self.getCommissario(users.get_current_user()).commissioni()[0]        
+    
     self.createMenu(self.request,template_values)
     
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu2.html')
     self.response.out.write(template.render(path, template_values))
 
-  def createMenu(self,request,template_values):
+  def createMenu(self,request,c,template_values):
     menu = Menu();
-
-    c = None
-    if request.get("cm"):
-      c = Commissione.get(request.get("cm"))
-          
+       
     data = self.workingDay(datetime.now().date())
     
     template_values["data"] = data
@@ -73,11 +76,10 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     
   def getMenu(self, data, c):
     offset = -1
-    if c:
-      cc = c.centroCucina
-      offset = cc.menuOffset      
+    if c and c.centroCucina.menuOffset:
+      offset = c.centroCucina.menuOffset      
 
-    logging.info(offset)
+    #logging.info(offset)
     menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
     #logging.info("len %d" , menus.count())
 
@@ -107,8 +109,11 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values = dict()
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
+
+    if request.get("cm"):
+      c = Commissione.get(request.get("cm"))
     
-    self.createStat(self.request,template_values)
+    self.createStat(self.request,c,template_values)
     
     t = ""
     if self.request.get("t") == "c":
@@ -119,11 +124,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/wstat.html')
     self.response.out.write(template.render(path, template_values))
 
-  def createStat(self,request,template_values):
-    cmk = request.get("cm")
-    c = None
-    if cmk != "":
-      c = Commissione.get(request.get("cm"))
+  def createStat(self,request,c,template_values):
 
     now = datetime.now().date()
     year = now.year

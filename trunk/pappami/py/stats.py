@@ -63,8 +63,12 @@ class CMStatsHandler(BasePage):
     
   def post(self):
     return self.get()
-  
+
   def get(self):
+    template_values = dict()
+    self.getBase(template_values)
+  
+  def getBase(self,template_values):
     cm = None
     cc = None
     statCC = None
@@ -87,8 +91,11 @@ class CMStatsHandler(BasePage):
 
     stat = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",None).filter("centroCucina", None).get()
       
-    if(self.request.get("cm")):
+    if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
+      cm = self.getCommissario(users.get_current_user()).commissioni()[0]
+    elif self.request.get("cm"):
       cm = Commissione.get(self.request.get("cm"))
+    if cm:
       cc = cm.centroCucina
       statCC = StatisticheIspezioni.all().filter("timeId", anno).filter("centroCucina",cc).get()
       statCM = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",cm).get()
@@ -210,7 +217,6 @@ class CMStatsHandler(BasePage):
     cm_table = DataTable(cm_desc)
     cm_table.LoadData(cm_data)
     
-    template_values = dict()
     template_values["anni"] = anni
     template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
     template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "iscritte", "totali"))
@@ -248,8 +254,9 @@ class CMStatsHandler(BasePage):
     template_values["stat"] = stat
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
+    template_values['action'] = self.request.path
     template_values["content"] = "stats/statindex.html"
-    self.getBase(template_values)
+    super(CMStatsHandler, self).getBase(template_values)
 
     
 class CMStatsDataHandler(BasePage):

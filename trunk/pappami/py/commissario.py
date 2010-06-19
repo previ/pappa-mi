@@ -33,37 +33,13 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.main import BasePage
+from py.main import BasePage, CMCommissioniHandler, CMMenuHandler
+from py.stats import CMStatsHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
     
 class CMCommissarioHandler(BasePage):
-  def getMenu(self, data, cm): 
-    menu = list();
-
-    #logging.info("data: %s", data)
-
-    cc = cm.centroCucina
-    offset = cc.menuOffset
-    if offset == None:
-      offset = 0
-      
-    # settimana corrente
-    menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
-    logging.info("len %d" , menus.count())
-
-    count = 0
-    for m in menus:
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
-        menu.append(m)
-        logging.info("m" + m.primo)
-        count += 1
-        if count >=5 :
-          break
-
-    return sorted(menu, key=lambda menu: menu.giorno)
-
   
   def get(self): 
     user = users.get_current_user()
@@ -81,33 +57,25 @@ class CMCommissarioHandler(BasePage):
       elif tab == "ud" :
         template_values['content'] = 'commissario/profilo.html'
         template_values['cmsro'] = commissario
-      elif tab == "mn" :
-        cm = self.request.get("cm")
-        if(cm):
-          cm = Commissione.get(cm)
-        else:
-          cm = commissario.commissioni()[0]
-        date = self.request.get("data")
-        if date:
-          date = datetime.strptime(date,DATE_FORMAT).date()
-        else:
-          date = datetime.now().date()
-        
-        date1 = date - timedelta(datetime.now().isoweekday() - 1)
-        date2 = date1 + timedelta(7)
-        template_values['content'] = 'menu.html'
-        template_values['menu1'] = self.getMenu(date1, cm )
-        template_values['menu2'] = self.getMenu(date2, cm )
-        template_values['data'] = date
-        template_values['data1'] = date1
-        template_values['data2'] = date2
-        template_values['cm'] = cm
-        template_values['action'] = self.request.path
       else:
         template_values['content'] = 'commissario/ispezioni.html'
       
       #logging.info("OK")
       self.getBase(template_values)
+
+class CMIspezioniCommissarioHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    template_values['content'] = 'commissario/ispezioni.html'
+    self.getBase(template_values)
+
+class CMNonconfsCommissarioHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    template_values['content'] = 'commissario/nonconfs.html'
+    self.getBase(template_values)
 
 class CMCommissioniDataHandler(BasePage):
 
@@ -277,11 +245,11 @@ class CMCommissarioDataHandler(BasePage):
           orderby = orderby + "Ispezione"
         for ispezione in isps.order(orderby).fetch(limit, offset):
           data.append({"commissione": (ispezione.commissione.nome + " - " + ispezione.commissione.tipoScuola), "data": ispezione.dataIspezione, "turno": ispezione.turno, 
-                       #"complessivo": "<img src='img/icon" + str(ispezione.giudizioGlobale) + ".png'/>", 
-                       "primo": "<img src='img/icoasg" + str(ispezione.primoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.primoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" + str(ispezione.primoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.primoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.primoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "secondo": "<img src='img/icoasg" + str(ispezione.secondoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.secondoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" +str(ispezione.secondoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.secondoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.secondoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "contorno": "<img src='img/icoasg" + str(ispezione.contornoAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.contornoGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icocot" + str(ispezione.contornoCottura) + ".png' title='Cottura'/>"+ "<img src='img/icotmp" + str(ispezione.contornoTemperatura) + ".png' title='Temperatura'/>" + "<img src='img/icoqta" + str(ispezione.contornoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "frutta": "<img src='img/icoasg" + str(ispezione.fruttaAssaggio) + ".png' title='Assaggio'/>" + "<img src='img/icogra" + str(ispezione.fruttaGradimento) + ".png' title='Gradimento'/>" + "<img src='img/icomat" + str(ispezione.fruttaMaturazione) + ".png' title='Maturazione'/>" + "<img src='img/icoqta" + str(ispezione.fruttaQuantita) + ".png' title='Quantit&agrave;'/>", 
+                       #"complessivo": "<img src='/img/icon" + str(ispezione.giudizioGlobale) + ".png'/>", 
+                       "primo": "<img src='/img/icoasg" + str(ispezione.primoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.primoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" + str(ispezione.primoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.primoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.primoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "secondo": "<img src='/img/icoasg" + str(ispezione.secondoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.secondoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" +str(ispezione.secondoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.secondoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.secondoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "contorno": "<img src='/img/icoasg" + str(ispezione.contornoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.contornoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" + str(ispezione.contornoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.contornoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.contornoQuantita) + ".png' title='Quantit&agrave;'/>",
+                       "frutta": "<img src='/img/icoasg" + str(ispezione.fruttaAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.fruttaGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icomat" + str(ispezione.fruttaMaturazione) + ".png' title='Maturazione'/>" + "<img src='/img/icoqta" + str(ispezione.fruttaQuantita) + ".png' title='Quantit&agrave;'/>", 
                        "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/" + url_path + "/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
   
         # Loading it into gviz_api.DataTable
@@ -312,6 +280,7 @@ class CMRegistrazioneHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     if(commissario == None):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 0)
+      commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
@@ -350,12 +319,23 @@ class CMRegistrazioneHandler(BasePage):
 
 class CMProfiloCommissarioHandler(BasePage):
   
+  def get(self):
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    template_values = {
+      'content_left': 'commissario/leftbar.html',
+      'content': 'commissario/profilo.html',
+      'cmsro': commissario
+    }
+    self.getBase(template_values)
+    
   def post(self):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if(commissario):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
+      commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
         cc.delete()
@@ -626,14 +606,48 @@ class CMNonconfHandler(BasePage):
         
       self.getBase(template_values)
 
+class CMCommissarioCommissioniHandler(CMCommissioniHandler):
+  def get(self):
+    logging.info("CMCommissioniHandler.get")
+    template_values = dict()
+    template_values["path"] = "/commissario/commissioni"
+    template_values["content_left"] = "commissario/leftbar.html"
+    self.getBase(template_values)
+    
+      
+class CMCommissarioStatsHandler(CMStatsHandler):
+  def post(self):
+    return self.get()
+
+  def get(self):
+    logging.info("CMCommissarioStatsHandler.get")
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    self.getBase(template_values)
+
+class CMCommissarioMenuHandler(CMMenuHandler):
+  def post(self):
+    return self.get()
+
+  def get(self):
+    logging.info("CMCommissarioMenuHandler.get")
+    template_values = dict()
+    template_values["content_left"] = "commissario/leftbar.html"
+    self.getBase(template_values)
+
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
    
   application = webapp.WSGIApplication([
+    ('/commissario/isp', CMIspezioniCommissarioHandler),
+    ('/commissario/nc', CMNonconfsCommissarioHandler),
     ('/commissario/ispezione', CMIspezioneHandler),
     ('/commissario/nonconf', CMNonconfHandler),
     ('/commissario/registrazione', CMRegistrazioneHandler),
     ('/commissario/profilo', CMProfiloCommissarioHandler),
+    ('/commissario/stats', CMCommissarioStatsHandler),
+    ('/commissario/commissioni', CMCommissarioCommissioniHandler),
+    ('/commissario/menu', CMCommissarioMenuHandler),
     ('/commissario', CMCommissarioHandler),
     ('/commissario/getcm', CMCommissioniDataHandler),
     ('/commissario/getdata', CMCommissarioDataHandler)

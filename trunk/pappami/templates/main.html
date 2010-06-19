@@ -40,9 +40,6 @@ dojo.addOnLoad(function(){ dojo.style("subwrap", {visibility:"visible"});});
 	<li><a href="http://blog.pappa-mi.it" target="_new">Blog</a></li>
 	<li><a href="/chi">Chi siamo</a></li>
 	<li><a href="/docs">Documenti</a></li>
-        {% if commissario or genitore %}	
-	<li><a href="/stats">Statistiche</a></li>
-	{% endif %}
         {% if commissario %}
 	<li><a href="/commissario">Area Commissari</a></li>
 	{% endif %}
@@ -51,8 +48,6 @@ dojo.addOnLoad(function(){ dojo.style("subwrap", {visibility:"visible"});});
 	{% endif %}	
 	{% if not commissario and not genitore %}
 	<li><a href="/registrazione">Registrati</a></li>
-	{% endif %}{% if commissario or genitore %}	
-	<li><a href="/commissioni">Commissioni</a></li>
 	{% endif %}{% if admin %}
 	<li><a href="/admin">Gestione Sistema</a></li>
 	{% endif %}
@@ -60,7 +55,7 @@ dojo.addOnLoad(function(){ dojo.style("subwrap", {visibility:"visible"});});
 	<li><a href="{{url}}">{{url_linktext}}</a></li>
   </ul>
  </div>
-  <!-- END header -->
+<!-- END header -->
 {%include billboard%}
  <div id="columnwrap">
   <div id="subwrap" style="visibility:hidden;">
