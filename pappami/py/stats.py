@@ -57,10 +57,10 @@ class CMStatsHandler(BasePage):
         for d in range(0,len(stat.getVals(attr))):
           sublist[str(d+1)] = round(float(stat.getVal(attr,d+1))/(d+1)*100/stat.numeroSchede,2)
           sr += round(float(stat.getVal(attr,d+1))/(d+1)*100/stat.numeroSchede,2)
-        d = sr - 100.0
+        dt = sr - 100.0
         for d in range(0,len(stat.getVals(attr))):
-          if sublist[str(d+1)] >= d:
-            sublist[str(d+1)] -= d
+          if sublist[str(d+1)] >= dt:
+            sublist[str(d+1)] -= dt
             break
         data.append(sublist)
 
