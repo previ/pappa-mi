@@ -48,7 +48,7 @@ class BasePage(webapp.RequestHandler):
     else:
       url = "/login"
       url_linktext = 'Accedi'
-    if self.request.url.find("test") != -1 :
+    if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
