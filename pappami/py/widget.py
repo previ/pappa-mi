@@ -50,13 +50,11 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
 
-    if request.get("cm"):
-      c = Commissione.get(request.get("cm"))
-    elif self.getCommissario(users.get_current_user()):
-      if len(self.getCommissario(users.get_current_user()).commissioni()):
-        c = self.getCommissario(users.get_current_user()).commissioni()[0]        
+    c = None
+    if self.request.get("cm"):
+      c = Commissione.get(self.request.get("cm"))
     
-    self.createMenu(self.request,template_values)
+    self.createMenu(self.request,c,template_values)
     
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu2.html')
     self.response.out.write(template.render(path, template_values))
@@ -110,8 +108,9 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
 
-    if request.get("cm"):
-      c = Commissione.get(request.get("cm"))
+    c = None
+    if self.request.get("cm"):
+      c = Commissione.get(self.request.get("cm"))
     
     self.createStat(self.request,c,template_values)
     

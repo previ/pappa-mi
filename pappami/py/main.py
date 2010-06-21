@@ -60,14 +60,14 @@ class BasePage(webapp.RequestHandler):
         commissario.put()
       template_values["commissario"] = commissario.isCommissario()
       template_values["genitore"] = commissario.isGenitore()
-      logging.info("commissario: " + str(commissario.isCommissario()))
-      logging.info("genitore: " + str(commissario.isGenitore()))
+      #logging.info("commissario: " + str(commissario.isCommissario()))
+      #logging.info("genitore: " + str(commissario.isGenitore()))
     
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.0.18 - 2010.06.18"
+    template_values["version"] = "1.0.0.20 - 2010.06.21"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -75,13 +75,13 @@ class BasePage(webapp.RequestHandler):
   def getCommissario(self,user):
     commissario = None
     if(user):
-      logging.info("user email: " + user.email() + " id: " + user.user_id())
+      #logging.info("user email: " + user.email() + " id: " + user.user_id())
       #commissario = Commissario.all().filter("user = ", users.User(users.get_current_user().email())).get()
       commissario = Commissario.all().filter("user = ", user).get()
     #query = db.GqlQuery("SELECT * FROM Commissario WHERE user = USER(:usr)", usr = users.get_current_user().email())
     #commissario = query.get()
-    if(commissario):
-      logging.info("commissario: " + commissario.nome)
+    #if(commissario):
+      #logging.info("commissario: " + commissario.nome)
     return commissario
   
   def getCommissioni(self):

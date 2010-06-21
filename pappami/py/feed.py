@@ -80,17 +80,11 @@ class CMFeedIspNCHandler(BasePage):
       items = list()
 
       for isp in isps:
-        note = "nessuna"
-        if isp.note is not None:
-          note = isp.note
         items.append((isp.dataIspezione, isp, None))
       
 
       ncs = Nonconformita.all().order("-dataNonconf").fetch(limit=5)
       for nc in ncs:
-        note = "nessuna"
-        if nc.note is not None:
-          note = nc.note
         items.append((nc.dataNonconf, None, nc))
 
 
@@ -99,12 +93,18 @@ class CMFeedIspNCHandler(BasePage):
       for i in items:
         if( i[1] ):
           isp = i[1]
+          note = "nessuna"
+          if isp.note is not None:
+            note = isp.note
           feeditems.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
                             description = "Ispezione - note:" + note,
                             guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/ispezione?key="+str(isp.key())),
                             pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
         else:
           nc = i[2]
+          note = "nessuna"
+          if nc.note is not None:
+            note = nc.note
           feeditems.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
                           description = "Non Conformita': " + nc.tipoNome() + " note:" + note,
                           guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nonconf?key="+str(nc.key())),
