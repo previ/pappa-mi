@@ -74,23 +74,25 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     
   def getMenu(self, data, c):
     offset = -1
-    if c and c.centroCucina.menuOffset:
+    if c and c.centroCucina.menuOffset is not None:
       offset = c.centroCucina.menuOffset      
 
-    #logging.info(offset)
-    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
-    #logging.info("len %d" , menus.count())
-
-    menu = list()
-    for m in menus:
-      #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
-        menu.append(m)
-        if((offset == -1 and len(menu) >=4) or (offset >=0 )):
-          break
-
-    menu = sorted(menu, key=lambda menu: menu.settimana)
-
+    menu = memcache.get("menu" + str(offset))
+    if not menu:
+      #logging.info(offset)
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
+      #logging.info("len %d" , menus.count())
+  
+      menu = list()
+      for m in menus:
+        #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
+        if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
+          menu.append(m)
+          if((offset == -1 and len(menu) >=4) or (offset >=0 )):
+            break
+  
+      menu = sorted(menu, key=lambda menu: menu.settimana)
+      memcache.set("offset" + str(offset), menu, 60)
     return menu
   
 class CMStatWidgetHandler(webapp.RequestHandler):
@@ -130,13 +132,23 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
 
-    stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
+    stats = memcache.get("statAll")
+    if not stats:
+      stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
+      memcache.set("statAll", stats, 60)
+
     statCC = None
     statCM = None
     if c:
-      statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
-      statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
-    
+      statCC = memcache.get("statCC" + str(c.centroCucina.key()))
+      if not statCC:
+        statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
+        memcache.set("statCC" + str(c.centroCucina.key()), statCC)
+      statCM = memcache.get("statCM" + str(c.key()))
+      if not statCM:
+        statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
+        memcache.set("statCM" + str(c.key()), statCM)
+      
     template_values["stats"] = stats
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
