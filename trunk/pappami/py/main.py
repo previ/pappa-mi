@@ -131,9 +131,11 @@ class MainPage(BasePage):
     stats = self.getStats()
 
     c = None
-    if self.getCommissario(users.get_current_user()):
-      if len(self.getCommissario(users.get_current_user()).commissioni()) > 0:
-        c = self.getCommissario(users.get_current_user()).commissioni()[0]        
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario:
+      commissioni = commissario.commissioni()
+      if len(commissioni) > 0:
+        c = commissioni[0]
     
     CMMenuWidgetHandler().createMenu(self.request,c,template_values)
     CMStatWidgetHandler().createStat(self.request,c,template_values)
