@@ -638,7 +638,6 @@ class CMCommissarioMenuHandler(CMMenuHandler):
     return self.get()
 
   def get(self):
-    logging.info("CMCommissarioMenuHandler.get")
     template_values = dict()
     template_values["content_left"] = "commissario/leftbar.html"
     self.getBase(template_values)

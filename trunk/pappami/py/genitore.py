@@ -244,7 +244,6 @@ class CMGenitoreMenuHandler(CMMenuHandler):
     return self.get()
 
   def get(self):
-    logging.info("CMGenitoreMenuHandler.get")
     template_values = dict()
     template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)

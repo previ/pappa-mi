@@ -68,7 +68,7 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.0.20 - 2010.06.21"
+    template_values["version"] = "1.0.0.21 - 2010.06.22"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -220,7 +220,7 @@ class CMMenuHandler(BasePage):
     template_values['data2'] = date2
     template_values['cm'] = cm
     template_values['action'] = self.request.path
-    logging.info("CMMenuHandler.type: " + self.type())
+    #logging.info("CMMenuHandler.type: " + str(type(self)))
     super(CMMenuHandler,self).getBase(template_values)    
     
 class CMSupportoHandler(BasePage):
@@ -357,7 +357,7 @@ class CMWidgetHandler(BasePage):
     template_values["host"] = self.getHost()
     self.getBase(template_values)
     
-def real_main():
+def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
@@ -376,24 +376,24 @@ def real_main():
   
   wsgiref.handlers.CGIHandler().run(application)
 
-def profile_main():
-    # This is the main function for profiling
-    # We've renamed our original main() above to real_main()
-    import cProfile, pstats
-    prof = cProfile.Profile()
-    prof = prof.runctx("real_main()", globals(), locals())
-    print "<pre>"
-    stats = pstats.Stats(prof)
-    stats.sort_stats("time")  # Or cumulative
-    stats.print_stats(100)  # 80 = how many to print
-    # The rest is optional.
-    #stats.print_callees()
-    #stats.print_callers()
-    print "</pre>"  
+#def profile_main():
+    ## This is the main function for profiling
+    ## We've renamed our original main() above to real_main()
+    #import cProfile, pstats
+    #prof = cProfile.Profile()
+    #prof = prof.runctx("real_main()", globals(), locals())
+    #print "<pre>"
+    #stats = pstats.Stats(prof)
+    #stats.sort_stats("time")  # Or cumulative
+    #stats.print_stats(100)  # 80 = how many to print
+    ## The rest is optional.
+    ##stats.print_callees()
+    ##stats.print_callers()
+    #print "</pre>"  
 
 #import py.dblog
 #py.dblog.patch_appengine()    
     
 if __name__ == "__main__":
-  real_main()
+  main()
   
