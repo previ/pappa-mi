@@ -323,7 +323,9 @@ class CMAdminHandler(BasePage):
         #logging.info("error")
         #logging.info(result.status_code)
         #logging.info(result.content)
-      memcache.delete("news")
+      memcache.delete("news_pappami")
+      memcache.delete("news_web")
+      memcache.delete("news_cal")
 
     if self.request.get("cmd") == "offset":
       ccs = CentroCucina.all()
@@ -363,6 +365,8 @@ class CMAdminCommissarioHandler(BasePage):
           c.put() 
         
       commissario.put()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+      
       
       if commissario.stato == 1:
         
