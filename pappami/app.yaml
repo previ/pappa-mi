@@ -19,6 +19,10 @@ skip_files: |
  
 handlers:
 
+- url: /admin/dblog
+  script: py/dblog.py
+  login: admin
+
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
@@ -92,7 +96,7 @@ handlers:
 - url: /widget/*
   script: py/widget.py
 
-- url: /getwidget/.*
+- url: /getwidget/*
   script: py/main.py
   login: required
   

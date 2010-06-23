@@ -12,7 +12,7 @@ dojo.style("sc_1", {visibility:"visible"});
 {%for item in news_pappami%}
 <h3><a href="{{item.link}}">{{item.title}}</a></h3> 
 <p class="date"></p> 
-{{item.summary}}
+{{item.summary}} <a href="{{item.link}}">... (continua)</a>
 {% comment %}
 {% for i in item.summary %}
 <p>{{i.value}}</p> 
