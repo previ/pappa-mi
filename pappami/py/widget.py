@@ -80,7 +80,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     menu = memcache.get("menu" + str(offset))
     if not menu:
       #logging.info(offset)
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).order("-validitaDa")
+      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", "Materna").order("-validitaDa")
       #logging.info("len %d" , menus.count())
   
       menu = list()
