@@ -33,7 +33,7 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.main import BasePage, CMCommissioniHandler, CMMenuHandler
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
 
 TIME_FORMAT = "%H:%M"
@@ -77,37 +77,6 @@ class CMNonconfsCommissarioHandler(BasePage):
     template_values['content'] = 'commissario/nonconfs.html'
     self.getBase(template_values)
 
-class CMCommissioniDataHandler(BasePage):
-
-  def get(self): 
-    user = users.get_current_user()
-    buff = memcache.get("cmall")
-    if(buff is None):
-  
-      description = {"nome": ("string", "Nome"), 
-                     "key": ("string", "Key")}
-      data_table = DataTable(description)
-      
-      cms = Commissione.all().order("nome")
-      buff = ""
-      buff = '{"label": "nome", "identifier": "key", "items": ['
-      buff = buff + '{ "nome": "", "key": ""},'
-  
-      
-      notfirst = False
-      for cm in cms.order("nome"):
-        if(notfirst) :
-          buff = buff + ','
-        notfirst = True
-        buff = buff + '{ "nome": "' + cm.nome + ' - ' + cm.tipoScuola + '", "key": "' + str(cm.key()) + '"}'
-        
-      buff = buff + ']}'
-      memcache.add("cmall", buff)
-        
-    expires_date = datetime.utcnow() + timedelta(20)
-    expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
-    self.response.headers.add_header("Expires", expires_str)
-    self.response.out.write(buff)
       
 class CMCommissarioDataHandler(BasePage):
   def get(self): 

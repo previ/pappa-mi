@@ -34,7 +34,7 @@ from google.appengine.api.labs.taskqueue import Task, Queue
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
-from py.main import BasePage
+from py.base import BasePage
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"

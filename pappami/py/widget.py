@@ -30,6 +30,7 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
 from py.model import *
+from py.base import BasePage, CMCommissioniDataHandler
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -63,8 +64,9 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     menu = Menu();
        
     data = self.workingDay(datetime.now().date())
-    
-    template_values["data"] = data
+
+    menu = self.getMenu(data, c)    
+    template_values["sett"] = len(menu) > 2
     template_values["menu"] = self.getMenu(data, c)
     
   def workingDay(self, data):
@@ -79,22 +81,29 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
 
     menu = memcache.get("menu" + str(offset))
     if not menu:
-      #logging.info(offset)
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", "Materna").order("-validitaDa")
-      #logging.info("len %d" , menus.count())
-  
       menu = list()
-      for m in menus:
-        #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-        if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
-          menu.append(m)
-          if((offset == -1 and len(menu) >=4) or (offset >=0 )):
-            break
-  
-      menu = sorted(menu, key=lambda menu: menu.settimana)
+
+      self.getMenuHelper(menu,data,offset)
+      if offset >= 0:
+        self.getMenuHelper(menu,data+timedelta(1),offset)
+      
+      if offset < 0:
+        menu = sorted(menu, key=lambda menu: menu.settimana)
+        
       memcache.set("menu" + str(offset), menu, 60)
     return menu
-  
+
+  def getMenuHelper(self, menu, data, offset):
+    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", "Materna").order("-validitaDa")
+
+    for m in menus:
+      #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
+      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
+        m.data = data
+        menu.append(m)
+        if((offset == -1 and len(menu) >=4) or (offset >=0 )):
+          break
+    
 class CMStatWidgetHandler(webapp.RequestHandler):
   
   def get(self): 
@@ -136,7 +145,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     if not stats:
       logging.info("statAll miss")
       stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
-      memcache.set("statAll", stats, 60)
+      memcache.set("statAll", stats, 3600)
 
     statCC = None
     statCM = None
@@ -145,7 +154,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
       if not statCC:
         logging.info("statCC miss")
         statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
-        memcache.set("statCC" + str(c.centroCucina.key()), statCC)
+        memcache.set("statCC" + str(c.centroCucina.key()), statCC, 3600)
       statCM = memcache.get("statCM" + str(c.key()))
       if not statCM:
         logging.info("statCM miss")
@@ -155,13 +164,23 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values["stats"] = stats
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
+
+class CMWidgetHandler(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "widget/widgetindex.html"
+    template_values["host"] = self.getHost()
+    self.getBase(template_values)
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
+  ('/widget/get', CMWidgetHandler),
   ('/widget/menu', CMMenuWidgetHandler),
-  ('/widget/stat', CMStatWidgetHandler)
+  ('/widget/stat', CMStatWidgetHandler),
+  ('/widget/getcm', CMCommissioniDataHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

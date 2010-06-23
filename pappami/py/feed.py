@@ -31,7 +31,7 @@ from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.model import *
-from py.main import BasePage
+from py.base import BasePage
 import py.PyRSS2Gen
 
 TIME_FORMAT = "%H:%M"
