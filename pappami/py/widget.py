@@ -92,7 +92,7 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
             break
   
       menu = sorted(menu, key=lambda menu: menu.settimana)
-      memcache.set("offset" + str(offset), menu, 60)
+      memcache.set("menu" + str(offset), menu, 60)
     return menu
   
 class CMStatWidgetHandler(webapp.RequestHandler):
@@ -134,6 +134,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
 
     stats = memcache.get("statAll")
     if not stats:
+      logging.info("statAll miss")
       stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
       memcache.set("statAll", stats, 60)
 
@@ -142,12 +143,14 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     if c:
       statCC = memcache.get("statCC" + str(c.centroCucina.key()))
       if not statCC:
+        logging.info("statCC miss")
         statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
         memcache.set("statCC" + str(c.centroCucina.key()), statCC)
       statCM = memcache.get("statCM" + str(c.key()))
       if not statCM:
+        logging.info("statCM miss")
         statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
-        memcache.set("statCM" + str(c.key()), statCM)
+        memcache.set("statCM" + str(c.key()), statCM, 3600)
       
     template_values["stats"] = stats
     template_values["statCC"] = statCC
