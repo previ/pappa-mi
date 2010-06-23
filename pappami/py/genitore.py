@@ -213,7 +213,6 @@ class CMNonconfGenitoreHandler(BasePage):
 
     nc = Nonconformita.get(self.request.get("key"))
 
-
     template_values = {
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
