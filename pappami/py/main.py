@@ -55,9 +55,10 @@ class BasePage(webapp.RequestHandler):
       
     commissario = self.getCommissario(user)
     if( commissario is not None ) :
-      if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=1) ):
+      if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
+        memcache.set("commissario" + str(user.user_id()), commissario, 600)
       template_values["commissario"] = commissario.isCommissario()
       template_values["genitore"] = commissario.isGenitore()
       #logging.info("commissario: " + str(commissario.isCommissario()))
@@ -75,15 +76,12 @@ class BasePage(webapp.RequestHandler):
   def getCommissario(self,user):
     commissario = None
     if(user):
-      #logging.info("user email: " + user.email() + " id: " + user.user_id())
-      #commissario = Commissario.all().filter("user = ", users.User(users.get_current_user().email())).get()
-      commissario = Commissario.all().filter("user = ", user).get()
-    #query = db.GqlQuery("SELECT * FROM Commissario WHERE user = USER(:usr)", usr = users.get_current_user().email())
-    #commissario = query.get()
-    #if(commissario):
-      #logging.info("commissario: " + commissario.nome)
+      #commissario = memcache.get("user" + str(user.user_id()))
+      #if not commissario:
+        commissario = Commissario.all().filter("user = ", user).get()
+        #memcache.add("user" + str(user.user_id()), commissario, 600)
     return commissario
-  
+
   def getCommissioni(self):
     commissioni = memcache.get("commissioni")
     if commissioni == None:
@@ -116,7 +114,7 @@ class MainPage(BasePage):
         i = i + 1
         news.append(n)
         
-      memcache.add("news_pappami",news)
+      memcache.add(name,news)
     return news
   
   def get(self):
@@ -133,9 +131,7 @@ class MainPage(BasePage):
     c = None
     commissario = self.getCommissario(users.get_current_user())
     if commissario:
-      commissioni = commissario.commissioni()
-      if len(commissioni) > 0:
-        c = commissioni[0]
+      c = commissario.commissione()
     
     CMMenuWidgetHandler().createMenu(self.request,c,template_values)
     CMStatWidgetHandler().createStat(self.request,c,template_values)
@@ -186,13 +182,13 @@ class CMMenuHandler(BasePage):
       
     # settimana corrente
     menus = Menu.all().filter("validitaDa <=", data).filter("tipoScuola", cm.tipoScuola).order("-validitaDa")
-    logging.info("len %d" , menus.count())
+    #logging.info("len %d" , menus.count())
 
     count = 0
     for m in menus:
       if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
         menu.append(m)
-        logging.info("m" + m.primo)
+        #logging.info("m" + m.primo)
         count += 1
         if count >=5 :
           break
@@ -204,8 +200,8 @@ class CMMenuHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cm") != "":
       cm = Commissione.get(self.request.get("cm"))
-    elif commissario and len(commissario.commissioni()) :
-      cm = commissario.commissioni()[0]
+    elif commissario and commissario.commissione() :
+      cm = commissario.commissione()
     else:
       cm = Commissione.all().get()
     date = self.request.get("data")
@@ -224,6 +220,7 @@ class CMMenuHandler(BasePage):
     template_values['data2'] = date2
     template_values['cm'] = cm
     template_values['action'] = self.request.path
+    logging.info("CMMenuHandler.type: " + self.type())
     super(CMMenuHandler,self).getBase(template_values)    
     
 class CMSupportoHandler(BasePage):
@@ -360,7 +357,7 @@ class CMWidgetHandler(BasePage):
     template_values["host"] = self.getHost()
     self.getBase(template_values)
     
-def main():
+def real_main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
@@ -379,5 +376,24 @@ def main():
   
   wsgiref.handlers.CGIHandler().run(application)
 
+def profile_main():
+    # This is the main function for profiling
+    # We've renamed our original main() above to real_main()
+    import cProfile, pstats
+    prof = cProfile.Profile()
+    prof = prof.runctx("real_main()", globals(), locals())
+    print "<pre>"
+    stats = pstats.Stats(prof)
+    stats.sort_stats("time")  # Or cumulative
+    stats.print_stats(100)  # 80 = how many to print
+    # The rest is optional.
+    #stats.print_callees()
+    #stats.print_callers()
+    print "</pre>"  
+
+#import py.dblog
+#py.dblog.patch_appengine()    
+    
 if __name__ == "__main__":
-  main()
+  real_main()
+  
