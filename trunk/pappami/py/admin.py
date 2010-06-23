@@ -379,10 +379,11 @@ class CMAdminCommissarioHandler(BasePage):
         #else:
           #url = "pappa-mi.appspot.com"        
 
+        sender = "Pappa-Mi <aiuto@pappa-mi.it>"
         message = mail.EmailMessage()
-        message.sender = "aiuto@pappa-mi.it"
+        message.sender = sender
         message.to = commissario.user.email()
-        message.bcc = "aiuto@pappa-mi.it"
+        message.bcc = sender
         message.subject = "Benvenuto in Pappa-Mi"
         message.body = """ La tua richiesta di registrazione come Commissario e' stata confermata.
         

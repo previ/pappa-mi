@@ -302,16 +302,11 @@ class CMRegistrazioneHandler(BasePage):
 
     host = self.getHost()
     
-    #if self.request.url.find("test") != -1:
-      #url = "test-pappa-mi.appspot.com"
-    #else if self.request.url.find("test") != -1:
-      #url = "pappa-mi.appspot.com"
-    #else:
-      #url = "pappa-mi.appspot.com"
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
     
     message = mail.EmailMessage()
-    message.sender = "aiuto@pappa-mi.it"
-    message.to = "aiuto@pappa-mi.it"
+    message.sender = sender
+    message.to = sender
     message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
     message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
     

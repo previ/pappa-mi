@@ -111,11 +111,13 @@ class CMRegistrazioneGenitoreHandler(BasePage):
   def sendRegistrationRequestMail(self, commissario) :
 
     host = self.getHost()
-       
+
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+    
     message = mail.EmailMessage()
-    message.sender = "aiuto@pappa-mi.it"
+    message.sender = sender
     message.to = commissario.user.email()
-    message.bcc = "aiuto@pappa-mi.it"
+    message.bcc = sender
     message.subject = "Benvenuto in Pappa-Mi"
     message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
     
