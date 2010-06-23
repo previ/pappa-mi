@@ -282,10 +282,14 @@ class CMRegistrazioneHandler(BasePage):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 0)
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
+          
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
 
+      commissario.setCMDefault()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        
       self.sendRegistrationRequestMail(commissario)
     
     template_values = {
@@ -337,12 +341,16 @@ class CMProfiloCommissarioHandler(BasePage):
       commissario.cognome = self.request.get("cognome")
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
+
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
         cc.delete()
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
-   
+
+      commissario.setCMDefault()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        
     template_values = {
       'content_left': 'commissario/leftbar.html',
       'content': 'commissario/profilo.html',
