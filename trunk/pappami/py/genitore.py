@@ -92,10 +92,14 @@ class CMRegistrazioneGenitoreHandler(BasePage):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 11)
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
+      
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
 
+      commissario.setCMDefault()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        
       self.sendRegistrationRequestMail(commissario)
     
     template_values = {
@@ -116,17 +120,12 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
     
     Ora puoi accedere all'area a te riservata:
-    
-    Schede Ispezione e Non Conformita'
     http://"""  + host + """/genitore
 
-    Dati statistici di tutte le Commissioni
-    http://"""  + host + """/stats
-
-    Documenti
+    Documenti:
     http://"""  + host + """/docs
     
-    Ciao |
+    Ciao !
     Pappa-Mi staff
     
     """
@@ -151,13 +150,17 @@ class CMProfiloGenitoreHandler(BasePage):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
       commissario.emailComunicazioni = self.request.get("emailalert")
-      commissario.put()
+      commissario.put()      
+
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
         cc.delete()
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
-   
+
+      commissario.setCMDefault()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        
     template_values = {
       'content_left': 'genitore/leftbar.html',
       'content': 'genitore/profilo.html',
