@@ -34,7 +34,7 @@ from google.appengine.api import mail
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
-from py.main import BasePage
+from py.base import BasePage
 
 
 TIME_FORMAT = "T%H:%M:%S"
@@ -353,32 +353,31 @@ class CMAdminCommissarioHandler(BasePage):
       url_linktext = 'Logout'
       user = users.get_current_user()
               
-      if self.request.get("cmd") == "enable" :
-        commissario.stato = 1
-        for c in commissario.commissioni():
-          c.numCommissari = c.numCommissari + 1
-          c.put() 
-      elif self.request.get("cmd") == "disable" :
-        commissario.stato = 0 
-        for c in commissario.commissioni():
-          c.numCommissari = c.numCommissari - 1
-          c.put() 
+      if self.request.get("cmd") == "enable":
+        if commissario.isCommissario():
+          commissario.stato = 1
+          for c in commissario.commissioni():
+            c.numCommissari = c.numCommissari + 1
+            c.put() 
+        else:
+          commissario.stato = 11
+      elif self.request.get("cmd") == "disable" : 
+        if commissario.isCommissario():
+          commissario.stato = 0 
+          for c in commissario.commissioni():
+            c.numCommissari = c.numCommissari - 1
+            c.put() 
+        else:
+          commissario.stati = 10
         
       commissario.put()
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
       
-      
+     
       if commissario.stato == 1:
         
         host = self.getHost()
         
-        #if self.request.url.find("test") != -1:
-          #url = "test-pappa-mi.appspot.com"
-        #elif self.request.url.find("www.pappa-mi.it") != -1:
-          #url = "www.pappa-mi.it"
-        #else:
-          #url = "pappa-mi.appspot.com"        
-
         sender = "Pappa-Mi <aiuto@pappa-mi.it>"
         message = mail.EmailMessage()
         message.sender = sender
@@ -422,7 +421,7 @@ class CMAdminCommissarioHandler(BasePage):
       
       data = list()
       for commissario in Commissario.all():
-        if commissario.stato == 1:
+        if not commissario.isRegistering():
           stato = "Attivo"
           cmd = "disable"
           comando = "Disabilita"
@@ -434,7 +433,7 @@ class CMAdminCommissarioHandler(BasePage):
         commissioni = ""
         for c in commissario.commissioni():
           commissioni = commissioni + c.nome + " - " + c.tipoScuola + "<br/>"
-          
+
         data.append({"nome": commissario.nome, "cognome": commissario.cognome, "nick": commissario.nome, "commissioni": commissioni, "stato":stato, "ultimo_accesso_il":commissario.ultimo_accesso_il, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
 
       # Loading it into gviz_api.DataTable

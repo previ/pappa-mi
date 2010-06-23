@@ -30,7 +30,7 @@ from google.appengine.ext.webapp.util import login_required
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
-from py.main import BasePage
+from py.base import BasePage
 
 class LoginPage(BasePage):
   

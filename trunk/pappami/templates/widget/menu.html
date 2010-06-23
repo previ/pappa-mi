@@ -8,7 +8,7 @@ a {text-decoration:none;}
 </style>
 <ul id="menu" class="jcarousel-skin-tango">{%for m in menu%}
     <li><div><table width="100%" border="0" style="margin:0px; border-spacing:0px;">
-<tr><td align="center" class="md">{{data|date:"d/m/Y"}} Sett. {{m.settimana}}</td></tr>
+<tr><td align="center" class="md">{{m.data|date:"d/m/Y"}} {%if sett%}Sett. {{m.settimana}}{%endif%}</td></tr>
 <tr><td align="center" class="mt">Primo piatto</td></tr>
 <tr><td align="center" class="md">{{m.primo}}</td></tr>
 <tr><td align="center" class="mt">Secondo piatto</td></tr>

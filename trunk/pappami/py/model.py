@@ -119,6 +119,7 @@ class Menu(db.Model):
   secondo = db.StringProperty()
   contorno = db.StringProperty()
   dessert = db.StringProperty()
+  data = None
 
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):

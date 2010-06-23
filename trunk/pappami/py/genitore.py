@@ -33,9 +33,9 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.main import BasePage, CMCommissioniHandler, CMMenuHandler
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
-from py.commissario import CMCommissioniDataHandler, CMCommissarioDataHandler
+from py.commissario import CMCommissarioDataHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
