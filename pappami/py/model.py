@@ -74,6 +74,8 @@ class Commissario(db.Model):
 
   stato = db.IntegerProperty()
   
+  cmdefault = None
+  
   def isCommissario(self):
     return self.stato == 1
   def isGenitore(self):
@@ -90,6 +92,18 @@ class Commissario(db.Model):
     for cc in CommissioneCommissario.all().filter("commissario", self):
       commissioni.append(cc.commissione)
     return commissioni
+
+  def setCMDefault(self):
+    if len(self.commissioni()) > 0:
+      self.cmdefault = self.commissioni()[0]
+  
+  def commissione(self):
+    #if not self.cmdefault and len(self.commissioni()) > 0:
+      #self.cmdefault = self.commissioni()[0]
+    #return self.cmdefault
+    cms = self.commissioni()
+    if len(cms) > 0:
+      return cms[0]
   
 class CommissioneCommissario(db.Model):
   commissione = db.ReferenceProperty(Commissione)
