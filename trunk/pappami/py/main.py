@@ -82,8 +82,8 @@ class MainPage(BasePage):
     template_values["stat"] = stats
     template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
-    template_values["news_web"] = self.getNews("news_web")
-    template_values["news_cal"] = self.getNews("news_cal")
+    #template_values["news_web"] = self.getNews("news_web")
+    #template_values["news_cal"] = self.getNews("news_cal")
 
     #if(len(self.getNews("news_pappami"))>0):
     #  template_values["newsMsg"] = self.getNews("news_pappami")[0].content[0]
