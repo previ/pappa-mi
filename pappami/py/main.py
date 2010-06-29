@@ -156,11 +156,18 @@ class CMMenuDataHandler(webapp.RequestHandler):
 class CMMapDataHandler(webapp.RequestHandler):
   
   def get(self): 
+    limit = 100
+    if self.request.get("limit"):
+      limit = int(self.request.get("limit"))    
+    offset = 0
+    if self.request.get("offset"):
+      offset = int(self.request.get("offset"))    
+
     if self.request.get("cmd") == "all":
-      markers = memcache.get("markers_all")
+      markers = memcache.get("markers_all"+str(offset))
       if(markers == None):
           
-        commissioni = Commissione.all().order("nome");
+        commissioni = Commissione.all().order("nome").fetch(limit, offset);
           
         markers = "<markers>\n"
         try:
@@ -172,9 +179,10 @@ class CMMapDataHandler(webapp.RequestHandler):
           logging.error("Timeout")
           
         markers = markers + "</markers>"    
-        memcache.add("markers_all", markers)
+        memcache.add("markers_all"+str(offset), markers)
       
       #logging.info(markers)
+      self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)      
     else:
       markers = memcache.get("markers")
@@ -195,6 +203,7 @@ class CMMapDataHandler(webapp.RequestHandler):
         memcache.add("markers", markers)
       
       #logging.info(markers)
+      self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
 
 class DocPage(BasePage):

@@ -354,7 +354,7 @@ class CMAdminCommissarioHandler(BasePage):
       user = users.get_current_user()
               
       if self.request.get("cmd") == "enable":
-        if commissario.isCommissario():
+        if commissario.isRegCommissario():
           commissario.stato = 1
           for c in commissario.commissioni():
             c.numCommissari = c.numCommissari + 1
@@ -368,7 +368,7 @@ class CMAdminCommissarioHandler(BasePage):
             c.numCommissari = c.numCommissari - 1
             c.put() 
         else:
-          commissario.stati = 10
+          commissario.stato = 10
         
       commissario.put()
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
@@ -421,20 +421,24 @@ class CMAdminCommissarioHandler(BasePage):
       
       data = list()
       for commissario in Commissario.all():
-        if not commissario.isRegistering():
-          stato = "Attivo"
-          cmd = "disable"
-          comando = "Disabilita"
-        else:
+        if commissario.isRegCommissario():
           stato = "Richiesta"
-          cmd = "enable"
           comando = "Attiva"
+          cmd = "enable"
+        elif commissario.isCommissario():
+          stato = "Commissario"
+          comando = "Disabilita"
+          cmd = "disable"
+        elif commissario.isGenitore():
+          stato = "Genitore"
+          comando = "Disabilita"
+          cmd = "disable"
         
         commissioni = ""
         for c in commissario.commissioni():
           commissioni = commissioni + c.nome + " - " + c.tipoScuola + "<br/>"
 
-        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "nick": commissario.nome, "commissioni": commissioni, "stato":stato, "ultimo_accesso_il":commissario.ultimo_accesso_il, "comando":"<a href='/admin/commissario?cmd=" + cmd + "&key="+str(commissario.key())+"'>"+comando+"</a>"})
+        data.append({"nome": commissario.nome, "cognome": commissario.cognome, "email": commissario.user.email(), "commissioni": commissioni, "stato":stato, "ultimo_accesso_il":commissario.ultimo_accesso_il, "comando":"<a href='/admin/commissario?cmd="+cmd+"&key="+str(commissario.key())+"'>"+comando+"</a>"})
 
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)

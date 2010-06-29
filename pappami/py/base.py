@@ -68,7 +68,7 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.0.21 - 2010.06.22"
+    template_values["version"] = "1.0.0.22 - 2010.06.29"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
@@ -131,7 +131,7 @@ class CMCommissioniHandler(BasePage):
       
   def getBase(self,template_values):
     template_values["content"] = "map.html"
-    template_values["limit"] = 500
+    template_values["limit"] = 100
     template_values["centriCucina"] = CentroCucina.all().order("nome")
     template_values['action'] = self.request.path
     super(CMCommissioniHandler,self).getBase(template_values)
