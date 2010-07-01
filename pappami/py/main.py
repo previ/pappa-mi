@@ -173,7 +173,7 @@ class CMMapDataHandler(webapp.RequestHandler):
         try:
           for c in commissioni :
             if c.geo:
-              markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
+              markers = markers + '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
               markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.centroCucina.key().name() + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
@@ -194,7 +194,7 @@ class CMMapDataHandler(webapp.RequestHandler):
         try:
           for c in commissioni :
             if c.geo :
-              markers = markers + '<marker nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
+              markers = markers + '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
               markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.centroCucina.key().name() + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
