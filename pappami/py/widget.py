@@ -56,8 +56,11 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       c = Commissione.get(self.request.get("cm"))
     
     self.createMenu(self.request,c,template_values)
-    
-    path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu2.html')
+
+    if self.request.get("i") == "n":
+      path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
+    else:
+      path = os.path.join(os.path.dirname(__file__), '../templates/widget/wmenu.html')
     self.response.out.write(template.render(path, template_values))
 
   def createMenu(self,request,c,template_values):
@@ -131,7 +134,10 @@ class CMStatWidgetHandler(webapp.RequestHandler):
 
     template_values["wcontent"] = "stat" + t + ".html"
     
-    path = os.path.join(os.path.dirname(__file__), '../templates/widget/wstat.html')
+    if self.request.get("i") == "n":
+      path = os.path.join(os.path.dirname(__file__), '../templates/widget/' + template_values["wcontent"])
+    else:
+      path = os.path.join(os.path.dirname(__file__), '../templates/widget/wstat.html')
     self.response.out.write(template.render(path, template_values))
 
   def createStat(self,request,c,template_values):
