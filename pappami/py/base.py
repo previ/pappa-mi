@@ -47,7 +47,7 @@ class BasePage(webapp.RequestHandler):
       url_linktext = 'Esci'
     else:
       url = "/login"
-      url_linktext = 'Accedi'
+      url_linktext = 'Entra'
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
@@ -68,7 +68,7 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.0.22 - 2010.06.29"
+    template_values["version"] = "1.0.0.23 - 2010.07.03"
 
     path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
     self.response.out.write(template.render(path, template_values))
