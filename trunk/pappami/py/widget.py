@@ -79,16 +79,18 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
     
   def getMenu(self, data, c):
     offset = -1
+    tipoScuola = "Materna"
     if c and c.centroCucina.menuOffset is not None:
-      offset = c.centroCucina.menuOffset      
+      offset = c.centroCucina.menuOffset
+      tipoScuola = c.tipoScuola
 
     menu = memcache.get("menu" + str(offset))
     if not menu:
       menu = list()
 
-      self.getMenuHelper(menu,data,offset)
+      self.getMenuHelper(menu,data,offset,tipoScuola)
       if offset >= 0:
-        self.getMenuHelper(menu,data+timedelta(1),offset)
+        self.getMenuHelper(menu,data+timedelta(1),offset,tipoScuola)
       
       if offset < 0:
         menu = sorted(menu, key=lambda menu: menu.settimana)
@@ -96,8 +98,8 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       memcache.set("menu" + str(offset), menu, 60)
     return menu
 
-  def getMenuHelper(self, menu, data, offset):
-    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", "Materna").order("-validitaDa")
+  def getMenuHelper(self, menu, data, offset, tipoScuola):
+    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", tipoScuola).order("-validitaDa")
 
     for m in menus:
       #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())

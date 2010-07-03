@@ -37,6 +37,10 @@ class LoginPage(BasePage):
   def get(self):
     if not self.getCommissario(users.get_current_user()):
       self.redirect("/registrazione")
+    elif self.getCommissario(users.get_current_user()).isCommissario():
+      self.redirect("/commissario")
+    elif self.getCommissario(users.get_current_user()).isGenitore():
+      self.redirect("/genitore")
     else:
       self.redirect("/")
 

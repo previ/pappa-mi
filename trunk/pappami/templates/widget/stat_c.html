@@ -1,6 +1,8 @@
+<div style="position:relative;">
+<div id="lgd" style="position:absolute; top:40px; left:5px; display:none; background:url('/img/back_transp.png');"><img src="/img/chart_lgd.png" title="Legenda"/></div>
 <table border="0" style="padding:0px; margin:0px; font-family:verdana; font-size:12px; border-spacing:0px;">
 <tr>
-<td>{%if not pappamiit%}<a href="/" target="_new"><img width="20" border="0" src="/img/pappa-mi-logo.png" title="Pappa-Mi"/></a>{%endif%}</td>
+<td>{%if not pappamiit%}<a href="/" target="_new"><img width="20" border="0" src="/img/pappa-mi-logo.png" title="Pappa-Mi"/></a>{%endif%}<img style="position:absolute; top:0px; right:0px;" width="16" src="/img/help-icon.png" title="Legenda" onmouseover="$('#lgd').show()" onmouseout="$('#lgd').hide()"/></td>
 <td align="center"><img width="32" src="/img/chef.png" title="Assaggio"/></td>
 <td align="center"><img width="32" src="/img/grad.png" title="Gradimento"/></td>
 </tr>
@@ -34,3 +36,4 @@
 <td>
 </tr>
 </table>
+</div>
