@@ -1,7 +1,10 @@
-application: test-pappa-mi
-version: 1
+application: pappa-mi
+version: 2
 runtime: python
 api_version: 1
+
+derived_file_type:
+- python_precompiled
 
 skip_files: |
  ^(.*/)?(

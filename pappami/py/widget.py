@@ -30,12 +30,12 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
 from py.model import *
-from py.base import BasePage, CMCommissioniDataHandler
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMMenuWidgetHandler(webapp.RequestHandler):
+class CMMenuWidgetHandler(CMMenuHandler):
   
   def get(self): 
     menu = Menu();
@@ -63,51 +63,6 @@ class CMMenuWidgetHandler(webapp.RequestHandler):
       path = os.path.join(os.path.dirname(__file__), '../templates/widget/wmenu.html')
     self.response.out.write(template.render(path, template_values))
 
-  def createMenu(self,request,c,template_values):
-    menu = Menu();
-       
-    data = self.workingDay(datetime.now().date())
-
-    menu = self.getMenu(data, c)    
-    template_values["sett"] = len(menu) > 2
-    template_values["menu"] = self.getMenu(data, c)
-    
-  def workingDay(self, data):
-    while data.isoweekday() > 5:
-      data += timedelta(1)      
-    return data
-    
-  def getMenu(self, data, c):
-    offset = -1
-    tipoScuola = "Materna"
-    if c and c.centroCucina.menuOffset is not None:
-      offset = c.centroCucina.menuOffset
-      tipoScuola = c.tipoScuola
-
-    menu = memcache.get("menu" + str(offset))
-    if not menu:
-      menu = list()
-
-      self.getMenuHelper(menu,data,offset,tipoScuola)
-      if offset >= 0:
-        self.getMenuHelper(menu,data+timedelta(1),offset,tipoScuola)
-      
-      if offset < 0:
-        menu = sorted(menu, key=lambda menu: menu.settimana)
-        
-      memcache.set("menu" + str(offset), menu, 60)
-    return menu
-
-  def getMenuHelper(self, menu, data, offset, tipoScuola):
-    menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", tipoScuola).order("-validitaDa")
-
-    for m in menus:
-      #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-      if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana or offset == -1):
-        m.data = data
-        menu.append(m)
-        if((offset == -1 and len(menu) >=4) or (offset >=0 )):
-          break
     
 class CMStatWidgetHandler(webapp.RequestHandler):
   
