@@ -125,7 +125,9 @@ class Menu(db.Model):
   def getData(self):
     return self._giorni[self.giorno-1]
   def today(self):
-    return datetime.now().date().isoweekday() == self.giorno
+    logging.info(self.data)
+    logging.info(datetime.now().date())
+    return datetime.now().date() == self.data
   
 class Ispezione(db.Model):
       

@@ -227,7 +227,7 @@ class CMGenitoreCommissioniHandler(CMCommissioniHandler):
   def get(self):
     logging.info("CMCommissioniHandler.get")
     template_values = dict()
-    template_values["content_left"] = "commissario/leftbar.html"
+    template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)
     
       
@@ -238,7 +238,7 @@ class CMGenitoreStatsHandler(CMStatsHandler):
   def get(self):
     logging.info("CMCommissarioStatsHandler.get")
     template_values = dict()
-    template_values["content_left"] = "commissario/leftbar.html"
+    template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)
 
 class CMGenitoreMenuHandler(CMMenuHandler):
