@@ -101,7 +101,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
 
     now = datetime.now().date()
     year = now.year
-    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+    if now.month <= 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
 
     stats = memcache.get("statAll")

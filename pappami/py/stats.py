@@ -85,7 +85,7 @@ class CMStatsHandler(BasePage):
     
     now = datetime.datetime.now().date()
     anno = now.year
-    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+    if now.month <= 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       anno = anno - 1
     if self.request.get("anno"):
       anno = int(self.request.get("anno"))
