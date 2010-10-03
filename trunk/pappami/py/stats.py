@@ -38,6 +38,7 @@ from py.base import BasePage
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
+DAYS_OF_WEEK = 7
 
 class CMStatsHandlerOld(BasePage):
     
@@ -81,7 +82,7 @@ class CMStatsHandler(BasePage):
     statCC = None
     statCM = None
 
-    logging.info("anno: " + self.request.get("anno"))
+    #logging.info("anno: " + self.request.get("anno"))
     
     now = datetime.datetime.now().date()
     anno = now.year
@@ -280,8 +281,8 @@ class CMStatCalcHandler(BasePage):
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
-    logging.info("limit: %d", limit)
-    logging.info("offset: %d", offset)
+    #logging.info("limit: %d", limit)
+    #logging.info("offset: %d", offset)
 
     self.putTask('/admin/stats/calcisp',limit=limit,offset=offset)
     self.putTask('/admin/stats/calcnc',limit=limit,offset=offset)
@@ -308,15 +309,15 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
-    logging.info("limit: %d", limit)
-    logging.info("offset: %d", offset)
+    #logging.info("limit: %d", limit)
+    #logging.info("offset: %d", offset)
     
     now = datetime.datetime.now().date()
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
     dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
-    dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
+    dataFine = datetime.datetime.now().date() - datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
     timeId=year
     timePeriod = "Y"
@@ -348,9 +349,23 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
       
     count = 0
-    # carica gli elementi creati successivamente all'ultimo calcolo
-    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
-      if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine:
+
+    #for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
+      #if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine:
+    
+    dataCreatoIlLimite = stats.dataFine - datetime.timedelta(DAYS_OF_WEEK)
+    if stats.dataCalcolo.date() < dataCreatoIlLimite:
+      dataCreatoIlLimite = stats.dataCalcolo.date()
+
+    #logging.info("dataCreatoIlLimite: " + str(dataCreatoIlLimite))
+      
+    for nc in Nonconformita.all().filter("creato_il >", dataCreatoIlLimite).order("creato_il").fetch(limit+1, offset):
+      #logging.info("creato_il: " + str(nc.creato_il))
+      #logging.info("dataNonconf: " + str(nc.dataNonconf))
+
+      if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine and ( nc.creato_il > stats.dataCalcolo or (nc.creato_il.date() > dataCreatoIlLimite and nc.dataNonconf > dataCreatoIlLimite)) :
+        logging.info("nc added to stat")
+    
         if( nc.commissione.key() not in statsCM ):          
           statCM = StatisticheNonconf()
           statCM.dataInizio = stats.dataInizio
@@ -429,15 +444,15 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
 
-    logging.info("limit: %d", limit)
-    logging.info("offset: %d", offset)
+    #logging.info("limit: %d", limit)
+    #logging.info("offset: %d", offset)
 
     now = datetime.datetime.now().date()
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
     dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
-    dataFine = datetime.datetime.now().date() - datetime.timedelta(7 - datetime.datetime.now().isoweekday())
+    dataFine = datetime.datetime.now().date() - datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
     timeId=year
     timePeriod = "Y"
@@ -471,8 +486,28 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
 
     count = 0
-    for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
-      if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
+
+    #for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+      #if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
+    
+    # bisogna prendere in considerazione tutti i record isp che soddisfano la condizione:
+    # stats.dataInizio <= isp.dataIspezione < stats.dataFine and  'tutti i record del periodo in esame
+    # (isp.creato_il > stats.dataFine - PERIODO_RICALCOLO and     'tutti i record la cui data di inserimento e' nella settimana precedente alla attuale e
+    # (isp.dataIspezione > stats.dataFine - PERIODO_RICALCOLO) or 'la data di ispezione e' nella settimana precedente alla attuale oppure
+    # isp.creato_il > dataCalcolo)                                'tutti i record la cui data di inserimento e' antecedente al calcolo
+    dataCreatoIlLimite = stats.dataFine - datetime.timedelta(DAYS_OF_WEEK)
+    if stats.dataCalcolo.date() < dataCreatoIlLimite:
+      dataCreatoIlLimite = stats.dataCalcolo.date()
+
+    #logging.info("dataCreatoIlLimite: " + str(dataCreatoIlLimite))
+      
+    for isp in Ispezione.all().filter("creato_il >", dataCreatoIlLimite).order("creato_il").fetch(limit+1, offset):
+      #logging.info("creato_il: " + str(isp.creato_il))
+      #logging.info("dataIspezione: " + str(isp.dataIspezione))
+
+      if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine and ( isp.creato_il > stats.dataCalcolo or (isp.creato_il.date() > dataCreatoIlLimite and isp.dataIspezione > dataCreatoIlLimite)) :
+        logging.info("isp added to stat")
+
         if( isp.commissione.key() not in statsCM ):          
           statCM = StatisticheIspezioni()
           statCM.dataInizio = stats.dataInizio
@@ -502,7 +537,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         self.calcIsp(isp,stats)
         count += 1
         if count == limit : break
-    
+        
     if stats.numeroSchede > 0 :
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
