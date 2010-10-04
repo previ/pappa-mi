@@ -316,17 +316,14 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
-    dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
-    dataFine = datetime.datetime.now().date() - datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
+    dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
+    dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
+
     timeId=year
     timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
-    #logging.info("dataInizio: " + str(dataInizio))
-    #logging.info("dataFine: " + str(dataFine))
-    #logging.info("wtot: " + str(wtot))
-    
     for s in StatisticheNonconf.all().filter("dataInizio >=", dataInizio):
       if s.commissione is None and s.centroCucina is None:
         stats = s
@@ -344,28 +341,13 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       stats.timeId=timeId
       stats.timePeriod = timePeriod
       self.initWeek(stats, wtot)
-
-    if stats.dataCalcolo is None:
-      stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
+      stats.dataCalcolo = datetime.datetime(stats.dataInizio.year, stats.dataInizio.month, stats.dataInizio.day)
       
     count = 0
-
-    #for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset): 
-      #if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine:
-    
-    dataCreatoIlLimite = stats.dataFine - datetime.timedelta(DAYS_OF_WEEK)
-    if stats.dataCalcolo.date() < dataCreatoIlLimite:
-      dataCreatoIlLimite = stats.dataCalcolo.date()
-
-    #logging.info("dataCreatoIlLimite: " + str(dataCreatoIlLimite))
+   
       
-    for nc in Nonconformita.all().filter("creato_il >", dataCreatoIlLimite).order("creato_il").fetch(limit+1, offset):
-      #logging.info("creato_il: " + str(nc.creato_il))
-      #logging.info("dataNonconf: " + str(nc.dataNonconf))
-
-      if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine and ( nc.creato_il > stats.dataCalcolo or (nc.creato_il.date() > dataCreatoIlLimite and nc.dataNonconf > dataCreatoIlLimite)) :
-        logging.info("nc added to stat")
-    
+    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+      if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine :
         if( nc.commissione.key() not in statsCM ):          
           statCM = StatisticheNonconf()
           statCM.dataInizio = stats.dataInizio
@@ -451,9 +433,11 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
-    dataInizio = datetime.datetime(year=year, month=9, day=1).date()    
-    dataFine = datetime.datetime.now().date() - datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
+    
+    dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
+    dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
+
     timeId=year
     timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
@@ -481,33 +465,13 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       stats.timeId=timeId
       stats.timePeriod = timePeriod
       self.initWeek(stats, wtot)
-
-    if stats.dataCalcolo is None:
-      stats.dataCalcolo = datetime.datetime(year=year, month=9, day=1)
+      stats.dataCalcolo = datetime.datetime(stats.dataInizio.year, stats.dataInizio.month, stats.dataInizio.day)
 
     count = 0
 
-    #for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
-      #if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
-    
-    # bisogna prendere in considerazione tutti i record isp che soddisfano la condizione:
-    # stats.dataInizio <= isp.dataIspezione < stats.dataFine and  'tutti i record del periodo in esame
-    # (isp.creato_il > stats.dataFine - PERIODO_RICALCOLO and     'tutti i record la cui data di inserimento e' nella settimana precedente alla attuale e
-    # (isp.dataIspezione > stats.dataFine - PERIODO_RICALCOLO) or 'la data di ispezione e' nella settimana precedente alla attuale oppure
-    # isp.creato_il > dataCalcolo)                                'tutti i record la cui data di inserimento e' antecedente al calcolo
-    dataCreatoIlLimite = stats.dataFine - datetime.timedelta(DAYS_OF_WEEK)
-    if stats.dataCalcolo.date() < dataCreatoIlLimite:
-      dataCreatoIlLimite = stats.dataCalcolo.date()
-
-    #logging.info("dataCreatoIlLimite: " + str(dataCreatoIlLimite))
       
-    for isp in Ispezione.all().filter("creato_il >", dataCreatoIlLimite).order("creato_il").fetch(limit+1, offset):
-      #logging.info("creato_il: " + str(isp.creato_il))
-      #logging.info("dataIspezione: " + str(isp.dataIspezione))
-
-      if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine and ( isp.creato_il > stats.dataCalcolo or (isp.creato_il.date() > dataCreatoIlLimite and isp.dataIspezione > dataCreatoIlLimite)) :
-        logging.info("isp added to stat")
-
+    for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+      if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
         if( isp.commissione.key() not in statsCM ):          
           statCM = StatisticheIspezioni()
           statCM.dataInizio = stats.dataInizio
