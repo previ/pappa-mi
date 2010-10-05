@@ -198,7 +198,7 @@ class CMStatsHandler(BasePage):
     nc_desc = {"tipo": ("string", "Tipo"), 
                "count": ("number", "Occorrenze")}
     
-    ncstat = StatisticheNonconf.all().filter("commissione", None).filter("centroCucina",None).order("-dataInizio").get()
+    ncstat = StatisticheNonconf.all().filter("timeId", anno).filter("commissione", None).filter("centroCucina",None).order("-dataInizio").get()
     nc_data = list()
     nci = Nonconformita();
     for nd in ncstat.getTipiPos():
