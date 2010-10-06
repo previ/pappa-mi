@@ -74,21 +74,23 @@ function load() {
 function createMarker(school) {
   var marker = new google.maps.Marker({position:school.latlng, map:map, icon: image, shadow: shadow});
   markersArray.push(marker)
-  //var html = "<b>" + school.name + " - " + school.type + "</b> <br/>" + school.address + "";
-
-  //var html = "<div id='info'><div id='tabs'><ul><li><a href='#general'>Generale</a></li><li><a href='/widget/menu?i=n&cm="+school.key+"'>Menu</a></li><li><a href='/widget/stat?i=n&t=c&cm="+school.key+"'>Statistiche</a></li></ul>" + "<div id='general'><b>" + school.name + " - " + school.type + "</b> " + school.address + "</div>" + "<div id='menu'></div>" + "<div id='stat'></div>" + "</div></div>";
 
   var html = "<div id='info'><div id='tabs'><ul><li><a href='#general'>Generale</a></li><li><li><a href='/widget/stat?i=n&cm="+school.key+"'>Statistiche</a></li></ul>" + "<div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div>" + "<div id='menu'></div>" + "<div id='stat'></div>" + "</div></div>";
   
+  infowindow = new google.maps.InfoWindow({ content: html });
+  google.maps.event.addListener(infowindow, 'domready', function() {
+      $("#tabs").tabs();
+    });  
+    
   google.maps.event.addListener(marker, 'click', function() {
     if (infowindow) infowindow.close();
-    infowindow = new google.maps.InfoWindow({ content: html });
     infowindow.open(map,marker);
     google.maps.event.addListener(infowindow, 'domready', function() {
       $("#tabs").tabs();
     });
   });
-  addLocationToList(list, school, marker, infowindow);      
+  addLocationToList(list, school, marker, infowindow);          
+
   return marker;
 }
 
