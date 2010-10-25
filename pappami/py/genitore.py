@@ -124,8 +124,8 @@ class CMRegistrazioneGenitoreHandler(BasePage):
     Ora puoi accedere all'area a te riservata:
     http://"""  + host + """/genitore
 
-    Documenti:
-    http://"""  + host + """/docs
+    PappaPedia (documenti):
+    http://pappapedia.pappa-mi.it
     
     Ciao !
     Pappa-Mi staff

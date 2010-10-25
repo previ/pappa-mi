@@ -207,6 +207,8 @@ class Ispezione(db.Model):
   giudizioGlobale = db.IntegerProperty()
   note = db.TextProperty(default="")
 
+  anno = db.IntegerProperty()
+  
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
@@ -225,6 +227,8 @@ class Nonconformita(db.Model):
 
   note = db.TextProperty(default="")
 
+  anno = db.IntegerProperty()
+  
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
