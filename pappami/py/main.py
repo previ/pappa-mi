@@ -28,7 +28,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 import py.feedparser
-from py.base import BasePage
+from py.base import BasePage, CMMenuHandler
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 
 from py.model import *
@@ -122,29 +122,14 @@ class CMRegistrazioneHandler(BasePage):
     template_values["content"] = "registrazione.html"
     self.getBase(template_values)
     
-class CMMenuDataHandler(webapp.RequestHandler):
+class CMMenuDataHandler(CMMenuHandler):
   
   def get(self): 
     if( self.request.get("cmd") == "getbydate" ):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-
-      #logging.info("data: %s", data)
-
       c = Commissione.get(self.request.get("commissione"))
-      cc = c.centroCucina
-      offset = cc.menuOffset
-      if offset == None:
-        offset = 0
-        
-      menus = Menu.all().filter("validitaDa <=", data).filter("giorno", data.isoweekday()).filter("tipoScuola", c.tipoScuola).order("-validitaDa")
-      #logging.info("len %d" , menus.count())
-
-      for m in menus:
-        #logging.info("s %d g %d, sc: %d, gc: %d", m.settimana, m.giorno, ((((data-m.validitaDa).days) / 7)%4)+1, data.isoweekday())
-        if((((((data-m.validitaDa).days) / 7)+offset)%4 + 1) == m.settimana):
-          menu = m
-          break
+      menu = self.getMenu(data, c)[0]
       
       self.response.out.write(menu.primo)
       self.response.out.write("|")

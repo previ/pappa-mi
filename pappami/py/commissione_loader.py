@@ -5,7 +5,33 @@ from google.appengine.tools.bulkloader import Loader, Exporter
 from google.appengine.api import users
 from py.model import *
 
+DATE_FORMAT = "%d/%m/%Y"
 
+class MenuLoader(Loader):
+  def __init__(self):
+    Loader.__init__(self, 'Menu',
+                    [('tipoScuola', str),
+                     ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
+                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
+                     ('settimana', int),
+                     ('giorno', int),
+                     ('primo', str),
+                     ('secondo', str),
+                     ('contorno', str),
+                     ('dessert', str)
+                     ])
+    self.alias_old_names()
+    
+class CentroCucinaZonaLoader(Loader):
+  def __init__(self):
+    Loader.__init__(self, 'CentroCucinaZona',
+                    [('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
+                     ('zona', int),
+                     ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
+                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())                     
+                     ])
+    self.alias_old_names()
+    
 class CommissioneLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Commissione',
@@ -44,7 +70,7 @@ class NonconfLoader(Loader):
                      ])
     self.alias_old_names()    
 
-loaders = [CommissioneLoader, NonconfLoader]
+loaders = [MenuLoader, CentroCucinaZonaLoader, CommissioneLoader, NonconfLoader]
 
 class CommissioneExporter(Exporter):
   def __init__(self):
@@ -178,5 +204,29 @@ def decode_int(x):
     return int(x)
   else:
     return None
+
+class CentroCucinaZonaExporter(Exporter):
+  def __init__(self):
+    Exporter.__init__(self, 'CentroCucinaZona',
+                    [('centroCucina', lambda x: x.name(), ""),
+                     ('zona', int, None),
+                     ('validitaDa', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ('validitaA', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ])
+
+class MenuExporter(Exporter):
+  def __init__(self):
+    Exporter.__init__(self, 'Menu',
+                    [('tipoScuola', str, None),
+                     ('validitaDa', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ('validitaA', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ('settimana', int, None),
+                     ('giorno', int, None),
+                     ('primo', str, None),
+                     ('secondo', str, None),
+                     ('contorno', str, None),
+                     ('dessert', str, None)
+                     ])
+    
   
-exporters = [CommissioneExporter, NonconfExporter, IspezioneExporter]
+exporters = [CommissioneExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]

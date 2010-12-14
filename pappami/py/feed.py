@@ -52,7 +52,7 @@ class CMFeedIspHandler(BasePage):
           note = isp.note
         isp_items.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
                           description = "Ispezione - note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/commissario/ispezione?key="+str(isp.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/ispezione?key="+str(isp.key())),
                           pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 

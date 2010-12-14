@@ -195,6 +195,8 @@ class CMIspezioneGenitoreHandler(BasePage):
       'content_left': 'genitore/leftbar.html',
       'isp': isp,
       'cancopy': cancopy
+        #"public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        #"comments": True
       }
 
     self.getBase(template_values)
@@ -219,13 +221,14 @@ class CMNonconfGenitoreHandler(BasePage):
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
       'nc': nc
+        #"public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        #"comments": True
       }
 
     self.getBase(template_values)
 
 class CMGenitoreCommissioniHandler(CMCommissioniHandler):
   def get(self):
-    logging.info("CMCommissioniHandler.get")
     template_values = dict()
     template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)
@@ -236,7 +239,6 @@ class CMGenitoreStatsHandler(CMStatsHandler):
     return self.get()
 
   def get(self):
-    logging.info("CMCommissarioStatsHandler.get")
     template_values = dict()
     template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)

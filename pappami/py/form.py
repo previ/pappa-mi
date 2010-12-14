@@ -66,6 +66,33 @@ class NonconformitaForm(djangoforms.ModelForm):
     model = Nonconformita
     exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
 
+class DietaForm(djangoforms.ModelForm):
+  def clean(self):
+    super(DietaForm,self).clean()
+    cleaned_data = self._cleaned_data()
+    #for f in cleaned_data:
+      #logging.info("data: %s, %s", f, cleaned_data.get(f))
+
+    if Dieta.all().filter("dataIspezione",cleaned_data.get("dataIspezione")).filter("commissione",cleaned_data.get("commissione")).filter("turno",cleaned_data.get("turno")).filter("tipoDieta",cleaned_data.get("tipo")).count() > 0 :
+      raise newforms.ValidationError("Esiste gia' una scheda di Ispezione Diete per questa commissione con la stessa data e turno.")
+
+    if cleaned_data.get("dataIspezione").isoweekday() > 5 :
+      raise newforms.ValidationError(u"La scheda di Ispezione deve essere fatta in un giorno feriale")
+
+    age = (date.today() - cleaned_data.get("dataIspezione")).days
+    #if age > 60 :
+    #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
+
+    if age < 0 :
+      raise newforms.ValidationError(u"Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
+
+    # Always return the full collection of cleaned data.
+    return cleaned_data
+  class Meta:
+    model = Dieta
+    exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
+
+    
 class CommissioneForm(djangoforms.ModelForm):
   class Meta:
     model = Commissione
