@@ -4,6 +4,10 @@ import fpformat
 
 from google.appengine.ext import db
 
+class Configurazione(db.Model):
+  nome = db.StringProperty()
+  valore = db.StringProperty()
+  
 class CentroCucina(db.Model):
   nome = db.StringProperty()
   codice = db.StringProperty()
@@ -24,6 +28,12 @@ class CentroCucina(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
+  def getZona(self, data=datetime.now().date()):
+    return CentroCucinaZona.all().filter("centroCucina",self).filter("validitaDa <=",data).order("-validitaDa").get().zona
+
+  def getMenuOffset(self, data=datetime.now().date()):
+    return ZonaOffset.all().filter("zona",self.getZona(data)).filter("validitaDa <=",data).order("-validitaDa").get().offset
+  
 class Commissione(db.Model):
   nome = db.StringProperty(default="")
   nomeScuola = db.StringProperty(default="")
@@ -43,7 +53,9 @@ class Commissione(db.Model):
   geo = db.GeoPtProperty()
 
   numCommissari = db.IntegerProperty(default=0)
-    
+
+  calendario = db.StringProperty(default="")
+  
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
@@ -56,6 +68,10 @@ class Commissione(db.Model):
       commissari.append(cc.commissario)
     return commissari
 
+  def getCentroCucina(self, data=datetime.now().date()):
+    return CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get().centroCucina
+      
+  
 class Commissario(db.Model):
   user = db.UserProperty()
   nome = db.StringProperty()
@@ -128,6 +144,24 @@ class Menu(db.Model):
     logging.info(self.data)
     logging.info(datetime.now().date())
     return datetime.now().date() == self.data
+
+class CommissioneCentroCucina(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  centroCucina = db.ReferenceProperty(CentroCucina)
+  validitaDa = db.DateProperty()
+  validitaA = db.DateProperty()
+
+class CentroCucinaZona(db.Model):
+  centroCucina = db.ReferenceProperty(CentroCucina)
+  zona = db.IntegerProperty()
+  validitaDa = db.DateProperty()
+  validitaA = db.DateProperty()
+
+class ZonaOffset(db.Model):
+  zona = db.IntegerProperty()
+  offset = db.IntegerProperty()
+  validitaDa = db.DateProperty()
+  validitaA = db.DateProperty()
   
 class Ispezione(db.Model):
       
@@ -267,29 +301,82 @@ class Nonconformita(db.Model):
   
   def tipoNome(self):
     return self._tipi[self.tipo]
+
+class Dieta(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  commissario = db.ReferenceProperty(Commissario)
+ 
+  dataIspezione = db.DateProperty()
+  turno = db.IntegerProperty()
+  
+  tipoDieta = db.IntegerProperty()
+  etichettaLeggibile = db.IntegerProperty()
+  temperaturaVaschetta = db.IntegerProperty()
+  vicinoEducatore = db.IntegerProperty()
+  vaschettaOriginale = db.IntegerProperty()
+  condimentiVicini = db.IntegerProperty()
+  primoAccettato = db.IntegerProperty()
+  secondoAccettato = db.IntegerProperty()
+  contornoAccettato = db.IntegerProperty()
+  fruttaAccettata = db.IntegerProperty()
+  gradimentoPrimo = db.IntegerProperty()
+  gradimentoSecondo = db.IntegerProperty()
+  gradimentoContorno = db.IntegerProperty()
+  comunicazioneGenitori = db.IntegerProperty()
+
+  note = db.TextProperty(default="")
+
+  anno = db.IntegerProperty()
+  
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+
+  _tipi = {1:0,
+           2:1,
+           3:2,
+           4:3,
+           5:4,
+           6:5,
+           7:6,
+           8:7,
+           9:8,
+           10:9,
+           11:10,
+           12:11,
+           99:12}
+
+  _tipi = {1:"menu privo di fave e piselli",
+           2:"menu privo di cereali contenenti glutine",
+           3:"menu privo di proteine del latte",
+           4:"menu privo di uovo",
+           5:"menu privo di pesce, molluschi e crostacei",
+           6:"menu privo di proteine del latte, e uova",
+           7:"menu privo di solanacee",
+           8:"menu privo di frutta a guscio, pinoli, lupini, semi di sesamo",
+           9:"menu privo di legumi, soia,arachidi",
+           10:"menu a ridotto apporto di sostanze istamino-liberatrici",
+           11:"menu ridotto in nichel",
+           12:"menu privo di tutti gli allergeni (D.L.vo n.114/ 06)",
+           13:"esclusione di sola frutta",
+           14:"menu diabete e/o ipocalorico",
+           15:"menu ipolipidico",
+           16:"menu iposodico",
+           17:"menu tritato / frullato",
+           18:"menu per stipsi (nido)",
+           19:"menu privo di carni bianche"}
+  def tipi(self):
+    return self._tipi
+  
+  def tipoNome(self):
+    return self._tipi[self.tipoDieta]
   
 class Statistiche:
   numeroCommissioni = int(0)
   numeroSchede = int(0) 
   ncTotali = int(0)
-
-class StatisticheIspezioniNew(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  centroCucina = db.ReferenceProperty(CentroCucina)
-  
-  dataInizio = db.DateProperty()
-  datafine = db.DateProperty()
-
-  numeroSchede = db.IntegerProperty()
-  
-  nomeValore = db.StringProperty()
-
-  totaleSomma = db.IntegerProperty()
-  valoreSomma1 = db.IntegerProperty()
-  valoreSomma2 = db.IntegerProperty()
-  valoreSomma3 = db.IntegerProperty()
-  valoreSomma4 = db.IntegerProperty()
-  valoreSomma5 = db.IntegerProperty()
 
 class StatisticheIspezioni(db.Model):
   commissione = db.ReferenceProperty(Commissione)

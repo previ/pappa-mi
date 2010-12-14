@@ -63,14 +63,16 @@ class BasePage(webapp.RequestHandler):
       template_values["genitore"] = commissario.isGenitore()
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
-    
+
+    if "main" not in template_values:
+      template_values["main"] = '../templates/main.html'
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.0.1.27 - 2010.10.25"
+    template_values["version"] = "1.1.0.28 - 2010.11.06"
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/main.html')
+    path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))
 
   def getCommissario(self,user):
@@ -155,14 +157,14 @@ class CMMenuHandler(BasePage):
   def getMenu(self, data, c):
     offset = -1
     tipoScuola = "Materna"
-    if c and c.centroCucina.menuOffset is not None:
-      offset = c.centroCucina.menuOffset
+    if c and c.getCentroCucina(data).getMenuOffset(data) is not None:
+      offset = c.getCentroCucina(data).getMenuOffset(data)
       tipoScuola = c.tipoScuola
 
     if data >= date(2010,6,14) and data < date(2010,8,31):
       offset = 0
       
-    menu = memcache.get("menu" + str(offset))
+    menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
       menu = list()
 
@@ -173,7 +175,7 @@ class CMMenuHandler(BasePage):
       if offset < 0:
         menu = sorted(menu, key=lambda menu: menu.settimana)
         
-      memcache.set("menu" + str(offset), menu, 60)
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu, 60)
     return menu
 
   def getMenuHelper(self, menu, data, offset, tipoScuola):
@@ -192,8 +194,8 @@ class CMMenuHandler(BasePage):
 
     #logging.info("data: %s", data)
 
-    cc = cm.centroCucina
-    offset = cc.menuOffset
+    offset = cm.getCentroCucina(data).getMenuOffset(data)
+
     if offset == None:
       offset = 0
 

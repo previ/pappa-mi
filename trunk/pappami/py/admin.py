@@ -35,7 +35,7 @@ from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
 from py.base import BasePage
-
+from py.calendar import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -310,6 +310,46 @@ class CMAdminCommissioneDataHandler(BasePage):
 class CMAdminHandler(BasePage):
 
   def get(self):    
+
+    if self.request.get("cmd") == "initAnno":
+      d2008da = date(2008,9,1)
+      d2008a = date(2009,7,31)
+      d2009da = date(2009,9,1)
+      d2009a = date(2010,7,31)
+      d2010da = date(2010,9,1)
+      d2010a = date(2011,7,31)
+      for isp in Ispezione.all() :
+        if isp.dataIspezione >= d2008da and isp.dataIspezione < d2008a :
+          isp.anno = 2008
+        if isp.dataIspezione >= d2009da and isp.dataIspezione < d2009a :
+          isp.anno = 2009
+        if isp.dataIspezione >= d2010da and isp.dataIspezione < d2010a :
+          isp.anno = 2010
+        isp.put()
+      for nc in Nonconformita.all() :
+        if nc.dataNonconf >= d2008da and nc.dataNonconf < d2008a :
+           nc.anno = 2008
+        if nc.dataNonconf >= d2009da and nc.dataNonconf < d2009a :
+           nc.anno = 2009
+        if nc.dataNonconf >= d2010da and nc.dataNonconf < d2010a :
+           nc.anno = 2010
+        nc.put()
+          
+    
+    if self.request.get("cmd") == "initZone":
+      for cc in CentroCucina.all():
+        ccZona = CentroCucinaZona(centroCucina = cc, zona = cc.menuOffset + 1, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
+        ccZona.put()
+      for cm in Commissione.all():
+        cmCC = CommissioneCentroCucina(commissione = cm, centroCucina = cm.centroCucina, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2099,month=12, day=31))
+        cmCC.put()
+      for z in range(1,5):
+        zonaOld = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
+        zonaOld.put()
+        zona = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2010,month=11, day=1), validitaA=date(year=2099,month=12, day=31))
+        zona.put()
+        
+    
     if self.request.get("cmd") == "flush":
       memcache.flush_all()
 
@@ -352,13 +392,21 @@ class CMAdminCommissarioHandler(BasePage):
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
       user = users.get_current_user()
-              
+
+      calendario = Calendario()
+      calendario.logon(Configurazione.get("calendar_user"), Configurazione.get("calendar_password"))
+      
       if self.request.get("cmd") == "enable":
         if commissario.isRegCommissario():
           commissario.stato = 1
           for c in commissario.commissioni():
             c.numCommissari = c.numCommissari + 1
             c.put() 
+
+            if(c.calendario):
+              calendario.load(c.calendario)
+              calendario.share(commissario.user.email())
+            
         else:
           commissario.stato = 11
       elif self.request.get("cmd") == "disable" : 
@@ -374,7 +422,7 @@ class CMAdminCommissarioHandler(BasePage):
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
       
      
-      if commissario.stato == 1:
+      if commissario.stato == 1:              
         
         host = self.getHost()
         
@@ -454,7 +502,7 @@ class CMAdminCommissarioHandler(BasePage):
         'json': json
       }
       self.getBase(template_values)
-    
+        
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
