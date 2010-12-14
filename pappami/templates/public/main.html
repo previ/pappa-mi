@@ -16,6 +16,10 @@
 		<link href="/css/print.css" rel="stylesheet" type="text/css" media="print"/>
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.3.2/dijit/themes/nihilo/nihilo.css" />	
 		<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<style>
+#content-nav { width:0em; }
+#content-main {width: 80em;padding:1em;}
+</style>
 <script type="text/javascript">
 djConfig={
           parseOnLoad: true,
@@ -39,23 +43,6 @@ $(document).ready(function(){ $("#subwrap").css("visibility", "visible");});
    <h1 id="logo"><a href="/"><img src="/img/pappa-mi-logo.png" alt="Pappa-Mi"/></a></h1>
     <h1 id="logo-txt"><a href="/">Pappa-Mi</a> {%if test%}Test{%endif%}</h1>
     <ul id="nav-global">
-	<li><a href="/">Home</a></li>
-	<li><a href="http://blog.pappa-mi.it" target="_new">Blog</a></li>
-	<li><a href="/chi">Chi siamo</a></li>
-	<li><a href="http://pappapedia.pappa-mi.it" target="_new">PappaPedia</a></li>
-        {% if commissario %}
-	<li><a href="/commissario">Area Commissari</a></li>
-	{% endif %}
-        {% if genitore %}
-	<li><a href="/genitore">Area Genitori</a></li>
-	{% endif %}	
-	{% if not commissario and not genitore %}
-	<li><a href="/registrazione">Registrati</a></li>
-	{% endif %}{% if admin %}
-	<li><a href="/admin">Gestione Sistema</a></li>
-	{% endif %}
-	<li><a href="/supporto">Aiuto</a></li>
-	<li><a href="{{url}}">{{url_linktext}}</a></li>
   </ul>
  </div>
 <!-- END header -->
