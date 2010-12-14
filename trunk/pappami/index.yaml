@@ -10,10 +10,50 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: CentroCucinaZona
+  properties:
+  - name: centroCucina
+  - name: validitaDa
+    direction: desc
+
 - kind: Commissione
   properties:
   - name: tipoScuola
   - name: numCommissari
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: <validitaDa
+  - name: commissione
+  - name: validitaDa
+    direction: desc
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: commissione
+  - name: validitaDa
+  - name: validitaDa
+    direction: desc
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: commissione
+  - name: validitaDa
+    direction: desc
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: commissione
+  - name: validitaDa<
+  - name: validitaDa
+    direction: desc
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: validitaDa
+  - name: commissione
+  - name: validitaDa
+    direction: desc
 
 - kind: Ispezione
   properties:
@@ -259,4 +299,10 @@ indexes:
   - name: centroCucina
   - name: commissione
   - name: dataInizio
+    direction: desc
+
+- kind: ZonaOffset
+  properties:
+  - name: zona
+  - name: validitaDa
     direction: desc
