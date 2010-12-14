@@ -1,0 +1,12 @@
+if(!dojo._hasResource["custom.form.TimeTextBox"]){
+dojo._hasResource["custom.form.TimeTextBox"]=true;
+dojo.provide("custom.form.TimeTextBox");
+
+dojo.require("dijit.form.TimeTextBox");
+
+dojo.declare("custom.form.TimeTextBox",dijit.form.TimeTextBox, {
+      serialize: function(d, options) {
+        return dojo.date.locale.format(d, {selector:'time', timePattern:'HH:mm:ss'}).toLowerCase();
+      }
+    });
+}
