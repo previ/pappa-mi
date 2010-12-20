@@ -57,6 +57,24 @@ indexes:
 
 - kind: Ispezione
   properties:
+  - name: anno
+  - name: commissario
+  - name: dataIspezione
+    direction: desc
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: dataIspezione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: dataIspezione
+    direction: desc
+
+- kind: Ispezione
+  properties:
   - name: commissario
   - name: commissione
 
