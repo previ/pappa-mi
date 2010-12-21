@@ -412,7 +412,7 @@ class CMAdminCommissarioHandler(BasePage):
       user = users.get_current_user()
 
       calendario = Calendario()
-      calendario.logon(Configurazione.get("calendar_user"), Configurazione.get("calendar_password"))
+      calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
       
       if self.request.get("cmd") == "enable":
         if commissario.isRegCommissario():
