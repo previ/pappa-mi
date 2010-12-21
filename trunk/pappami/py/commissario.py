@@ -346,10 +346,21 @@ class CMProfiloCommissarioHandler(BasePage):
       commissario.put()
 
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
+        #if cc.commissione.calendario :
+          #calendario = Calendario();        
+          #calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+          #calendario.load(cc.commissione.calendario)
+          #calendario.unShare(commissario.user.email())
+                         
         cc.delete()
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
+        #if commissioneCommissario.commissione.calendario :
+          #calendario = Calendario();        
+          #calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+          #calendario.load(commissioneCommissario.commissione.calendario)
+          #calendario.share(commissario.user.email())
 
       commissario.setCMDefault()
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
