@@ -20,7 +20,7 @@ class Calendario:
   
   def logon(self, user, password):
     self.calendar_service = gdata.calendar.service.CalendarService()
-    self.calendar_service = gdata.alt.appengine.run_on_appengine(self.calendar_service)
+    self.calendar_service = gdata.alt.appengine.run_on_appengine(self.calendar_service, deadline=10)
     self.calendar_service.email = user
     self.calendar_service.password = password
     self.calendar_service.source = 'Pappa-Mi-1.0'
@@ -123,6 +123,36 @@ class Calendario:
       break     
     #logging.info(self.GetId())
 
+  def unShare(self, user_email):
+    rule = gdata.calendar.CalendarAclEntry()
+    rule.scope = gdata.calendar.Scope(value=user_email, scope_type='user')
+    roleValue = 'http://schemas.google.com/gCal/2005#%s' % ('editor')
+    rule.role = gdata.calendar.Role(value=roleValue)
+    aclUrl = "https://www.google.com/calendar/feeds/" + self.GetId() + "/acl/full"
+    j = 3    
+    while True:
+      if j < 1: 
+        logging.error("unable to share calendar to " + str(user_email))
+        break 
+      try: 
+        returned_rule = self.calendar_service.DeleteAclEntry(rule, aclUrl)  
+      except gdata.service.RequestError, inst: 
+        thing = inst[0] 
+        if thing['status'] == 302:
+          j = j - 1 
+          time.sleep(2.0) 
+          continue 
+        elif thing['status'] == 403: 
+          j = j - 1 
+          time.sleep(5.0) 
+          continue 
+        else: 
+          raise 
+      except: 
+        raise 
+      break     
+    #logging.info(self.GetId())
+    
   def GetId(self):
     calId = self.calendar.id.text
     return calId[calId.find("/full/") + len("/full/"): len(calId)]
