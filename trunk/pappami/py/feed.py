@@ -166,7 +166,7 @@ class CMFeedHandler(BasePage):
     self.getBase(template_values)
     
 application = webapp.WSGIApplication([
-  ('/feed/ispezioni', CMFeedIspHandler),
+  ('/feed/isp', CMFeedIspHandler),
   ('/feed/ispnc', CMFeedIspNCHandler),
   ('/feed/nc', CMFeedNCHandler),
   ('/feed', CMFeedHandler)  
