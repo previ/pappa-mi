@@ -59,7 +59,52 @@ indexes:
   properties:
   - name: anno
   - name: commissario
+  - name: commissione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
   - name: dataIspezione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+    direction: desc
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataIspezione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataIspezione
+    direction: desc
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissione
     direction: desc
 
 - kind: Ispezione
@@ -106,19 +151,6 @@ indexes:
   properties:
   - name: commissario
   - name: dataIspezione
-  - name: commissione
-
-- kind: Ispezione
-  properties:
-  - name: commissario
-  - name: dataIspezione
-  - name: commissione
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: commissario
-  - name: dataIspezione
     direction: desc
 
 - kind: Ispezione
@@ -130,17 +162,6 @@ indexes:
   properties:
   - name: commissione
   - name: dataIspezione
-    direction: desc
-
-- kind: Ispezione
-  properties:
-  - name: dataIspezione
-  - name: commissione
-
-- kind: Ispezione
-  properties:
-  - name: dataIspezione
-  - name: commissione
     direction: desc
 
 - kind: Menu
@@ -164,32 +185,20 @@ indexes:
 
 - kind: Nonconformita
   properties:
+  - name: anno
   - name: commissario
   - name: commissione
 
 - kind: Nonconformita
   properties:
-  - name: commissario
-  - name: commissione
-  - name: dataNonconf
-
-- kind: Nonconformita
-  properties:
+  - name: anno
   - name: commissario
   - name: commissione
   - name: dataNonconf
-  - name: tipo
 
 - kind: Nonconformita
   properties:
-  - name: commissario
-  - name: commissione
-  - name: dataNonconf
-  - name: tipo
-    direction: desc
-
-- kind: Nonconformita
-  properties:
+  - name: anno
   - name: commissario
   - name: commissione
   - name: dataNonconf
@@ -197,12 +206,14 @@ indexes:
 
 - kind: Nonconformita
   properties:
+  - name: anno
   - name: commissario
   - name: commissione
   - name: tipo
 
 - kind: Nonconformita
   properties:
+  - name: anno
   - name: commissario
   - name: commissione
   - name: tipo
@@ -210,6 +221,103 @@ indexes:
 
 - kind: Nonconformita
   properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataNonconf
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataNonconf
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissario
+  - name: tipo
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissario
+  - name: tipo
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+  - name: dataNonconf
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+  - name: dataNonconf
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+  - name: tipo
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+  - name: tipo
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: commissione
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: dataNonconf
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: dataNonconf
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: tipo
+
+- kind: Nonconformita
+  properties:
+  - name: anno
+  - name: tipo
+    direction: desc
+
+- kind: Nonconformita
+  properties:
+  - name: commissario
+  - name: commissione
+
+- kind: Nonconformita
+  properties:
   - name: commissario
   - name: commissione
     direction: desc
@@ -245,19 +353,6 @@ indexes:
   properties:
   - name: commissione
   - name: dataNonconf
-  - name: tipo
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: dataNonconf
-  - name: tipo
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: commissione
-  - name: dataNonconf
     direction: desc
 
 - kind: Nonconformita
@@ -268,28 +363,6 @@ indexes:
 - kind: Nonconformita
   properties:
   - name: commissione
-  - name: tipo
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
-  - name: commissione
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
-  - name: commissione
-    direction: desc
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
-  - name: tipo
-
-- kind: Nonconformita
-  properties:
-  - name: dataNonconf
   - name: tipo
     direction: desc
 
