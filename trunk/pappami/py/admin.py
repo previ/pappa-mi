@@ -311,6 +311,10 @@ class CMAdminHandler(BasePage):
 
   def get(self):    
 
+    if self.request.get("cmd") == "initConfig":
+      dummy = Configurazione(nome="dummyname", valore="dummyvalue")
+      dummy.put()
+    
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)
       d2008a = date(2009,7,31)

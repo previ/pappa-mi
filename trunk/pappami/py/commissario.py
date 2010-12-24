@@ -345,22 +345,41 @@ class CMProfiloCommissarioHandler(BasePage):
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
 
+      old = list()
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
-        #if cc.commissione.calendario :
-          #calendario = Calendario();        
-          #calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
-          #calendario.load(cc.commissione.calendario)
-          #calendario.unShare(commissario.user.email())
-                         
-        cc.delete()
+        old.append(str(cc.commissione.key()))
+        #logging.info("old " + cc.commissione.nome)
+      old = set(old)
+
+      new = list()
       for c_key in self.request.get_all("commissione"):
-        commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
-        commissioneCommissario.put()
-        #if commissioneCommissario.commissione.calendario :
-          #calendario = Calendario();        
-          #calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
-          #calendario.load(commissioneCommissario.commissione.calendario)
-          #calendario.share(commissario.user.email())
+        new.append(c_key)
+        #logging.info("new " + Commissione.get(db.Key(c_key)).nome)
+      new = set(new)
+
+      todel = old - new
+      toadd = new - old
+
+      for cm in todel:
+        logging.info("delete " + Commissione.get(db.Key(cm)).nome)
+        cc = CommissioneCommissario.all().filter("commissario",commissario).filter("commissione",Commissione.get(db.Key(cm))).get()
+        if cc.commissione.calendario :
+          calendario = Calendario();        
+          calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+          calendario.load(cc.commissione.calendario)
+          calendario.unShare(commissario.user.email())
+        cc.delete()
+        
+      for cm in toadd:
+        logging.info("add " + Commissione.get(cm).nome)
+
+        cc = CommissioneCommissario(commissione = Commissione.get(cm), commissario = commissario)
+        cc.put()
+        if cc.commissione.calendario :
+          calendario = Calendario();        
+          calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+          calendario.load(cc.commissione.calendario)
+          calendario.share(commissario.user.email())
 
       commissario.setCMDefault()
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
@@ -797,11 +816,6 @@ class CMCommissarioCalendarioHandler(BasePage):
       cm = Commissione.get(self.request.get("cm"))
       if((cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None):
         calendario = Calendario()
-        if Configurazione.all().filter("nome","calendar_user").get() is None:
-          calendar_user = Configurazione(nome="calendar_user", valore="calendari@pappa-mi.it")
-          calendar_user.put()
-          calendar_password = Configurazione(nome="calendar_password", valore="abc")
-          calendar_password.put()
         calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
         calendario.create(cm.nome + " - " + cm.tipoScuola)
         for c in cm.commissari():
