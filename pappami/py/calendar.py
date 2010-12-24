@@ -69,7 +69,7 @@ class Calendario:
     j = 3    
     while True:
       if j < 1: 
-        logging.error("unable to insert calendar")
+        logging.error("unable to update calendar")
         break 
       try: 
         self.calendar = self.calendar_service.UpdateCalendar(calendar=self.calendar)
@@ -124,18 +124,16 @@ class Calendario:
     #logging.info(self.GetId())
 
   def unShare(self, user_email):
-    rule = gdata.calendar.CalendarAclEntry()
-    rule.scope = gdata.calendar.Scope(value=user_email, scope_type='user')
-    roleValue = 'http://schemas.google.com/gCal/2005#%s' % ('editor')
-    rule.role = gdata.calendar.Role(value=roleValue)
-    aclUrl = "https://www.google.com/calendar/feeds/" + self.GetId() + "/acl/full"
+    uri = "http://www.google.com/calendar/feeds/" + self.GetId() + "/acl/full/user:" + user_email
+    self.calendar_service.GetCalendarAclEntry(uri)
     j = 3    
     while True:
       if j < 1: 
         logging.error("unable to share calendar to " + str(user_email))
         break 
       try: 
-        returned_rule = self.calendar_service.DeleteAclEntry(rule, aclUrl)  
+        entry = self.calendar_service.GetCalendarAclEntry(uri)  
+        self.calendar_service.DeleteAclEntry(entry.GetEditLink().href)  
       except gdata.service.RequestError, inst: 
         thing = inst[0] 
         if thing['status'] == 302:
