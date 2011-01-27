@@ -16,6 +16,7 @@ var oldDisp_1 = "";
 var oldDisp_2 = "";
 var oldDisp_3 = "";
 dojo.addOnLoad(onMenuChanged);
+//dojo.addOnLoad(getPrevIspData);
 </script>
 <div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Raccolta dati Ispezioni</h1>
 <p/>
@@ -72,8 +73,8 @@ return true;
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<select name="commissione" id="e_commissione" onchange="getMenu()">{% for cm in commissioni %}
-<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+<select dojoType="dijit.form.FilteringSelect" required="true" name="commissione" value="{{form.data.commissione.key}}" id="e_commissione" onchange="getPrevIspData()">{% for cm in commissioni %}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>

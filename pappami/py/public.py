@@ -49,6 +49,7 @@ class CMIspezionePublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
+    template_values["comments"] = True
     self.getBase(template_values)
         
 class CMNonconfPublicHandler(BasePage):
@@ -60,6 +61,7 @@ class CMNonconfPublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
+    template_values["comments"] = True
     self.getBase(template_values)
 
 def main():

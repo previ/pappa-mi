@@ -114,6 +114,9 @@ handlers:
 - url: /login
   script: py/login.py
   login: required
+
+- url: /fb/.*
+  script: py/fb.py
   
 - url: .*
   script: py/main.py

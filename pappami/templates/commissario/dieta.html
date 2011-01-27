@@ -51,8 +51,8 @@ return true;
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<select name="commissione" id="e_commissione" onchange="getMenu()">{% for cm in commissioni %}
-<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+<select dojoType="dijit.form.FilteringSelect" required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>
@@ -79,7 +79,7 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Dieta
 <span class="ss-required-asterisk">*</span></label>
-<select name="tipoDieta" id="e_tipoDieto" dojoType="dijit.form.FilteringSelect" required="true">
+<select name="tipoDieta" id="e_tipoDieto" dojoType="dijit.form.FilteringSelect" required="true" style="width:400px;">
 <option value="1"{% ifequal form.data.tipoDieta "1" %} selected{% endifequal %}>menu privo di fave e piselli</option>
 <option value="2"{% ifequal form.data.tipoDieta "2" %} selected{% endifequal %}>menu privo di cereali contenenti glutine</option>
 <option value="3"{% ifequal form.data.tipoDieta "3" %} selected{% endifequal %}>menu privo di proteine del latte</option>

@@ -266,6 +266,20 @@ class CMCommissarioDataHandler(BasePage):
         # Creating a JSon string
         self.response.out.write(data_table_dieta.ToJSonResponse(columns_order=("commissione", "data", "turno", "tipoDieta", "key")))
 
+class CMGetIspDataHandler(BasePage):
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if( commissario is not None):    
+      cm = self.request.get("cm")
+      isp = Ispezione.all().filter("commissione",Commissione.get(cm)).order("-dataIspezione").get()
+        
+      buff = ""
+      if( isp ):
+        buff = str(isp.aaRispettoCapitolato)+"|"+str(isp.aaTavoliApparecchiati)+"|"+str(isp.aaTermichePulite)+"|"+str(isp.aaAcqua)+"|"+str(isp.aaScaldaVivande)+"|"+str(isp.aaSelfService)+"|"+str(isp.aaTabellaEsposta)+"|"+str(isp.ricicloStoviglie)+"|"+str(isp.ricicloPosate)+"|"+str(isp.ricicloBicchieri)
+      
+    self.response.out.write(buff)
+      
       
 class CMRegistrazioneHandler(BasePage):
   
@@ -411,9 +425,9 @@ class CMIspezioneHandler(BasePage):
         'content': 'commissario/ispezione_read.html',
         'content_left': 'commissario/leftbar.html',
         'isp': isp,
-        'cancopy': cancopy
-        #"public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
-        #"comments": True
+        'cancopy': cancopy,
+        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        "comments": False
         }
       
     elif( self.request.get("cmd") == "edit" ):
@@ -551,9 +565,9 @@ class CMNonconfHandler(BasePage):
       template_values = {
         'content': 'commissario/nonconf_read.html',
         'content_left': 'commissario/leftbar.html',
-        'nc': nc
-        #"public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
-        #"comments": True
+        'nc': nc,
+        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
+        "comments": False
         }
 
       self.getBase(template_values)
@@ -859,7 +873,8 @@ def main():
     ('/commissario/calendario', CMCommissarioCalendarioHandler),
     ('/commissario', CMCommissarioHandler),
     ('/commissario/getcm', CMCommissioniDataHandler),
-    ('/commissario/getdata', CMCommissarioDataHandler)
+    ('/commissario/getdata', CMCommissarioDataHandler),
+    ('/commissario/getispdata', CMGetIspDataHandler)    
   ], debug=debug)
 
   wsgiref.handlers.CGIHandler().run(application)
