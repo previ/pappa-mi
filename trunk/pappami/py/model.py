@@ -4,6 +4,18 @@ import fpformat
 
 from google.appengine.ext import db
 
+class Citta(db.Model):
+  nome = db.StringProperty()
+  provincia = db.StringProperty()
+  codice =  db.StringProperty()
+  geo = db.GeoPtProperty()
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+  
 class Configurazione(db.Model):
   nome = db.StringProperty()
   valore = db.StringProperty()
@@ -145,6 +157,74 @@ class Menu(db.Model):
     logging.info(datetime.now().date())
     return datetime.now().date() == self.data
 
+class MenuNew(db.Model):
+  nome = db.StringProperty()
+  validitaDa = db.DateProperty()
+  validitaA = db.DateProperty()
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+
+class Piatto(db.Model):
+  nome = db.StringProperty()
+  calorie = db.IntegerProperty()
+  proteine = db.IntegerProperty()
+  grassi = db.IntegerProperty()
+  carboidrati = db.IntegerProperty()
+  gi = db.IntegerProperty()
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+  
+class MenuGiorno(db.Model):
+  menu = db.ReferenceProperty(MenuNew)
+  settimana = db.IntegerProperty()
+  giorno = db.IntegerProperty()
+  piatti = db.ReferenceProperty(Piatto, collection_name='menuprimi')
+  secondo = db.ReferenceProperty(Piatto, collection_name='menusecondi')
+  contorno = db.ReferenceProperty(Piatto, collection_name='menucontorni')
+  dessert = db.ReferenceProperty(Piatto, collection_name='menudesserts')
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+  
+class StatistichePiatto(db.Model):
+  piatto = db.ReferenceProperty(Piatto)
+  commissione = db.ReferenceProperty(Commissione)
+  centroCucina = db.ReferenceProperty(CentroCucina)
+
+  timePeriod = db.StringProperty() # W, M, Y
+  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
+  
+  dataInizio = db.DateProperty()
+  dataFine = db.DateProperty()
+
+  dataCalcolo = db.DateTimeProperty()
+
+  numeroSchede = db.IntegerProperty(default=0) 
+  numeroSchedeSettimana = db.ListProperty(int, default=[0])
+
+  cottura = db.ListProperty(int,default=[0,0,0])
+  temperatura = db.ListProperty(int,default=[0,0,0])
+  quantita = db.ListProperty(int,default=[0,0,0])
+  assaggio = db.ListProperty(int,default=[0,0,0])
+  gradimento = db.ListProperty(int,default=[0,0,0,0])
+
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  modificato_da = db.UserProperty(auto_current_user=True)
+  modificato_il = db.DateTimeProperty(auto_now=True)
+  stato = db.IntegerProperty()
+  
 class CommissioneCentroCucina(db.Model):
   commissione = db.ReferenceProperty(Commissione)
   centroCucina = db.ReferenceProperty(CentroCucina)

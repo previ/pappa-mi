@@ -42,7 +42,8 @@ function validateradio() {
 //Request the data using the query passed as a parameter
   var getMenu = function(){
     date = dojo.byId("e_dataIspezione").value;
-    commissione = dojo.byId("e_commissione").value;
+    commissione = dijit.byId("e_commissione").attr("value");
+
     dateArr = date.split("/");
     date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
     var urlserv = "/menu?cmd=getbydate&data="+date+"&commissione="+commissione;
@@ -83,6 +84,53 @@ function validateradio() {
 		dojo.byId("s_primo").innerHTML = "Primo Piatto";
 		piattounico = false;
 	}
+}
+
+function getPrevIspData() {
+  getMenu();
+  commissione = dijit.byId("e_commissione").attr("value");
+
+  if((dojo.query('[name="aaRispettoCapitolato"]')[0].checked != 
+      dojo.query('[name="aaRispettoCapitolato"]')[1].checked ) && 
+      commissione &&
+      !window.confirm("Caricare i dati 'ambientali' da precedente scheda inserita per la Commissione ?") ) {
+     return;
+  }
+
+  var urlserv = "/commissario/getispdata?cm="+commissione;
+  var kw = {
+    url: urlserv,
+      load: function(data){ 
+        var ispdata = data.split("|");
+	if(ispdata.length > 0) {
+	  dojo.query('[name="aaRispettoCapitolato"]')[0].checked = ispdata[0];
+	  dojo.query('[name="aaRispettoCapitolato"]')[1].checked = !ispdata[0];
+	  dojo.query('[name="aaTavoliApparecchiati"]')[0].checked = ispdata[1];
+	  dojo.query('[name="aaTavoliApparecchiati"]')[1].checked = !ispdata[1];
+	  dojo.query('[name="aaTermichePulite"]')[0].checked = ispdata[2];
+	  dojo.query('[name="aaTermichePulite"]')[1].checked = !ispdata[2];
+	  dojo.query('[name="aaAcqua"]')[0].checked = ispdata[3];
+	  dojo.query('[name="aaAcqua"]')[1].checked = !ispdata[3];
+	  dojo.query('[name="aaScaldaVivande"]')[0].checked = ispdata[4];
+	  dojo.query('[name="aaScaldaVivande"]')[1].checked = !ispdata[4];
+	  dojo.query('[name="aaSelfService"]')[0].checked = ispdata[5];
+	  dojo.query('[name="aaSelfService"]')[1].checked = !ispdata[5];
+	  dojo.query('[name="aaTabellaEsposta"]')[0].checked = ispdata[6];
+	  dojo.query('[name="aaTabellaEsposta"]')[1].checked = !ispdata[6];
+	  dojo.query('[name="ricicloStoviglie"]')[0].checked = ispdata[7];
+	  dojo.query('[name="ricicloStoviglie"]')[1].checked = !ispdata[7];
+	  dojo.query('[name="ricicloPosate"]')[0].checked = ispdata[8];
+	  dojo.query('[name="ricicloPosate"]')[1].checked = !ispdata[8];
+	  dojo.query('[name="ricicloBicchieri"]')[0].checked = ispdata[9];
+	  dojo.query('[name="ricicloBicchieri"]')[1].checked = !ispdata[9];
+	}
+      },
+      error: function(data){
+        console.debug("Errore: ", data);
+      },
+      timeout: 2000
+   };
+  dojo.xhrGet(kw);
 }
 
 function setAll(prefix, value) {

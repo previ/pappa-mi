@@ -55,6 +55,12 @@ indexes:
   - name: validitaDa
     direction: desc
 
+- kind: Dieta
+  properties:
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
 - kind: Ispezione
   properties:
   - name: anno

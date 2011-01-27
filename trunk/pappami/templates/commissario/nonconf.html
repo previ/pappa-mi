@@ -43,8 +43,8 @@ return true;
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<select name="commissione" id="e_commissione">{% for cm in commissioni %}
-<option value="{{cm.key}}"{% ifequal form.data.commissione.key cm.key %} selected{% endifequal %}>{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+<select dojoType="dijit.form.FilteringSelect" required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>

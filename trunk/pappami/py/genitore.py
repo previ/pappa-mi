@@ -194,9 +194,9 @@ class CMIspezioneGenitoreHandler(BasePage):
       'content': 'genitore/ispezione_read.html',
       'content_left': 'genitore/leftbar.html',
       'isp': isp,
-      'cancopy': cancopy
-        #"public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
-        #"comments": True
+      'cancopy': cancopy,
+      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+      "comments": False
       }
 
     self.getBase(template_values)
@@ -220,9 +220,9 @@ class CMNonconfGenitoreHandler(BasePage):
     template_values = {
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
-      'nc': nc
-        #"public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
-        #"comments": True
+      'nc': nc,
+      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+      "comments": False
       }
 
     self.getBase(template_values)
