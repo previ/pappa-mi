@@ -426,7 +426,18 @@ class Dieta(db.Model):
            10:9,
            11:10,
            12:11,
-           99:12}
+           13:12,
+           14:13,
+           15:14,
+           16:15,
+           17:16,
+           18:17,
+           19:18,
+           20:19,
+           21:20,
+           22:21,
+           23:22,
+           24:23}
 
   _tipi = {1:"menu privo di fave e piselli",
            2:"menu privo di cereali contenenti glutine",
@@ -446,7 +457,13 @@ class Dieta(db.Model):
            16:"menu iposodico",
            17:"menu tritato / frullato",
            18:"menu per stipsi (nido)",
-           19:"menu privo di carni bianche"}
+           19:"menu privo di carni bianche",
+           20:"menu privo di carne suina",
+           21:"menu privo di tutte le carni",
+           22:"menu privo di carni bovine e suine",
+           23:"menu privo di carni di origine animale",
+           24:"menu privo di carne e pesce"}
+  
   def tipi(self):
     return self._tipi
   

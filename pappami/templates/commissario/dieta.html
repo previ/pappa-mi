@@ -17,7 +17,7 @@ var oldDisp_2 = "";
 var oldDisp_3 = "";
 dojo.addOnLoad(onMenuChanged);
 </script>
-<div class="ss-form-container"><h1 class="table_separator">Ispezioni Diete Sanitarie</h1>
+<div class="ss-form-container"><h1 class="table_separator">Ispezioni Diete Sanitarie ed Etico-Religiose</h1>
 <p/>
 <p/>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
@@ -99,6 +99,12 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <option value="17"{% ifequal form.data.tipoDieta "17" %} selected{% endifequal %}>menu tritato / frullato</option>
 <option value="18"{% ifequal form.data.tipoDieta "18" %} selected{% endifequal %}>menu per stipsi (nido)</option>
 <option value="19"{% ifequal form.data.tipoDieta "19" %} selected{% endifequal %}>menu privo di carni bianche</option>
+<option value="19"{% ifequal form.data.tipoDieta "20" %} selected{% endifequal %}>menu privo di carne suina</option>
+<option value="19"{% ifequal form.data.tipoDieta "21" %} selected{% endifequal %}>menu privo di tutte le carni</option>
+<option value="19"{% ifequal form.data.tipoDieta "22" %} selected{% endifequal %}>menu privo di carni bovine e suine</option>
+<option value="19"{% ifequal form.data.tipoDieta "23" %} selected{% endifequal %}>menu privo di carni di origine animale</option>
+<option value="19"{% ifequal form.data.tipoDieta "24" %} selected{% endifequal %}>menu privo di carne e pesce</option>
+
 </select></div></div>
 </td>
 </tr>

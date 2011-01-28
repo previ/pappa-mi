@@ -221,7 +221,7 @@ class CMNonconfGenitoreHandler(BasePage):
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
       'nc': nc,
-      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+      "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
       "comments": False
       }
 
