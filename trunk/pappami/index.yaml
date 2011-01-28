@@ -57,6 +57,106 @@ indexes:
 
 - kind: Dieta
   properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissario
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissione
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: anno
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: commissione
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: commissione
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: commissione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
+  - name: commissario
+  - name: dataIspezione
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: commissione
+  - name: dataIspezione
+
+- kind: Dieta
+  properties:
   - name: commissione
   - name: dataIspezione
     direction: desc

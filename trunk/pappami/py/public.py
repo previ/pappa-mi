@@ -49,7 +49,7 @@ class CMIspezionePublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
-    template_values["comments"] = True
+    template_values["comments"] = False
     self.getBase(template_values)
         
 class CMNonconfPublicHandler(BasePage):
@@ -61,15 +61,28 @@ class CMNonconfPublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
-    template_values["comments"] = True
+    template_values["comments"] = False
     self.getBase(template_values)
 
+class CMDietePublicHandler(BasePage):
+  
+  def get(self): 
+    nc = Dieta.get(self.request.get("key"))
+    template_values = dict()
+    template_values["dieta"] = nc
+    template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(nc.key())
+    template_values["main"] = "../templates/public/main.html"
+    template_values["content"] = "../public/dieta_read.html"
+    template_values["comments"] = False
+    self.getBase(template_values)
+    
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
     ('/public/isp', CMIspezionePublicHandler),
-    ('/public/nc', CMNonconfPublicHandler)
+    ('/public/nc', CMNonconfPublicHandler),
+    ('/public/dieta', CMDietePublicHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

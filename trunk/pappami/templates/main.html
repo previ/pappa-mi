@@ -28,9 +28,9 @@ djConfig={
 <script type="text/javascript">
 $(document).ready(function(){ $("img[rel]").overlay(); $("#subwrap").css("visibility", "visible");});
 </script>
-	<!--[if IE]>
-	<script src="/js/ieresizefix.js" type="text/javascript"></script>
-	<![endif]-->	
+<!--[if IE]>
+<script src="/js/ieresizefix.js" type="text/javascript"></script>
+<![endif]-->	
 <script src="http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js" type="text/javascript"></script>
 <script src="http://www.google.com/moderator/static/moderator-embed-api.js" type="text/javascript"></script>
 </head>
@@ -88,6 +88,7 @@ $(document).ready(function(){ $("img[rel]").overlay(); $("#subwrap").css("visibi
 <!-- END #footer -->
 {%include "footer.inc"%}
 <!-- END #container -->
+{% if commissario or genitore %}
 <img src="/img/feedback_side_tab.gif" rel="#mies1" style="position:absolute; top: 300px; left: 0px;"/>
 <div class="simple_overlay" id="mies1">
 <div id="moderator-embed-target"></div>
@@ -101,4 +102,5 @@ mod.height = 620;
 mod.embed("moderator-embed-target");
 </script>	
 </div>
+{% endif %}
 </body></html>

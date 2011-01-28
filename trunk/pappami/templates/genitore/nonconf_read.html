@@ -9,6 +9,21 @@ dojo.require("dijit.form.FilteringSelect");
 </script>
 <script src="/js/form.js" type="text/javascript"></script>
 <div class="ss-form-container"><h2 class="table_separator">{{nc.commissione.nome}} - Segnalazione del {{nc.dataNonconf|date:"d/m/Y"}} - Turno {{nc.turno}}</h2>
+{%if public_url%}
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style ">
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4cdb224129b45357" class="addthis_button_compact" addthis:url="{{public_url}}">Share</a>
+<span class="addthis_separator">|</span>
+<a class="addthis_button_googlebuzz" addthis:url="{{public_url}}"></a>
+<a class="addthis_button_facebook" addthis:url="{{public_url}}"></a>
+<a class="addthis_button_twitter" addthis:url="{{public_url}}"></a>
+<a class="addthis_button_email" addthis:url="{{public_url}}"></a>
+<a href="{{public_url}}" target="_new">Link pubblico a questa pagina</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
+<!-- AddThis Button END -->
+{%endif%}
+
 <p/>
 <br/>
 <br/>
@@ -52,14 +67,13 @@ Non Conformit&agrave Gravi
 </td>
 </tr>
 </table>
+{%if comments%}
 <!-- Load the Google AJAX API Loader -->
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-
 <!-- Load the Google Friend Connect javascript library. -->
 <script type="text/javascript">
 google.load('friendconnect', '0.8');
 </script>
-
 <!-- Initialize the Google Friend Connect OpenSocial API. -->
 <script type="text/javascript">
 google.friendconnect.container.setParentUrl('/' /* location of rpc_relay.html and canvas.html */);
@@ -68,7 +82,6 @@ google.friendconnect.container.initOpenSocialApi({
   onload: function(securityToken) { /* your callback, which is passed a security token */ }
 });
 </script>
-
 <!-- Include the Google Friend Connect javascript library. -->
 <script type="text/javascript" src="http://www.google.com/friendconnect/script/friendconnect.js"></script>
 <!-- Define the div tag where the gadget will be inserted. -->
@@ -98,4 +111,5 @@ google.friendconnect.container.renderWallGadget(
  },
   skin);
 </script>
+{%endif%}
 </div>
