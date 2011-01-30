@@ -686,9 +686,9 @@ class CMDietaHandler(BasePage):
       template_values = {
         'content': 'commissario/dieta_read.html',
         'content_left': 'commissario/leftbar.html',
-        'dieta': dieta
-        #"public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
-        #"comments": False
+        'dieta': dieta,
+        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+        "comments": False
         }
 
       self.getBase(template_values)

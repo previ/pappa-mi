@@ -8,6 +8,13 @@ dojo.require("dijit.form.Button");
 dojo.require("dijit.form.FilteringSelect");
 </script>
 <script src="/js/form.js" type="text/javascript"></script>
+<script type="text/javascript">
+var ulmsg=true;
+function closeIt() {
+if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+}
+window.onbeforeunload = closeIt;
+</script>
 <div class="ss-form-container">
 <h1 class="table_separator">Pappa-Mi - Segnalazione Non Conformit&agrave</h1>
 <p/>
@@ -71,7 +78,7 @@ Inserire la data in cui è stata effettuata l'ispezione.
 </tr>
 <tr>
 <th colspan="3" class="table_separator">
-Non Conformit&agrave Gravi
+Non Conformit&agrave
 </th>
 </tr>
 <tr>
@@ -80,20 +87,20 @@ Non Conformit&agrave Gravi
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Non Conformit&agrave
 <span class="ss-required-asterisk">*</span></label>
-<select name="tipo" id="e_tipo" dojoType="dijit.form.FilteringSelect" required="true">
-<option value="1"{% ifequal form.data.tipo "1" %} selected{% endifequal %}>Cambiamenti di men&ugrave</option>
-<option value="2"{% ifequal form.data.tipo "2" %} selected{% endifequal %}>Cibo avanzato oltre 30%</option>
-<option value="3"{% ifequal form.data.tipo "3" %} selected{% endifequal %}>Quantit&agrave insufficiente di una vivanda</option>
-<option value="4"{% ifequal form.data.tipo "4" %} selected{% endifequal %}>Tavoli o apparecchiatura tavoli non adeguata</option>
-<option value="5"{% ifequal form.data.tipo "5" %} selected{% endifequal %}>Arredi e attrezzature inadeguate della sala di rigoverno</option>
-<option value="6"{% ifequal form.data.tipo "6" %} selected{% endifequal %}>Inadeguata pulizia dei locali</option>
-<option value="7"{% ifequal form.data.tipo "7" %} selected{% endifequal %}>Errata / mancata consegna o distribuzione delle diete speciali</option>
-<option value="8"{% ifequal form.data.tipo "8" %} selected{% endifequal %}>Ritardo o anticipo nella consegna delle termiche</option>
-<option value="9"{% ifequal form.data.tipo "9" %} selected{% endifequal %}>Corpo estraneo</option>
-<option value="10"{% ifequal form.data.tipo "10" %} selected{% endifequal %}>Temperatura non conforme alla legge</option>
-<option value="11"{% ifequal form.data.tipo "11" %} selected{% endifequal %}>Temperatura della dieta sanitaria giudicata inadeguata</option>
-<option value="12"{% ifequal form.data.tipo "12" %} selected{% endifequal %}>Inadeguato smaltimento della spazzatura</option>
-<option value="99"{% ifequal form.data.tipo "99" %} selected{% endifequal %}>Altro</option>
+<select name="tipo" id="e_tipo" dojoType="dijit.form.FilteringSelect" required="true" value="{{form.data.tipo}}">
+<option value="1">Cambiamenti di men&ugrave</option>
+<option value="2">Cibo avanzato oltre 30%</option>
+<option value="3">Quantit&agrave insufficiente di una vivanda</option>
+<option value="4">Tavoli o apparecchiatura tavoli non adeguata</option>
+<option value="5">Arredi e attrezzature inadeguate della sala di rigoverno</option>
+<option value="6">Inadeguata pulizia dei locali</option>
+<option value="7">Errata / mancata consegna o distribuzione delle diete speciali</option>
+<option value="8">Ritardo o anticipo nella consegna delle termiche</option>
+<option value="9">Corpo estraneo</option>
+<option value="10">Temperatura non conforme alla legge</option>
+<option value="11">Temperatura della dieta sanitaria giudicata inadeguata</option>
+<option value="12">Inadeguato smaltimento della spazzatura</option>
+<option value="99">Altro</option>
 </select></div></div>
 </td>
 <td colspan="1">
@@ -119,7 +126,7 @@ Non Conformit&agrave Gravi
 </tr>
 <tr>
 <td colspan="3" align="center">
-<button id="e_submit" type="submit">Salva dati</button><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
+<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="ulmsg=false; location.href='/commissario';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table>

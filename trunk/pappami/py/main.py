@@ -97,6 +97,7 @@ class MainPage(BasePage):
       stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
       stats.numeroSchede = Ispezione.all().count()      
       stats.ncTotali = Nonconformita.all().count()
+      stats.diete = Dieta.all().count()
       memcache.add("stats", stats)
       
     return stats
@@ -159,7 +160,7 @@ class CMMapDataHandler(webapp.RequestHandler):
           for c in commissioni :
             if c.geo:
               markers = markers + '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta + '"'
-              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.centroCucina.key().name() + '" />\n'
+              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina().key().name() + '" />\n'
         except db.Timeout:
           logging.error("Timeout")
           

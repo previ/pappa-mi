@@ -474,6 +474,7 @@ class Statistiche:
   numeroCommissioni = int(0)
   numeroSchede = int(0) 
   ncTotali = int(0)
+  diete = int(0)  
 
 class StatisticheIspezioni(db.Model):
   commissione = db.ReferenceProperty(Commissione)
