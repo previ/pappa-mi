@@ -49,6 +49,7 @@ class CMGenitoreHandler(BasePage):
       self.redirect("/genitore/registrazione")
     else:
       self.redirect("/genitore/menu")
+
 class CMGenitoreDataHandler(CMCommissarioDataHandler):
   def dummy(self):
     a
@@ -227,6 +228,37 @@ class CMNonconfGenitoreHandler(BasePage):
 
     self.getBase(template_values)
 
+class CMDieteGenitoreHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "genitore/leftbar.html"
+    template_values['content'] = 'genitore/diete.html'
+    self.getBase(template_values)
+
+class CMDietaGenitoreHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is not None and commissario.isCommissario() :
+      self.redirect("/commissario/dieta?cmd=open&key="+self.request.get("key"))
+      return
+    if commissario is None or not commissario.isGenitore() :
+      self.redirect("/genitore/registrazione")
+      return
+
+    dieta = Dieta.get(self.request.get("key"))
+
+    template_values = {
+      'content': 'genitore/dieta_read.html',
+      'content_left': 'genitore/leftbar.html',
+      'dieta': dieta,
+      "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+      "comments": False
+      }
+
+    self.getBase(template_values)
+    
 class CMGenitoreCommissioniHandler(CMCommissioniHandler):
   def get(self):
     template_values = dict()
@@ -258,8 +290,10 @@ def main():
   application = webapp.WSGIApplication([
     ('/genitore/isp', CMIspezioniGenitoreHandler),
     ('/genitore/nc', CMNonconfsGenitoreHandler),
+    ('/genitore/diete', CMDieteGenitoreHandler),
     ('/genitore/ispezione', CMIspezioneGenitoreHandler),
     ('/genitore/nonconf', CMNonconfGenitoreHandler),
+    ('/genitore/dieta', CMDietaGenitoreHandler),
     ('/genitore/registrazione', CMRegistrazioneGenitoreHandler),
     ('/genitore/profilo', CMProfiloGenitoreHandler),
     ('/genitore/stats', CMGenitoreStatsHandler),

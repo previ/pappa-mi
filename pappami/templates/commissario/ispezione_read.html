@@ -18,6 +18,15 @@ function onMenuChanged() {
 	}
 }
 </script>
+{% if preview %}
+<script type="text/javascript">
+var ulmsg=true;
+function closeIt() {
+if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+}
+window.onbeforeunload = closeIt;
+</script>
+{% endif %}
 <DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 {%if public_url%}
 <!-- AddThis Button BEGIN -->
@@ -738,8 +747,8 @@ return true;
 </script>
 <P align="center">
 <input type="hidden" name="preview" value="{{preview}}">
-<button type="submit">Conferma salvataggio dati</button>
-<button onclick="location.href='/commissario/ispezione?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
+<button type="submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
+<button onclick="ulmsg=false; location.href='/commissario/ispezione?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
 <P>
 </form>
 {% else %}

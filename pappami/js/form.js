@@ -102,27 +102,27 @@ function getPrevIspData() {
     url: urlserv,
       load: function(data){ 
         var ispdata = data.split("|");
-	if(ispdata.length > 0) {
-	  dojo.query('[name="aaRispettoCapitolato"]')[0].checked = ispdata[0];
-	  dojo.query('[name="aaRispettoCapitolato"]')[1].checked = !ispdata[0];
-	  dojo.query('[name="aaTavoliApparecchiati"]')[0].checked = ispdata[1];
-	  dojo.query('[name="aaTavoliApparecchiati"]')[1].checked = !ispdata[1];
-	  dojo.query('[name="aaTermichePulite"]')[0].checked = ispdata[2];
-	  dojo.query('[name="aaTermichePulite"]')[1].checked = !ispdata[2];
-	  dojo.query('[name="aaAcqua"]')[0].checked = ispdata[3];
-	  dojo.query('[name="aaAcqua"]')[1].checked = !ispdata[3];
-	  dojo.query('[name="aaScaldaVivande"]')[0].checked = ispdata[4];
-	  dojo.query('[name="aaScaldaVivande"]')[1].checked = !ispdata[4];
-	  dojo.query('[name="aaSelfService"]')[0].checked = ispdata[5];
-	  dojo.query('[name="aaSelfService"]')[1].checked = !ispdata[5];
-	  dojo.query('[name="aaTabellaEsposta"]')[0].checked = ispdata[6];
-	  dojo.query('[name="aaTabellaEsposta"]')[1].checked = !ispdata[6];
-	  dojo.query('[name="ricicloStoviglie"]')[0].checked = ispdata[7];
-	  dojo.query('[name="ricicloStoviglie"]')[1].checked = !ispdata[7];
-	  dojo.query('[name="ricicloPosate"]')[0].checked = ispdata[8];
-	  dojo.query('[name="ricicloPosate"]')[1].checked = !ispdata[8];
-	  dojo.query('[name="ricicloBicchieri"]')[0].checked = ispdata[9];
-	  dojo.query('[name="ricicloBicchieri"]')[1].checked = !ispdata[9];
+	if(ispdata.length > 1) {
+	  dojo.query('[name="aaRispettoCapitolato"]')[0].checked = ispdata[0] == 1;
+	  dojo.query('[name="aaRispettoCapitolato"]')[1].checked = ispdata[0] == 0;
+	  dojo.query('[name="aaTavoliApparecchiati"]')[0].checked = ispdata[1] == 1;
+	  dojo.query('[name="aaTavoliApparecchiati"]')[1].checked = ispdata[1] == 0;
+	  dojo.query('[name="aaTermichePulite"]')[0].checked = ispdata[2] == 1;
+	  dojo.query('[name="aaTermichePulite"]')[1].checked = ispdata[2] == 0;
+	  dojo.query('[name="aaAcqua"]')[0].checked = ispdata[3] == 1;
+	  dojo.query('[name="aaAcqua"]')[1].checked = ispdata[3] == 0;
+	  dojo.query('[name="aaScaldaVivande"]')[0].checked = ispdata[4] == 1;
+	  dojo.query('[name="aaScaldaVivande"]')[1].checked = ispdata[4] == 0;
+	  dojo.query('[name="aaSelfService"]')[0].checked = ispdata[5] == 1;
+	  dojo.query('[name="aaSelfService"]')[1].checked = ispdata[5] == 0;
+	  dojo.query('[name="aaTabellaEsposta"]')[0].checked = ispdata[6] == 1;
+	  dojo.query('[name="aaTabellaEsposta"]')[1].checked = ispdata[6] == 0;
+	  dojo.query('[name="ricicloStoviglie"]')[0].checked = ispdata[7] == 1;
+	  dojo.query('[name="ricicloStoviglie"]')[1].checked = ispdata[7] == 0;
+	  dojo.query('[name="ricicloPosate"]')[0].checked = ispdata[8] == 1;
+	  dojo.query('[name="ricicloPosate"]')[1].checked = ispdata[8] == 0;
+	  dojo.query('[name="ricicloBicchieri"]')[0].checked = ispdata[9] == 1;
+	  dojo.query('[name="ricicloBicchieri"]')[1].checked = ispdata[9] == 0;
 	}
       },
       error: function(data){

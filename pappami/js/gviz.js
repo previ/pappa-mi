@@ -267,6 +267,31 @@ TableQueryWrapper.clone = function(obj) {
       sendAndDraw();
       display="inline";
     }
+
+    function initDieteGen() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
+      query = new google.visualization.Query("/commissario/getdata");
+      container = document.getElementById("diete");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data tipo'
+                 };
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from diete" + " me " + " commissione " + p[1] + " anno " + p[2];
+
+      display="none";
+      sendAndDraw();
+      display="inline";
+    }
     
     function initIspGen() {
       var cmStore = new dojo.data.ItemFileReadStore({url: "/genitore/getcm"});

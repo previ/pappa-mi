@@ -31,6 +31,16 @@ class CentroCucinaZonaLoader(Loader):
                      ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())                     
                      ])
     self.alias_old_names()
+
+class CommissioneCentroCucinaLoader(Loader):
+  def __init__(self):
+    Loader.__init__(self, 'CommissioneCentroCucina',
+                    [('commissione', lambda x: Commissione.get(x)),
+                     ('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
+                     ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
+                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())                     
+                     ])
+    self.alias_old_names()
     
 class CommissioneLoader(Loader):
   def __init__(self):
@@ -70,7 +80,25 @@ class NonconfLoader(Loader):
                      ])
     self.alias_old_names()    
 
-loaders = [MenuLoader, CentroCucinaZonaLoader, CommissioneLoader, NonconfLoader]
+class CentroCucinaLoader(Loader):
+  def __init__(self):
+    Loader.__init__(self, 'CentroCucina',
+                    [('key_name', str),
+                     ('nome', str),
+                     ('strada', str),
+                     ('civico', str),
+                     ('citta', str),
+                     ('cap', str),
+                     ('nomeContatto', str),
+                     ('cognomeContatto', str),
+                     ('telefono', str),
+                     ('fax', str),
+                     ('codice', str)
+                     ])
+                     
+    self.alias_old_names()
+    
+loaders = [MenuLoader, CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
 
 class CommissioneExporter(Exporter):
   def __init__(self):
@@ -92,6 +120,16 @@ class CommissioneExporter(Exporter):
                      ('geo', lambda x: str(x.lat)+":"+str(x.lon), "0.0:0.0")
                      ])
 
+class CommissioneCentroCucinaExporter(Exporter):
+  def __init__(self):
+    Exporter.__init__(self, 'CommissioneCentroCucina',
+                    [('commissione', str, None), 
+                     ('commissione', lambda x: Commissione.get(x).nome, None), 
+                     ('centroCucina', lambda x: x.name(), ""),
+                     ('validitaDa', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ('validitaA', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
+                     ])
+    
 class NonconfExporter(Exporter):
   def __init__(self):
     
@@ -229,4 +267,4 @@ class MenuExporter(Exporter):
                      ])
     
   
-exporters = [CommissioneExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]
+exporters = [CommissioneExporter, CommissioneCentroCucinaExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]

@@ -15,8 +15,13 @@ var piattounico = false;
 var oldDisp_1 = "";
 var oldDisp_2 = "";
 var oldDisp_3 = "";
+var ulmsg = true;
 dojo.addOnLoad(onMenuChanged);
-//dojo.addOnLoad(getPrevIspData);
+
+function closeIt() {
+if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+}
+window.onbeforeunload = closeIt;
 </script>
 <div class="ss-form-container"><h1 class="table_separator">Pappa-Mi - Raccolta dati Ispezioni</h1>
 <p/>
@@ -844,7 +849,7 @@ Specificare:<ul>
 </tr>
 <tr>
 <td colspan="3" align="center">
-<button id="e_submit" type="submit">Salva dati</button><button onclick="location.href='/commissario';return false;" id="e_annulla">Annulla</button>
+<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="ulmsg=false; location.href='/commissario';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table>

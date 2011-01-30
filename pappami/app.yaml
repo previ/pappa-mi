@@ -1,5 +1,5 @@
-application: test-pappa-mi
-version: 1
+application: pappa-mi
+version: 2
 runtime: python
 api_version: 1
 
@@ -8,6 +8,9 @@ derived_file_type:
 
 builtins:
 - datastore_admin: on
+
+inbound_services:
+- mail
 
 skip_files: |
  ^(.*/)?(
@@ -25,6 +28,10 @@ skip_files: |
  
 handlers:
 
+- url: /_ah/mail/.+ 
+  script: py/handle_incoming_email.py 
+  login: admin
+  
 - url: /admin/dblog
   script: py/dblog.py
   login: admin
