@@ -211,6 +211,19 @@ indexes:
   properties:
   - name: anno
   - name: commissione
+  - name: dataIspezione
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissione
+  - name: dataIspezione
+    direction: desc
+
+- kind: Ispezione
+  properties:
+  - name: anno
+  - name: commissione
     direction: desc
 
 - kind: Ispezione
@@ -470,6 +483,26 @@ indexes:
   properties:
   - name: commissione
   - name: tipo
+    direction: desc
+
+- kind: Nota
+  properties:
+  - name: anno
+  - name: commissario
+  - name: commissione
+  - name: dataNota
+    direction: desc
+
+- kind: Nota
+  properties:
+  - name: anno
+  - name: dataNota
+    direction: desc
+
+- kind: Nota
+  properties:
+  - name: commissario
+  - name: dataNota
     direction: desc
 
 - kind: StatisticheIspezioni

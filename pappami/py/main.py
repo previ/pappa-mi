@@ -95,7 +95,7 @@ class MainPage(BasePage):
     if(stats is None):
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
-      stats.numeroSchede = Ispezione.all().count()      
+      stats.numeroSchede = Ispezione.all().count()
       stats.ncTotali = Nonconformita.all().count()
       stats.diete = Dieta.all().count()
       memcache.add("stats", stats)

@@ -342,6 +342,58 @@ TableQueryWrapper.clone = function(obj) {
       sendAndDraw();
       display="inline";
     }
+
+    function initNote() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/commissario/getcm"});
+      query = new google.visualization.Query("/commissario/getdata");
+      container = document.getElementById("note");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data tipo'
+                 };
+      var me = dojo.byId("e_me");
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      me.checked = (p[0] == "true");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from note" + " me " + ((p[0] == "true")?"on":"") + " commissione " + p[1] + " anno " + p[2];
+
+      display="none";
+      sendAndDraw();
+      display="inline";
+    }
+
+    function initNoteGen() {
+      var cmStore = new dojo.data.ItemFileReadStore({url: "/genitore/getcm"});
+      query = new google.visualization.Query("/genitore/getdata");
+      container = document.getElementById("note");
+      options = {'pageSize': 10, 
+                 'callPre': function() {dojo.byId("d_loading").style.display = "inline";},
+                 'callPost': function() {dojo.byId("d_loading").style.display = "none";},
+                 'sortableColumns': 'commissione data tipo'
+                 };
+      var cm = dijit.byId("e_cm");
+      var anno = dojo.byId("e_aa");
+      cookie = readCookie("pappa-mi-ctx");
+      if(!cookie) {
+        cookie = "true,,";
+      }
+      var p = cookie.split(",");
+      cm.attr("value", p[1]);
+      anno.value=p[2];
+      whereClause = "from note" + " me " + " commissione " + p[1] + " anno " + p[2];
+
+      display="none";
+      sendAndDraw();
+      display="inline";
+    }
     
     function sendAndDraw() {
       query.abort();

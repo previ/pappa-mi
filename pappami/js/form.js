@@ -43,28 +43,29 @@ function validateradio() {
   var getMenu = function(){
     date = dojo.byId("e_dataIspezione").value;
     commissione = dijit.byId("e_commissione").attr("value");
-
-    dateArr = date.split("/");
-    date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
-    var urlserv = "/menu?cmd=getbydate&data="+date+"&commissione="+commissione;
-	var kw = {
-	        url: urlserv,
-	        load: function(data){ 
-			var menu = data.split("|");				        	
-	                dojo.byId('e_primoPrevisto').value = menu[0];
-	                dojo.byId('e_secondoPrevisto').value = menu[1];
-	                dojo.byId('e_contornoPrevisto').value = menu[2];
-	                dojo.byId('e_primoEffettivo').value = menu[0];
-	                dojo.byId('e_secondoEffettivo').value = menu[1];
-	                dojo.byId('e_contornoEffettivo').value = menu[2];
-			onMenuChanged();
-	        },
-	        error: function(data){
-	                console.debug("Errore: ", data);
-	        },
-	        timeout: 2000
-	};
-	dojo.xhrGet(kw);
+    if(date && commissione) {
+      dateArr = date.split("/");
+      date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
+      var urlserv = "/menu?cmd=getbydate&data="+date+"&commissione="+commissione;
+	  var kw = {
+		  url: urlserv,
+		  load: function(data){ 
+			  var menu = data.split("|");				        	
+			  dojo.byId('e_primoPrevisto').value = menu[0];
+			  dojo.byId('e_secondoPrevisto').value = menu[1];
+			  dojo.byId('e_contornoPrevisto').value = menu[2];
+			  dojo.byId('e_primoEffettivo').value = menu[0];
+			  dojo.byId('e_secondoEffettivo').value = menu[1];
+			  dojo.byId('e_contornoEffettivo').value = menu[2];
+			  onMenuChanged();
+		  },
+		  error: function(data){
+			  console.debug("Errore: ", data);
+		  },
+		  timeout: 2000
+	  };
+	  dojo.xhrGet(kw);
+    }
   }
 
   function onMenuChanged() {

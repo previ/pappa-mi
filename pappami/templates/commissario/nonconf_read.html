@@ -17,7 +17,6 @@ if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunq
 window.onbeforeunload = closeIt;
 </script>
 {% endif %}
-<div class="ss-form-container"><h2 class="table_separator">{{nc.commissione.nome}} - Segnalazione del {{nc.dataNonconf|date:"d/m/Y"}} - Turno {{nc.turno}}</h2>
 {%if public_url%}
 <!-- AddThis Button BEGIN -->
 <div class="addthis_toolbox addthis_default_style ">
@@ -32,9 +31,7 @@ window.onbeforeunload = closeIt;
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
 <!-- AddThis Button END -->
 {%endif%}
-<p/>
-<br/>
-<br/>
+<div class="ss-form-container"><h1 class="table_separator">{{nc.commissione.nome}} - {{nc.commissione.tipoScuola}} - Ispezione del {{nc.dataNonconf|date:"d/m/Y"}} - Turno {{nc.turno}}</h1>
 {% if form.errors %}
 <div class="errorbox-bad" id="form-error">
 	<p>Non è stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>

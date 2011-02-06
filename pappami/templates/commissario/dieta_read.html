@@ -17,7 +17,6 @@ if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunq
 window.onbeforeunload = closeIt;
 </script>
 {% endif %}
-<div class="ss-form-container"><h2 class="table_separator">{{dieta.commissione.nome}} - Ispezione del {{dieta.dataIspezione|date:"d/m/Y"}} - Turno {{dieta.turno}}</h2>
 {%if public_url%}
 <!-- AddThis Button BEGIN -->
 <div class="addthis_toolbox addthis_default_style ">
@@ -32,9 +31,7 @@ window.onbeforeunload = closeIt;
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
 <!-- AddThis Button END -->
 {%endif%}
-<p/>
-<br/>
-<br/>
+<div class="ss-form-container"><h1 class="table_separator">{{dieta.commissione.nome}} - {{dieta.commissione.tipoScuola}} - Ispezione del {{dieta.dataIspezione|date:"d/m/Y"}} - Turno {{dieta.turno}}</h1>
 <form dojoType="dijit.form.Form" action="/commissario/dieta" method="post" id="form0">
 <script type="dojo/method" event="onSubmit">
 dojo.byId("e_submit").disabled = true;
@@ -49,9 +46,8 @@ Ispezione Diete Sanitarie ed Etico-Religiose
 <tr>
 <td colspan="2">
 <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo dieta: {{dieta.tipoNome}}
 </label>
-{{dieta.tipoNome}}
 </div></div>
 </td>
 <td>
