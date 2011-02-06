@@ -469,6 +469,23 @@ class Dieta(db.Model):
   
   def tipoNome(self):
     return self._tipi[self.tipoDieta]
+
+class Nota(db.Model):
+  commissione = db.ReferenceProperty(Commissione)
+  commissario = db.ReferenceProperty(Commissario)
+ 
+  dataNota = db.DateProperty()
+  titolo = db.StringProperty()
+  note = db.TextProperty(default="")
+  anno = db.IntegerProperty()
+  
+  creato_da = db.UserProperty(auto_current_user_add=True)
+  creato_il = db.DateTimeProperty(auto_now_add=True)
+  stato = db.IntegerProperty()
+
+class Tag(db.Model):
+  obj = db.ReferenceProperty(db.Model)
+  tag = db.StringProperty(default="")
   
 class Statistiche:
   numeroCommissioni = int(0)
@@ -763,5 +780,4 @@ class StatisticheNonconf(db.Model):
 
   def getTipiPos(self):
     return self._tipiPos
-
   

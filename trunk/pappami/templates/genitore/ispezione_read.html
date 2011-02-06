@@ -2,7 +2,6 @@
 dojo.require("dijit.form.Form");
 dojo.require("dijit.form.Button");
 </script>
-<DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 {%if public_url%}
 <!-- AddThis Button BEGIN -->
 <div class="addthis_toolbox addthis_default_style ">
@@ -17,6 +16,7 @@ dojo.require("dijit.form.Button");
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
 <!-- AddThis Button END -->
 {%endif%}
+<DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 <table>
 <tr>
 <td colspan="3">

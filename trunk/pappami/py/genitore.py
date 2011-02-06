@@ -258,6 +258,37 @@ class CMDietaGenitoreHandler(BasePage):
       }
 
     self.getBase(template_values)
+
+class CMNoteGenitoreHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["content_left"] = "genitore/leftbar.html"
+    template_values['content'] = 'genitore/note.html'
+    self.getBase(template_values)
+
+class CMNotaGenitoreHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is not None and commissario.isCommissario() :
+      self.redirect("/commissario/nota?cmd=open&key="+self.request.get("key"))
+      return
+    if commissario is None or not commissario.isGenitore() :
+      self.redirect("/genitore/registrazione")
+      return
+
+    nota = Nota.get(self.request.get("key"))
+
+    template_values = {
+      'content': 'genitore/nota_read.html',
+      'content_left': 'genitore/leftbar.html',
+      'nota': nota,
+      "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
+      "comments": False
+      }
+
+    self.getBase(template_values)
     
 class CMGenitoreCommissioniHandler(CMCommissioniHandler):
   def get(self):
@@ -291,9 +322,11 @@ def main():
     ('/genitore/isp', CMIspezioniGenitoreHandler),
     ('/genitore/nc', CMNonconfsGenitoreHandler),
     ('/genitore/diete', CMDieteGenitoreHandler),
+    ('/genitore/note', CMNoteGenitoreHandler),
     ('/genitore/ispezione', CMIspezioneGenitoreHandler),
     ('/genitore/nonconf', CMNonconfGenitoreHandler),
     ('/genitore/dieta', CMDietaGenitoreHandler),
+    ('/genitore/nota', CMNotaGenitoreHandler),
     ('/genitore/registrazione', CMRegistrazioneGenitoreHandler),
     ('/genitore/profilo', CMProfiloGenitoreHandler),
     ('/genitore/stats', CMGenitoreStatsHandler),

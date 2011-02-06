@@ -69,8 +69,9 @@ class BasePage(webapp.RequestHandler):
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
+    template_values["shownote"] = False
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.2.0.30 - 2011.01.22"
+    template_values["version"] = "1.2.1.31 - 2011.02.06"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))
@@ -80,8 +81,10 @@ class BasePage(webapp.RequestHandler):
     if(user):
       #commissario = memcache.get("user" + str(user.user_id()))
       #if not commissario:
-        commissario = Commissario.all().filter("user = ", user).get()
-        #memcache.add("user" + str(user.user_id()), commissario, 600)
+      #logging.info(user.email())
+      #commissario = db.GqlQuery("SELECT * FROM Commissario where user = USER('" + user.email() + "')").get()
+      commissario = Commissario.all().filter("user", user).get()
+      #memcache.add("user" + str(user.user_id()), commissario, 600)
     return commissario
 
   def getCommissioni(self):

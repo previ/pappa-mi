@@ -67,12 +67,24 @@ class CMNonconfPublicHandler(BasePage):
 class CMDietePublicHandler(BasePage):
   
   def get(self): 
-    nc = Dieta.get(self.request.get("key"))
+    dieta = Dieta.get(self.request.get("key"))
     template_values = dict()
-    template_values["dieta"] = nc
-    template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(nc.key())
+    template_values["dieta"] = dieta
+    template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/dieta_read.html"
+    template_values["comments"] = False
+    self.getBase(template_values)
+
+class CMNotePublicHandler(BasePage):
+  
+  def get(self): 
+    nota = Nota.get(self.request.get("key"))
+    template_values = dict()
+    template_values["nota"] = nota
+    template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key())
+    template_values["main"] = "../templates/public/main.html"
+    template_values["content"] = "../public/nota_read.html"
     template_values["comments"] = False
     self.getBase(template_values)
     
@@ -82,7 +94,8 @@ def main():
   application = webapp.WSGIApplication([
     ('/public/isp', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
-    ('/public/dieta', CMDietePublicHandler)
+    ('/public/dieta', CMDietePublicHandler),
+    ('/public/nota', CMNotePublicHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

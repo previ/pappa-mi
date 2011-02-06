@@ -104,7 +104,7 @@ class CMStatsHandler(BasePage):
     elif self.request.get("cm"):
       cm = Commissione.get(self.request.get("cm"))
     if cm:
-      cc = cm.centroCucina
+      cc = cm.getCentroCucina(now)
       statCC = StatisticheIspezioni.all().filter("timeId", anno).filter("centroCucina",cc).get()
       statCM = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",cm).get()
     stats = [stat,statCC,statCM]
@@ -360,17 +360,17 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
         else:
           statCM = statsCM[nc.commissione.key()]
           
-        if( nc.commissione.centroCucina.key() not in statsCC ):
+        if( nc.commissione.getCentroCucina(now).key() not in statsCC ):
           statCC = StatisticheNonconf()
           statCC.dataInizio = stats.dataInizio
           statCC.dataFine = stats.dataFine
-          statCC.centroCucina = nc.commissione.centroCucina
+          statCC.centroCucina = nc.commissione.getCentroCucina(now)
           statCC.timeId=timeId
           statCC.timePeriod = statCM.timePeriod
           statsCC[statCC.centroCucina.key()] = statCC
           self.initWeek(statCC, wtot)
         else:
-          statCC = statsCC[nc.commissione.centroCucina.key()]
+          statCC = statsCC[nc.commissione.getCentroCucina(now).key()]
   
         self.calcNC(nc,statCM)
         self.calcNC(nc,statCC)
@@ -484,17 +484,17 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         else:
           statCM = statsCM[isp.commissione.key()]
   
-        if( isp.commissione.centroCucina.key() not in statsCC ):
+        if( isp.commissione.getCentroCucina(now).key() not in statsCC ):
           statCC = StatisticheIspezioni()
           statCC.dataInizio = stats.dataInizio
           statCC.dataFine = stats.dataFine
           statCC.timeId=timeId
           statCC.timePeriod = statCM.timePeriod
-          statCC.centroCucina = isp.commissione.centroCucina
+          statCC.centroCucina = isp.commissione.getCentroCucina(now)
           statsCC[statCC.centroCucina.key()] = statCC
           self.initWeek(statCC, wtot)
         else:
-          statCC = statsCC[isp.commissione.centroCucina.key()]
+          statCC = statsCC[isp.commissione.getCentroCucina(now).key()]
           
         self.calcIsp(isp,statCM)
         self.calcIsp(isp,statCC)

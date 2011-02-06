@@ -92,6 +92,28 @@ class DietaForm(djangoforms.ModelForm):
     model = Dieta
     exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
 
+class NotaForm(djangoforms.ModelForm):
+  def clean(self):
+    super(NotaForm,self).clean()
+    cleaned_data = self._cleaned_data()
+    #for f in cleaned_data:
+      #logging.info("data: %s, %s", f, cleaned_data.get(f))
+
+    if cleaned_data.get("dataNota").isoweekday() > 5 :
+      raise newforms.ValidationError(u"La Nota deve far riferimento a un giorno feriale")
+
+    age = (date.today() - cleaned_data.get("dataNota")).days
+    #if age > 60 :
+    #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
+
+    if age < 0 :
+      raise newforms.ValidationError(u"Non e' ammesso inserire note in date successive alla data odierna")
+
+    # Always return the full collection of cleaned data.
+    return cleaned_data
+  class Meta:
+    model = Nota
+    exclude = ['commissario']
     
 class CommissioneForm(djangoforms.ModelForm):
   class Meta:
