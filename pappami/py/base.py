@@ -69,7 +69,7 @@ class BasePage(webapp.RequestHandler):
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
-    template_values["shownote"] = False
+    template_values["shownote"] = True
     template_values["url_linktext"] = url_linktext
     template_values["version"] = "1.2.1.31 - 2011.02.06"
 

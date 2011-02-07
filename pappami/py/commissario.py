@@ -856,13 +856,16 @@ class CMNotaHandler(BasePage):
 
     if( self.request.get("cmd") == "open" ):
       nota = Nota.get(self.request.get("key"))
+      allegati = None
+      if nota.allegato_set.count():
+        allegati = nota.allegato_set
   
-
       template_values = {
         'content': 'commissario/nota_read.html',
         'content_left': 'commissario/leftbar.html',
         'nota': nota,
         "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
+        "allegati": allegati,
         "comments": False
         }
 

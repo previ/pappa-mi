@@ -63,10 +63,20 @@ Nota
 {{nota.note|linebreaksbr}}</div></div>
 </td>
 </tr>
+{% if allegati %}<tr>
+<td colspan="3">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Allegati
+</label>
+{%for allegato in allegati%}
+<label class="ss-q-help" for="e_note"></label>
+<a href="/public/allegato?key={{allegato.key}}" target="_new">{{allegato.titolo}}</a><br/>{%endfor%}</div></div>
+</td>
+</tr>{% endif %}
 <tr>
 <td colspan="3" align="center">
 {% if preview %}
-<form action="/commissario/nonconf" method="POST">
+<form action="/commissario/nota" method="POST">
 <script type="dojo/method" event="onSubmit">
 dojo.byId("e_submit").disabled = true;
 dojo.byId("e_annulla").disabled = true;
