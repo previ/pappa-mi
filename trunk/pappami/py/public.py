@@ -87,6 +87,16 @@ class CMNotePublicHandler(BasePage):
     template_values["content"] = "../public/nota_read.html"
     template_values["comments"] = False
     self.getBase(template_values)
+
+class CMAllegatoPublicHandler(BasePage):
+  
+  def get(self): 
+    allegato = Allegato.get(self.request.get("key"))   
+    if allegato.isImage():
+      self.response.headers['Content-Type'] = "image/png"
+    else:
+      self.response.headers['Content-Type'] = "application/pdf"
+    self.response.out.write(allegato.dati)    
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
@@ -95,7 +105,8 @@ def main():
     ('/public/isp', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
     ('/public/dieta', CMDietePublicHandler),
-    ('/public/nota', CMNotePublicHandler)
+    ('/public/nota', CMNotePublicHandler),
+    ('/public/allegato', CMAllegatoPublicHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

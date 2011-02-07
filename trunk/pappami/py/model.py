@@ -475,7 +475,7 @@ class Nota(db.Model):
   commissario = db.ReferenceProperty(Commissario)
  
   dataNota = db.DateProperty()
-  titolo = db.StringProperty()
+  titolo = db.StringProperty(default="")
   note = db.TextProperty(default="")
   anno = db.IntegerProperty()
   
@@ -486,6 +486,13 @@ class Nota(db.Model):
 class Tag(db.Model):
   obj = db.ReferenceProperty(db.Model)
   tag = db.StringProperty(default="")
+
+class Allegato(db.Model):
+  obj = db.ReferenceProperty(db.Model)
+  dati = db.BlobProperty()
+  titolo = db.StringProperty(default="")
+  def isImage(self):
+    return ".png" in self.titolo.lower() or ".gif" in ".png" in self.titolo.lower() or ".jpg" in self.titolo.lower() or ".jpeg" in self.titolo.lower()
   
 class Statistiche:
   numeroCommissioni = int(0)

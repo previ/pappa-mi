@@ -10,6 +10,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import users
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.api import images
 
 class MailHandler(InboundMailHandler):
   def receive(self, message):
@@ -21,8 +22,10 @@ class MailHandler(InboundMailHandler):
     commissario = Commissario.all().filter("user",users.User(parseaddr(message.sender)[1])).get()    
     if commissario:
       logging.info("found commissario")
-      decoded_subject = decode_header(message.subject)[0]
-      decoded_subject = decoded_subject[0].decode(decoded_subject[1])
+      decoded_subject = message.subject.decode()
+      if len(decode_header(message.subject)) > 0 and len(decode_header(message.subject)[0]) > 1:
+        decoded_subject = decode_header(message.subject)[0]
+        decoded_subject = decoded_subject[0].decode(decoded_subject[1])
       
       commissione = None
       cms = commissario.commissioni()
@@ -53,6 +56,7 @@ class MailHandler(InboundMailHandler):
         for body in message.bodies('text/plain'):
           nota.note = body[1].decode()
         nota.put()
+        # tags
         s = nota.note.find("#")
         while s >= 0:
           e = nota.note.find(" ",s+1)
@@ -63,10 +67,18 @@ class MailHandler(InboundMailHandler):
           tag.obj = nota
           tag.put()
           s = nota.note.find("#",e)
-
-            
-    
-    
+        
+        #allegati
+        for attach in message.attachments:
+          logging.info("allegato: " + attach[0])
+          allegato = Allegato()
+          allegato.obj = nota          
+          allegato.titolo = attach[0]
+          if len(attach[1].decode()) > 1000000:
+            logging.info("attachment too big")
+          else:
+            allegato.dati = db.Blob(attach[1].decode())
+            allegato.put()
 
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   

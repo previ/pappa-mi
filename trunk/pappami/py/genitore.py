@@ -32,7 +32,7 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
-from py.form import IspezioneForm, NonconformitaForm
+from py.form import NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
 from py.commissario import CMCommissarioDataHandler
@@ -271,24 +271,120 @@ class CMNotaGenitoreHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
-    if commissario is not None and commissario.isCommissario() :
-      self.redirect("/commissario/nota?cmd=open&key="+self.request.get("key"))
-      return
     if commissario is None or not commissario.isGenitore() :
-      self.redirect("/genitore/registrazione")
       return
 
-    nota = Nota.get(self.request.get("key"))
+    if( self.request.get("cmd") == "open" ):
+      nota = Nota.get(self.request.get("key"))
+      allegati = None
+      if nota.allegato_set.count():
+        allegati = nota.allegato_set
+  
+      template_values = {
+        'content': 'genitore/nota_read.html',
+        'content_left': 'genitore/leftbar.html',
+        'nota': nota,
+        "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
+        "allegati": allegati,
+        "comments": False
+        }
 
-    template_values = {
-      'content': 'genitore/nota_read.html',
-      'content_left': 'genitore/leftbar.html',
-      'nota': nota,
-      "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-      "comments": False
+      self.getBase(template_values)
+
+    elif( self.request.get("cmd") == "edit" ):
+   
+      nota = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("nota"))
+    
+      form = NotaForm(instance=nota)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = dieta.commissione
+
+      template_values = {
+        'content': 'genitore/nota.html',
+        'content_left': 'genitore/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
       }
 
-    self.getBase(template_values)
+      self.getBase(template_values)
+          
+    else:     
+  
+      nota = Nota(commissario = commissario) 
+      form = NotaForm(instance=nota)
+
+      for field in form:
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'content': 'genitore/nota.html',
+        'content_left': 'genitore/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+
+      self.getBase(template_values)
+
+  def post(self):    
+   
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+
+    if commissario is None or not commissario.isGenitore() :
+      return
+    preview = self.request.get("preview")
+   
+    if( preview ):
+      nota = memcache.get(preview)
+      memcache.delete(preview)
+
+      if nota.dataNota.month >= 9:
+        nota.anno = nota.dataNota.year
+      else:
+        nota.anno = nota.dataNota.year - 1
+
+      nota.put()
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+      
+      self.redirect("/genitore/note")
+    else:
+      key = self.request.get("k")
+      if( key != "" ) :
+        nota = Nota.get(key)
+      else:
+        nota = Nota()
+    
+      form = NotaForm(data=self.request.POST, instance=nota)
+
+      if form.is_valid():
+        nota = form.save(commit=False)
+        nota.commissario = commissario
+   
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        memcache.add(preview, nota, 3600)
+    
+        template_values = {
+          'content': 'genitore/nota_read.html',
+          'content_left': 'genitore/leftbar.html',
+          'nota': nota,
+          'preview': preview
+        }
+        
+      else:
+        template_values = {
+          'content': 'genitore/nota.html',
+          'content_left': 'genitore/leftbar.html',
+          'commissioni': commissario.commissioni(),
+          'form': form
+        }
+        
+      self.getBase(template_values)
     
 class CMGenitoreCommissioniHandler(CMCommissioniHandler):
   def get(self):
