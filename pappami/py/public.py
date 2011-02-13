@@ -49,7 +49,6 @@ class CMIspezionePublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
-    template_values["comments"] = False
     self.getBase(template_values)
         
 class CMNonconfPublicHandler(BasePage):
@@ -61,7 +60,6 @@ class CMNonconfPublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
-    template_values["comments"] = False
     self.getBase(template_values)
 
 class CMDietePublicHandler(BasePage):
@@ -73,19 +71,22 @@ class CMDietePublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/dieta_read.html"
-    template_values["comments"] = False
     self.getBase(template_values)
 
 class CMNotePublicHandler(BasePage):
   
   def get(self): 
     nota = Nota.get(self.request.get("key"))
+    allegati = None
+    if nota.allegato_set.count():
+      allegati = nota.allegato_set
+    
     template_values = dict()
     template_values["nota"] = nota
     template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nota_read.html"
-    template_values["comments"] = False
+    template_values["allegati"] = allegati
     self.getBase(template_values)
 
 class CMAllegatoPublicHandler(BasePage):

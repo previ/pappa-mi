@@ -99,7 +99,7 @@ OAUTH_SCOPE_URL_PARAM_NAME = 'oauth_token_scope'
 # Maps the service names used in ClientLogin to scope URLs.
 CLIENT_LOGIN_SCOPES = gdata.gauth.AUTH_SCOPES
 # Default parameters for GDataService.GetWithRetries method
-DEFAULT_NUM_RETRIES = 4
+DEFAULT_NUM_RETRIES = 3
 DEFAULT_DELAY = 1
 DEFAULT_BACKOFF = 2
 
@@ -949,7 +949,7 @@ class GDataService(atom.service.AtomService):
       raise RequestError, {'status': response.status,
           'body': result_body}
 
-  def GetWithRetries(self, uri, extra_headers=None, redirects_remaining=DEFAULT_NUM_RETRIES, 
+  def GetWithRetries(self, uri, extra_headers=None, redirects_remaining=4, 
       encoding='UTF-8', converter=None, num_retries=DEFAULT_NUM_RETRIES,
       delay=DEFAULT_DELAY, backoff=DEFAULT_BACKOFF, logger=None):
     """This is a wrapper method for Get with retrying capability.
@@ -1016,7 +1016,7 @@ class GDataService(atom.service.AtomService):
     raise RanOutOfTries('Ran out of tries.')
 
   # CRUD operations
-  def Get(self, uri, extra_headers=None, redirects_remaining=DEFAULT_NUM_RETRIES, 
+  def Get(self, uri, extra_headers=None, redirects_remaining=4, 
       encoding='UTF-8', converter=None):
     """Query the GData API with the given URI
 
@@ -1197,7 +1197,7 @@ class GDataService(atom.service.AtomService):
       return None
 
   def Post(self, data, uri, extra_headers=None, url_params=None,
-           escape_params=True, redirects_remaining=DEFAULT_NUM_RETRIES, media_source=None,
+           escape_params=True, redirects_remaining=4, media_source=None,
            converter=None):
     """Insert or update  data into a GData service at the given URI.
 
@@ -1236,7 +1236,7 @@ class GDataService(atom.service.AtomService):
         media_source=media_source, converter=converter)
 
   def PostOrPut(self, verb, data, uri, extra_headers=None, url_params=None, 
-           escape_params=True, redirects_remaining=DEFAULT_NUM_RETRIES, media_source=None, 
+           escape_params=True, redirects_remaining=4, media_source=None, 
            converter=None):
     """Insert data into a GData service at the given URI.
 
@@ -1358,7 +1358,7 @@ class GDataService(atom.service.AtomService):
           'reason': server_response.reason, 'body': result_body}
 
   def Put(self, data, uri, extra_headers=None, url_params=None, 
-          escape_params=True, redirects_remaining=DEFAULT_NUM_RETRIES, media_source=None,
+          escape_params=True, redirects_remaining=3, media_source=None,
           converter=None):
     """Updates an entry at the given URI.
      
@@ -1395,7 +1395,7 @@ class GDataService(atom.service.AtomService):
         media_source=media_source, converter=converter)
 
   def Delete(self, uri, extra_headers=None, url_params=None, 
-             escape_params=True, redirects_remaining=DEFAULT_NUM_RETRIES):
+             escape_params=True, redirects_remaining=4):
     """Deletes the entry at the given URI.
 
     Args:

@@ -49,5 +49,15 @@ Nota
 {{nota.note|linebreaksbr}}</div></div>
 </td>
 </tr>
+{% if allegati %}<tr>
+<td colspan="3">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Allegati
+</label>
+{%for allegato in allegati%}
+<label class="ss-q-help" for="e_note"></label>
+<a href="{{allegato.path}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}</div></div>
+</td>
+</tr>{% endif %}
 </table>
 </div>
