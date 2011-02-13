@@ -70,7 +70,7 @@ Nota
 </label>
 {%for allegato in allegati%}
 <label class="ss-q-help" for="e_note"></label>
-<a href="/public/allegato?key={{allegato.key}}" target="_new">{{allegato.titolo}}</a><br/>{%endfor%}</div></div>
+<a href="{{allegato.path}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}</div></div>
 </td>
 </tr>{% endif %}
 <tr>

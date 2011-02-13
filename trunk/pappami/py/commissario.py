@@ -32,6 +32,7 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
+from py.site import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
@@ -477,8 +478,7 @@ class CMIspezioneHandler(BasePage):
         'content_left': 'commissario/leftbar.html',
         'isp': isp,
         'cancopy': cancopy,
-        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
-        "comments": False
+        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
         }
       
     elif( self.request.get("cmd") == "edit" ):
@@ -617,8 +617,7 @@ class CMNonconfHandler(BasePage):
         'content': 'commissario/nonconf_read.html',
         'content_left': 'commissario/leftbar.html',
         'nc': nc,
-        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
-        "comments": False
+        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
         }
 
       self.getBase(template_values)
@@ -738,8 +737,7 @@ class CMDietaHandler(BasePage):
         'content': 'commissario/dieta_read.html',
         'content_left': 'commissario/leftbar.html',
         'dieta': dieta,
-        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
-        "comments": False
+        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
         }
 
       self.getBase(template_values)
@@ -865,8 +863,7 @@ class CMNotaHandler(BasePage):
         'content_left': 'commissario/leftbar.html',
         'nota': nota,
         "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-        "allegati": allegati,
-        "comments": False
+        "allegati": allegati
         }
 
       self.getBase(template_values)
@@ -882,7 +879,7 @@ class CMNotaHandler(BasePage):
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
       
-      form.data["commissione"] = dieta.commissione
+      form.data["commissione"] = nota.commissione
 
       template_values = {
         'content': 'commissario/nota.html',
@@ -927,8 +924,20 @@ class CMNotaHandler(BasePage):
         nota.anno = nota.dataNota.year
       else:
         nota.anno = nota.dataNota.year - 1
-
+     
       nota.put()
+
+      username = Configurazione.all().filter("nome", "attach_user").get().valore
+      password = Configurazione.all().filter("nome", "attach_password").get().valore
+      site = Configurazione.all().filter("nome", "attach_site").get().valore
+      path = Configurazione.all().filter("nome", "attach_path").get().valore
+      site = Site(username, password, site)
+
+      for allegato in nota.allegati:
+        allegato.obj = nota
+        allegato.path = site.uploadDoc(allegato.dati, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), path)
+        allegato.put()
+
       memcache.delete("stats")
       memcache.delete("statsMese")
       
@@ -947,7 +956,13 @@ class CMNotaHandler(BasePage):
       if form.is_valid():
         nota = form.save(commit=False)
         nota.commissario = commissario
-   
+        
+        allegato = Allegato()
+        allegato.descrizione = self.request.get('allegato_desc')
+        allegato.nome = self.request.POST['allegato_file'].filename
+        allegato.dati = self.request.get("allegato_file")
+        nota.allegati.append(allegato)
+            
         preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
         memcache.add(preview, nota, 3600)
     
@@ -955,6 +970,7 @@ class CMNotaHandler(BasePage):
           'content': 'commissario/nota_read.html',
           'content_left': 'commissario/leftbar.html',
           'nota': nota,
+          'allegati': nota.allegati,
           'preview': preview
         }
         

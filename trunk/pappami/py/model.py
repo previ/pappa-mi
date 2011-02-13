@@ -479,6 +479,8 @@ class Nota(db.Model):
   note = db.TextProperty(default="")
   anno = db.IntegerProperty()
   
+  allegati = list()
+  
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   stato = db.IntegerProperty()
@@ -489,10 +491,26 @@ class Tag(db.Model):
 
 class Allegato(db.Model):
   obj = db.ReferenceProperty(db.Model)
-  dati = db.BlobProperty()
-  titolo = db.StringProperty(default="")
+  path = db.StringProperty()
+  nome = db.StringProperty(default="")
+  descrizione = db.StringProperty(default="")
+  
+  dati=None
+  
   def isImage(self):
-    return ".png" in self.titolo.lower() or ".gif" in ".png" in self.titolo.lower() or ".jpg" in self.titolo.lower() or ".jpeg" in self.titolo.lower()
+    return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
+  def contentType(self):
+    return self._tipi[self.nome[self.nome.rfind("."):]]
+
+  _tipi = {".png":"image/png",
+           ".jpg":"image/jpeg",
+           ".jpeg":"image/jpeg",
+           ".gif":"image/gif",
+           ".tif":"image/tiff",
+           ".tiff":"image/tiff",           
+           ".pdf":"application/pdf",
+           ".doc":"application/msword",
+           ".pdf":"application/msword"}
   
 class Statistiche:
   numeroCommissioni = int(0)

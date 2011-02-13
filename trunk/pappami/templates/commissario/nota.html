@@ -30,7 +30,7 @@ window.onbeforeunload = closeIt;
 {{form.errors}}
 	</ul>
 </div>
-{% endif %}<form dojoType="dijit.form.Form" action="/commissario/nota" method="post" id="form0">
+{% endif %}<form dojoType="dijit.form.Form" action="/commissario/nota" method="post" id="form0" ENCTYPE="multipart/form-data">
 <script type="dojo/method" event="onSubmit">
 dojo.byId("e_submit").disabled = true;
 dojo.byId("e_annulla").disabled = true;
@@ -85,6 +85,11 @@ Inserire la data a cui si riferisce la segnalazione.
 <label class="ss-q-help" for="entry_13"></label>
 <textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}
 </textarea></div></div>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+Allega un file:<input type="file" name="allegato_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc" allow="*"/>
 </td>
 </tr>
 <tr>

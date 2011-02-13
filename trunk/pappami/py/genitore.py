@@ -196,8 +196,7 @@ class CMIspezioneGenitoreHandler(BasePage):
       'content_left': 'genitore/leftbar.html',
       'isp': isp,
       'cancopy': cancopy,
-      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
-      "comments": False
+      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
       }
 
     self.getBase(template_values)
@@ -222,8 +221,7 @@ class CMNonconfGenitoreHandler(BasePage):
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
       'nc': nc,
-      "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
-      "comments": False
+      "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
       }
 
     self.getBase(template_values)
@@ -253,8 +251,7 @@ class CMDietaGenitoreHandler(BasePage):
       'content': 'genitore/dieta_read.html',
       'content_left': 'genitore/leftbar.html',
       'dieta': dieta,
-      "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
-      "comments": False
+      "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
       }
 
     self.getBase(template_values)
@@ -285,8 +282,7 @@ class CMNotaGenitoreHandler(BasePage):
         'content_left': 'genitore/leftbar.html',
         'nota': nota,
         "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-        "allegati": allegati,
-        "comments": False
+        "allegati": allegati
         }
 
       self.getBase(template_values)
