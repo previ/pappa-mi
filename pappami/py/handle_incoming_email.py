@@ -18,7 +18,7 @@ from google.appengine.api import mail
 
 class MailHandler(InboundMailHandler):
   site = None
-  host = "test.pappa-mi.it"
+  host = "www.pappa-mi.it"
   path = None
 
   def __init__(self):
@@ -33,13 +33,14 @@ class MailHandler(InboundMailHandler):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
     logging.info("subject: " + self.decode(message.subject))
     text_bodies = message.bodies('text/plain')
-    #for body in text_bodies:
-    #  logging.info("body: " + body[1].decode())
+    for body in text_bodies:
+      logging.info("body: " + body[1].decode())
     commissario = Commissario.all().filter("user",users.User(parseaddr(message.sender)[1])).get()    
     if commissario:
       feedback = list()
-      logging.info("found commissario")
+      logging.info("found commissario")      
       nota = Nota()
+      nota.creato_da = commissario.user
       nota.titolo = self.decode(message.subject)
       
       commissione = None
