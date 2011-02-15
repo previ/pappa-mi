@@ -79,6 +79,10 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
     nota.dataNota = datetime.now().date()
     if nota.titolo.lower().find("ieri") >= 0:
       nota.dataNota = nota.dataNota + timedelta(-1)
+      if nota.dataNota.isoweekday() == 0 :
+        nota.dataNota = nota.dataNota + timedelta(-2)
+      if nota.dataNota.isoweekday() == 6 :
+        nota.dataNota = nota.dataNota + timedelta(-1)
     else:
       i = 0
       for giorno in ["luned","marted","mercoled","gioved","venerd"]:
@@ -90,6 +94,8 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
 
+    nota.put()
+      
     # tags
     s = nota.note.find("#")
     while s >= 0:
@@ -98,34 +104,29 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         e = len(nota.note)
       tag = Tag()
       tag.tag = nota.note[s+1:e]
-      tags.append(tag)
+      tag.obj = nota
+      tag.put()
       s = nota.note.find("#",e)
 
     logging.info('uploading')        
-    
+         
     #allegati
-    allegati = list()
     if hasattr(message, 'attachments'):
       for attach in message.attachments :
         allegato = Allegato()
+        allegato.obj = nota
         allegato.nome = self.decode(attach[0])
         logging.info("allegato: " + allegato.nome)
-        if len(attach[1].decode()) > 1000000:
+        allegato_decode = attach[1].decode()
+        if len(allegato_decode) > 1000000:
           logging.info("attachment too big")
           feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 1MB\r\n")
-        else:            
-          allegato.path = self.site.uploadDoc(attach[1].decode(), str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), self.path)
-        allegati.append(allegato)
-
-    nota.put()
-       
-    for tag in tags:
-      tag.obj = nota
-      tag.put()
-    for allegato in allegati:
-      allegato.obj = nota
-      allegato.put()
-          
+        elif len(allegato_decode) < 5000: 
+          logging.info("attachment too small")
+        else:
+          allegato.path = self.site.uploadDoc(allegato_decode, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), self.path)
+          allegato.put()
+         
     linkpath="genitore"
     if nota.commissario.isCommissario():
       linkpath="commissario"

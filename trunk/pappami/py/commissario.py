@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
 #
@@ -957,11 +958,16 @@ class CMNotaHandler(BasePage):
         nota = form.save(commit=False)
         nota.commissario = commissario
         
-        allegato = Allegato()
-        allegato.descrizione = self.request.get('allegato_desc')
-        allegato.nome = self.request.POST['allegato_file'].filename
-        allegato.dati = self.request.get("allegato_file")
-        nota.allegati.append(allegato)
+        if self.request.get("allegato_file"):
+          nota.allegati = list()
+          allegato = Allegato()
+          allegato.descrizione = self.request.get('allegato_desc')
+          allegato.nome = self.request.POST['allegato_file'].filename
+          allegato.dati = self.request.get("allegato_file")
+          if len(allegato.dati) < 1000000 :         
+            nota.allegati.append(allegato)
+          else:
+            logging.info("attachment is too big.")
             
         preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
         memcache.add(preview, nota, 3600)

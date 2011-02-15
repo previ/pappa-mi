@@ -479,7 +479,7 @@ class Nota(db.Model):
   note = db.TextProperty(default="")
   anno = db.IntegerProperty()
   
-  allegati = list()
+  allegati = list() #helper, not stored
   
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
@@ -500,7 +500,7 @@ class Allegato(db.Model):
   def isImage(self):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
   def contentType(self):
-    return self._tipi[self.nome[self.nome.rfind("."):]]
+    return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
 
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
