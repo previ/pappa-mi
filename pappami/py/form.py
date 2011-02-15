@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from google.appengine.ext.db import djangoforms
 from django import newforms
 import logging
@@ -31,7 +34,7 @@ class IspezioneForm(djangoforms.ModelForm):
     #  raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
-      raise newforms.ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
+      raise newforms.ValidationError("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
 
     # Always return the full collection of cleaned data.
     return cleaned_data
@@ -58,7 +61,7 @@ class NonconformitaForm(djangoforms.ModelForm):
     #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
-      raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date successive alla data odierna")
+      raise newforms.ValidationError(u"Non è ammesso inserire schede di Non Conformità effettuate in date successive alla data odierna")
 
     # Always return the full collection of cleaned data.
     return cleaned_data
@@ -74,7 +77,7 @@ class DietaForm(djangoforms.ModelForm):
       #logging.info("data: %s, %s", f, cleaned_data.get(f))
 
     if Dieta.all().filter("dataIspezione",cleaned_data.get("dataIspezione")).filter("commissione",cleaned_data.get("commissione")).filter("turno",cleaned_data.get("turno")).filter("tipoDieta",cleaned_data.get("tipo")).count() > 0 :
-      raise newforms.ValidationError("Esiste gia' una scheda di Ispezione Diete per questa commissione con la stessa data e turno.")
+      raise newforms.ValidationError("Esiste già una scheda di Ispezione Diete per questa commissione con la stessa data e turno.")
 
     if cleaned_data.get("dataIspezione").isoweekday() > 5 :
       raise newforms.ValidationError(u"La scheda di Ispezione deve essere fatta in un giorno feriale")
@@ -84,7 +87,7 @@ class DietaForm(djangoforms.ModelForm):
     #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
-      raise newforms.ValidationError(u"Non e' ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
+      raise newforms.ValidationError(u"Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
 
     # Always return the full collection of cleaned data.
     return cleaned_data
@@ -107,8 +110,8 @@ class NotaForm(djangoforms.ModelForm):
     #  raise newforms.ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
-      raise newforms.ValidationError(u"Non e' ammesso inserire note in date successive alla data odierna")
-
+      raise newforms.ValidationError(u"Non è ammesso inserire note in date successive alla data odierna")
+   
     # Always return the full collection of cleaned data.
     return cleaned_data
   class Meta:
