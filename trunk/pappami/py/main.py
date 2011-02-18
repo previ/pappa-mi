@@ -30,11 +30,13 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 from py.base import BasePage, CMMenuHandler
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
+from google.appengine.dist import use_library 
 
 from py.model import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
+
   
 class MainPage(BasePage):
 

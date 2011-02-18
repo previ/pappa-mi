@@ -21,12 +21,14 @@ import logging
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
+
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+
 import py.feedparser
 
 from py.gviz_api import *
@@ -34,6 +36,7 @@ from py.model import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
+
 
 class BasePage(webapp.RequestHandler):
   def getBase(self, template_values):
@@ -72,7 +75,7 @@ class BasePage(webapp.RequestHandler):
     template_values["shownote"] = True
     template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.2.1.31 - 2011.02.06"
+    template_values["version"] = "1.3.1.33 - 2011.02.18"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))
