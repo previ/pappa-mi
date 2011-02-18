@@ -298,7 +298,7 @@ class CMNotaGenitoreHandler(BasePage):
         #logging.info(field.name)
         form.data[field.name] = unicode(form.initial[field.name])
       
-      form.data["commissione"] = dieta.commissione
+      form.data["commissione"] = nota.commissione
 
       template_values = {
         'content': 'genitore/nota.html',
