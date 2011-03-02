@@ -95,11 +95,19 @@ class MainPage(BasePage):
   def getStats(self):
     stats = memcache.get("stats")
     if(stats is None):
+      now = datetime.now().date()
+      anno = now.year
+      if now.month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
+        anno = anno - 1
+      
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
-      stats.numeroSchede = Ispezione.all().count()
-      stats.ncTotali = Nonconformita.all().count()
+      stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
+      stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
       stats.diete = Dieta.all().count()
+      stats.note = Nota.all().count()
+      stats.anno1 = anno
+      stats.anno2 = anno + 1
       memcache.add("stats", stats)
       
     return stats
