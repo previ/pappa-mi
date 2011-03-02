@@ -513,10 +513,13 @@ class Allegato(db.Model):
            ".pdf":"application/msword"}
   
 class Statistiche:
+  anno1 = int(0)
+  anno2 = int(0)
   numeroCommissioni = int(0)
   numeroSchede = int(0) 
   ncTotali = int(0)
   diete = int(0)  
+  note = int(0)  
 
 class StatisticheIspezioni(db.Model):
   commissione = db.ReferenceProperty(Commissione)
