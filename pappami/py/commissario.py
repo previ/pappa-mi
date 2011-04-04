@@ -236,7 +236,7 @@ class CMCommissarioDataHandler(BasePage):
         # Creating a JSon string
         self.response.out.write(data_table.ToJSonResponse(columns_order=("commissione", "data", "turno", "primo", "secondo", "contorno", "frutta", "pasti", "key")))
 
-      elif frm == 'diete':
+      elif frm == 'dieta':
         # Creating the data
         description_dieta = {"commissione": ("string", "Commissione"), 
                        "data": ("date", "Data"),
