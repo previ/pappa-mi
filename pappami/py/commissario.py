@@ -35,7 +35,7 @@ from py.gviz_api import *
 from py.model import *
 from py.site import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
 from py.stats import CMStatsHandler
 from py.calendar import *
 
@@ -67,6 +67,7 @@ class CMCommissarioHandler(BasePage):
       self.getBase(template_values)
 
 class CMIspezioniCommissarioHandler(BasePage):
+  @roleCommissario
   def get(self):
     template_values = dict()
     template_values["content_left"] = "commissario/leftbar.html"
@@ -74,6 +75,7 @@ class CMIspezioniCommissarioHandler(BasePage):
     self.getBase(template_values)
 
 class CMNonconfsCommissarioHandler(BasePage):
+  @roleCommissario
   def get(self):
     template_values = dict()
     template_values["content_left"] = "commissario/leftbar.html"
@@ -81,6 +83,7 @@ class CMNonconfsCommissarioHandler(BasePage):
     self.getBase(template_values)
 
 class CMDieteCommissarioHandler(BasePage):
+  @roleCommissario
   def get(self):
     template_values = dict()
     template_values["content_left"] = "commissario/leftbar.html"
@@ -88,6 +91,7 @@ class CMDieteCommissarioHandler(BasePage):
     self.getBase(template_values)
 
 class CMNoteCommissarioHandler(BasePage):
+  @roleCommissario
   def get(self):
     template_values = dict()
     template_values["content_left"] = "commissario/leftbar.html"
