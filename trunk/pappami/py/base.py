@@ -75,7 +75,7 @@ class BasePage(webapp.RequestHandler):
     template_values["shownote"] = True
     template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.3.2.34 - 2011.03.02"
+    template_values["version"] = "1.3.3.35 - 2011.04.12"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))
@@ -253,3 +253,11 @@ class CMMenuHandler(BasePage):
     #logging.info("CMMenuHandler.type: " + str(type(self)))
     super(CMMenuHandler,self).getBase(template_values)    
     
+def roleCommissario(func):
+  def callf(basePage, *args, **kwargs):
+    commissario = basePage.getCommissario(users.get_current_user())
+    if commissario == None or commissario.isCommissario() == False:
+      basePage.redirect("/")
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf    
