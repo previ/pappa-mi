@@ -43,14 +43,14 @@ DATE_FORMAT = "%Y-%m-%d"
 class CMIspezionePublicHandler(BasePage):
   
   def get(self): 
-    isp = Ispezione.get(self.request.get("key"))
-    template_values = dict()
-    template_values["isp"] = isp
-    template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
-    template_values["main"] = "../templates/public/main.html"
-    template_values["content"] = "../public/ispezione_read.html"
-    self.getBase(template_values)
-        
+      isp = Ispezione.get(self.request.get("key"))
+      template_values = dict()
+      template_values["isp"] = isp
+      template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
+      template_values["main"] = "../templates/public/main.html"
+      template_values["content"] = "../public/ispezione_read.html"
+      self.getBase(template_values)
+ 
 class CMNonconfPublicHandler(BasePage):
   
   def get(self): 
@@ -98,11 +98,26 @@ class CMAllegatoPublicHandler(BasePage):
     else:
       self.response.headers['Content-Type'] = "application/pdf"
     self.response.out.write(allegato.dati)    
+
+class CMRobotPublicHandler(BasePage):
+  
+  def get(self): 
+    if self.request.headers["User-Agent"] == "Googlebot":
+      template_values = dict()
+      isps = Ispezione.all()
+      template_values["isps"] = isps
+      template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key="
+      template_values["main"] = "../templates/public/robot.html"
+      self.getBase(template_values)
+    else:
+      self.redirect("/")
+    
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
+    ('/public/robot', CMRobotPublicHandler),
     ('/public/isp', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
     ('/public/dieta', CMDietePublicHandler),
