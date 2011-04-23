@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
+
 import os
 import cgi
 import logging
@@ -33,7 +35,6 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.form import NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
 from py.commissario import CMCommissarioDataHandler
 

@@ -16,6 +16,11 @@
 #
 
 import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+from google.appengine.dist import use_library
+use_library('django', '0.96')
+
 import cgi
 import logging
 from datetime import date, datetime, time, timedelta
@@ -50,6 +55,7 @@ class BasePage(webapp.RequestHandler):
       url_linktext = 'Esci'
     else:
       url = "/login"
+      template_values["login_url"] = users.create_login_url(self.request.uri)
       url_linktext = 'Entra'
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
@@ -73,7 +79,7 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["shownote"] = True
-    template_values["comments"] = False   
+    #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["version"] = "1.3.3.35 - 2011.04.12"
 

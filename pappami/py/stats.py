@@ -29,7 +29,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
-from google.appengine.api.labs.taskqueue import Task, Queue
+from google.appengine.api.taskqueue import Task, Queue
 
 from py.model import *
 from py.form import CommissioneForm
@@ -111,7 +111,7 @@ class CMStatsHandler(BasePage):
     
     z_desc = {"group": ("string", "Gruppo"), 
                "1": ("number", "Scarso"),
-               "2": ("number", "Sifficiente"),
+               "2": ("number", "Sufficiente"),
                "3": ("number", "Discreto"),
                "4": ("number", "Buono")}
 

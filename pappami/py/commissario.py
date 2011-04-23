@@ -1,20 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+
+
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
 
 import os
 import cgi
@@ -35,7 +24,6 @@ from py.gviz_api import *
 from py.model import *
 from py.site import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
 from py.stats import CMStatsHandler
 from py.calendar import *
 
@@ -863,6 +851,7 @@ class CMNotaHandler(BasePage):
       if nota.allegato_set.count():
         allegati = nota.allegato_set
   
+    
       template_values = {
         'content': 'commissario/nota_read.html',
         'content_left': 'commissario/leftbar.html',
@@ -1060,7 +1049,7 @@ class CMCommissarioCalendarioHandler(BasePage):
     template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None
     template_values["cm"] = cm
     self.getBase(template_values)
-
+    
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
    
@@ -1082,7 +1071,7 @@ def main():
     ('/commissario', CMCommissarioHandler),
     ('/commissario/getcm', CMCommissioniDataHandler),
     ('/commissario/getdata', CMCommissarioDataHandler),
-    ('/commissario/getispdata', CMGetIspDataHandler)    
+    ('/commissario/getispdata', CMGetIspDataHandler)
   ], debug=debug)
 
   wsgiref.handlers.CGIHandler().run(application)

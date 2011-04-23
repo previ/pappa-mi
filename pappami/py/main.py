@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+from py.base import BasePage, CMMenuHandler
 import os
 import cgi
 import logging
@@ -28,7 +29,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 import py.feedparser
-from py.base import BasePage, CMMenuHandler
+
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 from google.appengine.dist import use_library 
 
