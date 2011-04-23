@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler
+
 import os
 import cgi
 import logging
@@ -30,7 +32,6 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
 from py.model import *
-from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"

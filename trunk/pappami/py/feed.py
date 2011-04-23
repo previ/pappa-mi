@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+from py.base import BasePage
+
 import os
 import cgi
 import logging

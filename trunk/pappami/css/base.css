@@ -160,7 +160,7 @@ div.versionadded span.title, div.versionchanged span.title { font-weight: bold; 
 
 /* COMMENTS */
 
-.comment { margin:15px 0; }
+.comment { margin:5px 0; background-color: #eeeeff }
 div.comment p { margin-left:1em; }
 #weblog div.comment p.date { margin-bottom:.2em; color:#94da3a; }
 

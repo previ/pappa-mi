@@ -85,12 +85,11 @@ return true;
 <input type="hidden" name="preview" value="{{preview}}">
 <button type="submit" id="e_submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
 <button onclick="ulmsg=false; location.href='/commissario/nota?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
-</form>
 {% else %}
 <button dojoType="dijit.form.Button" id="e_annulla" onclick="location.href='/commissario/note';return false;">Pagina precedente</button>
 {% endif %}
-</form>
 </td>
 </tr>
 </table>
 </div>
+</form>
