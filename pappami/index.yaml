@@ -505,6 +505,12 @@ indexes:
   - name: dataNota
     direction: desc
 
+- kind: Nota
+  properties:
+  - name: commissione
+  - name: dataNota
+    direction: desc
+
 - kind: StatisticheIspezioni
   properties:
   - name: centroCucina

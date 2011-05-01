@@ -1,18 +1,5 @@
 #!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# -*- coding: utf-8 -*-
 #
 
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler
@@ -129,6 +116,101 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
 
+class WidgetListitem:
+  item = None
+  date = None
+  def __init__(self,item,date):
+    self.item=item
+    self.date=date
+  def scuola(self):
+    return self.item.commissione.tipoScuola + " " + self.item.commissione.nome
+  def tipo(self):
+    if isinstance(self.item, Ispezione):
+      return "Ispezione"
+    if isinstance(self.item, Nonconformita):
+      return "Non Conformità"
+    if isinstance(self.item, Dieta):
+      return "Ispezione Diete speciali"
+    if isinstance(self.item, Nota):
+      return "Note"
+    return ""
+  def date(self):
+    if isinstance(self.item, Ispezione):
+      return self.item.dataIspezione
+    if isinstance(self.item, Nonconformita):
+      return self.item.dataNonconf
+    if isinstance(self.item, Dieta):
+      return self.item.dataIspezione
+    if isinstance(self.item, Nota):
+      return self.item.dataNota
+    
+  def url(self):
+    u = "../public/"
+    if isinstance(self.item, Ispezione):
+      u += "isp?key="
+    if isinstance(self.item, Nonconformita):
+      u += "nc?key="
+    if isinstance(self.item, Dieta):
+      u += "dieta?key="
+    if isinstance(self.item, Nota):
+      u += "nota?key="
+    u += str(self.item.key())
+    return u
+
+  
+class CMListWidgetHandler(BasePage):
+  
+  def get(self): 
+    template_values = dict()
+
+    bgcolor = self.request.get("bc")
+    if(bgcolor is None): 
+      bgcolor = "eeeeff"
+    fcolor = self.request.get("fc")
+    if(fcolor is None): 
+      fcolor = "000000"
+
+    template_values["bgcolor"] = bgcolor
+    template_values["fcolor"] = fcolor
+    
+    items=list()
+    cm = Commissione.get(self.request.get("cm"))
+    if cm:
+      isps = Ispezione.all().filter("commissione", cm).order("-dataIspezione")
+      for isp in isps:
+        items.append(WidgetListitem(isp, isp.dataIspezione))
+      
+      ncs = Nonconformita.all().filter("commissione", cm).order("-dataNonconf")
+      for nc in ncs:
+        items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
+
+      diete = Dieta.all().filter("commissione", cm).order("-dataIspezione")
+      for dieta in diete:
+        items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
+
+      note = Nota.all().filter("commissione", cm).order("-dataNota")
+      for nota in note:
+        items.append(WidgetListitem(item=nota, date=nota.dataNota))
+        
+      items = sorted(items, key=lambda item: item.date, reverse=True)
+    
+    template_values["host"] = self.getHost()
+    template_values["items"] = items
+    template_values["scuola"] = cm.nome + " " + cm.tipoScuola
+
+    path = os.path.join(os.path.dirname(__file__), '../templates/widget/list.html')
+    self.response.out.write(template.render(path, template_values))
+
+class CMGadgetHandler(BasePage):
+  
+  def get(self): 
+    template_values = dict()
+    template_values["main"] = "../templates/widget/gadget.xml"
+    template_values["host"] = self.getHost()
+    template_values["cms"] = Commissione.all().order("nome")
+    self.getBase(template_values)
+    
+        
 class CMWidgetHandler(BasePage):
   
   def get(self):
@@ -144,6 +226,8 @@ def main():
   ('/widget/get', CMWidgetHandler),
   ('/widget/menu', CMMenuWidgetHandler),
   ('/widget/stat', CMStatWidgetHandler),
+  ('/widget/list', CMListWidgetHandler),
+  ('/widget/gadget', CMGadgetHandler),
   ('/widget/getcm', CMCommissioniDataHandler)
   ], debug=debug)
   

@@ -332,11 +332,11 @@ class CMAdminHandler(BasePage):
         isp.put()
       for nc in Nonconformita.all() :
         if nc.dataNonconf >= d2008da and nc.dataNonconf < d2008a :
-           nc.anno = 2008
+          nc.anno = 2008
         if nc.dataNonconf >= d2009da and nc.dataNonconf < d2009a :
-           nc.anno = 2009
+          nc.anno = 2009
         if nc.dataNonconf >= d2010da and nc.dataNonconf < d2010a :
-           nc.anno = 2010
+          nc.anno = 2010
         nc.put()
           
     
@@ -357,7 +357,7 @@ class CMAdminHandler(BasePage):
       buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
       for c in Commissario.all():
         if c.isCommissario():
-          buff = buff + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
         
       self.response.out.write(buff)        
       return
@@ -366,7 +366,7 @@ class CMAdminHandler(BasePage):
       buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
       for c in Commissario.all():
         if c.isGenitore():
-          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
         
       self.response.out.write(buff)
       return

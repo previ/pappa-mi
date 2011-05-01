@@ -121,7 +121,9 @@ def main():
   application = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
     ('/public/isp', CMIspezionePublicHandler),
+    ('/public/ispezione', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
+    ('/public/nonconf', CMNonconfPublicHandler),
     ('/public/dieta', CMDietePublicHandler),
     ('/public/nota', CMNotePublicHandler),
     ('/public/allegato', CMAllegatoPublicHandler)
