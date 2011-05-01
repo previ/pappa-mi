@@ -81,7 +81,7 @@ class BasePage(webapp.RequestHandler):
     template_values["shownote"] = True
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.3.3.35 - 2011.04.12"
+    template_values["version"] = "1.4.0.36 - 2011.04.30"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))

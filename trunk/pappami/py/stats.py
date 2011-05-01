@@ -99,9 +99,9 @@ class CMStatsHandler(BasePage):
 
     stat = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",None).filter("centroCucina", None).get()
       
-    if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
-      cm = self.getCommissario(users.get_current_user()).commissioni()[0]
-    elif self.request.get("cm"):
+    #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
+    #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
+    if self.request.get("cm"):
       cm = Commissione.get(self.request.get("cm"))
     if cm:
       cc = cm.getCentroCucina(now)
@@ -189,29 +189,43 @@ class CMStatsHandler(BasePage):
     a_desc = {"tipo": ("string", "Descrizione"), 
                "count": ("number", "Numero")}
 
+    a_stat = stat
+    if statCC:
+      a_stat = statCC
+    if statCM:
+      a_stat = statCM
     aa_data = list()
-    for a_idx in range(0, len(stat.ambiente)):
-      aa_data.append({"tipo": stat.ambiente_desc[a_idx], "count": stat.ambiente[a_idx]})
+    for a_idx in range(0, len(a_stat.ambiente)):
+      aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
     aa_table = DataTable(a_desc)
     aa_table.LoadData(aa_data)    
     
     nc_desc = {"tipo": ("string", "Tipo"), 
                "count": ("number", "Occorrenze")}
     
-    ncstat = StatisticheNonconf.all().filter("timeId", anno).filter("commissione", None).filter("centroCucina",None).get()
-    nc_data = list()
-    nci = Nonconformita();
-    for nd in ncstat.getTipiPos():
-      nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
+    if cm:
+      ncstat = StatisticheNonconf.all().filter("timeId", anno).filter("commissione", cm).filter("centroCucina",None).get()
+    else:
+      ncstat = StatisticheNonconf.all().filter("timeId", anno).filter("commissione", None).filter("centroCucina",None).get()      
+
     nc_table = DataTable(nc_desc)
-    nc_table.LoadData(nc_data)
+    if ncstat is not None:      
+      nc_data = list()
+      nci = Nonconformita();
+      for nd in ncstat.getTipiPos():
+        nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
+      nc_table.LoadData(nc_data)
     
     di_desc = {"time": ("string", "Settimane"), 
                "schede": ("number", "Schede"),
                "nonconf": ("number", "Non Conformita")}
     di_data = list()
-    for w in range(len(ncstat.numeroNonconfSettimana)):
-      di_data.append({"time": w, "schede": stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
+
+    for w in range(len(a_stat.numeroSchedeSettimana)):
+      if ncstat is not None:
+        di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
+      else:
+        di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": 0})
     di_table = DataTable(di_desc)
     di_table.LoadData(di_data)
 
