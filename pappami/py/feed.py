@@ -76,7 +76,9 @@ class CMFeedIspNCHandler(BasePage):
 
   def get(self): 
     buff = memcache.get("feed_ispnc")
-    cm = Commissione.get(self.request.get("key"))
+    cm = None
+    if self.request.get("key"):
+      cm = Commissione.get(self.request.get("key"))
     
     path = "/genitore/"
     if self.request.get('public'):
