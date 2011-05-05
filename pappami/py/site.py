@@ -18,7 +18,6 @@ class Site:
     self.username = username
     self.password = password
     self.site = site
-    logging.info("username: " + str(username) + " password: " + str(password))
     self.client = gdata.sites.client.SitesClient(source='Pappa-Mi-1.0', domain="pappa-mi.it", site=site)
     self.client.ClientLogin(self.username, self.password, self.client.source);
 
