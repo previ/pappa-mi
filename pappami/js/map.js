@@ -59,10 +59,10 @@ function redraw() {
   offset = 0;
   jQuery.get("/map?cmd=all&limit="+limit, {}, drawMap );
 }
-function load() {
+function load(lat, lon) {
   var myOptions = {
     zoom: 12,
-    center: new google.maps.LatLng(45.4636889,9.1881408),
+    center: new google.maps.LatLng(lat,lon),
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }    
   map = new google.maps.Map(document.getElementById("map"), myOptions);
