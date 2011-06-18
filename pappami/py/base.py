@@ -33,11 +33,15 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.api import images
 
 import py.feedparser
 
 from py.gviz_api import *
 from py.model import *
+from py.modelMsg import *
+
+from django.utils import simplejson as json
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -46,7 +50,7 @@ DATE_FORMAT = "%Y-%m-%d"
 class BasePage(webapp.RequestHandler):
   def getBase(self, template_values):
     
-    if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1:
+    if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
       self.redirect("http://www.pappa-mi.it")
         
     user = users.get_current_user()
@@ -70,6 +74,11 @@ class BasePage(webapp.RequestHandler):
         memcache.set("commissario" + str(user.user_id()), commissario, 600)
       template_values["commissario"] = commissario.isCommissario()
       template_values["genitore"] = commissario.isGenitore()
+      user.fullname = commissario.nomecompleto()
+      user.title = commissario.titolo()
+      user.avatar = commissario.avatar()
+     
+       
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
 
@@ -81,6 +90,7 @@ class BasePage(webapp.RequestHandler):
     template_values["shownote"] = True
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
+    template_values["host"] = self.getHost()
     template_values["version"] = "1.4.0.36 - 2011.04.30"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
@@ -89,12 +99,12 @@ class BasePage(webapp.RequestHandler):
   def getCommissario(self,user):
     commissario = None
     if(user):
-      #commissario = memcache.get("user" + str(user.user_id()))
-      #if not commissario:
-      #logging.info(user.email())
+      commissario = memcache.get("user" + str(user.user_id()))
+      if not commissario:
+        logging.info(user.email())
       #commissario = db.GqlQuery("SELECT * FROM Commissario where user = USER('" + user.email() + "')").get()
       commissario = Commissario.all().filter("user", user).get()
-      #memcache.add("user" + str(user.user_id()), commissario, 600)
+      memcache.add("user" + str(user.user_id()), commissario, 600)
     return commissario
 
   def getCommissioni(self):
@@ -103,6 +113,38 @@ class BasePage(webapp.RequestHandler):
       commissioni = Commissione.all().order("nome");
       memcache.add("commissioni", commissioni)
     return commissioni
+
+  def getTopTags(self):
+    tags = memcache.get("toptags")
+    if not tags:
+      tags = list()
+      for tag in Tag.all().order("-numRef").fetch(40):
+        tags.append(tag)
+      memcache.add("toptags", tags, 60)      
+    return tags
+
+  def getActivities(self, tagname=""):
+    activities = None
+    if tagname != "":
+      activities = memcache.get("public_activities_" + tagname)
+      if not activities:
+        activities = list()
+        tag = Tag.all().filter("nome", tagname).get()
+        if tag:
+          for tagobj in tag.tagobj_reference_set:
+            activities.append(tagobj.obj)
+          activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
+        memcache.add("public_activities_" + tagname, activities, 60)
+      
+    else:
+      activities = memcache.get("public_activities")
+      if not activities:
+        activities = list()
+        for msg in Messaggio.all().filter("livello", 0).order("-creato_il").fetch(50):
+          #logging.info("tags: " + msg.tags())
+          activities.append(msg)
+        memcache.add("public_activities", activities, 60)
+    return activities
   
   def getHost(self):
     host = self.request.url[len("http://"):]
@@ -110,33 +152,49 @@ class BasePage(webapp.RequestHandler):
     #logging.info("host: " + host)
     return host
 
+  _news = {"news_pappami":"http://blog.pappa-mi.it/feeds/posts/default",
+          "news_web": "http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast",
+          "news_cal": "http://www.google.com/calendar/feeds/aiuto%40pappa-mi.it/public/basic"}
+  def getNews(self,name):
+    news = memcache.get(name)
+    i = 0
+    if news is None:
+      news_all = py.feedparser.parse(self._news[name])
+      #logging.debug(news_all)
+      news = []
+      for n in news_all.entries:
+        #logging.debug(n)
+        if i >= 4 :
+          break
+        i = i + 1
+        news.append(n)
+        
+      memcache.add(name,news)
+    return news
+  
 class CMCommissioniDataHandler(BasePage):
 
   def get(self): 
     user = users.get_current_user()
-    buff = memcache.get("cmall")
-    if(buff is None):
-  
-      description = {"nome": ("string", "Nome"), 
-                     "key": ("string", "Key")}
-      data_table = DataTable(description)
-      
-      cms = Commissione.all().order("nome")
-      buff = ""
-      buff = '{"label": "nome", "identifier": "key", "items": ['
-      buff = buff + '{ "nome": "", "key": ""},'
-  
-      
-      notfirst = False
-      for cm in cms.order("nome"):
-        if(notfirst) :
-          buff = buff + ','
-        notfirst = True
-        buff = buff + '{ "nome": "' + cm.nome + ' - ' + cm.tipoScuola + '", "key": "' + str(cm.key()) + '"}'
+    city = self.request.get("city")
+    if city == "" and self.getCommissario(user):
+      city = self.getCommissario(user).citta.key()
+    else:
+      city = db.Key(city)      
+
+    buff = ""
+    if city:
+      buff = memcache.get("cmall"+str(city))
+      if(buff is None):
+        cmlist = list()  
+        cms = Commissione.all().filter("citta", city).order("nome")
+        for cm in cms:
+          cmlist.append({'key': str(cm.key()), 'nome':cm.nome + ' - ' + cm.tipoScuola})
         
-      buff = buff + ']}'
-      memcache.add("cmall", buff)
-        
+        buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
+          
+        memcache.add("cmall"+str(city), buff)
+          
     expires_date = datetime.utcnow() + timedelta(20)
     expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
     self.response.headers.add_header("Expires", expires_str)
@@ -149,9 +207,146 @@ class CMCommissioniHandler(BasePage):
     template_values["limit"] = 100
     template_values["centriCucina"] = CentroCucina.all().order("nome")
     template_values['action'] = self.request.path
+    template_values['geo'] = self.getCommissario(users.get_current_user()).citta.geo
     super(CMCommissioniHandler,self).getBase(template_values)
 
 class CMMenuHandler(BasePage):
+
+  def createMenu(self,request,c,template_values):
+    menu = Menu();
+       
+    data = self.workingDay(datetime.now().date())
+
+    menu = self.getMenu(data, c)    
+    template_values["sett"] = len(menu) > 2
+    template_values["menu"] = self.getMenu(data, c)
+    
+  def workingDay(self, data):
+    while data.isoweekday() > 5:
+      data += timedelta(1)      
+    return data
+    
+  def getMenu(self, data, c):
+    offset = -1
+    citta = Citta.all().get()
+    if c and c.getCentroCucina(data).getMenuOffset(data) is not None:
+      offset = c.getCentroCucina(data).getMenuOffset(data)
+      citta = c.citta
+
+    if data >= date(2010,6,14) and data < date(2010,8,31):
+      offset = 0
+      
+    menu = memcache.get("menu-" + str(offset) + "-" + str(data))
+    if not menu:
+      menu = list()
+      
+      self.getMenuHelper(menu,data,offset,citta)
+      if offset >= 0:
+        self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
+              
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu, 60)
+    return menu
+
+  def getMenuHelper(self, menu, data, offset, citta):
+    mn = MenuNew.all().filter("citta",citta).filter("validitaDa <=", data).order("-validitaDa").get()
+    
+    piatti = dict()
+    if offset > 0:
+      for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()).filter("settimana", (((((data-mn.validitaDa).days) / 7)+offset)%4 + 1) ):
+        piatti[pg.tipo] = pg.piatto    
+      mh = MenuHelper()
+      mh.data = data + timedelta(data.isoweekday()-1)      
+      mh.giorno = data.isoweekday()
+      mh.primo = piatti["p"]
+      mh.secondo = piatti["s"]
+      mh.contorno = piatti["c"]
+      mh.dessert = piatti["d"]
+      menu.append(mh)
+    else:
+      settimane = dict()
+      for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()):
+        if not pg.settimana in settimane:
+          settimane[pg.settimana] = dict()
+        settimane[pg.settimana][pg.tipo] = pg.piatto
+    
+      for i in range(1,5):
+        piatti = settimane[i]
+        mh = MenuHelper()
+        mh.data = data + timedelta(data.isoweekday()-1)      
+        mh.giorno = data.isoweekday()
+        mh.settimana = i
+        mh.primo = piatti["p"]
+        mh.secondo = piatti["s"]
+        mh.contorno = piatti["c"]
+        mh.dessert = piatti["d"]
+        menu.append(mh)      
+    
+
+  def getMenuWeek(self, data, cm): 
+    menu = list();
+
+    #logging.info("data: %s", data)
+
+    offset = cm.getCentroCucina(data).getMenuOffset(data)
+
+    if offset == None:
+      offset = 0
+
+    if data >= date(2010,6,14) and data < date(2010,8,31):
+      offset = 0
+      
+    # settimana corrente
+    menu = MenuNew.all().filter("citta",cm.citta).filter("validitaDa <=", data).order("-validitaDa").get()
+
+    giorni = dict()
+    for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+      if not pg.giorno in giorni:
+        giorni[pg.giorno] = dict()
+      giorni[pg.giorno][pg.tipo] = pg.piatto
+
+    mlist = list()
+    for i in range(1,6):
+      piatti = giorni[i]
+      mh = MenuHelper()
+      mh.data = data + timedelta(data.isoweekday()-1)      
+      mh.giorno = i
+      mh.primo = piatti["p"]
+      mh.secondo = piatti["s"]
+      mh.contorno = piatti["c"]
+      mh.dessert = piatti["d"]
+      mlist.append(mh)
+      
+    return mlist
+      
+  def getBase(self,template_values):
+    cm = None
+    commissario = self.getCommissario(users.get_current_user())
+    if self.request.get("cm") != "":
+      cm = Commissione.get(self.request.get("cm"))
+    elif commissario and commissario.commissione() :
+      cm = commissario.commissione()
+    else:
+      cm = Commissione.all().get()
+    date = self.request.get("data")
+    if date:
+      date = datetime.strptime(date,DATE_FORMAT).date()
+    else:
+      date = datetime.now().date()
+    
+    date1 = date - timedelta(date.isoweekday() - 1)
+    date2 = date1 + timedelta(7)
+    template_values['content'] = 'menu.html'
+    template_values['menu1'] = self.getMenuWeek(date1, cm )
+    template_values['menu2'] = self.getMenuWeek(date2, cm )
+    template_values['data'] = date
+    template_values['data1'] = date1
+    template_values['data2'] = date2
+    template_values['cm'] = cm
+    template_values['action'] = self.request.path
+    #logging.info("CMMenuHandler.type: " + str(type(self)))
+    super(CMMenuHandler,self).getBase(template_values)    
+    
+class CMMenuHandlerOld(BasePage):
 
   def createMenu(self,request,c,template_values):
     menu = Menu();
@@ -259,6 +454,49 @@ class CMMenuHandler(BasePage):
     template_values['action'] = self.request.path
     #logging.info("CMMenuHandler.type: " + str(type(self)))
     super(CMMenuHandler,self).getBase(template_values)    
+
+class CMAvatarHandler(BasePage):
+  
+  def get(self):
+    commissario = self.getCommissario(users.get_current_user())
+    self.response.headers['Content-Type'] = "image/png"
+    img = commissario.avatar_data
+    if self.request.get("size") != "big":
+      img = images.resize(img, 48,48)
+    self.response.out.write(img)
+    
+  def post(self):
+    cmd = self.request.get("cmd")
+    logging.info("cmd:" + cmd)
+    if cmd == "upload":
+      commissario = self.getCommissario(users.get_current_user())
+      avatar_file = self.request.get("avatar_file")
+      logging.info("1")
+      if avatar_file:
+        if len(avatar_file) < 1000000 :
+          logging.info("2")
+          avatar = images.resize(self.request.get("avatar_file"), 128,128)
+          commissario.avatar_data = avatar
+          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key())
+          commissario.put()
+          self.response.out.write(commissario.avatar()+"?size=normal");
+        else:
+          logging.info("attachment is too big.")
+    if cmd == "saveurl":
+      commissario = self.getCommissario(users.get_current_user())
+      commissario.avatar_url = self.request.get("picture")
+      commissario.put()
+
+class CMCittaHandler(webapp.RequestHandler):
+  def get(self):        
+    citta = Citta.all()
+    citlist = list()
+    for c in citta:
+      citlist.append({'key': str(c.key()), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
+      
+    self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
+    
+    
     
 def roleCommissario(func):
   def callf(basePage, *args, **kwargs):
