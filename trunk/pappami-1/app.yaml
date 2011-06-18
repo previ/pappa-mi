@@ -1,0 +1,129 @@
+application: test-pappa-mi
+version: 1
+runtime: python
+api_version: 1
+
+derived_file_type:
+- python_precompiled
+
+builtins:
+- datastore_admin: on
+
+inbound_services:
+- mail
+
+skip_files: |
+ ^(.*/)?(
+ (app\.yaml)|
+ (app\.yml)|
+ (index\.yaml)|
+ (index\.yml)|
+ (#.*#)|
+ (.*~)|
+ (.bak)|
+ (.*\.py[co])|
+ (.*/RCS/.*)|
+ (\..*)|
+ )$
+ 
+handlers:
+
+- url: /_ah/mail/.+ 
+  script: py/handle_incoming_email.py 
+  login: admin
+  
+- url: /admin/dblog
+  script: py/dblog.py
+  login: admin
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /css
+  static_dir: css
+
+- url: /img
+  static_dir: img
+
+- url: /js
+  static_dir: js
+
+- url: /(.*\.(gif|png|jpg|txt|html))
+  static_files: static/\1
+  upload: static/(.*\.(gif|png|jpg|txt|html))
+
+- url: /favicon.ico
+  static_files: img/favicon.ico
+  upload: img/favicon.ico
+
+- url: /public/.*
+  script: py/public.py
+
+- url: /commissario/.*
+  script: py/commissario.py
+  login: required
+
+- url: /commissario/*
+  script: py/commissario.py
+  login: required
+
+- url: /genitore/.*
+  script: py/genitore.py
+  login: required
+
+- url: /genitore/*
+  script: py/genitore.py
+  login: required
+  
+- url: /admin/stats/*
+  script: py/stats.py
+  login: admin  
+
+- url: /admin/stats/.*
+  script: py/stats.py
+  login: admin  
+  
+- url: /admin/.*
+  script: py/admin.py
+  login: admin
+
+- url: /admin/*
+  script: py/admin.py
+  login: admin
+  
+- url: /stats/.*
+  script: py/stats.py
+  login: required
+
+- url: /stats/*
+  script: py/stats.py
+  login: required
+
+- url: /feed/.*
+  script: py/feed.py
+
+- url: /feed/*
+  script: py/feed.py
+
+- url: /widget/.*
+  script: py/widget.py
+  
+- url: /widget/*
+  script: py/widget.py
+ 
+- url: /_ah/login_required
+  script: py/login.py
+
+- url: /_ah/login_required
+  script: py/login.py
+
+- url: /login
+  script: py/login.py
+  login: required
+
+- url: /fb/.*
+  script: py/fb.py
+  
+- url: .*
+  script: py/main.py

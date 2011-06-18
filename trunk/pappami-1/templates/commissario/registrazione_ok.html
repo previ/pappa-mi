@@ -1,0 +1,43 @@
+﻿<style>#content-main {width: 60em; margin-left: 10em;margin-right: 10em;padding:1em;}</style>
+<script type="text/javascript">
+dojo.require("dijit.form.Button");
+</script>
+<H1 class="ss-form-title">Registrazione Commissario Completata</H1>
+<p>Grazie per esserti registrato, la tua richiesta è stata inviata allo staff di Pappa-Mi.</p>
+<p>Riceverai a breve una email di conferma dell'abilitazione.</p>
+<p>Da quel momento potrai iniziare ad inserire le schede di valutazione e le segnalazioni di non conformita'.
+</p>
+<HR class="ss-email-break" style="display:none;">
+<BR>
+<table width="100%">
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Nome</LABEL>{{cmsro.nome}}</DIV></DIV>
+</td>
+<td rowspan="3">
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_1">Commissione</LABEL> 
+{% for cm in cmsro.commissioni %}
+{{cm.nome}} - {{cm.tipoScuola}}<br>
+{% endfor %}
+</DIV></DIV>
+</td>
+</tr>
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_0">Cognome</LABEL>{{cmsro.cognome}}
+</DIV></DIV>
+</td>
+</tr>
+<tr>
+<td>
+<DIV class="errorbox-good">
+<DIV class="ss-form-entry"><LABEL class="ss-q-title" for="entry_2">email</LABEL>{{cmsro.user.email}}</DIV></DIV>
+</td>
+</tr>
+</table>
+<P align="center">
+<button dojoType="dijit.form.Button" onclick="location.href='/';return false;">Torna a pagina principale</button>
+<P>

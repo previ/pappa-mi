@@ -1,0 +1,250 @@
+<script type="text/javascript">
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojo.parser");
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.layout.StackContainer");
+dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Tooltip");
+</script>
+<style>
+div { padding: 0px; }
+.tab_title {text-align:center; font-size:130%; }
+#content-main { padding:1em;width:66em;}
+.legind {font-size: 80%;}
+</style>
+<script src="/js/form.js" type="text/javascript"></script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<!--script src="/stats/getdata" type="text/javascript"></script-->
+<script>
+    //google.load('visualization', '1.1', {'packages' : ['piechart','linechart','barchart','columnchart', 'table']});
+    google.load('visualization', '1.1', {'packages' : ['corechart']});
+    dojo.addOnLoad(init);
+
+function init() {
+  // Create and populate the data table.
+  var barOptsD = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#00FF00','#FFFF00','#FF0000']};
+  var barOptsG = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#FF0000','#FFFF00','#00CC00','#00FF00']};
+  var barOptsA = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#FF0000','#FFFF00','#00FF00']};
+  var barOpts = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#FF0000','#FFFF00','#00FF00']};
+  var barOptsC = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#0000FF','#00FF00','#FF0000']};
+  var barOptsT = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#0000FF','#00FF00','#FF0000']};
+  var barOptsQ = {width: 300, height: 100, isStacked: 'true', legend: 'none', colors: ['#FF0000','#00CC00','#00FF00']};
+  
+  var cm_data = new google.visualization.DataTable({{cm_data}});
+  var dati_ins = new google.visualization.DataTable({{di_table}});
+  var aa_data = new google.visualization.DataTable({{aa_table}});
+  var nc_data = new google.visualization.DataTable({{nc_table}});
+
+  var gg_data = new google.visualization.DataTable({{gg_table}});
+  var zr_data = new google.visualization.DataTable({{zr_table}});
+  var zc_data = new google.visualization.DataTable({{zc_table}});
+  var sr_data = new google.visualization.DataTable({{sr_table}});
+  var dp_data = new google.visualization.DataTable({{dp_table}});
+  
+  var pa_data = new google.visualization.DataTable({{pa_table}});
+  var pg_data = new google.visualization.DataTable({{pg_table}});
+  var pc_data = new google.visualization.DataTable({{pc_table}});
+  var pt_data = new google.visualization.DataTable({{pt_table}});
+  var pq_data = new google.visualization.DataTable({{pq_table}});
+  var pd_data = new google.visualization.DataTable({{pd_table}});
+
+  var sa_data = new google.visualization.DataTable({{sa_table}});
+  var sg_data = new google.visualization.DataTable({{sg_table}});
+  var sc_data = new google.visualization.DataTable({{sc_table}});
+  var st_data = new google.visualization.DataTable({{st_table}});
+  var sq_data = new google.visualization.DataTable({{sq_table}});
+  var sd_data = new google.visualization.DataTable({{sd_table}});
+
+  var ca_data = new google.visualization.DataTable({{ca_table}});
+  var cg_data = new google.visualization.DataTable({{cg_table}});
+  var cc_data = new google.visualization.DataTable({{cc_table}});
+  var ct_data = new google.visualization.DataTable({{ct_table}});
+  var cq_data = new google.visualization.DataTable({{cq_table}});
+
+  var ba_data = new google.visualization.DataTable({{ba_table}});
+  var bg_data = new google.visualization.DataTable({{bg_table}});
+  var bq_data = new google.visualization.DataTable({{bq_table}});
+
+  var fa_data = new google.visualization.DataTable({{fa_table}});
+  var fg_data = new google.visualization.DataTable({{fg_table}});
+  var fm_data = new google.visualization.DataTable({{fm_table}});
+  var fq_data = new google.visualization.DataTable({{fq_table}});
+  var fd_data = new google.visualization.DataTable({{fd_table}});
+
+  new google.visualization.ColumnChart(document.getElementById('cm_chart')).draw(cm_data, {width: 780, height: 410, is3D: true, title: 'Commissioni'});  
+  new google.visualization.LineChart(document.getElementById('dati')).draw(dati_ins, {width: 780, height: 410, smoothLine: 'true', title: 'Dati raccolti', titleX: 'Settimane', curveType: "function"});  
+  new google.visualization.ColumnChart(document.getElementById('aa_chart')).draw(aa_data, {width: 250, height: 100, legend: 'none', title: 'Aspetti ambientali'});  
+  new google.visualization.PieChart(document.getElementById('nc_chart')).draw(nc_data, {width: 780, height: 410, legend: 'right', legendFontSize: '12', tooltipHeight: "120", tooltipFontSize: "14"});  
+
+  new google.visualization.BarChart(document.getElementById('gg_chart')).draw(gg_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('zr_chart')).draw(zr_data, barOptsG);  
+  new google.visualization.BarChart(document.getElementById('zc_chart')).draw(zc_data, barOptsG);  
+  new google.visualization.BarChart(document.getElementById('sr_chart')).draw(sr_data, barOptsG);  
+  new google.visualization.BarChart(document.getElementById('dp_chart')).draw(dp_data, barOptsD);  
+  
+  new google.visualization.BarChart(document.getElementById('pd_chart')).draw(pd_data, barOptsD);  
+  new google.visualization.BarChart(document.getElementById('pc_chart')).draw(pc_data, barOptsC);  
+  new google.visualization.BarChart(document.getElementById('pt_chart')).draw(pt_data, barOptsT);  
+  new google.visualization.BarChart(document.getElementById('pq_chart')).draw(pq_data, barOptsQ);  
+  new google.visualization.BarChart(document.getElementById('pa_chart')).draw(pa_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('pg_chart')).draw(pg_data, barOptsG);  
+
+  new google.visualization.BarChart(document.getElementById('sd_chart')).draw(sd_data, barOptsD);  
+  new google.visualization.BarChart(document.getElementById('sc_chart')).draw(sc_data, barOptsC);  
+  new google.visualization.BarChart(document.getElementById('st_chart')).draw(st_data, barOptsT);  
+  new google.visualization.BarChart(document.getElementById('sq_chart')).draw(sq_data, barOptsQ);  
+  new google.visualization.BarChart(document.getElementById('sa_chart')).draw(sa_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('sg_chart')).draw(sg_data, barOptsG);  
+
+  new google.visualization.BarChart(document.getElementById('cc_chart')).draw(cc_data, barOptsC);  
+  new google.visualization.BarChart(document.getElementById('ct_chart')).draw(ct_data, barOptsT);  
+  new google.visualization.BarChart(document.getElementById('cq_chart')).draw(cq_data, barOptsQ);  
+  new google.visualization.BarChart(document.getElementById('ca_chart')).draw(ca_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('cg_chart')).draw(cg_data, barOptsG);  
+
+  new google.visualization.BarChart(document.getElementById('bq_chart')).draw(bq_data, barOptsQ);  
+  new google.visualization.BarChart(document.getElementById('ba_chart')).draw(ba_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('bg_chart')).draw(bg_data, barOptsG);  
+
+  new google.visualization.BarChart(document.getElementById('fq_chart')).draw(fq_data, barOptsQ);  
+  new google.visualization.BarChart(document.getElementById('fa_chart')).draw(fa_data, barOptsA);  
+  new google.visualization.BarChart(document.getElementById('fm_chart')).draw(fm_data, barOptsC);  
+  new google.visualization.BarChart(document.getElementById('fg_chart')).draw(fg_data, barOptsG);  
+
+{%if commissario or genitore%}
+  var cm = dijit.byId("e_cm");
+  var anno = dojo.byId("e_aa");
+  cookie = readCookie("pappa-mi-ctx");
+  if(!cookie) {
+   cookie = "true,,";
+  }
+  var p = cookie.split(",");
+  cm.attr("value", p[1]);
+  anno.value=p[2]; 
+{%endif%}    
+  dojo.style("d_loading", {display:"none"});
+  dojo.style("statContainer", {visibility:"visible"});
+}
+function setQuery(){
+{%if commissario or genitore%}
+  var cm = dijit.byId("e_cm");
+  var anno = dojo.byId("e_aa");
+  createCookie("pappa-mi-ctx", "," + cm.attr("value") + "," + anno.value, 10);
+{%endif%}  
+}
+</script>
+<H1 style="display:inline;">Statistiche dal {{stat.dataInizio|date:"d/m/Y"}} al {{stat.dataFine|date:"d/m/Y"}}{%if statCM%} {{statCM.commissione.nome}} - {{statCM.commissione.tipoScuola}}{%endif%}</H1>
+<div id="d_loading" style="opacity:0.9; text-align: center; border-style:solid; border-width:1px; background-color: white; width: 20%; height: 60px; position:absolute; top: 30%; left: 40%;"><br><img src="/img/loading.gif" style = "margin:auto;" alt="loading"/></div>
+<div id="statContainer" style="margin:0;visibility:hidden;">
+<div dojoType="dijit.form.DropDownButton" id="filtraDati"><span>Seleziona l'insieme di dati</span>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati" >
+<form dojoType="dijit.form.Form" action="{{action}}" method="post" id="form0" execute="setQuery();">
+<table>
+{%if commissario or genitore%}<tr>
+<td>
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
+<LABEL class="ss-q-title" for="e_cm">Commissioni</LABEL>
+<input dojoType="dijit.form.FilteringSelect" value="" store="cmStore"
+searchAttr="nome" name="cm" id="e_cm">
+</td>
+</tr>
+{%endif%}<tr>
+<td>
+<LABEL class="ss-q-title" for="e_aa">Anno scolastico</LABEL>
+<SELECT name="anno" id="e_aa">
+{%for anno in anni%}<OPTION value="{{anno}}">{{anno}}-{{anno|add:1}}</OPTION>{%endfor%}
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit">Applica</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+<br/>
+<span dojoType="dijit.layout.StackController" containerId="stackContainer"></span>
+<button id="previous" onClick="dijit.byId('stackContainer').back()" dojoType="dijit.form.Button" style="margin:0;">&lt;</button>
+<button id="next" onClick="dijit.byId('stackContainer').forward()" dojoType="dijit.form.Button" style="margin:0;">&gt;</button>
+<div dojoType="dijit.layout.StackContainer" id="stackContainer" style="height: 430px;">
+    <div dojoType="dijit.layout.ContentPane" title="Commissioni">
+        <table width="100%"><tr><!--td><div id="cm_table" style="width: 300px; height: 300px;"></div></td--><td><div id="cm_chart"></div></td></tr></table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Dati inseriti">
+        <div id="dati"></div>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Servizio">
+        <table>
+        <tr><td colspan="2" class="tab_title">Giudizio Globale sul cibo</td><td colspan="2" class="tab_title">Aspetti ambientali</td></tr>
+        <tr><td><div id="gg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.giudizioGlobaleNorm}}{%if statCC%}|{{statCC.giudizioGlobaleNorm}}{%endif%}{%if statCM%}|{{statCM.giudizioGlobaleNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Giudizio Globale"/></div></td><td><div id="gg_chart"></div></td><td><div id="aa_table"></div></td><td><div id="aa_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Pulizia Refettorio</td><td colspan="2" class="tab_title">Pulizia Centro Cottura</td></tr>
+        <tr><td><div id="zr_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.puliziaRefettorioNorm}}{%if statCC%}|{{statCC.puliziaRefettorioNorm}}{%endif%}{%if statCM%}|{{statCM.puliziaRefettorioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Pulizia Refettorio"/></div></td><td><div id="zr_chart"></div></td><td><div id="pt_table"></div></td><td><div id="zc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Smaltimento rifiuti</td><td colspan="2" class="tab_title">Durata pasto</td></tr>
+        <tr><td><div id="sr_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="sr_chart"></div></td><td></td><td><div id="dp_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Non conformit&agrave;">
+        <table><tr><td><div id="nc_table"></div></td><td><div id="nc_chart"></div></td></tr></table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Primo">
+        <table>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="pa_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.primoAssaggioNorm}}{%if statCC%}|{{statCC.primoAssaggioNorm}}{%endif%}{%if statCM%}|{{statCM.primoAssaggioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pa_chart"></div></td><td><div id="pc_table"></div></td><td><div id="pc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="pg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.primoGradimentoNorm}}{%if statCC%}|{{statCC.primoGradimentoNorm}}{%endif%}{%if statCM%}|{{statCM.primoGradimentoNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></div></td><td><div id="pg_chart"></div></td><td><div id="pt_table"></div></td><td><div id="pt_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quantit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
+        <tr><td><div id="pq_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="pq_chart"></div></td><td></td><td><div id="pd_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Secondo">
+        <table>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="sa_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.secondoAssaggioNorm}}{%if statCC%}|{{statCC.secondoAssaggioNorm}}{%endif%}{%if statCM%}|{{statCM.secondoAssaggioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Assaggio"/></div></td><td><div id="sa_chart"></div></td><td><div id="sc_table"></div></td><td><div id="sc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="sg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.secondoGradimentoNorm}}{%if statCC%}|{{statCC.secondoGradimentoNorm}}{%endif%}{%if statCM%}|{{statCM.secondoGradimentoNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/></div></td><td><div id="sg_chart"></div></td><td><div id="st_table"></div></td><td><div id="st_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quantit&agrave;</td><td colspan="2" class="tab_title">Distribuzione</td></tr>
+        <tr><td><div id="sq_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="sq_chart"></div></td><td><div id="sd_table"></div></td><td><div id="sd_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Contorno">
+        <table>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Cottura</td></tr>
+        <tr><td><div id="ca_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.contornoAssaggioNorm}}{%if statCC%}|{{statCC.contornoAssaggioNorm}}{%endif%}{%if statCM%}|{{statCM.contornoAssaggioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="contorno - Assaggio"/></div></td><td><div id="ca_chart"></div></td><td><div id="cc_table"></div></td><td><div id="cc_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Temperatura</td></tr>
+        <tr><td><div id="cg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.contornoGradimentoNorm}}{%if statCC%}|{{statCC.contornoGradimentoNorm}}{%endif%}{%if statCM%}|{{statCM.contornoGradimentoNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="contorno - Gradimento"/></div></td><td><div id="cg_chart"></div></td><td><div id="ct_table"></div></td><td><div id="ct_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Quantit&agrave;</td><td colspan="2" class="tab_title"></td></tr>
+        <tr><td><div id="cq_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="cq_chart"></div></td><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Pane">
+        <table>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Quantit&agrave;</td></tr>
+        <tr><td><div id="ba_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.paneAssaggioNorm}}{%if statCC%}|{{statCC.paneAssaggioNorm}}{%endif%}{%if statCM%}|{{statCM.paneAssaggioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="pane - Assaggio"/></div></td><td><div id="ba_chart"></div></td><td><div id="bq_table"></div></td><td><div id="bq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title"></td></tr>
+        <tr><td><div id="bg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.paneGradimentoNorm}}{%if statCC%}|{{statCC.paneGradimentoNorm}}{%endif%}{%if statCM%}|{{statCM.paneGradimentoNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="pane - Gradimento"/></div></td><td><div id="bg_chart"></div></td><td><div id="bt_table"></div></td><td><div id="bt_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">&nbsp;</td><td colspan="2" class="tab_title"></td></tr>
+        <tr><td><div id="cq_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="cq_chart"></div></td><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td></tr>
+        </table>
+    </div>
+    <div dojoType="dijit.layout.ContentPane" title="Frutta">
+        <table>
+        <tr><td colspan="2" class="tab_title">Assaggio</td><td colspan="2" class="tab_title">Quantit&agrave;</td></tr>
+        <tr><td><div id="fa_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.fruttaAssaggioNorm}}{%if statCC%}|{{statCC.fruttaAssaggioNorm}}{%endif%}{%if statCM%}|{{statCM.fruttaAssaggioNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="frutta - Assaggio"/></div></td><td><div id="fa_chart"></div></td><td><div id="fq_table"></div></td><td><div id="fq_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">Gradimento</td><td colspan="2" class="tab_title">Maturazione</td></tr>
+        <tr><td><div id="fg_table"><img src="http://chart.apis.google.com/chart?chs=180x100&cht=gom&chd=t:{{stat.fruttaGradimentoNorm}}{%if statCC%}|{{statCC.fruttaGradimentoNorm}}{%endif%}{%if statCM%}|{{statCM.fruttaGradimentoNorm}}{%endif%}&chls=1{%if statCC%}|3{%endif%}{%if statCM%}|5{%endif%}&chco=FF0000,FFFF00,00FF00&chxt=x&chxl=0:|Tutte{%if statCC%}|CC{%endif%}{%if statCM%}|CM{%endif%}&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="frutta - Gradimento"/></div></td><td><div id="fg_chart"></div></td><td><div id="fm_table"></div></td><td><div id="fm_chart"></div></td></tr>
+        <tr><td colspan="2" class="tab_title">&nbsp;</td><td colspan="2" class="tab_title"></td></tr>
+        <tr><td><div id="cq_table"><table><tr><td colspan="2" class="legind">Legenda indicatori</td></tr><tr><td class="legind">Tutte</td><td class="legind">Dati di tutte le scuole</td></tr><tr><td class="legind">CC</td><td class="legind">Dati del Centro Cucina</td></tr><tr><td class="legind">CM</td><td class="legind">Dati della Scuola</td></tr></table></div></td><td><div id="cq_chart"></div></td><td><div id="cd_table"></div></td><td><div id="cd_chart"></div></td></tr>        
+        </table>
+    </div>
+</div>
+</div>

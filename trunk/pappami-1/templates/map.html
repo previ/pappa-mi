@@ -1,0 +1,73 @@
+﻿<style>#content-main {width: 66em;padding:1em;}</style>
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+</script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/> 
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">google.load("jqueryui", "1.8.2", {uncompressed:false});</script>
+<script type="text/javascript" src="/js/map.js"></script>
+<script type="text/javascript">
+var limit = {{limit}};
+$(document).ready(function () {
+  load();
+});      
+</script>
+<style> 
+#info {
+width:250px;
+height: 230px;
+}
+#tabs {
+width:230px;
+height: 220px;
+}
+</style>
+<div style="position:relative;">
+<div style="position:absolute; top:20em; left:18em; width:30em; background: #ffffff; border: 1px;z-index:999;display:none;" id="loading"><center><img src="/img/loading.gif"/><br/>Caricamento in corso ...</center></div><h1 class="ss-form-title"style="display:inline;">Le Commissioni</h1>
+<div dojoType="dijit.form.DropDownButton">
+  <span>Filtra dati</span>
+  <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
+<table>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_3">Tipo</LABEL>
+<SELECT name="tipoScuola" id="e_tipo">
+<OPTION value="">Tutte</OPTION>
+<OPTION value="Materna"{% ifequal tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
+<OPTION value="Primaria"{% ifequal tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
+<OPTION value="Secondaria"{% ifequal tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_4">C.Cucina</LABEL>
+<SELECT name="centroCucina" id="e_cc">
+<OPTION value="">Tutti</OPTION>{%for cc in centriCucina%}
+<OPTION value="{{cc.key.name}}">{{cc.nome}}</OPTION>{%endfor%}
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_4">Stato</LABEL>
+<SELECT name="numcm" id="e_numcm">
+<OPTION value="0">Tutte</OPTION>
+<OPTION value="1" selected>Attive</OPTION>
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit" onclick="redraw()">Applica</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id="left_list" style="height: 600px; width: 14em; float:left; border: 0px solid black; overflow: auto;"></div>
+<div id="map" style="height: 600px; width: 51em; float:left; border: 1px solid black"></div>
+</div>
