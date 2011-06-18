@@ -87,7 +87,7 @@ class CentroCucinaLoader(Loader):
                      ('nome', str),
                      ('strada', str),
                      ('civico', str),
-                     ('citta', str),
+                     ('citta', lambda x: Citta.all().filter("codice",x).get()),
                      ('cap', str),
                      ('nomeContatto', str),
                      ('cognomeContatto', str),

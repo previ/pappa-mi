@@ -32,6 +32,7 @@ from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.model import *
+from py.modelMsg import *
 from py.form import CommissioneForm
 from py.gviz_api import *
 from py.base import BasePage
@@ -296,7 +297,7 @@ class CMAdminCommissioneDataHandler(BasePage):
       data = list()
       try:
         for commissione in commissioni.order(orderby).fetch(limit, offset):
-          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipoScuola": commissione.tipoScuola, "strada": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
+          data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipoScuola": commissione.tipoScuola, "strada": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta.nome, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
       except db.Timeout:
         errmsg = "Timeout"
         
@@ -314,7 +315,139 @@ class CMAdminHandler(BasePage):
     if self.request.get("cmd") == "initConfig":
       dummy = Configurazione(nome="dummyname", valore="dummyvalue")
       dummy.put()
-    
+
+     
+    if self.request.get("cmd") == "initMenu":
+      citta = self.getCommissario(users.get_current_user()).citta
+      for menu in Menu.all().filter("tipoScuola", "Materna"):
+        nm = MenuNew.all().filter("validitaA", menu.validitaA).get()
+        if not nm:
+          nm = MenuNew()
+          nm.validitaDa = menu.validitaDa
+          nm.validitaA = menu.validitaA
+          nm.citta = citta
+          nm.put()
+        piatto = Piatto.all().filter("nome", menu.primo).get()
+        if not piatto:
+          piatto = Piatto()
+          piatto.nome = menu.primo
+          piatto.calorie = 200
+          piatto.proteine = 30
+          piatto.carboidrati = 40
+          piatto.grassi = 30
+          piatto.gi = 10
+          piatto.put()
+        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        if not piattoGiorno:
+          piattoGiorno = PiattoGiorno()
+          piattoGiorno.menu = nm
+          piattoGiorno.tipo = "p"
+          piattoGiorno.piatto = piatto
+          piattoGiorno.giorno = menu.giorno
+          piattoGiorno.settimana = menu.settimana
+          piattoGiorno.put()
+        piatto = Piatto.all().filter("nome", menu.secondo).get()
+        if not piatto:
+          piatto = Piatto()
+          piatto.nome = menu.secondo
+          piatto.calorie = 200
+          piatto.proteine = 30
+          piatto.carboidrati = 40
+          piatto.grassi = 30
+          piatto.gi = 10
+          piatto.put()
+        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        if not piattoGiorno:
+          piattoGiorno = PiattoGiorno()
+          piattoGiorno.menu = nm
+          piattoGiorno.tipo = "s"
+          piattoGiorno.piatto = piatto
+          piattoGiorno.giorno = menu.giorno
+          piattoGiorno.settimana = menu.settimana
+          piattoGiorno.put()
+        piatto = Piatto.all().filter("nome", menu.contorno).get()
+        if not piatto:
+          piatto = Piatto()
+          piatto.nome = menu.contorno
+          piatto.calorie = 200
+          piatto.proteine = 30
+          piatto.carboidrati = 40
+          piatto.grassi = 30
+          piatto.gi = 10
+          piatto.put()
+        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        if not piattoGiorno:
+          piattoGiorno = PiattoGiorno()
+          piattoGiorno.menu = nm
+          piattoGiorno.tipo = "c"
+          piattoGiorno.piatto = piatto
+          piattoGiorno.giorno = menu.giorno
+          piattoGiorno.settimana = menu.settimana
+          piattoGiorno.put()
+        piatto = Piatto.all().filter("nome", menu.dessert).get()
+        if not piatto:
+          piatto = Piatto()
+          piatto.nome = menu.dessert
+          piatto.calorie = 200
+          piatto.proteine = 30
+          piatto.carboidrati = 40
+          piatto.grassi = 30
+          piatto.gi = 10
+          piatto.put()
+        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        if not piattoGiorno:
+          piattoGiorno = PiattoGiorno()
+          piattoGiorno.menu = nm
+          piattoGiorno.tipo = "d"
+          piattoGiorno.piatto = piatto
+          piattoGiorno.giorno = menu.giorno
+          piattoGiorno.settimana = menu.settimana
+          piattoGiorno.put()
+          
+          
+      
+    if self.request.get("cmd") == "initCity1":
+      for cm in Commissione.all().filter("citta","Milano"):
+        cm.citta = None
+        cm.put()
+
+      for cc in CentroCucina.all():
+        cc.citta = None
+        cc.put()
+
+    if self.request.get("cmd") == "initCity2":
+      c = Citta.all().get()
+      if not c:
+        c = Citta()
+        c.nome = "Milano"
+        c.codice = "F205"
+        c.provincia = "MI"
+        c.geo = db.GeoPt(45.463681,9.188171)
+        c.put()
+      for cm in Commissione.all().filter("citta",None):
+        cm.citta = c
+        cm.put()
+
+      for cc in CentroCucina.all():
+        cc.citta = c
+        cc.put()
+
+      for cs in Commissario.all():
+        cs.citta = c
+        cs.put()
+        
+    if self.request.get("cmd") == "initStream":
+      for isp in Ispezione().all().order("-creato_il").fetch(50):
+        messaggio = Messaggio(par = isp, root = isp, tipo = 101, livello = 0, creato_da = isp.creato_da, creato_il = isp.creato_il, modificato_da = isp.modificato_da, modificato_il = isp.modificato_il)
+        messaggio.put()
+      for nc in Nonconformita().all().order("-creato_il").fetch(50):
+        messaggio = Messaggio(par = nc, root = nc, tipo = 102, livello = 0, creato_da = nc.creato_da, creato_il = nc.creato_il, modificato_da = nc.modificato_da, modificato_il = nc.modificato_il)
+        messaggio.put()
+      for nota in Nota().all().order("-creato_il").fetch(50):
+        messaggio = Messaggio(par = nota, root = nota, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
+        messaggio.put()
+      
+      
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)
       d2008a = date(2009,7,31)
