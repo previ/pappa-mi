@@ -18,6 +18,11 @@ indexes:
 
 - kind: Commissione
   properties:
+  - name: citta
+  - name: nome
+
+- kind: Commissione
+  properties:
   - name: tipoScuola
   - name: numCommissari
 
@@ -301,6 +306,23 @@ indexes:
   - name: tipoScuola
   - name: validitaDa
     direction: desc
+
+- kind: MenuNew
+  properties:
+  - name: citta
+  - name: validitaDa
+    direction: desc
+
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: creato_il
+    direction: desc
+
+- kind: Messaggio
+  properties:
+  - name: par
+  - name: creato_il
 
 - kind: Nonconformita
   properties:
