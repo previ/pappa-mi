@@ -8,6 +8,7 @@ derived_file_type:
 
 builtins:
 - datastore_admin: on
+- remote_api: on 
 
 inbound_services:
 - mail
@@ -36,10 +37,10 @@ handlers:
   script: py/dblog.py
   login: admin
 
-- url: /remote_api
+- url: /_ah/remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
-
+  
 - url: /css
   static_dir: css
 
@@ -60,6 +61,10 @@ handlers:
 - url: /public/.*
   script: py/public.py
 
+- url: /signup
+  script: py/main.py
+  login: required
+  
 - url: /commissario/.*
   script: py/commissario.py
   login: required
@@ -122,8 +127,20 @@ handlers:
   script: py/login.py
   login: required
 
+- url: /fb
+  script: py/fb.py
+
+- url: /fb/*
+  script: py/fb.py
+
 - url: /fb/.*
   script: py/fb.py
+
+- url: /comments/*
+  script: py/comments.py
+
+- url: /comments/.*
+  script: py/comments.py
   
 - url: .*
   script: py/main.py
