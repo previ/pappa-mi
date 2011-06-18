@@ -1,0 +1,95 @@
+<style>#content-main {padding:0em;width:67.5em;}</style>
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+dojo.require("dijit.Tooltip");
+dojo.require("dijit.form.DateTextBox");
+dojo.require("dijit.form.DropDownButton");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dojo.data.ItemFileReadStore");
+dojo.require("dojo.parser");
+</script>
+<style>
+.mt {font-size:10px;}
+.md {font-size:8pt;height:50px; margin:2px;}
+.cg {cursor: hand;}
+a {text-decoration:none;}
+.dayheader {float:left;font-size:12px;width:130px; margin-left:2px; margin-right:2px;background: #d2d9e3;}
+.day1 {background: #ffffff;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
+.day2 {background: #efefef;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
+.today {background: #eff3f6;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
+</style>
+<H1 class="ss-form-title">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</H1>
+<div dojoType="dijit.form.DropDownButton">
+<span>Cambia Scuola e Data</span>
+<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati"
+    execute=";">
+<form dojoType="dijit.form.Form" action="{{action}}" method="get" id="form0">
+<input type="hidden" name="tab" value="mn">
+<table>
+<tr>
+<td>
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
+<LABEL class="ss-q-title" for="e_cm">Scuole</LABEL>
+<input dojoType="dijit.form.FilteringSelect" value="{{cm.key}}" store="cmStore"
+searchAttr="nome" name="cm" id="e_cm">
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_aa">Data</LABEL>
+<input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" required="true" name="data" value="{{data}}" class="ss-q-short" id="e_data"/></td>
+</tr>
+<tr>
+<td>
+<button dojoType="dijit.form.Button" type="submit">Applica</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+<table>
+<tr>
+<td>
+<div class="dayheader">
+<div class="md">Dal {{data1|date:"d/m/Y"}}</div>
+<div class="md">Primo piatto</div>
+<div class="md">Secondo piatto</div>
+<div class="md">Contorno</div>
+<div class="md">Dessert</div>
+</div>
+{%for m in menu1%}
+<div class="{%if m.today%}today{%else%}day1{%endif%}">
+<div class="md">{{m.getData}}</div>
+<div class="md">{{m.primo}}</div>
+<div class="md">{{m.secondo}}</div>
+<div class="md">{{m.contorno}}</div>
+<div class="md">{{m.dessert}}</div>
+</div>
+{%endfor%}
+</td>
+</tr>
+<tr>
+<td>
+<div class="dayheader">
+<div class="md">Dal {{data2|date:"d/m/Y"}}</div>
+<div class="md">Primo piatto</div>
+<div class="md">Secondo piatto</div>
+<div class="md">Contorno</div>
+<div class="md">Dessert</div>
+</div>
+{%for m in menu2%}
+<div class="day2">
+<div class="md">{{m.getData}}</div>
+<div class="md">{{m.primo}}</div>
+<div class="md">{{m.secondo}}</div>
+<div class="md">{{m.contorno}}</div>
+<div class="md">{{m.dessert}}</div>
+</div>
+{%endfor%}
+</td>
+</tr>
+</table>

@@ -1,0 +1,21 @@
+<link rel="stylesheet" type="text/css" href="/css/jcarousel.css" />
+<script type="text/javascript" src="/js/jquery.jcarousel.min.js"></script>
+<script type="text/javascript" src="/js/wmenu.js"></script>
+<style>
+.mt {font-size:7pt;}
+.md {font-size:8pt;}
+a {text-decoration:none;}
+</style>
+<ul id="menu" class="jcarousel-skin-tango">{%for m in menu%}
+    <li><div><table width="100%" border="0" style="margin:0px; border-spacing:0px;">
+<tr><td align="center" class="md">{{m.data|date:"d/m/Y"}} {%if sett%}Sett. {{m.settimana}}{%endif%}</td></tr>
+<tr><td align="center" class="mt">Primo piatto</td></tr>
+<tr><td align="center" class="md">{{m.primo}}</td></tr>
+<tr><td align="center" class="mt">Secondo piatto</td></tr>
+<tr><td align="center" class="md">{{m.secondo}}</td></tr>
+<tr><td align="center" class="mt">Contorno</td></tr>
+<tr><td align="center" class="md">{{m.contorno}}</td></tr>
+<tr><td align="center" class="mt">Dessert</td></tr>
+<tr><td align="center" class="md">{{m.dessert}}</td></tr>
+</table></div></li>{%endfor%}
+</ul>
