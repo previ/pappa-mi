@@ -179,6 +179,7 @@ class CMMenuHandler(BasePage):
       
     menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
+      logging.info("cache miss: " + "menu-" + str(offset) + "-" + str(data))
       menu = list()
 
       self.getMenuHelper(menu,data,offset,tipoScuola)
