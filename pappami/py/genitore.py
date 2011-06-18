@@ -269,14 +269,14 @@ class CMNotaGenitoreHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
-    if commissario is not None and commissario.isCommissario() :
-      self.redirect("/commissario/nota?cmd=open&key="+self.request.get("key"))
-      return
     if commissario is None or not commissario.isGenitore() :
       self.redirect("/genitore/registrazione")
       return
     
-    if( self.request.get("cmd") == "" or self.request.get("cmd") == "open" ):
+    if( self.request.get("key") or self.request.get("cmd") == "open" ):
+      if commissario is not None and commissario.isCommissario() :
+        self.redirect("/commissario/nota?cmd=open&key="+self.request.get("key"))
+        return
       nota = Nota.get(self.request.get("key"))
       allegati = None
       if nota.allegato_set.count():
