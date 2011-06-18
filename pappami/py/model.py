@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
@@ -6,14 +10,15 @@ from google.appengine.ext import db
 
 class Citta(db.Model):
   nome = db.StringProperty()
-  provincia = db.StringProperty()
   codice =  db.StringProperty()
+  provincia = db.StringProperty()
   geo = db.GeoPtProperty()
 
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
+
   stato = db.IntegerProperty()
   
 class Configurazione(db.Model):
@@ -25,7 +30,8 @@ class CentroCucina(db.Model):
   codice = db.StringProperty()
   strada = db.StringProperty()
   civico = db.StringProperty()
-  citta = db.StringProperty()
+  #citta = db.StringProperty()
+  citta = db.ReferenceProperty(Citta)
   cap = db.StringProperty()
   nomeContatto = db.StringProperty()
   cognomeContatto = db.StringProperty()
@@ -55,7 +61,8 @@ class Commissione(db.Model):
   zona = db.StringProperty(default="")
   strada = db.StringProperty(default="")
   civico = db.StringProperty(default="")
-  citta = db.StringProperty(default="")
+  #citta = db.StringProperty(default="")
+  citta = db.ReferenceProperty(Citta)
   cap = db.StringProperty(default="")
   telefono = db.StringProperty(default="")
   fax = db.StringProperty(default="")
@@ -82,17 +89,22 @@ class Commissione(db.Model):
 
   def getCentroCucina(self, data=datetime.now().date()):
     return CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get().centroCucina
-      
+
+  def desc(self):
+    return self.tipoScuola + " " + self.nome
   
 class Commissario(db.Model):
   user = db.UserProperty()
   nome = db.StringProperty()
   cognome = db.StringProperty()
+  
+  avatar_url = db.StringProperty()
+  avatar_data = db.BlobProperty()
 
   emailComunicazioni = db.StringProperty()
   
-  ultimo_accesso_il = db.DateTimeProperty()
-
+  citta = db.ReferenceProperty(Citta)
+  
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   modificato_da = db.UserProperty(auto_current_user=True)
@@ -133,6 +145,29 @@ class Commissario(db.Model):
     if len(cms) > 0:
       return cms[0]
   
+  def nomecompleto(self):
+    if self.nome or self.cognome:
+      return self.nome + " " + self.cognome
+    else:
+      return self.user.nickname()
+
+  def titolo(self):
+    titolo = None
+    if self.isCommissario():
+      titolo = "Commissione Mensa - ["
+    else:
+      titolo = "Genitore - ["
+    for c in self.commissioni():
+      titolo = titolo + c.tipoScuola + " " + c.nome + "; "
+    return titolo + "]"
+    
+  def avatar(self):
+    if not self.avatar_url:
+      return "/img/default_avatar.png"
+    else:
+      return self.avatar_url
+    
+  
 class CommissioneCommissario(db.Model):
   commissione = db.ReferenceProperty(Commissione)
   commissario = db.ReferenceProperty(Commissario)
@@ -153,19 +188,17 @@ class Menu(db.Model):
   def getData(self):
     return self._giorni[self.giorno-1]
   def today(self):
-    logging.info(self.data)
-    logging.info(datetime.now().date())
     return datetime.now().date() == self.data
 
 class MenuNew(db.Model):
   nome = db.StringProperty()
+  citta = db.ReferenceProperty(Citta)
+
   validitaDa = db.DateProperty()
   validitaA = db.DateProperty()
 
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
 class Piatto(db.Model):
@@ -176,26 +209,36 @@ class Piatto(db.Model):
   carboidrati = db.IntegerProperty()
   gi = db.IntegerProperty()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  #creato_da = db.UserProperty(auto_current_user_add=True)
+  #creato_il = db.DateTimeProperty(auto_now_add=True)
+  #stato = db.IntegerProperty()
   
-class MenuGiorno(db.Model):
+class PiattoGiorno(db.Model):
   menu = db.ReferenceProperty(MenuNew)
   settimana = db.IntegerProperty()
   giorno = db.IntegerProperty()
-  piatti = db.ReferenceProperty(Piatto, collection_name='menuprimi')
-  secondo = db.ReferenceProperty(Piatto, collection_name='menusecondi')
-  contorno = db.ReferenceProperty(Piatto, collection_name='menucontorni')
-  dessert = db.ReferenceProperty(Piatto, collection_name='menudesserts')
+  piatto = db.ReferenceProperty(Piatto, collection_name='piatto_giorni')
+  tipo = db.StringProperty()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  #creato_da = db.UserProperty(auto_current_user_add=True)
+  #creato_il = db.DateTimeProperty(auto_now_add=True)
+  #stato = db.IntegerProperty()
+  
+class MenuHelper():
+  primo = None
+  secondo = None
+  contorno = None
+  dessert = None
+  data = None
+  giorno = None
+  settimana = None
+
+  _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
+  def getData(self):
+    return self._giorni[self.giorno-1]
+  def today(self):
+    return datetime.now().date() == self.data
+  
   
 class StatistichePiatto(db.Model):
   piatto = db.ReferenceProperty(Piatto)
@@ -328,6 +371,9 @@ class Ispezione(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
+  
+  def data(self): 
+    return self.dataIspezione  
 
 class Nonconformita(db.Model):
   commissione = db.ReferenceProperty(Commissione)
@@ -348,6 +394,8 @@ class Nonconformita(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
+
+  def data(self): return self.dataNonconf  
 
   _tipi = {1:0,
            2:1,
@@ -413,6 +461,8 @@ class Dieta(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
+
+  def data(self): return self.dataIspezione
 
   _tipi = {1:0,
            2:1,
@@ -485,6 +535,8 @@ class Nota(db.Model):
   creato_il = db.DateTimeProperty(auto_now_add=True)
   stato = db.IntegerProperty()
 
+  def data(self): return self.dataNota  
+  
 class Tag(db.Model):
   obj = db.ReferenceProperty(db.Model)
   tag = db.StringProperty(default="")
