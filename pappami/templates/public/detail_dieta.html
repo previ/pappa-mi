@@ -1,0 +1,18 @@
+<div>
+<table>
+<tbody>
+<tr>
+<td>Domanda</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>Etichetta &egrave; leggibile?</td><td>{% ifequal dieta.etichettaLeggibile 1 %}Si{%endifequal%}{% ifnotequal dieta.etichettaLeggibile 1 %}No{%endifnotequal%}</td>
+</tr>
+<tr>
+<td>La vaschetta &egrave; pi&ugrave; fredda, al tatto, rispetto al piatto del vicino ?</td><td>{% ifequal dieta.temperaturaVaschetta 1 %}Si{%endifequal%}{% ifnotequal dieta.temperaturaVaschetta 1 %}No{%endifnotequal%}</td>
+</tr>
+<tr>
+<td>Bambino seduto vicino educatore ?</td><td>{% ifequal dieta.vicinoEducatore 1 %}Si{%endifequal%}{% ifnotequal dieta.vicinoEducatore 1 %}No{%endifnotequal%}</td>
+</tr>
+</tbody>
+</table>
+</div>

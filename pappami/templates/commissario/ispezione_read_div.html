@@ -1,17 +1,12 @@
 ﻿<script type="text/javascript">
-dojo.require("dijit.form.Form");
-dojo.require("dijit.form.Button");
-</script>
-<script type="text/javascript">
 var piattounico = false;
-dojo.addOnLoad(onMenuChanged);
 
 function onMenuChanged() {
 	if("{{isp.primoEffettivo}}" == "{{isp.secondoEffettivo}}" ) {
-		dojo.byId("s_secondo_1").style.display = "none";
-		dojo.byId("s_secondo_2").style.display = "none";
-		dojo.byId("s_secondo_3").style.display = "none";
-		dojo.byId("s_primo").innerHTML = "Primo e Secondo Piatto (Piatto unico)";
+		$("#s_secondo_1").hide();
+		$("#s_secondo_2").hide();
+		$("#s_secondo_3").hide();
+		$("#s_primo").text("Primo e Secondo Piatto (Piatto unico)");
 		piattounico = true;
 	} else {
 		piattounico = false;
@@ -41,6 +36,15 @@ window.onbeforeunload = closeIt;
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
 <!-- AddThis Button END -->
 {%endif%}
+{% if form.errors %}
+<div class="errorbox-bad" id="form-error">
+	<p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
+	<ul>
+{% for error in form.errors.values %}<li>{{error}}</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
 <DIV class="ss-form-container"><H1 class="table_separator">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</H1>
 <table>
 <tr>
@@ -739,29 +743,29 @@ Fine Pasto
 </tr>
 </table>
 {% if preview %}
-<form action="/commissario/ispezione" method="POST">
+<form id="form1" action="/commissario/ispezione_div" method="POST">
 <script type="dojo/method" event="onSubmit">
-dojo.byId("e_submit").disabled = true;
-dojo.byId("e_annulla").disabled = true;
+$("#e_submit").disabled = true;
+$("#e_annulla").disabled = true;
 return true;
 </script>
 <P align="center">
 <input type="hidden" name="preview" value="{{preview}}">
 <button type="submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-<button onclick="ulmsg=false; location.href='/commissario/ispezione?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
+<button onclick="ulmsg=false; previewback();return false;">Torna a modifiche</button>
 <P>
 </form>
 {% else %}
-<form action="/commissario/ispezione" method="POST">
+<form id="form1" action="/commissario/ispezione" method="POST">
 <script type="dojo/method" event="onSubmit">
-dojo.byId("e_submit").disabled = true;
-dojo.byId("e_annulla").disabled = true;
+$("#e_submit").disabled = true;
+$("#e_annulla").disabled = true;
 return true;
 </script>
 <input type="hidden" name="cmd" value="copy">
 <input type="hidden" name="key" value="{{isp.key}}">
 <P align="center">
-<button dojoType="dijit.form.Button" onclick="location.href='/commissario?tab=isp';return false;">Pagina precedente</button>{%if cancopy %}<button type="submit" dojoType="dijit.form.Button">Crea copia</button>{% endif %}
+<button onclick="location.href='/commissario?tab=isp';return false;">Pagina precedente</button>{%if cancopy %}<button type="submit">Crea copia</button>{% endif %}
 <P>
 </form>
 {% endif %}

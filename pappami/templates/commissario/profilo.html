@@ -7,13 +7,15 @@ dojo.require("dijit.form.FilteringSelect");
 dojo.require("dojo.data.ItemFileReadStore");
 dojo.require("dojo.parser");
 </script>
+<script src="/js/jquery.form.js"></script> 
+<script src="http://connect.facebook.net/it_IT/all.js"></script> 
 <script>
 function alreadySelected() {
     cm_all = dijit.byId("e_cm_all");
     cm_sel = dojo.byId("e_cm_sel");
     for( i=0;i<cm_sel.options.length;i++) {
         if(cm_all.attr("value") == cm_sel.options[i].value ) {
-            alert(cm_all.innerHTML + " gia' aggiunta");
+            alert(cm_sel.options[i].innerHTML + " gia' aggiunta");
             return true;
         }
     }
@@ -51,6 +53,67 @@ function removeAll() {
     }
 }
 </script>
+<script type="text/javascript"> 
+fblogged = false;
+// wait for the DOM to be loaded 
+$(document).ready(function() { 
+    $("#avatar_dialog").dialog({ autoOpen: false });
+    $("#avatar").click(function() {
+        $("#avatar_dialog").dialog("open");
+        $("#fbgetimage").click(function() {
+            if(!fblogged) {
+                FB.login(function(response) {
+                    getimage();
+                });
+            } else {
+                getimage();
+            }            
+        });
+    });
+    // bind 'myForm' and provide a simple callback function 
+    $('#avatar_file').change(function(){
+        $('#avatar_form').ajaxSubmit(function(data) { 
+            $('#avatar_edit').attr("src", data);
+            $('#avatar').attr("src", data);
+            $("#avatar_dialog").dialog("close");            
+        }); 
+    }); 
+    FB.init({ 
+       appId:'103254759720309', cookie:true, 
+       status:true, xfbml:true 
+    });        
+    FB.getLoginStatus(function(response) {
+       if (response.session) {
+         fblogged = true;
+       }
+    });
+});     
+
+function getimage() {
+  FB.api('/me', function(user) {
+    if(user != null) {
+        picturl = 'https://graph.facebook.com/' + user.id + '/picture'
+        $('#avatar').attr("src", picturl);
+        $('#avatar_edit').attr("src", picturl);
+        data = {cmd: 'saveurl', picture: picturl};
+        $.post('/commissario/avatar', data, function() {
+            $("#avatar_dialog").dialog("close");            
+        });
+    }
+  });
+}
+
+function onSelCity() {    
+    cm_city = dijit.byId("e_citta");
+    cm_all = dijit.byId("e_cm_all");
+
+    cmStore.url = "/commissario/getcm?city="+cm_city.attr("value");
+    cmStore.close();
+    cm_all.attr("disabled", false);
+}
+
+</script>
+
 <H1>I tuoi dati</H1>
 <P>
 <P>
@@ -80,18 +143,30 @@ dojo.byId("e_cm_sel").value != ""){
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="e_n"></label>
 <input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="nome" value="{{cmsro.nome}}" class="ss-q-short" id="e_n"></div></div>
-</td>
-<td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_c">Cognome
 <span class="ss-required-asterisk">*</span></label>
 <label class="ss-q-help" for="e_c"></label>
 <input type="text" dojoType="dijit.form.TextBox" required="true" style="width:20em;" name="cognome" value="{{cmsro.cognome}}" class="ss-q-short" id="e_c"></div></div>
 </td>
+<td>
+<img id="avatar" src="{{cmsro.avatar}}?size=normal" width="128" height="128"/>
+</td>
 </tr>
 <tr>
 <td>
-<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm">
+<div dojoType="dojo.data.ItemFileReadStore" jsId="cityStore" url="/commissario/getcity">
+<div class="errorbox-good">
+<div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Citt&agrave;
+<span class="ss-required-asterisk">*</span></label>
+<input dojoType="dijit.form.FilteringSelect" value="{{cmsro.citta.key}}" store="cityStore" searchAttr="nome" name="citta" id="e_citta" style="width:24em;" onchange="onSelCity();"></input></div></div>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+<div id="cmstore" dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/commissario/getcm" urlPreventCache="true" clearOnClose="true">
 <div class="errorbox-good">
 <div class="ss-form-entry" id="l_cm"><label class="ss-q-title" for="e_cm">Scuola
 <span class="ss-required-asterisk">*</span></label>
@@ -125,4 +200,17 @@ I dati sono stati salvati.
 <button type="submit" id="e_submit">Salva</button><button onclick="location.href='/';return false;" id="e_annulla">Annulla</button>
 </td>
 </tr>
-</table></FORM>
+</table>
+</form>
+<div id="avatar_dialog" style="display:none;>
+<img id="avatar_edit" src="{{cmsro.avatar}}?size=normal" width="128" height="128"/>
+<form id="avatar_form" action="/commissario/avatar" method="POST">
+<input type="hidden" name="cmd" value="upload"/>
+Carica una immagine: <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
+</form>
+<p>Oppure:</p>
+<div id="fb-root"></div>
+<div id="fb">
+<button id="fbgetimage">Usa l'immagine dal tuo profilo di Facebook</button>
+</div>
+

@@ -51,5 +51,6 @@ Non Conformit&agrave
 </td>
 </tr>
 </table>
-{%if comments%}
-<div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=103254759720309&amp;xfbml=1"></script><fb:comments xid="111" numposts="10" width="600" publish_feed="false"></fb:comments>{%endif%}
+{% if comments %}
+{% include "../comments/comments.html" %}
+{% endif %}
