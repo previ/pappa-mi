@@ -3,7 +3,8 @@
 #
 
 
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
+
+from py.base import *
 
 import os
 import cgi
@@ -24,8 +25,11 @@ from py.gviz_api import *
 from py.model import *
 from py.site import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
 from py.stats import CMStatsHandler
 from py.calendar import *
+from py.modelMsg import *
+from py.comments import CMCommentHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
@@ -38,22 +42,34 @@ class CMCommissarioHandler(BasePage):
     if commissario is None or not commissario.isCommissario() :
       self.redirect("/commissario/registrazione")
     else:
-      tab=self.request.get("tab")
-      template_values = {
-        'content_left': 'commissario/leftbar.html',
-        'tab': tab
-        }
-      if tab == "nc" :
-        template_values['content'] = 'commissario/nonconfs.html'
-      elif tab == "ud" :
-        template_values['content'] = 'commissario/profilo.html'
-        template_values['cmsro'] = commissario
-      else:
-        template_values['content'] = 'commissario/ispezioni.html'
+  
+      c = None
+      geo = db.GeoPt(45.463681,9.188171)
+      commissario = self.getCommissario(users.get_current_user())
+      c = commissario.commissione()
+      geo = commissario.citta.geo
       
-      #logging.info("OK")
+      template_values = dict()
+      template_values["bgcolor"] = "eeeeff"
+      template_values["fgcolor"] = "000000"    
+      template_values["activities"] = self.getActivities()
+      template_values["activity_last"] = self.getActivities()[0]
+      template_values["geo"] = geo
+      template_values["billboard"] = "navigation.html"
+      template_values["content"] = "activities.html"
+      template_values["host"] = self.getHost()  
+
       self.getBase(template_values)
 
+class CMDatiHandler(BasePage):
+  
+  @roleCommissario
+  def get(self): 
+    template_values = dict()
+    template_values["billboard"] = "navigation.html"
+    template_values['content'] = 'commissario/ispezioni.html'
+    self.getBase(template_values)
+      
 class CMIspezioniCommissarioHandler(BasePage):
   @roleCommissario
   def get(self):
@@ -401,6 +417,7 @@ class CMProfiloCommissarioHandler(BasePage):
     if(commissario):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
+      commissario.citta = db.Key(self.request.get("citta"))
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
 
@@ -420,20 +437,29 @@ class CMProfiloCommissarioHandler(BasePage):
       toadd = new - old
 
       for cm in todel:
-        logging.info("delete " + Commissione.get(db.Key(cm)).nome)
-        cc = CommissioneCommissario.all().filter("commissario",commissario).filter("commissione",Commissione.get(db.Key(cm))).get()
+        cmd = Commissione.get(db.Key(cm))
+        logging.info("delete " + cmd.nome)
+        
+        cc = CommissioneCommissario.all().filter("commissario",commissario).filter("commissione",cmd).get()
         if cc.commissione.calendario :
           calendario = Calendario();        
           calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
           calendario.load(cc.commissione.calendario)
           calendario.unShare(commissario.user.email())
         cc.delete()
+        cmd.numCommissari -= 1
+        cmd.put()
+        
+        
         
       for cm in toadd:
-        logging.info("add " + Commissione.get(cm).nome)
+        cma = Commissione.get(db.Key(cm))
+        logging.info("add " + cma.nome)
 
-        cc = CommissioneCommissario(commissione = Commissione.get(cm), commissario = commissario)
+        cc = CommissioneCommissario(commissione = cma, commissario = commissario)
         cc.put()
+        cma.numCommissari += 1
+        cma.put()
         if cc.commissione.calendario :
           calendario = Calendario();        
           calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
@@ -451,6 +477,8 @@ class CMProfiloCommissarioHandler(BasePage):
     }
     self.getBase(template_values)
       
+
+    
 class CMIspezioneHandler(BasePage):
   
   def get(self): 
@@ -466,12 +494,16 @@ class CMIspezioneHandler(BasePage):
       if( isp.commissario.key() == commissario.key()):
         cancopy = True
       
+      comment_root = CMCommentHandler().getRoot(isp.key())
+        
       template_values = {
         'content': 'commissario/ispezione_read.html',
         'content_left': 'commissario/leftbar.html',
         'isp': isp,
         'cancopy': cancopy,
-        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
+        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        "comments": True,
+        "comment_root": comment_root
         }
       
     elif( self.request.get("cmd") == "edit" ):
@@ -503,7 +535,7 @@ class CMIspezioneHandler(BasePage):
         form.data[field.name] = str(form.initial[field.name])
         
       template_values = {
-        'content': 'commissario/ispezione.html',
+        'content': '../templates/commissario/ispezione.html',
         'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
@@ -550,6 +582,9 @@ class CMIspezioneHandler(BasePage):
         isp.anno = isp.dataIspezione.year - 1
         
       isp.put()
+
+      comment_root = CMCommentHandler().init(isp.key())
+
       memcache.delete("stats")
       memcache.delete("statsMese")
       
@@ -595,6 +630,156 @@ class CMIspezioneHandler(BasePage):
         self.getBase(template_values)
         
 
+class IspezioneHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
+    if( self.request.get("cmd") == "open" ):
+      isp = Ispezione.get(self.request.get("key"))
+  
+      cancopy = None;
+      if( isp.commissario.key() == commissario.key()):
+        cancopy = True
+      
+      comment_root = CMCommentHandler().getRoot(isp.key())
+        
+      template_values = {
+        'content': 'commissario/ispezione_read.html',
+        'content_left': 'commissario/leftbar.html',
+        'isp': isp,
+        'cancopy': cancopy,
+        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        "comments": True,
+        "comment_root": comment_root
+        }
+      
+    elif( self.request.get("cmd") == "edit" ):
+   
+      isp = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("preview"))
+     
+      form = IspezioneForm(instance=isp)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = isp.commissione
+
+      template_values = {
+        'content': 'commissario/ispezione.html',
+        'content_left': 'commissario/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+      }
+          
+    else:       
+      isp = Ispezione(commissario = commissario) 
+      form = IspezioneForm(instance=isp)
+
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'main': '../templates/commissario/ispezione_div.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+
+
+    self.getBase(template_values)
+
+  def post(self):    
+   
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
+    preview = self.request.get("preview")
+   
+    if( self.request.get("cmd") == "copy" ):
+   
+      key = self.request.get("key")
+      isp = Ispezione.get(key)
+      form = IspezioneForm(instance=isp)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = isp.commissione
+  
+      template_values = {
+        'main': '../templates/commissario/ispezione_div.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+        
+      self.getBase(template_values) 
+    elif( preview ):
+      isp = memcache.get(preview)
+      memcache.delete(preview)
+      if isp.dataIspezione.month >= 9:
+        isp.anno = isp.dataIspezione.year
+      else:
+        isp.anno = isp.dataIspezione.year - 1
+        
+      isp.put()
+
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+      
+      self.response.out.write(CMCommentHandler().initActivity(isp.key(), 101, db.Key(self.request.get("last"))))
+      
+    else:
+      key = self.request.get("key")
+      if( key != "" ) :
+        isp = Ispezione.get(key)
+      else:
+        isp = Ispezione()
+    
+      form = IspezioneForm(data=self.request.POST, instance=isp)
+      
+      logging.info(preview)
+      
+      if form.is_valid():
+        logging.info("valid")
+
+        isp = form.save(commit=False)
+        
+        isp.commissario = commissario
+   
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        logging.info(preview)
+        memcache.add(preview, isp, 3600)
+    
+        template_values = {
+          'main': '../templates/commissario/ispezione_read_div.html',
+          'isp': isp,
+          'preview': preview
+        }
+        
+        self.getBase(template_values) 
+      else:
+        logging.info("data: %s", form.data)
+        for e in form.errors["__all__"] :
+          logging.info("errors: %s", e)
+
+        template_values = {
+          'main': '../templates/commissario/ispezione_div.html',
+          'commissioni': commissario.commissioni(),
+          'form': form
+        }
+
+        self.getBase(template_values)
+        
+        
 class CMNonconfHandler(BasePage):
   
   def get(self): 
@@ -605,12 +790,16 @@ class CMNonconfHandler(BasePage):
 
     if( self.request.get("cmd") == "open" ):
       nc = Nonconformita.get(self.request.get("key"))
-  
+
+      comment_root = CMCommentHandler().getRoot(nc.key())
+      
       template_values = {
         'content': 'commissario/nonconf_read.html',
         'content_left': 'commissario/leftbar.html',
         'nc': nc,
-        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
+        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
+        "comments": True,
+        "comment_root": comment_root
         }
 
       self.getBase(template_values)
@@ -646,7 +835,7 @@ class CMNonconfHandler(BasePage):
         form.data[field.name] = str(form.initial[field.name])
         
       template_values = {
-        'content': 'commissario/nonconf.html',
+        'content': '../templates/commissario/nonconf.html',
         'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
@@ -673,6 +862,8 @@ class CMNonconfHandler(BasePage):
         nc.anno = nc.dataNonconf.year - 1
 
       nc.put()
+      comment_root = CMCommentHandler().init(nc.key())
+
       memcache.delete("stats")
       memcache.delete("statsMese")
       
@@ -686,7 +877,7 @@ class CMNonconfHandler(BasePage):
     
       form = NonconformitaForm(data=self.request.POST, instance=nc)
 
-      logging.info(nc)
+      #logging.info(nc)
       
       if form.is_valid():
         nc = form.save(commit=False)
@@ -714,6 +905,132 @@ class CMNonconfHandler(BasePage):
         
       self.getBase(template_values)
 
+class NonconfHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
+    if( self.request.get("cmd") == "open" ):
+      nc = Nonconformita.get(self.request.get("key"))
+
+      comment_root = CMCommentHandler().getRoot(nc.key())
+      
+      template_values = {
+        'main': '../templates/commissario/nonconf_read.html',
+        #'content_left': 'commissario/leftbar.html',
+        'nc': nc,
+        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
+        "comments": True,
+        "comment_root": comment_root
+        }
+
+      self.getBase(template_values)
+
+    elif( self.request.get("cmd") == "edit" ):
+   
+      nc = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("nc"))
+    
+      form = NonconformitaForm(instance=nc)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = nc.commissione
+
+      template_values = {
+        'content': 'commissario/nonconf_div.html',
+        'content_left': 'commissario/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+      }
+
+      self.getBase(template_values)
+          
+    else:     
+  
+      nc = Nonconformita(commissario = commissario) 
+      form = NonconformitaForm(instance=nc)
+
+      for field in form:
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'main': '../templates/commissario/nonconf_div.html',
+        #'content_left': 'commissario/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+
+      self.getBase(template_values)
+
+  def post(self):    
+   
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+
+    if commissario is None or not commissario.isCommissario() :
+      return
+    preview = self.request.get("preview")
+   
+    if( preview ):
+      nc = memcache.get(preview)
+      memcache.delete(preview)
+      
+      if nc.dataNonconf.month >= 9:
+        nc.anno = nc.dataNonconf.year
+      else:
+        nc.anno = nc.dataNonconf.year - 1
+
+      nc.put()
+
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+
+      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last"))))     
+      
+    else:
+      key = self.request.get("key")
+      if( key != "" ) :
+        nc = Nonconformita.get(key)
+      else:
+        nc = Nonconformita()
+    
+      form = NonconformitaForm(data=self.request.POST, instance=nc)
+
+      #logging.info(nc)
+      
+      if form.is_valid():
+        nc = form.save(commit=False)
+        nc.commissario = commissario
+   
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        memcache.add(preview, nc, 3600)
+   
+        template_values = {
+          'main': '../templates/commissario/nonconf_read_div.html',
+          #'content_left': 'commissario/leftbar.html',
+          'nc': nc,
+          'preview': preview
+        }
+        
+      else:
+        for error in form.errors["__all__"]:
+          logging.info(error)
+        template_values = {
+          'main': '../templates/commissario/nonconf_read_div.html',
+          #'content_left': 'commissario/leftbar.html',
+          'commissioni': commissario.commissioni(),
+          'form': form,
+          'form_errors': form.errors["__all__"]
+        }
+        
+      self.getBase(template_values)
+      
 class CMDietaHandler(BasePage):
   
   def get(self): 
@@ -725,12 +1042,15 @@ class CMDietaHandler(BasePage):
     if( self.request.get("cmd") == "open" ):
       dieta = Dieta.get(self.request.get("key"))
   
+      comment_root = CMCommentHandler().getRoot(dieta.key())
 
       template_values = {
         'content': 'commissario/dieta_read.html',
         'content_left': 'commissario/leftbar.html',
         'dieta': dieta,
-        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
+        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+        "comments": True,
+        "comment_root": comment_root
         }
 
       self.getBase(template_values)
@@ -793,10 +1113,12 @@ class CMDietaHandler(BasePage):
         dieta.anno = dieta.dataIspezione.year - 1
 
       dieta.put()
+    
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      self.redirect("/commissario/diete")
+      self.response.out.write(CMCommentHandler().initActivity(dieta.key(), 103, db.Key(self.request.get("last"))))
+      
     else:
       key = self.request.get("k")
       if( key != "" ) :
@@ -837,6 +1159,130 @@ class CMDietaHandler(BasePage):
         
       self.getBase(template_values)
 
+class DietaHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
+    if( self.request.get("cmd") == "open" ):
+      dieta = Dieta.get(self.request.get("key"))
+  
+      comment_root = CMCommentHandler().getRoot(dieta.key())
+
+      template_values = {
+        'content': 'commissario/dieta_read.html',
+        'content_left': 'commissario/leftbar.html',
+        'dieta': dieta,
+        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+        "comments": True,
+        "comment_root": comment_root
+        }
+
+      self.getBase(template_values)
+
+    elif( self.request.get("cmd") == "edit" ):
+   
+      dieta = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("dieta"))
+    
+      form = DietaForm(instance=dieta)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = dieta.commissione
+
+      template_values = {
+        'content': 'commissario/dieta.html',
+        'content_left': 'commissario/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+      }
+
+      self.getBase(template_values)
+          
+    else:     
+  
+      dieta = Dieta(commissario = commissario) 
+      form = DietaForm(instance=dieta)
+
+      for field in form:
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'main': '../templates/commissario/dieta_div.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+
+      self.getBase(template_values)
+
+  def post(self):    
+   
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+
+    if commissario is None or not commissario.isCommissario() :
+      return
+    preview = self.request.get("preview")
+   
+    if( preview ):
+      dieta = memcache.get(preview)
+      memcache.delete(preview)
+
+      if dieta.dataIspezione.month >= 9:
+        dieta.anno = dieta.dataIspezione.year
+      else:
+        dieta.anno = dieta.dataIspezione.year - 1
+
+      dieta.put()
+    
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+
+      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 103, db.Key(self.request.get("last"))))
+      
+    else:
+      key = self.request.get("key")
+      if( key != "" ) :
+        dieta = Dieta.get(key)
+      else:
+        dieta = Dieta()
+    
+      form = DietaForm(data=self.request.POST, instance=dieta)
+      #for field in form:
+        #logging.info("%s, %s",field.name, field)
+
+      if form.is_valid():
+        dieta = form.save(commit=False)
+        dieta.commissario = commissario
+   
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        memcache.add(preview, dieta, 3600)
+    
+        template_values = {
+          'main': '../templates/commissario/dieta_read_div.html',
+          'dieta': dieta,
+          'preview': preview
+        }
+        
+      else:
+        #logging.info("data: %s", form.data)
+        #for e in form.errors["__all__"] :
+          #logging.info("errors: %s", e)
+          
+        template_values = {
+          'main': '../templates/commissario/dieta_read.html',
+          'commissioni': commissario.commissioni(),
+          'form': form
+        }
+        
+      self.getBase(template_values)
+      
 class CMNotaHandler(BasePage):
   
   def get(self): 
@@ -851,13 +1297,16 @@ class CMNotaHandler(BasePage):
       if nota.allegato_set.count():
         allegati = nota.allegato_set
   
-    
+      comment_root = CMCommentHandler().getRoot(nota.key())
+      
       template_values = {
         'content': 'commissario/nota_read.html',
         'content_left': 'commissario/leftbar.html',
         'nota': nota,
         "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-        "allegati": allegati
+        "allegati": allegati,
+        "comments": True,
+        "comment_root": comment_root
         }
 
       self.getBase(template_values)
@@ -920,6 +1369,8 @@ class CMNotaHandler(BasePage):
         nota.anno = nota.dataNota.year - 1
      
       nota.put()
+
+      comment_root = CMCommentHandler().init(nota.key())
 
       username = Configurazione.all().filter("nome", "attach_user").get().valore
       password = Configurazione.all().filter("nome", "attach_password").get().valore
@@ -987,13 +1438,165 @@ class CMNotaHandler(BasePage):
         }
         
       self.getBase(template_values)
+
+class NotaHandler(BasePage):
+  
+  def get(self): 
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario is None or not commissario.isCommissario() :
+      return
+
+    if( self.request.get("cmd") == "open" ):
+      nota = Nota.get(self.request.get("key"))
+      allegati = None
+      if nota.allegato_set.count():
+        allegati = nota.allegato_set
+  
+      comment_root = CMCommentHandler().getRoot(nota.key())
+      
+      template_values = {
+        'content': 'commissario/nota_read.html',
+        'content_left': 'commissario/leftbar.html',
+        'nota': nota,
+        "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
+        "allegati": allegati,
+        "comments": True,
+        "comment_root": comment_root
+        }
+
+      self.getBase(template_values)
+
+    elif( self.request.get("cmd") == "edit" ):
+   
+      nota = memcache.get(self.request.get("preview"))
+      memcache.delete(self.request.get("nota"))
+    
+      form = NotaForm(instance=nota)
+      
+      for field in form:
+        #logging.info(field.name)
+        form.data[field.name] = unicode(form.initial[field.name])
+      
+      form.data["commissione"] = nota.commissione
+
+      template_values = {
+        'content': 'commissario/nota.html',
+        'content_left': 'commissario/leftbar.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+      }
+
+      self.getBase(template_values)
+          
+    else:     
+  
+      nota = Nota(commissario = commissario) 
+      form = NotaForm(instance=nota)
+
+      for field in form:
+        form.data[field.name] = str(form.initial[field.name])
+        
+      template_values = {
+        'main': '../templates/commissario/nota_div.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
+
+      self.getBase(template_values)
+
+  def post(self):    
+   
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+
+    if commissario is None or not commissario.isCommissario() :
+      return
+    preview = self.request.get("preview")
+   
+    if( preview ):
+      nota = memcache.get(preview)
+      memcache.delete(preview)
+
+      if nota.dataNota.month >= 9:
+        nota.anno = nota.dataNota.year
+      else:
+        nota.anno = nota.dataNota.year - 1
+     
+      nota.put()
+
+      username = Configurazione.all().filter("nome", "attach_user").get().valore
+      password = Configurazione.all().filter("nome", "attach_password").get().valore
+      site = Configurazione.all().filter("nome", "attach_site").get().valore
+      path = Configurazione.all().filter("nome", "attach_path").get().valore
+      site = Site(username, password, site)
+
+      for allegato in nota.allegati:
+        allegato.obj = nota
+        allegato.path = site.uploadDoc(allegato.dati, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), path)
+        allegato.put()
+
+      memcache.delete("stats")
+      memcache.delete("statsMese")
+      
+      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last"))))
+    else:
+      key = self.request.get("key")
+      if( key != "" ) :
+        nota = Nota.get(key)
+      else:
+        nota = Nota()
+    
+      form = NotaForm(data=self.request.POST, instance=nota)
+      #for field in form:
+        #logging.info("%s, %s",field.name, field)
+
+      if form.is_valid():
+        nota = form.save(commit=False)
+        nota.commissario = commissario
+        
+        if self.request.get("allegato_file"):
+          nota.allegati = list()
+          allegato = Allegato()
+          allegato.descrizione = self.request.get('allegato_desc')
+          allegato.nome = self.request.POST['allegato_file'].filename
+          allegato.dati = self.request.get("allegato_file")
+          if len(allegato.dati) < 1000000 :         
+            nota.allegati.append(allegato)
+          else:
+            logging.info("attachment is too big.")
+            
+        preview = user.email() + datetime.strftime(datetime.now(), TIME_FORMAT)
+        memcache.add(preview, nota, 3600)
+    
+        template_values = {
+          'main': '../templates/commissario/nota_read_div.html',
+          'nota': nota,
+          'allegati': nota.allegati,
+          'preview': preview
+        }
+        
+      else:
+        #logging.info("data: %s", form.data)
+        #for e in form.errors["__all__"] :
+          #logging.info("errors: %s", e)
+  
+        
+        template_values = {
+          'main': '../templates/commissario/nota_div.html',
+          'commissioni': commissario.commissioni(),
+          'form': form
+        }
+        
+      self.getBase(template_values)
       
 class CMCommissarioCommissioniHandler(CMCommissioniHandler):
   def get(self):
     #logging.info("CMCommissioniHandler.get")
     template_values = dict()
     template_values["path"] = "/commissario/commissioni"
-    template_values["content_left"] = "commissario/leftbar.html"
+    #template_values["content_left"] = "commissario/leftbar.html"
+    template_values["billboard"] = "navigation.html"    
     self.getBase(template_values)
     
       
@@ -1004,7 +1607,8 @@ class CMCommissarioStatsHandler(CMStatsHandler):
   def get(self):
     #logging.info("CMCommissarioStatsHandler.get")
     template_values = dict()
-    template_values["content_left"] = "commissario/leftbar.html"
+    #template_values["content_left"] = "commissario/leftbar.html"
+    template_values["billboard"] = "navigation.html"    
     self.getBase(template_values)
 
 class CMCommissarioMenuHandler(CMMenuHandler):
@@ -1013,7 +1617,8 @@ class CMCommissarioMenuHandler(CMMenuHandler):
 
   def get(self):
     template_values = dict()
-    template_values["content_left"] = "commissario/leftbar.html"
+    #template_values["content_left"] = "commissario/leftbar.html"
+    template_values["billboard"] = "navigation.html"    
     self.getBase(template_values)
 
 class CMCommissarioCalendarioHandler(BasePage):
@@ -1049,30 +1654,37 @@ class CMCommissarioCalendarioHandler(BasePage):
     template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None
     template_values["cm"] = cm
     self.getBase(template_values)
+
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
    
   application = webapp.WSGIApplication([
+    ('/commissario', CMCommissarioHandler),
+    ('/commissario/dati', CMDatiHandler),
     ('/commissario/isp', CMIspezioniCommissarioHandler),
     ('/commissario/nc', CMNonconfsCommissarioHandler),
     ('/commissario/diete', CMDieteCommissarioHandler),
     ('/commissario/note', CMNoteCommissarioHandler),
     ('/commissario/ispezione', CMIspezioneHandler),
+    ('/commissario/ispezione_div', IspezioneHandler),
     ('/commissario/nonconf', CMNonconfHandler),
+    ('/commissario/nonconf_div', NonconfHandler),
     ('/commissario/dieta', CMDietaHandler),
+    ('/commissario/dieta_div', DietaHandler),
     ('/commissario/nota', CMNotaHandler),
+    ('/commissario/nota_div', NotaHandler),
     ('/commissario/registrazione', CMRegistrazioneHandler),
     ('/commissario/profilo', CMProfiloCommissarioHandler),
+    ('/commissario/avatar', CMAvatarHandler),
     ('/commissario/stats', CMCommissarioStatsHandler),
     ('/commissario/commissioni', CMCommissarioCommissioniHandler),
     ('/commissario/menu', CMCommissarioMenuHandler),
     ('/commissario/calendario', CMCommissarioCalendarioHandler),
-    ('/commissario', CMCommissarioHandler),
     ('/commissario/getcm', CMCommissioniDataHandler),
     ('/commissario/getdata', CMCommissarioDataHandler),
-    ('/commissario/getispdata', CMGetIspDataHandler)
-  ], debug=debug)
+    ('/commissario/getispdata', CMGetIspDataHandler),
+    ('/commissario/getcity', CMCittaHandler)])
 
   wsgiref.handlers.CGIHandler().run(application)
   
