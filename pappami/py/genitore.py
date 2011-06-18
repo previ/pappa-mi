@@ -37,6 +37,7 @@ from py.model import *
 from py.form import NotaForm
 from py.stats import CMStatsHandler
 from py.commissario import CMCommissarioDataHandler
+from py.comments import CMCommentHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
@@ -191,13 +192,17 @@ class CMIspezioneGenitoreHandler(BasePage):
     cancopy = None;
     if( isp.commissario.key() == commissario.key()):
       cancopy = True
-    
+
+    comment_root = CMCommentHandler().getRoot(isp.key())
+      
     template_values = {
       'content': 'genitore/ispezione_read.html',
       'content_left': 'genitore/leftbar.html',
       'isp': isp,
       'cancopy': cancopy,
-      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
+      "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+      "comments": isp.key(),
+      "comment_root": comment_root
       }
 
     self.getBase(template_values)
@@ -218,11 +223,15 @@ class CMNonconfGenitoreHandler(BasePage):
 
     nc = Nonconformita.get(self.request.get("key"))
 
+    comment_root = CMCommentHandler().getRoot(nc.key())
+    
     template_values = {
       'content': 'genitore/nonconf_read.html',
       'content_left': 'genitore/leftbar.html',
       'nc': nc,
-      "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
+      "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
+      "comments": nc.key(),
+      "comment_root": comment_root
       }
 
     self.getBase(template_values)
@@ -248,11 +257,15 @@ class CMDietaGenitoreHandler(BasePage):
 
     dieta = Dieta.get(self.request.get("key"))
 
+    comment_root = CMCommentHandler().getRoot(dieta.key())
+
     template_values = {
       'content': 'genitore/dieta_read.html',
       'content_left': 'genitore/leftbar.html',
       'dieta': dieta,
-      "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
+      "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+      "comments": dieta.key(),
+      "comment_root": comment_root
       }
 
     self.getBase(template_values)
@@ -281,13 +294,17 @@ class CMNotaGenitoreHandler(BasePage):
       allegati = None
       if nota.allegato_set.count():
         allegati = nota.allegato_set
-  
+
+      comment_root = CMCommentHandler().getRoot(nota.key())
+        
       template_values = {
         'content': 'genitore/nota_read.html',
         'content_left': 'genitore/leftbar.html',
         'nota': nota,
         "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-        "allegati": allegati
+        "allegati": allegati,
+        "comments": nota.key(),
+        "comment_root": comment_root
         }
 
       self.getBase(template_values)
@@ -350,6 +367,9 @@ class CMNotaGenitoreHandler(BasePage):
         nota.anno = nota.dataNota.year - 1
 
       nota.put()
+      
+      comment_root = CMCommentHandler().init(nota.key())
+      
       memcache.delete("stats")
       memcache.delete("statsMese")
       
