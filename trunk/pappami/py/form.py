@@ -38,7 +38,9 @@ class IspezioneForm(djangoforms.ModelForm):
 
     # Always return the full collection of cleaned data.
     return cleaned_data
-    
+
+  #dataIspezione = djangoforms.DateField(blank=True)
+  
   class Meta:
     model = Ispezione
     exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
@@ -65,6 +67,7 @@ class NonconformitaForm(djangoforms.ModelForm):
 
     # Always return the full collection of cleaned data.
     return cleaned_data
+
   class Meta:
     model = Nonconformita
     exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
