@@ -14,7 +14,8 @@
 		<meta name="description" content="Raccolta dati Commissioni mensa Milano"/>
 		<link href="/css/homepage.css" rel="stylesheet" type="text/css" media="screen"/>
 		<link href="/css/print.css" rel="stylesheet" type="text/css" media="print"/>
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/nihilo/nihilo.css" />	
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/nihilo/nihilo.css" />	
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/base/jquery-ui.css" type="text/css" media="all" />
 		<script src="http://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
 djConfig={
@@ -23,22 +24,26 @@ djConfig={
           modulePaths: { custom: "/js/dojo/custom" }
         };
 </script>
-<script type="text/javascript">google.load("dojo", "1.5", {uncompressed:false});</script>
-<script type="text/javascript">google.load("jquery", "1.5.0", {uncompressed:false});</script>
+<script type="text/javascript">google.load("dojo", "1.6", {uncompressed:false});</script>
+<script type="text/javascript">google.load("jquery", "1.4.2", {uncompressed:true});</script>
+<script type="text/javascript">google.load("jqueryui", "1.8.12", {uncompressed:true});</script>
 <script type="text/javascript">
-$(document).ready(function(){ $("#feedlink").overlay(); $("#subwrap").css("visibility", "visible");});
+$(document).ready(function(){ 
+$("#feedlink").overlay(); 
+$("#subwrap").css("visibility", "visible");});
 </script>
 <!--[if IE]>
 <script src="/js/ieresizefix.js" type="text/javascript"></script>
 <![endif]-->	
-<script src="http://cdn.jquerytools.org/1.2.5/jquery.tools.min.js" type="text/javascript"></script>
+<script src="/js/jquery.tools.min.js" type="text/javascript"></script>
+<script src="/js/jquery.labelify.js" type="text/javascript"></script>
 <script src="http://www.google.com/moderator/static/moderator-embed-api.js" type="text/javascript"></script>
 </head>
 <body id="homepage" class="nihilo">
 <div id="container">
  <div id="header">
    {%if user%}<div id="logon_user" style="position:absolute; top:0px;right:0px; z-index:2;">Ciao, {{user.email}}</div>{%endif%}
-   <h1 id="logo"><a href="/"><img src="/img/pappa-mi-logo.png" alt="Pappa-Mi"/></a></h1>
+   <h1 id="logo"><a href="/"><img src="/img/pappa-mi-logo.png" alt="Pappa-Mi" id="logo"/></a></h1>
     <h1 id="logo-txt"><a href="/">Pappa-Mi</a> {%if test%}Test{%endif%}</h1>
     <ul id="nav-global">
 	<li><a href="/">Home</a></li>

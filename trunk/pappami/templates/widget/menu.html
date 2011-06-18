@@ -10,12 +10,12 @@ a {text-decoration:none;}
     <li><div><table width="100%" border="0" style="margin:0px; border-spacing:0px;">
 <tr><td align="center" class="md">{{m.data|date:"d/m/Y"}} {%if sett%}Sett. {{m.settimana}}{%endif%}</td></tr>
 <tr><td align="center" class="mt">Primo piatto</td></tr>
-<tr><td align="center" class="md">{{m.primo}}</td></tr>
+<tr><td align="center" class="md" title="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</td></tr>
 <tr><td align="center" class="mt">Secondo piatto</td></tr>
-<tr><td align="center" class="md">{{m.secondo}}</td></tr>
+<tr><td align="center" class="md" title="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</td></tr>
 <tr><td align="center" class="mt">Contorno</td></tr>
-<tr><td align="center" class="md">{{m.contorno}}</td></tr>
+<tr><td align="center" class="md" title="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</td></tr>
 <tr><td align="center" class="mt">Dessert</td></tr>
-<tr><td align="center" class="md">{{m.dessert}}</td></tr>
+<tr><td align="center" class="md" title="Calorie: {{m.dessert.calorie}} Carboidrati: {{m.dessert.carboidrati}} Proteine: {{m.dessert.proteine}} Grassi: {{m.dessert.grassi}}">{{m.dessert.nome}}</td></tr>
 </table></div></li>{%endfor%}
 </ul>

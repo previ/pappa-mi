@@ -1,0 +1,189 @@
+﻿<link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/css/jquery.ui.tooltip.css" rel="stylesheet" type="text/css" media="screen"/>
+<script type="text/javascript" src="/js/jquery.taghandler.min.js"></script> 
+<script type="text/javascript" src="/js/jquery.autogrow-textarea.js"></script> 
+<script type="text/javascript" src="/js/jquery.form.js"></script> 
+<script type="text/javascript" src="/js/comments.js"></script> 
+<script type="text/javascript" src="/js/jquery.ui.combobox.js"></script> 
+<script type="text/javascript" src="/js/jquery.ui.datepicker-it.js"></script> 
+<script type="text/javascript" src="/js/jquery.timers.js"></script> 
+<script type="text/javascript" src="/js/jquery.dropshadow.js"></script> 
+<script type="text/javascript" src="/js/jquery.ui.tooltip.js"></script> 
+<script type="text/javascript" src="/js/jquery.validate.js"></script> 
+<script type="text/javascript" src="/js/bbq.js"></script> 
+<script type="text/javascript" src="/js/jquery.form.wizard.js"></script> 
+<link href="/css/activity.css" rel="stylesheet" type="text/css" media="screen"/>
+<style> 
+.ui-button { margin-left: -1px; }
+.ui-button-icon-only .ui-button-text { padding: 0.35em; } 
+.ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }
+</style> 
+<script type="text/javascript"> 
+// wait for the DOM to be loaded 
+$(document).ready(function() { 
+    // bind 'myForm' and provide a simple callback function 
+    $('#new-msg-form').submit(function() { 	
+      var tags = "";
+      $('.tagItem').each(function() {
+	tags =+ $(this).text() + ",";
+	$("<input />").attr({ type: "hidden", name: "tags[]", value: $(this).text()}).appendTo($('#new-msg-form'));
+       });
+    }); 
+    $('textarea').autogrow();
+    $('#new-msg-form').ajaxForm(function(data) { 
+	$('#activity_list').prepend(data);
+	$('.tagItem').each(function() {
+	  $(this).remove();
+	});
+	$('#new-msg-form').find('[type="text"],[type="textarea"]').each(function() {
+	 $(this).val('');
+	});
+    }); 
+    //$('#comments').load('/comments/comment?par={{comment_root.key}}');        
+
+    $("#comment_tags_handler").tagHandler({
+	getData: { 'msg': "" },
+	getURL: '/comments/gettags',            
+	updateData: { msg: '{{comment_root.key}}' },
+	autocomplete: true
+	//minChars: 2
+    });        
+}); 
+
+var ulmsg=true;
+function closeIt() {
+  if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+}
+
+function opennewmsg() {
+ $('#new-msg').slideDown();
+}
+
+function opennewisp() {
+  $('#new-data-form').load("/commissario/ispezione_div", function(){
+    $('#act_last').clone().appendTo('#form1');
+    $("#form0").formwizard({ 
+      formPluginEnabled: true,
+      validationEnabled: true,
+      focusFirstInput : true,    
+      formOptions :{
+	success: function(data){
+	  $('#new-data-preview').html(data);
+	  $('#act_last').clone().appendTo('#form1'); 
+	  $('#new-data-form').hide();
+	  $('#new-data-preview').show();
+	  $('#form1').ajaxForm(function(data) {
+	    $('#new-data').dialog('close');
+	    $('#new-data-form').html('');
+	    $('#new-data-preview').html('');
+	    $('#activity_list').prepend(data);
+	  });
+	},
+	//beforeSubmit: function(data){$("#data").html("data sent to the server: " + $.param(data));},
+	resetForm: false,
+	  validationOptions: {
+	    rules: {
+	      numeroPastiTotale: { 
+		required: true,
+		number: true,
+		range: [0, 1000]},
+	      numeroPastiBambini: { 
+		required: true,
+		number: true,
+		range: [0, 1000]}
+	    }
+	  }
+	}
+      });
+      $.validator.messages = {
+	required: "Inserire o selezionare un valore",
+	range: "Inserire un valore compreso tra {0} e {1}" };
+    $('#new-data-form').show();
+    $('#new-data').dialog({ title: "Nuova Ispezione", modal: true, height: 600, width: "62em", zIndex: 2, autoOpen: false,  beforeClose: closeIt() });
+    $('#new-data').dialog('open');
+  });
+}
+
+function onopennewitem() {
+  $('#form0').ajaxForm(function(data) { 
+    $('#new-data-preview').html(data);
+    if($('#form-error').html()) {
+      $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  beforeClose: closeIt(), buttons: [
+	{ text: "Ok",
+          click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
+      $('#form-error').dialog('open');      
+    } else {
+      $('#act_last').clone().appendTo('#form1');
+      $('#new-data-form').hide();  
+      $('#new-data-preview').show();
+    }
+    $('#form1').ajaxForm(function(data) {      
+      $('#new-data').dialog('close');
+      $('#new-data-form').html('');
+      $('#new-data-preview').html('');
+      $('#activity_list').prepend(data);
+    });
+  });
+  $('#new-data-form').show();
+  $('#new-data').dialog({ modal: true, width: "62em", zIndex: 2, autoOpen: false,  beforeClose: closeIt() });
+  $('#new-data').dialog('open');
+}
+
+
+function opennewnc() {
+ $('#new-data-form').load("/commissario/nonconf_div", onopennewitem);
+}
+
+function opennewdieta() {
+ $('#new-data-form').load("/commissario/dieta_div", onopennewitem);
+}
+
+function opennewnota() {
+ $('#new-data-form').load("/commissario/nota_div", onopennewitem);
+}
+
+function previewback() {
+ $('#new-data-preview').hide();
+ $('#new-data-form').show();
+}
+</script> 
+<style>
+#content-main {width: 58em;padding:1em;}
+</style>
+<div id="activities" class="activity_container">
+{%if commissario or genitore%}
+ <div id="nav-priv-cnt">
+    <ul id="nav-priv">
+	<li><a href="#" onclick="opennewmsg();">Nuovo messaggio</a></li>
+	<li><a href="#" onclick="opennewisp();">Nuova Ispezione</a></li>
+	<li><a href="#" onclick="opennewnc();">Nuova Non Conformit&agrave;</a></li>
+	<li><a href="#" onclick="opennewdieta();">Nuova Ispezione Diete</a></li>
+	<li><a href="#" onclick="opennewnota();">Nuova Nota</a></li>
+  </ul>
+ </div>
+ <div id="new-msg" style="display:none;">
+  <form id="new-msg-form" action="/comments/message" method="post"> 
+   <input type="hidden" id="act_last" name="last" value="{{activity_last.key}}" /> 
+   <input type="hidden" name="livello" value="0" /> 
+   <input type="hidden" name="tipo" value="201" /> 
+   <div class="comment_avatar">
+    <img src="{{user.avatar}}" title="{{user.fullname}}">
+   </div>
+   <div class="comment_body">
+    <div class="comment_author">{{user.fullname}} </div>
+    <div class="comment_author_title"><input type="text" name="titolo" size="80"; maxsize="200"/></div>
+    <div class="comment_text"><textarea class="comment_textarea" name="testo"></textarea></div>
+    <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="comment_tags_handler"></ul><input type="submit" value="Invia" /></div></div>
+   </div>   
+   </form>
+ </div>
+ <div id="new-data" style="display:none;">
+ <div id="new-data-form" style="display:none;"></div> 
+ <div id="new-data-preview" style="display:none;"></div> 
+ </div> 
+{%endif%}
+<ul class="activity_list" id="activity_list">{%for activity in activities %}
+{%include "activity.html"%}{%endfor%}
+</ul>
+</div>
