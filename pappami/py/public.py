@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
+
+from py.base import *
 
 import os
 import cgi
@@ -34,9 +35,12 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
+from py.modelMsg import *
 from py.form import IspezioneForm, NonconformitaForm
+from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
 from py.stats import CMStatsHandler
 from py.commissario import CMCommissarioDataHandler
+from py.comments import CMCommentHandler
 
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
@@ -44,13 +48,16 @@ DATE_FORMAT = "%Y-%m-%d"
 class CMIspezionePublicHandler(BasePage):
   
   def get(self): 
-      isp = Ispezione.get(self.request.get("key"))
-      template_values = dict()
-      template_values["isp"] = isp
-      template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
-      template_values["main"] = "../templates/public/main.html"
-      template_values["content"] = "../public/ispezione_read.html"
-      self.getBase(template_values)
+    isp = Ispezione.get(self.request.get("key"))
+    template_values = dict()
+    template_values["isp"] = isp
+    template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
+    template_values["main"] = "../templates/public/main.html"
+    template_values["content"] = "../public/ispezione_read.html"
+    template_values["comments"] = True
+    template_values["comment_root"] = CMCommentHandler().getRoot(isp.key())
+    
+    self.getBase(template_values)
  
 class CMNonconfPublicHandler(BasePage):
   
@@ -61,6 +68,8 @@ class CMNonconfPublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
+    template_values["comments"] = True
+    template_values["comment_root"] = CMCommentHandler().getRoot(nc.key())
     self.getBase(template_values)
 
 class CMDietePublicHandler(BasePage):
@@ -72,6 +81,8 @@ class CMDietePublicHandler(BasePage):
     template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/dieta_read.html"
+    template_values["comments"] = True
+    template_values["comment_root"] = CMCommentHandler().getRoot(dieta.key())
     self.getBase(template_values)
 
 class CMNotePublicHandler(BasePage):
@@ -88,6 +99,8 @@ class CMNotePublicHandler(BasePage):
     template_values["main"] = "../templates/public/main.html"
     template_values["content"] = "../public/nota_read.html"
     template_values["allegati"] = allegati
+    template_values["comments"] = True
+    template_values["comment_root"] = CMCommentHandler().getRoot(nota.key())
     
     self.getBase(template_values)
 
@@ -104,7 +117,7 @@ class CMAllegatoPublicHandler(BasePage):
 class CMRobotPublicHandler(BasePage):
   
   def get(self): 
-    if self.request.headers["User-Agent"] == "Googlebot":
+    if "Googlebot" in self.request.headers["User-Agent"]:
       template_values = dict()
       isps = Ispezione.all()
       template_values["isps"] = isps
@@ -113,7 +126,35 @@ class CMRobotPublicHandler(BasePage):
       self.getBase(template_values)
     else:
       self.redirect("/")
+
+class CMDetailHandler(BasePage):
+  
+  def get(self): 
+    logging.info("CMDetailHandler")
+    msg = Messaggio.get(self.request.get("key"))
     
+    temp = "../templates/public/detail_"
+    tipo = int(msg.tipo)
+    if tipo == 101:
+      temp += "isp"
+    if tipo == 102:
+      temp += "nc"
+    if tipo == 103:
+      temp += "dieta"
+    if tipo == 104:
+      temp += "nota"
+    if tipo == 201:
+      temp += "msg"
+      
+    template_values = dict()
+    template_values["main"] = temp + ".html"
+    template_values["msg"] = msg
+    
+    path = os.path.join(os.path.dirname(__file__), template_values["main"])
+    logging.info("CMDetailHandler: " + template.render(path, template_values))
+    
+    self.getBase(template_values)
+      
     
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
@@ -121,12 +162,14 @@ def main():
   application = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
     ('/public/isp', CMIspezionePublicHandler),
-    ('/public/ispezione', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
-    ('/public/nonconf', CMNonconfPublicHandler),
     ('/public/dieta', CMDietePublicHandler),
     ('/public/nota', CMNotePublicHandler),
-    ('/public/allegato', CMAllegatoPublicHandler)
+    ('/public/allegato', CMAllegatoPublicHandler),
+    ('/public/avatar', CMAvatarHandler),
+    ('/public/detail', CMDetailHandler),
+    ('/public/getcm', CMCommissioniDataHandler),
+    ('/public/getcity', CMCittaHandler)
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)

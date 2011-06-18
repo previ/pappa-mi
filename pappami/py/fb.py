@@ -2,47 +2,56 @@
 
 import wsgiref.handlers
 import os
-import facebook
+import logging
 from google.appengine.ext import webapp
+from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
-class BaseHandler(webapp.RequestHandler):
+from py.facebook import *
+from py.base import BasePage
+from py.model import Commissario
+
+class MainHandler(webapp.RequestHandler):
   def get(self):
-    self.API_KEY = '63acc8b9bce03aaa3fbfaa14fe4d4e8a'# YOUR API KEY
-    self.SECRET_KEY = 'e57edc34abb15fece9abcc7b00d39735'# YOUR SECRET KEY
-    self.facebookapi = facebook.Facebook(self.API_KEY, self.SECRET_KEY)
-
-    if not self.facebookapi.check_connect_session(self.request):
-      self.tpl('login.html')
-      return
-
-    try:
-      self.user = self.facebookapi.users.getInfo(
-        [self.facebookapi.uid],
-        ['uid', 'name'])[0]
-    except facebook.FacebookError:
-      self.tpl('login.html')
-      return
-
-    self.get_secure()
-
-  def tpl(self, tpl_file, vars = {}):
-      vars['apikey'] = self.API_KEY
-      path = os.path.join(os.path.dirname(__file__), 'templates/py/' + tpl_file)
-      self.response.out.write(template.render(path, vars))
-
-class MainHandler(BaseHandler):
-  def get_secure(self):
+    user = get_user_from_cookie(self.request.cookies, '63acc8b9bce03aaa3fbfaa14fe4d4e8a', 'e57edc34abb15fece9abcc7b00d39735')
+    template_values = dict()
+    template_values["apikey"] = '63acc8b9bce03aaa3fbfaa14fe4d4e8a'
+    logging.info(user)
+    if user:
+      graph = facebook.GraphAPI(user["access_token"])
+      profile = graph.get_object("me")
+      friends = graph.get_connections("me", "friends")
+      picture = graph.get_connections("me", "picture")
+      logging.info(profile)
+      logging.info(picture)
+      template_values["profile"] = profile
+      template_values["picture"] = picture
+    path = os.path.join(os.path.dirname(__file__), '../templates/fb/index.html')
+    self.response.out.write(template.render(path, template_values))
+        
+  
+class LoginHandler(webapp.RequestHandler):
+  def get(self):    
     template_values = {
-      'name': self.user['name'],
-      'uid': self.user['uid']
     }
+    path = os.path.join(os.path.dirname(__file__), '../templates/fb/login2.html')
+    self.response.out.write(template.render(path, template_values))
 
-    self.tpl('index.html', template_values)
-
+class SaveUserInfoHandler(BasePage):
+  def post(self):
+    commissario = self.getCommissario(users.get_current_user())
+    commissario.avatar_url = self.request.get("picture")
+    commissario.put()
+    
+    
+    
 def main():
-  application = webapp.WSGIApplication([('/fb', MainHandler)], debug=True)
+  application = webapp.WSGIApplication([
+    ('/fb', MainHandler),
+    ('/fb/login', LoginHandler),
+    ('/fb/save', SaveUserInfoHandler)
+    ], debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == '__main__':
