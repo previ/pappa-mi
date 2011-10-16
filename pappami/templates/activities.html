@@ -1,115 +1,163 @@
-﻿<link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
-<link href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
-<link href="/css/jquery.ui.tooltip.css" rel="stylesheet" type="text/css" media="screen"/>
-<script type="text/javascript" src="/js/jquery.taghandler.min.js"></script> 
-<script type="text/javascript" src="/js/jquery.autogrow-textarea.js"></script> 
-<script type="text/javascript" src="/js/jquery.form.js"></script> 
-<script type="text/javascript" src="/js/comments.js"></script> 
-<script type="text/javascript" src="/js/jquery.ui.combobox.js"></script> 
-<script type="text/javascript" src="/js/jquery.ui.datepicker-it.js"></script> 
-<script type="text/javascript" src="/js/jquery.timers.js"></script> 
-<script type="text/javascript" src="/js/jquery.dropshadow.js"></script> 
-<script type="text/javascript" src="/js/jquery.ui.tooltip.js"></script> 
-<script type="text/javascript" src="/js/jquery.validate.js"></script> 
-<script type="text/javascript" src="/js/bbq.js"></script> 
-<script type="text/javascript" src="/js/jquery.form.wizard.js"></script> 
-<link href="/css/activity.css" rel="stylesheet" type="text/css" media="screen"/>
-<style> 
+﻿<style> 
+label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
 .ui-button { margin-left: -1px; }
 .ui-button-icon-only .ui-button-text { padding: 0.35em; } 
 .ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }
 </style> 
 <script type="text/javascript"> 
+
+var query = "";
+var offset = 1;
+
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
     // bind 'myForm' and provide a simple callback function 
-    $('#new-msg-form').submit(function() { 	
-      var tags = "";
-      $('.tagItem').each(function() {
-	tags =+ $(this).text() + ",";
-	$("<input />").attr({ type: "hidden", name: "tags[]", value: $(this).text()}).appendTo($('#new-msg-form'));
-       });
-    }); 
     $('textarea').autogrow();
-    $('#new-msg-form').ajaxForm(function(data) { 
-	$('#activity_list').prepend(data);
-	$('.tagItem').each(function() {
-	  $(this).remove();
-	});
-	$('#new-msg-form').find('[type="text"],[type="textarea"]').each(function() {
-	 $(this).val('');
-	});
-    }); 
-    //$('#comments').load('/comments/comment?par={{comment_root.key}}');        
-
-    $("#comment_tags_handler").tagHandler({
-	getData: { 'msg': "" },
-	getURL: '/comments/gettags',            
-	updateData: { msg: '{{comment_root.key}}' },
-	autocomplete: true
-	//minChars: 2
-    });        
+    //$("#new-msg-form").validate();
+    $('#activity_list').load('/comments/load', function(){$('#e_act_more').bind( "click", function(){moreactivities();} );});
+    
+    $('#form_filter').ajaxForm({ beforeSubmit: function(data) { 
+      query = $.param(data);
+      offset = 1;
+      $('#activity_list').text('');
+      $('#activity_list').load('/comments/load?'+query); return false;}
+    });
 }); 
 
-var ulmsg=true;
+
+var ulmsg=false;
 function closeIt() {
-  if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+  if(ulmsg) {
+    if( confirm("Attenzione, la pagina contiene dati non salvati, uscire comunque ?") ) {
+      ulmsg=false;  
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
+
+window.onbeforeunload = closeIt;
 
 function opennewmsg() {
- $('#new-msg').slideDown();
+  if($('#new-msg').is(':visible') ) {
+    $('#new-msg').slideUp();
+  } else {     
+    $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
+      $('#activity_list').prepend(data);
+      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+    }, beforeSubmit: function(arr,$form) {
+      $("[name='tags']").attr('value','');
+      $('.tagItem').each(function() {
+	arr.push({name: "tags", value: $(this).text()});
+       });
+      $('#new-msg').slideUp();
+    }}); 
+    $("#message_tags_handler").tagHandler({
+	getData: { 'msg': "" },
+	getURL: '/comments/gettags',            
+	autocomplete: true
+    });
+    $('#new-msg').slideDown();  
+  }
 }
 
-function opennewisp() {
-  $('#new-data-form').load("/commissario/ispezione_div", function(){
+function opennewwiz(url) {
+  $('#new-data-form').load(url, function(){
+    ulmsg=true;
     $('#act_last').clone().appendTo('#form1');
     $("#form0").formwizard({ 
       formPluginEnabled: true,
       validationEnabled: true,
-      focusFirstInput : true,    
+      validationOptions: {
+	errorClass: "error",
+	errorPlacement: function(error, element) {	
+	  //error.appendTo( element.parent().parent() );
+	  //alert(error.text());
+	  $($($(element).parent()).parent()).attr("title", error.text());
+	  $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
+	  $($($(element).parent()).parent()).twipsy('show');
+        },
+	highlight: function(element, errorClass, validClass) {
+	    $($($(element).parent()).parent()).twipsy('show');
+	    //alert("pippo");
+	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
+	 },
+	unhighlight: function(element, errorClass, validClass) {
+	    $($($(element).parent()).parent()).twipsy('hide');
+	    //alert("pappo");	
+	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
+	 }
+      },
+      focusFirstInput : true,
+      textNext: "Avanti",
+      textBack: "Indietro",
+      disableUIStyles: true,
+      remoteAjax : {"step1" : { // add a remote ajax call when moving next from the second step
+	url : url + "val", 
+	dataType : 'text',
+	//beforeSend : function(){alert("Starting validation.")},
+	//complete : function(){alert("Validation complete.")},
+	success : function(data){
+	  if(data != "Ok") {
+	    $("#formwiz-error").append(data);
+	    $('#formwiz-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	      { text: "Ok",
+		click: function() { $(this).dialog("close"); $('#form-error').text(''); } } ] });
+	    $('#formwiz-error').dialog('open');	    
+	    return false; //return false to stop the wizard from going forward to the next step (this will always happen)
+	  }
+	  return true; //return true to make the wizard move to the next step
+	}
+      }},      
       formOptions :{
 	success: function(data){
 	  $('#new-data-preview').html(data);
-	  $('#act_last').clone().appendTo('#form1'); 
-	  $('#new-data-form').hide();
-	  $('#new-data-preview').show();
+	  if($('#form-error').html()) {
+	    $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	      { text: "Ok",
+		click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
+	    $('#form-error').dialog('open');
+	    $('#new-data-preview').html('');
+	  } else {
+	    $('#act_last').clone().appendTo('#form1');
+	    $('#new-data-form').hide();  
+	    $('#new-data-preview').show();
+	  }
+	  
 	  $('#form1').ajaxForm(function(data) {
 	    $('#new-data').dialog('close');
 	    $('#new-data-form').html('');
 	    $('#new-data-preview').html('');
 	    $('#activity_list').prepend(data);
+	    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
 	  });
 	},
 	//beforeSubmit: function(data){$("#data").html("data sent to the server: " + $.param(data));},
-	resetForm: false,
-	  validationOptions: {
-	    rules: {
-	      numeroPastiTotale: { 
-		required: true,
-		number: true,
-		range: [0, 1000]},
-	      numeroPastiBambini: { 
-		required: true,
-		number: true,
-		range: [0, 1000]}
-	    }
-	  }
-	}
-      });
-      $.validator.messages = {
+	resetForm: false
+      }
+    });
+    $.validator.messages = {
+	number: "Inserire in numero",
 	required: "Inserire o selezionare un valore",
 	range: "Inserire un valore compreso tra {0} e {1}" };
-    $('#new-data-form').show();
-    $('#new-data').dialog({ title: "Nuova Ispezione", modal: true, height: 600, width: "62em", zIndex: 2, autoOpen: false,  beforeClose: closeIt() });
+    $("#form0").bind("step_shown", function(event, data){
+      $("#formwiz-progress-" + data.previousStep).toggleClass("active");
+      $("#formwiz-progress-" + data.currentStep).toggleClass("active");
+    });
+    $('#new-data').show();
+    $("#formwiz-progress-step1").toggleClass("active");
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 500, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeIt });
     $('#new-data').dialog('open');
   });
 }
 
 function onopennewitem() {
-  $('#form0').ajaxForm(function(data) { 
+  ulmsg=true;  
+  $('#form0').ajaxForm({clearForm: false, success: function(data) { 
     $('#new-data-preview').html(data);
     if($('#form-error').html()) {
-      $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  beforeClose: closeIt(), buttons: [
+      $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	{ text: "Ok",
           click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
       $('#form-error').dialog('open');      
@@ -123,67 +171,131 @@ function onopennewitem() {
       $('#new-data-form').html('');
       $('#new-data-preview').html('');
       $('#activity_list').prepend(data);
+      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     });
-  });
+  }, beforeSubmit: function(arr,$form) {
+    $("[name='tags']").attr('value','');
+    $('.tagItem').each(function() {
+      arr.push({name: "tags", value: $(this).text()});
+     });
+  }});
+  $('textarea').autogrow();
+  $.validator.messages = {
+      required: "Inserire o selezionare un valore",
+      range: "Inserire un valore compreso tra {0} e {1}" };
   $('#new-data-form').show();
-  $('#new-data').dialog({ modal: true, width: "62em", zIndex: 2, autoOpen: false,  beforeClose: closeIt() });
+  $('#new-data').dialog({ title: $('#title').text(), modal: true, width: "720px;", zIndex: 2, autoOpen: false,  beforeClose: closeIt });
   $('#new-data').dialog('open');
 }
 
+function onclosenewitem() {
+  ulmsg=false;
+  $('#new-data').dialog('close');
+  //$('#new-data').html('');
+  return false;
+}
+
+function opennewisp() {
+ opennewwiz("/isp/isp");
+}
 
 function opennewnc() {
- $('#new-data-form').load("/commissario/nonconf_div", onopennewitem);
+ $('#new-data-form').load("/isp/nc", onopennewitem);
 }
 
 function opennewdieta() {
- $('#new-data-form').load("/commissario/dieta_div", onopennewitem);
+  opennewwiz("/isp/dieta");
 }
 
 function opennewnota() {
- $('#new-data-form').load("/commissario/nota_div", onopennewitem);
+ $('#new-data-form').load("/isp/nota", onopennewitem);
 }
 
 function previewback() {
  $('#new-data-preview').hide();
  $('#new-data-form').show();
 }
+
+function filteractivities(q) {
+  if(q) {
+    query = q;
+  }
+  offset=0;
+  $.ajax({url:'/comments/load?'+query+'&offset='+offset, success: function(data){
+    $('#activity_list').text('');
+    $('#activity_list').append(data);    
+    offset += 1;
+  }}); 
+}
+
+function moreactivities() {
+  $.ajax({url:'/comments/load?'+query+'&ease=1'+'&offset='+offset, success: function(data){
+    $('#activity_list').append(data);    
+    offset += 1;
+  }}); 
+}
+
 </script> 
 <style>
-#content-main {width: 58em;padding:1em;}
+#content-main {width: 58em;}
 </style>
+{%include "navigation.html"%}
 <div id="activities" class="activity_container">
+<div style="height:60px;"></div>
 {%if commissario or genitore%}
- <div id="nav-priv-cnt">
-    <ul id="nav-priv">
-	<li><a href="#" onclick="opennewmsg();">Nuovo messaggio</a></li>
-	<li><a href="#" onclick="opennewisp();">Nuova Ispezione</a></li>
-	<li><a href="#" onclick="opennewnc();">Nuova Non Conformit&agrave;</a></li>
-	<li><a href="#" onclick="opennewdieta();">Nuova Ispezione Diete</a></li>
-	<li><a href="#" onclick="opennewnota();">Nuova Nota</a></li>
-  </ul>
- </div>
- <div id="new-msg" style="display:none;">
-  <form id="new-msg-form" action="/comments/message" method="post"> 
-   <input type="hidden" id="act_last" name="last" value="{{activity_last.key}}" /> 
-   <input type="hidden" name="livello" value="0" /> 
-   <input type="hidden" name="tipo" value="201" /> 
-   <div class="comment_avatar">
-    <img src="{{user.avatar}}" title="{{user.fullname}}">
-   </div>
-   <div class="comment_body">
-    <div class="comment_author">{{user.fullname}} </div>
-    <div class="comment_author_title"><input type="text" name="titolo" size="80"; maxsize="200"/></div>
-    <div class="comment_text"><textarea class="comment_textarea" name="testo"></textarea></div>
-    <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="comment_tags_handler"></ul><input type="submit" value="Invia" /></div></div>
-   </div>   
-   </form>
- </div>
- <div id="new-data" style="display:none;">
- <div id="new-data-form" style="display:none;"></div> 
+<div id="nav-priv-cnt"></div>
+<ul id="message_tags_handler_test"></ul>
+<div class="well">
+  <div class="dropdown" data-dropdown="dropdown">
+    <a href="#" class="btn primary dropdown-toggle">Nuovo ...</a>
+    <ul class="dropdown-menu">
+      <li><a href="#" onclick="opennewmsg();">Messaggio</a></li>
+      <li class="divider"></li>
+      <li><a href="#" onclick="opennewisp();">Ispezione</a></li>
+      <li><a href="#" onclick="opennewdieta();">Ispezione Diete</a></li>
+      <li><a href="#" onclick="opennewnc();">Non conformit&agrave;</a></li>
+      <li><a href="#" onclick="opennewnota();">Nota</a></li>
+    </ul>
+  </div>
+  <div class="dropdown secondary-nav" data-dropdown="dropdown">
+    <a href="#" class="btn dropdown-toggle">Filtra dati</a>
+    <ul class="dropdown-menu">
+      <li><a href="#">Tutto</a></li>
+      <li class="divider"></li>
+      <li><a href="#">Inseriti da me</a></li>
+      <li><a href="#">Mia Scuola</a></li>
+      <li class="divider"></li>
+      <li><a href="#">Messaggi</a></li>
+      <li><a href="#">Ispezioni</a></li>
+      <li><a href="#">Ispezioni Diete</a></li>
+      <li><a href="#">Non conformit&agrave;</a></li>
+      <li><a href="#">Note</a></li>
+    </ul>
+  </div>
+</div>
+<div id="new-msg" style="display:none;">
+ <form id="new-msg-form" action="/comments/message" method="post"> 
+  <input type="hidden" id="act_last" name="last" value="{{act_last.key}}" /> 
+  <input type="hidden" name="livello" value="0" />  
+  <input type="hidden" name="tipo" value="201" /> 
+  <div class="comment_avatar">
+   <img src="{{user.avatar}}" title="{{user.fullname}}">
+  </div>
+  <div class="comment_body">
+   <div class="comment_author">{{user.fullname}} </div>
+   <div class="comment_author_title"><input type="text" name="titolo" size="80"; maxsize="200"/></div>
+   <div class="comment_text"><textarea required="true" class="comment_textarea" name="testo"></textarea></div>
+   <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="message_tags_handler"></ul><input type="submit" value="Invia" /></div></div>
+  </div>   
+ </form>
+</div>
+<div id="new-data" style="display:none;">
+ <div id="new-data-form" style="border: none;"></div> 
  <div id="new-data-preview" style="display:none;"></div> 
- </div> 
+</div> 
 {%endif%}
-<ul class="activity_list" id="activity_list">{%for activity in activities %}
-{%include "activity.html"%}{%endfor%}
+<ul class="activity_list" id="activity_list">{#{%for activity in activities %}
+{%include "activity.html"%}{%endfor%}#}
 </ul>
 </div>
+<div style="border-style:solid; border-width:1px; width:100%; text-align: center; background-color:#eee;" id="e_act_more">Altri...</div>

@@ -91,7 +91,7 @@ class Commissione(db.Model):
     return CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get().centroCucina
 
   def desc(self):
-    return self.tipoScuola + " " + self.nome
+    return self.nome + " " + self.tipoScuola
   
 class Commissario(db.Model):
   user = db.UserProperty()
@@ -121,7 +121,9 @@ class Commissario(db.Model):
   def isGenitore(self):
     return self.stato == 11
   def isRegistering(self):
-    return self.stato == 11 or self.stato == 0
+    return self.stato == 10 or self.stato == 0
+  def isRegistered(self):
+    return self.stato == 11 or self.stato == 1
   def isRegCommissario(self):
     return self.stato == 0
   def isRegGenitore(self):
@@ -534,6 +536,8 @@ class Nota(db.Model):
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
   stato = db.IntegerProperty()
+  
+  tags = None
 
   def data(self): return self.dataNota  
   

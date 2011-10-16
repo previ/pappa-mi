@@ -1,0 +1,22 @@
+<div id="nav-priv-cnt">
+<form id="form_filter" action="/comments/load">
+<ul id="nav-priv">
+<li><select name="tag">
+{%for tag in tags%}<option value="{{tag.nome}}">{{tag.nome}}</option>{%endfor%}
+</select></li>
+<li><select name="msgtype">
+<option value="">Tutto</option>
+<option value="101">Ispezioni</option>
+<option value="102">Non conformit&agrave;</option>
+<option value="103">Diete</option>
+<option value="104">Note</option>
+<option value="201">Messaggi</option>
+</select></li>
+<li><select name="user">
+<option value="">Tutti</option>
+{%for cr in commissari%}<option value="{{cr.user.email}}">{{cr.nome}} {{cr.cognome}}</option>{%endfor%}
+</select></li>
+</ul>
+<input type="submit" value="Filtro"/>
+</form>
+</div>

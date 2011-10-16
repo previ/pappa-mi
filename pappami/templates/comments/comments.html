@@ -7,10 +7,17 @@
     // wait for the DOM to be loaded 
     $(document).ready(function() { 
         // bind 'myForm' and provide a simple callback function 
-        $('#comment').ajaxForm(function() { 
-            $('#comments').load('/comments/comment?par={{comment_root.key}}')
+        $('#comment_{{comment_root.key}}').ajaxForm({clearForm: true, success:function(data) { 
+           $('#comment_list_{{comment_root.key}}').append(data);
+           last = $('#comment_list_{{comment_root.key}}').children().last().children().first().attr('id').substring("comment_".length);
+           $('#comment_last_{{comment_root.key}}').val(last);
+           //$('#comments_{{comment_root.key}}').load('/comments/comment?par={{comment_root.key}}')
+        }}); 
+        $('#comment_list_{{comment_root.key}}').load('/comments/comment?par={{comment_root.key}}', function(){
+         last = $('#comment_list_{{comment_root.key}}').children().last().children().first().attr('id').substring("comment_".length);
+         $('#comment_last_{{comment_root.key}}').val(last);
         }); 
-        $('#comments').load('/comments/comment?par={{comment_root.key}}');        
+        
 
         $("#comment_tags_handler").tagHandler({
             getData: { 'msg': '{{comment_root.key}}'},
@@ -28,20 +35,25 @@
 <div class="comment_container">
 <div class="comment_root">
 <div class="comment_tags" style="width:40em;"><ul id="comment_tags_handler"></ul></div>
- <div class="comment_feedback" id="votes_{{comment_root.key}}" onclick="onshowvotes('{{comment_root.key}}')" style="display:{%if comment_root.likes %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment_root.key}}">{{comment_root.likes}}</span> persone<span id="vnum_{{activity.key}}_me" {%if activity.canvote %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
- <div class="comment_vote" id="vote_1_{{comment_root.key}}" style="display:{%if comment_root.canvote %}inline{%else%}none{%endif%};">
+ <div class="comment_feedback" id="votes_{{comment_root.key}}" onclick="onshowvotes('{{comment_root.key}}')" style="display:{%if comment_root.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment_root.key}}">{{comment_root.likes}}</span> persone<span id="vnum_{{activity.key}}_me" {%if activity.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+ <div class="comment_vote" id="vote_1_{{comment_root.key}}" style="display:{%if comment_root.canvote() %}inline{%else%}none{%endif%};">
   <div class="comment_vote_button" id="vote_{{comment_root.key}}" onclick="onvote('{{comment_root.key}}',1)">Mi piace</div>
   <!--button id="vote_{{comment_root.key}}" onclick="onvote('{{comment_root.key}}',-1)">Non mi piace</button-->
  </div>
- <div class="comment_vote" id="vote_2_{{comment_root.key}}" style="display:{%if comment_root.canvote %}none{%else%}inline{%endif%};">
+ <div class="comment_vote" id="vote_2_{{comment_root.key}}" style="display:{%if comment_root.canvote() %}none{%else%}inline{%endif%};">
   <div class="comment_vote_button" id="vote_{{comment_root.key}}" onclick="onunvote('{{comment_root.key}}')">Ho cambiato idea</div>
  </div>{%endif%}
 </div>
-<div id="comments" class="comments"></div>
+<div id="comments" class="comments">
+<ul class="comment_list" id="comment_list_{{comment_root.key}}"></ul>
+</div>
 <div id="voters" title="Questa pagina &egrave; piaciuta a:"></div>
 {%if user%}
 <div class="comment_form">
-<form id="comment" action="/comments/comment" method="post"> 
+<form id="comment_{{comment_root.key}}" action="/comments/comment" method="post"> 
+<input type="hidden" name="tipo" value="202" /> 
+<input type="hidden" name="livello" value="1" /> 
+<input type="hidden" name="last" id="comment_last_{{comment_root.key}}" value="{{comment_last}}" /> 
 <input type="hidden" name="par" value="{{comment_root.key}}" /> 
  <div class="comment_avatar">
  <img src="{{user.avatar}}" title="{{user.fullname}}">

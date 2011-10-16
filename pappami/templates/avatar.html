@@ -1,0 +1,13 @@
+<div id="avatar_dialog" style="display:none;">
+<script src="http://connect.facebook.net/it_IT/all.js"></script> 
+<img id="avatar_edit" src="{{cmsro.avatar}}?size=normal" class="avatar-big"/>
+<form id="avatar_form" action="/commissario/avatar" method="POST">
+<input type="hidden" name="cmd" value="upload"/>
+Carica una immagine: <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
+</form>
+<p>Oppure:</p>
+<div id="fb-root"></div>
+<div id="fb"><a id="fbgetimage" class="btn large">Usa l'immagine dal tuo profilo Facebook</a></div>
+<div id="gp"><a id="gpgetimage" class="btn large">Usa l'immagine dal tuo profilo Google+</a></div>
+<div id="tw"><a id="twgetimage" class="btn large">Usa l'immagine dal tuo profilo Twitter</a></div>
+</div>

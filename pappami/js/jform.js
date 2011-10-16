@@ -17,28 +17,31 @@ var getMenu = function(){
   }
 }
 
-  function onMenuChanged() {
-	if($("#e_primoEffettivo").val() != "" && $("#e_primoEffettivo").val() == $("#e_secondoEffettivo").val() ) {		
-		oldDisp_1 = $('#s_secondo_1').css('display');
-		oldDisp_2 = $('#s_secondo_2').css('display');
-		oldDisp_3 = $('#s_secondo_3').css('display');
-		$('#s_secondo_1').css('display', "none");
-		$('#s_secondo_2').css('display', "none");
-		$('#s_secondo_3').css('display', "none");
-		$('#s_primo').html("Primo e Secondo Piatto (Piatto unico)");
-		piattounico = true;
-		$('#step3next').val('step5');
-	} else {
-		$('#s_secondo_1').css('display', oldDisp_1);
-		$('#s_secondo_2').css('display', oldDisp_2);
-		$('#s_secondo_3').css('display', oldDisp_3);
-		$('#s_primo').html("Primo Piatto");
-		piattounico = false;
-		$('#step3next').val('step4');
-	}
-	$('#s_primo').text("Primo Piatto: " + $('#e_primoEffettivo').val());
-	$('#s_secondo').text("Secondo Piatto: " + $('#e_secondoEffettivo').val());
-	$('#s_contorno').text("Contorno: " + $('#e_contornoEffettivo').val());
+function onMenuChanged() {
+      if($("#e_primoEffettivo").val() != "" && $("#e_primoEffettivo").val() == $("#e_secondoEffettivo").val() ) {
+	      oldDisp_1 = $('#s_secondo_1').css('display');
+	      oldDisp_2 = $('#s_secondo_2').css('display');
+	      oldDisp_3 = $('#s_secondo_3').css('display');
+	      //$('#s_secondo_1').css('display', "none");
+	      //$('#s_secondo_2').css('display', "none");
+	      //$('#s_secondo_3').css('display', "none");
+	      piattounico = true;
+	      $('#tab_primo').text("Piatto unico");
+	      $('#tab_secondo').parent().hide();
+	      $('#s_primo').html($('#e_primoEffettivo').val());
+	      $('#step3next').val('step5');
+      } else {
+	      //$('#s_secondo_1').css('display', oldDisp_1);
+	      //$('#s_secondo_2').css('display', oldDisp_2);
+	      //$('#s_secondo_3').css('display', oldDisp_3);
+	      piattounico = false;
+	      $('#tab_primo').text("Primo");
+	      $('#tab_secondo').parent().show();
+	      $('#s_primo').text($('#e_primoEffettivo').val());
+	      $('#s_secondo').text($('#e_secondoEffettivo').val());
+	      $('#step3next').val('step4');
+      }
+      $('#s_contorno').text("Contorno: " + $('#e_contornoEffettivo').val());
 }
 
 function getPrevIspData() {
@@ -75,6 +78,7 @@ function getPrevIspData() {
 	  $('[name="ricicloPosate"]')[1].checked = ispdata[8] == 0;
 	  $('[name="ricicloBicchieri"]')[0].checked = ispdata[9] == 1;
 	  $('[name="ricicloBicchieri"]')[1].checked = ispdata[9] == 0;
+	  $('#step2').updateRadioState();
 	}
 	}
 	});

@@ -3,7 +3,8 @@
 import wsgiref.handlers
 import os
 import logging
-from google.appengine.ext import webapp
+
+import webapp2 as webapp
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
@@ -45,15 +46,14 @@ class SaveUserInfoHandler(BasePage):
     commissario.put()
     
     
-    
-def main():
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
     ('/fb', MainHandler),
     ('/fb/login', LoginHandler),
     ('/fb/save', SaveUserInfoHandler)
-    ], debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+    ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-if __name__ == '__main__':
+def main():
+  app.run();
+
+if __name__ == "__main__":
   main()
-

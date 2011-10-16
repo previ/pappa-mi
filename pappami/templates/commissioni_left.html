@@ -22,9 +22,9 @@ if(this.validate()){
 <LABEL class="ss-q-title" for="entry_3">Tipo</LABEL>
 <SELECT name="tipoScuola" id="entry_3">
 <OPTION value=""></OPTION>
-<OPTION value="Materna"{% ifequal tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
-<OPTION value="Primaria"{% ifequal tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
-<OPTION value="Secondaria"{% ifequal tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
+<OPTION value="Materna"{% if tipoScuola == "Materna" %} selected{% endif %}>Materna</OPTION>
+<OPTION value="Primaria"{% if tipoScuola == "Primaria" %} selected{% endif %}>Primaria</OPTION>
+<OPTION value="Secondaria"{% if tipoScuola == "Secondaria" %} selected{% endif %}>Secondaria</OPTION>
 </SELECT>
 </td>
 </tr>
@@ -33,7 +33,7 @@ if(this.validate()){
 <LABEL class="ss-q-title" for="entry_4">C.Cucina</LABEL>
 <SELECT name="centroCucina" id="entry_4">
 <OPTION value=""></OPTION>{%for cc in centriCucina%}
-<OPTION value="{{cc.key}}"{% ifequal centroCucina cc.key %} selected{% endifequal %}>{{cc.nome}}</OPTION>{%endfor%}
+<OPTION value="{{cc.key}}"{% if centroCucina == cc.key %} selected{% endif %}>{{cc.nome}}</OPTION>{%endfor%}
 </select>
 </td>
 </tr>

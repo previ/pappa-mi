@@ -15,23 +15,17 @@
 # limitations under the License.
 #
 
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-
-from google.appengine.dist import use_library
-use_library('django', '0.96')
-
 import cgi
-import logging
+import os, logging, json
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
+import jinja2
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 
@@ -41,13 +35,25 @@ from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
 
-from django.utils import simplejson as json
+class Const:
+  TIME_FORMAT = "T%H:%M:%S"
+  DATE_FORMAT = "%Y-%m-%d"
+  ACTIVITY_FETCH_LIMIT = 5
 
-TIME_FORMAT = "T%H:%M:%S"
-DATE_FORMAT = "%Y-%m-%d"
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
-
-class BasePage(webapp.RequestHandler):
+class ActivityFilter():
+  def __init__(self, tagnames = list(), msgtypes = list(), users = list(), groups = list()):
+    self.tagnames=tagnames
+    self.msgtypes=msgtypes
+    self.users=users
+    self.groups=groups    
+  tagnames = None
+  msgtypes = None
+  users = None
+  group = None
+  
+class BasePage(webapp.RequestHandler):  
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
@@ -72,7 +78,7 @@ class BasePage(webapp.RequestHandler):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
         memcache.set("commissario" + str(user.user_id()), commissario, 600)
-      template_values["commissario"] = commissario.isCommissario()
+      template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
       user.fullname = commissario.nomecompleto()
       user.title = commissario.titolo()
@@ -83,7 +89,7 @@ class BasePage(webapp.RequestHandler):
       #logging.info("genitore: " + str(commissario.isGenitore()))
 
     if "main" not in template_values:
-      template_values["main"] = '../templates/main.html'
+      template_values["main"] = 'main.html'
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
@@ -92,10 +98,10 @@ class BasePage(webapp.RequestHandler):
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
     template_values["version"] = "1.4.0.36 - 2011.04.30"
-
-    path = os.path.join(os.path.dirname(__file__), template_values["main"])
-    self.response.out.write(template.render(path, template_values))
-
+    
+    template = jinja_environment.get_template(template_values["main"])
+    self.response.out.write(template.render(template_values))
+    
   def getCommissario(self,user):
     commissario = None
     if(user):
@@ -122,12 +128,12 @@ class BasePage(webapp.RequestHandler):
         tags.append(tag)
       memcache.add("toptags", tags, 60)      
     return tags
-
-  def getActivities(self, tagname=""):
+    
+  def getActivities(self, tagname = ""):
     activities = None
     if tagname != "":
       activities = memcache.get("public_activities_" + tagname)
-      if not activities:
+      if activities == None:
         activities = list()
         tag = Tag.all().filter("nome", tagname).get()
         if tag:
@@ -144,6 +150,104 @@ class BasePage(webapp.RequestHandler):
           #logging.info("tags: " + msg.tags())
           activities.append(msg)
         memcache.add("public_activities", activities, 60)
+    return activities
+
+  """
+  Algo A: 
+  1.read N activities, starting from M offset
+  2.cache the read
+  3.filter activities by tag, type, user, group
+  4.if activities < N and activities availables then loop 1
+  5.return activities
+
+  Algo B: 
+  1.detect filter category
+  2.read N activities, starting from M offset
+  3.cache the read  
+  4.return activities
+  """
+  
+  def get_activities(self, offset=0):
+    logging.info("get_activities")
+    activities = None
+    logging.info("tag: " + self.request.get("tag"))
+    if self.request.get("tag") != "":
+      activities = self.get_activities_by_tagname(self.request.get("tag"),offset)
+    elif self.request.get("msgtype") != "":
+      activities = self.get_activities_by_msgtype(int(self.request.get("msgtype")),offset)
+    elif self.request.get("user") != "":
+      activities = self.get_activities_by_user(self.request.get("user"),offset)
+    else:
+      activities = self.get_activities_all(offset)
+    
+    return activities
+  
+  def get_activities_by_filter(self, activity_filter):
+    activities = list()    
+    for tagname in activity_filter.tagnames:
+      activities.extend(self.get_activities_by_tagname(tagname))
+    for msgtype in activity_filter.msgtypes:
+      activities.extend(self.get_activities_by_msgtype(msgtype))
+    for user in activity_filter.users:
+      activities.extend(self.get_activities_by_user(user))
+    for group in activity_filter.groups:
+      activities.extend(self.get_activities_by_group(group))
+
+    activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+      
+    return activities
+
+  def get_activities_by_tagname(self,tagname,offset=0):
+    logging.info("get_activities_by_tagname")
+    activities = memcache.get("public_activities_tag_" + tagname + "_" + str(offset))
+    if activities == None:
+      activities = list()
+      tag = Tag.all().filter("nome", tagname).get()
+      if tag:
+        count = 0
+        for tagobj in tag.tagobj_reference_set[offset*Const.ACTIVITY_FETCH_LIMIT:(offset+1)*Const.ACTIVITY_FETCH_LIMIT]:
+          count += 1
+          if count > Const.ACTIVITY_FETCH_LIMIT:
+            break
+          activities.append(tagobj.obj)
+      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+      memcache.add("public_activities_tag_" + tagname + "_" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, 60)
+    return activities
+
+  def get_activities_by_msgtype(self, msgtype, offset=0):
+    logging.info("get_activities_by_msgtype")
+    activities = memcache.get("public_activities_type_" + str(msgtype) + "_" + str(offset))
+    if activities == None:
+      activities = list()
+      logging.info("get_activities_by_msgtype: " + str(msgtype))
+      for msg in Messaggio.all().filter("tipo", msgtype).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+        logging.info("get_activities_by_msgtype: " + str(msg.tipo))
+        activities.append(msg)
+      memcache.add("public_activities_type_" + str(msgtype) + "_" + str(offset), activities, 60)
+    return activities
+
+  def get_activities_by_user(self, user_email, offset=0):
+    activities = memcache.get("public_activities_user_" + user_email + "_" + str(offset))
+    if activities == None:
+      activities = list()
+      for msg in Messaggio.all().filter("creato_da", users.User(user_email)).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+        activities.append(msg)
+      memcache.add("public_activities_user_" + user_email + "_" + str(offset), activities, 60)
+    return activities
+
+  def get_activities_by_group(self, user):
+    return list()
+
+  def get_activities_all(self, offset=0):
+    logging.info('get_activities_all')
+    activities = memcache.get("activities_all_" + str(offset))
+    if not activities:
+      activities = list()
+      for msg in Messaggio.all().filter("livello", 0).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+        activities.append(msg)
+        
+      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+      memcache.add("public_activities_" + str(offset), activities, 60)
     return activities
   
   def getHost(self):
@@ -189,9 +293,11 @@ class CMCommissioniDataHandler(BasePage):
         cmlist = list()  
         cms = Commissione.all().filter("citta", city).order("nome")
         for cm in cms:
-          cmlist.append({'key': str(cm.key()), 'nome':cm.nome + ' - ' + cm.tipoScuola})
+          cmlist.append({'value': str(cm.key()), 'label':cm.nome + ' - ' + cm.tipoScuola})
+          #cmlist.append({'key': str(cm.key()), 'nome':cm.nome + ' - ' + cm.tipoScuola})
         
-        buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
+        #buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
+        buff = json.JSONEncoder().encode(cmlist)      
           
         memcache.add("cmall"+str(city), buff)
           
@@ -329,7 +435,7 @@ class CMMenuHandler(BasePage):
       cm = Commissione.all().get()
     date = self.request.get("data")
     if date:
-      date = datetime.strptime(date,DATE_FORMAT).date()
+      date = datetime.strptime(date,Const.DATE_FORMAT).date()
     else:
       date = datetime.now().date()
     
@@ -438,7 +544,7 @@ class CMMenuHandlerOld(BasePage):
       cm = Commissione.all().get()
     date = self.request.get("data")
     if date:
-      date = datetime.strptime(date,DATE_FORMAT).date()
+      date = datetime.strptime(date,Const.DATE_FORMAT).date()
     else:
       date = datetime.now().date()
     

@@ -15,32 +15,27 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler
-import os
-import cgi
-import logging
+from py.base import BasePage, CMMenuHandler, Const, ActivityFilter
+import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
+from jinja2 import Template
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
+
 import py.feedparser
 
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
-from google.appengine.dist import use_library 
 
 from py.model import *
 from py.modelMsg import *
+from py.comments import *
 
-TIME_FORMAT = "T%H:%M:%S"
-DATE_FORMAT = "%Y-%m-%d"
-
-  
 class MainPage(BasePage):
   
   def get(self):
@@ -49,10 +44,12 @@ class MainPage(BasePage):
 
     commissario = self.getCommissario(users.get_current_user())
     if commissario and commissario.isCommissario():
-      self.redirect("/commissario")
+      return self.getPrivate(template_values)
     if commissario and commissario.isGenitore():
-      self.redirect("/genitore")
+      return self.getPrivate(template_values)
       
+    activities = self.get_activities()
+    template_values["activities"] = activities
     template_values["content"] = "public.html"
     template_values["billboard"] = "billboard.html"
     template_values["content_right"] = "rightbar.html"
@@ -64,32 +61,57 @@ class MainPage(BasePage):
     template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
     template_values["geo"] = geo
-    template_values["activities"] = self.getActivities(self.request.get("tag"))
-
-    template_values["tags"] = self.getTopTags()
       
     self.getBase(template_values)
 
   def getPrivate(self, template_values):
-    template_values["billboard"] = "navigation.html"
-    template_values["content"] = "activities.html"
-    template_values["host"] = self.getHost()  
 
     c = None
     geo = db.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(users.get_current_user())
     c = commissario.commissione()
     geo = commissario.citta.geo
+
+    offset = 0
+    if self.request.get("offset") != "":
+      offset = int(self.request.get("offset"))
+
+    logging.info("tag1: " + self.request.get("tag"))
     
-    CMMenuWidgetHandler().createMenu(self.request,c,template_values)
-    CMStatWidgetHandler().createStat(self.request,c,template_values)
+    template_values = dict()
     template_values["bgcolor"] = "eeeeff"
-    template_values["fgcolor"] = "000000"
-    
-    template_values["activities"] = Messaggio.all().filter("livello", 0).order("-creato_il").fetch(50)
-    template_values["news_pappami"] = self.getNews("news_pappami")
-    template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
+    template_values["fgcolor"] = "000000"    
+    activities = self.get_activities(offset)
+    template_values["activities"] = activities
+    template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
+    template_values["act_last"] = activities[0]
     template_values["geo"] = geo
+    template_values["billboard"] = "navigation.html"
+    template_values["content"] = "activities.html"
+    template_values["host"] = self.getHost()
+    template_values["commissari"] = Commissario.all().order('user')
+    
+    #tags = list()
+    #types = list()
+    #userlist = list()
+    #if self.request.get("tag") != "":
+      #tags.append(self.request.get("tag"))
+    #if self.request.get("type") != "":
+      #types.append(int(self.request.get("type")))
+    #if self.request.get("user") != "":
+      #userlist.append(self.request.get("user"))
+    
+    #act_filter = ActivityFilter(tags,types,userlist)
+    #template_values["activities"] = self.get_activities_by_filter(act_filter)
+
+    userlist = list()
+    for cr in Commissario.all():
+      userlist.append(cr.user)
+    
+    template_values["users"] = userlist
+
+    template_values["tags"] = self.getTopTags()
+   
 
     self.getBase(template_values)
     
@@ -103,8 +125,12 @@ class MainPage(BasePage):
       
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
-      stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
-      stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
+      try:
+        stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
+        stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
+      except :
+        stats.numeroSchede = 0
+        stats.ncTotali = 0      
       stats.diete = Dieta.all().count()
       stats.note = Nota.all().count()
       stats.anno1 = anno
@@ -125,7 +151,7 @@ class CMCondizioniHandler(BasePage):
   
   def get(self):
     template_values = dict()
-    template_values["content"] = "condizioni.html"
+    template_values["main"] = "../templates/condizioni.html"
     self.getBase(template_values)
 
 class CMRegistrazioneHandler(BasePage):
@@ -144,7 +170,10 @@ class CMSignupHandler(BasePage):
       stato = 11
       if self.request.get("iscm") == "S":
         stato = 0
-      commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = stato, citta = db.Key(self.request.get("citta")))
+      
+      commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = stato)
+      if self.request.get("citta"):
+        commissario.citta = db.Key(self.request.get("citta"))
       commissario.emailComunicazioni = "S"
       commissario.put()
           
@@ -220,7 +249,7 @@ class CMMenuDataHandler(CMMenuHandler):
   def get(self): 
     if( self.request.get("cmd") == "getbydate" ):
       menu = Menu();
-      data = datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
+      data = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
       c = Commissione.get(self.request.get("commissione"))
       menu = self.getMenu(data, c)[0]
       
@@ -284,6 +313,15 @@ class CMMapDataHandler(webapp.RequestHandler):
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
 
+class TagsPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["content"] = "tags.html"
+    template_values["tags"] = CMTagHandler().getTags()
+    
+    self.getBase(template_values)
+      
 class DocPage(BasePage):
   
   def get(self):
@@ -313,12 +351,34 @@ class ChiSiamoPage(BasePage):
     template_values = dict()
     template_values["content"] = "chi.html"
     self.getBase(template_values)
-    
+
+app = webapp.WSGIApplication([
+  ('/', MainPage),
+  ('/tags', TagsPage),
+  #('/fb', FbPage),
+  ('/docs', DocPage),
+  #('/blog', BlogPage),
+  ('/chi', ChiSiamoPage),
+  ('/map', CMMapDataHandler),
+  ('/menu', CMMenuDataHandler),
+  ('/supporto', CMSupportoHandler),
+  ('/condizioni', CMCondizioniHandler),
+  ('/registrazione', CMRegistrazioneHandler),
+  ('/signup', CMSignupHandler)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+
+def main():
+  app.run();
+
+if __name__ == "__main__":
+  main()
+"""
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
 
   application = webapp.WSGIApplication([
   ('/', MainPage),
+  ('/tags', TagsPage),
   #('/fb', FbPage),
   ('/docs', DocPage),
   #('/blog', BlogPage),
@@ -332,7 +392,7 @@ def main():
   ], debug=debug)
   
   wsgiref.handlers.CGIHandler().run(application)
-
+"""
 #def profile_main():
     ## This is the main function for profiling
     ## We've renamed our original main() above to real_main()
@@ -350,7 +410,5 @@ def main():
 
 #import py.dblog
 #py.dblog.patch_appengine()    
-    
-if __name__ == "__main__":
-  main()
+
   

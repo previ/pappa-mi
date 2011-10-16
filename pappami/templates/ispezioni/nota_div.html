@@ -1,0 +1,107 @@
+<script type="text/javascript">
+var ulmsg = true;
+function closeIt() {
+if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
+}
+window.onbeforeunload = closeIt;
+</script>
+<div class="ss-form-container"><h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
+<span class="ss-required-asterisk">* Campo obbligatorio</span>
+{% if form.errors %}
+<div class="errorbox-bad" id="form-error">
+	<p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
+	<ul>
+{{form.errors}}
+	</ul>
+</div>
+{% endif %}<form action="/isp/nota" method="post" id="form0" ENCTYPE="multipart/form-data" novalidate>
+<table width="100%">
+<tr>
+<td>
+<input type="hidden" name="key" value="{{key}}"/>
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
+<span class="ss-required-asterisk">*</span></label>
+<select required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+<option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+</select></div></div>
+</td>
+<td>
+<div class="errorbox-good">
+<div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataNotaViz">Data
+<span class="ss-required-asterisk">*</span></label>
+<input type="text" title="Inserire la data a cui si riferisce la segnalazione." onchange="getMenu()" required="true" name="dataNotaViz" value="{{form.data.dataIspezione}}" class="ss-q-short" id="e_dataNotaViz"/>
+<input type="hidden" name="dataNota" value="" id="e_dataNota"/></div></div>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_note">Titolo
+</label>
+<label class="ss-q-help" for="entry_13"></label>
+<input type="text" id="e_titolo" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width: 400px;" required="true" name="titolo" value="{{form.data.titolo}}">
+</input></div></div>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+<br/> <div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_note">Testo
+</label>
+<label class="ss-q-help" for="entry_13"></label>
+<textarea required="true" name="note" rows="8" cols="120" class="ss-q-long" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}
+</textarea></div></div>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+Allega un file:<input type="file" name="allegato_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc" allow="*"/>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+<div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="nota_tags_handler"></ul></div></div></td>
+</tr>
+<tr>
+<td colspan="3" align="center">
+<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="return onclosenewitem();" id="e_annulla">Annulla</button>
+</td>
+</tr>
+</table>
+</form></div>
+<script type="text/javascript">
+$(document).ready(function() { 
+ $( "#e_dataNotaViz" ).datepicker({ altField: '#e_dataNota', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
+ $("#form0").validate(); 
+ //$('#e_note').wysiwyg();
+ $("[title]").mbTooltip({
+  opacity : .90, //opacity
+  wait:500, //before show
+  ancor:"mouse", //"parent"
+  cssClass:"default", // default = default
+  timePerWord:70, //time to show in milliseconds per word
+  hasArrow:false,
+  color:"white",
+  imgPath:"img/",
+  shadowColor:"black",
+  fade:500
+ });
+
+ $('#form0').submit(function() { 	
+   var tags = "";
+   $('.tagItem').each(function() {
+     tags =+ $(this).text() + ",";
+     $("<input />").attr({ type: "hidden", name: "tags[]", value: $(this).text()}).appendTo($('#form0'));
+    });
+ }); 
+
+ /*$("#nota_tags_handler").tagHandler({
+     getData: { 'msg': "" },
+     getURL: '/comments/gettags',            
+     autocomplete: true
+ });         */
+});
+</script>

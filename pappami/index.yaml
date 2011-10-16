@@ -315,6 +315,12 @@ indexes:
 
 - kind: Messaggio
   properties:
+  - name: creato_da
+  - name: creato_il
+    direction: desc
+
+- kind: Messaggio
+  properties:
   - name: livello
   - name: creato_il
     direction: desc
@@ -323,6 +329,12 @@ indexes:
   properties:
   - name: par
   - name: creato_il
+
+- kind: Messaggio
+  properties:
+  - name: tipo
+  - name: creato_il
+    direction: desc
 
 - kind: Nonconformita
   properties:

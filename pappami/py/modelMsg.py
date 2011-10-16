@@ -28,6 +28,8 @@ class Messaggio(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   
   commissario = None
+  
+  __tags__ = None
 
   def likes(self):
     return self.voto_reference_set.count()
@@ -61,10 +63,11 @@ class Messaggio(db.Model):
     return self.commissario.avatar()
 
   def tags(self):
-    tagnames = ""
-    for to in self.tagobj_reference_set:
-      tagnames += to.tag.nome + " "
-    return tagnames
+    if not self.__tags__:
+      self.__tags__ = list()
+      for to in self.tagobj_reference_set:
+        self.__tags__.append(to.tag)
+    return self.__tags__
   
   def title(self):
     #logging.info("tipo: " +self.tipodesc() )
@@ -111,6 +114,7 @@ class Messaggio(db.Model):
 class Tag(db.Model):
   nome = db.StringProperty()
   numRef = db.IntegerProperty()
+  last = db.DateTimeProperty(auto_now_add=True)
   maxRef = int()
 
   creato_da = db.UserProperty(auto_current_user_add=True)
