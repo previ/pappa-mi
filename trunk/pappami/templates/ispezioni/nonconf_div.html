@@ -4,27 +4,9 @@
 <script type="text/javascript">
 </script>
 <div class="ss-form-container">
-<h1 class="table_separator">Nuova Non Conformit&agrave</h1>
-<p/>
-<p/>
+<h1 class="table_separator" id="title" style="display:none;">Nuova Non Conformit&agrave;</h1>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
-<br/>
-<br/>
-<form action="/commissario/nonconf_div" method="post" id="form0">
-<!--script type="dojo/method" event="onSubmit">
-dojo.byId("e_submit").disabled = true;
-dojo.byId("e_annulla").disabled = true;
-enableAll("nc");
-if(this.validate()&&validateradio()){
-    return true;
-} else {
-    dojo.byId("e_submit").disabled = false;
-    dojo.byId("e_annulla").disabled = false;
-    alert('Il form contiene valori non corretti');
-    return false;
-}
-return true;
-</script-->
+<form action="/isp/nc" method="post" id="form0" novalidate>
 <table width="100%">
 <tr>
 <td>
@@ -48,17 +30,12 @@ return true;
 <div class="ss-form-entry"><label class="ss-q-title" for="e_turno">Turno
 <span class="ss-required-asterisk">*</span></label>
 <select name="turno" id="e_turno">
-<option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
-<option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
-<option value="3"{% ifequal form.data.turno "3" %} selected{% endifequal %}>Terzo</option>
-<option value="4"{% ifequal form.data.turno "4" %} selected{% endifequal %}>Quarto</option>
+<option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+<option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
+<option value="3"{% if form.data.turno == "3" %} selected{% endif %}>Terzo</option>
+<option value="4"{% if form.data.turno == "4" %} selected{% endif %}>Quarto</option>
 </select></div></div>
 </td>
-</tr>
-<tr>
-<th colspan="3" class="table_separator">
-Non Conformit&agrave
-</th>
 </tr>
 <tr>
 <td colspan="2">
@@ -67,6 +44,7 @@ Non Conformit&agrave
 <div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Non Conformit&agrave
 <span class="ss-required-asterisk">*</span></label>
 <select name="tipo" id="e_tipo" dojoType="dijit.form.FilteringSelect" required="true" value="{{form.data.tipo}}">
+<option value=""></option>
 <option value="1">Cambiamenti di men&ugrave</option>
 <option value="2">Cibo avanzato oltre 30%</option>
 <option value="3">Quantit&agrave insufficiente di una vivanda</option>
@@ -87,10 +65,10 @@ Non Conformit&agrave
 <div class="ss-form-entry"><label class="ss-q-title" for="e_rc">Richiesta campionatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
-<tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="richiestaCampionatura" value="1" id="e_rc_1" {% ifequal form.data.richiestaCampionatura "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="richiestaCampionatura" value="0" id="e_rc_2" {% ifequal form.data.richiestaCampionatura "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
+<tr>
+<td class="ss-scalerow"><input type="radio" class="required" name="richiestaCampionatura" required="true" value="1" id="e_rc_1" {% if form.data.richiestaCampionatura == "1" %}CHECKED{%endif%}/><label for="e_rc_1">Si</label></td> 
+<td class="ss-scalerow"><input type="radio" class="required" name="richiestaCampionatura" required="true" value="0" id="e_rc_2" {% if form.data.richiestaCampionatura == "0" %}CHECKED{%endif%}/><label for="e_rc_2">No</label></td>
+</tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -104,17 +82,22 @@ Non Conformit&agrave
 </td>
 </tr>
 <tr>
+<td colspan="3">
+<div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="nota_tags_handler"></ul></div></div></td>
+</tr>
+<tr>
 <td colspan="3" align="center">
-<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="ulmsg=false; $('#new-data').dialog('close'); return false;" id="e_annulla">Annulla</button>
+<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="return onclosenewitem();" id="e_annulla">Annulla</button>
 </td>
 </tr>
 </table>
 </form></div>
 <script type="text/javascript">
-$(function() {
+$().ready(function() {
  $( "#e_dataNonconfViz" ).datepicker({ altField: '#e_dataNonconf', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '+0d' });
-
-  $("[title]").mbTooltip({
+ $( "[type='radio']" ).button();
+ $("#form0").validate();
+ $("[title]").mbTooltip({
     opacity : .90, //opacity
     wait:500, //before show
     ancor:"mouse", //"parent"
@@ -125,6 +108,12 @@ $(function() {
     imgPath:"img/",
     shadowColor:"black",
     fade:500
-  });
+ });
+ $("#nota_tags_handler").tagHandler({
+     getData: { 'msg': "" },
+     getURL: '/comments/gettags',            
+     autocomplete: true
+ });         
+ 
 });
 </script>

@@ -1,40 +1,137 @@
-<div style="padding-left: 5px; padding-right:5px;">
-<h1 class="ss-form-title">Benvenuti in Pappa-Mi</h1>
-{%include "activities.html" %}
-  <div id="cont-blog" title="Pappa-Mi Blog">
-    <div style="overflow:hidden;">
-{%for item in news_pappami%}
-<h3><a href="{{item.link}}">{{item.title}}</a></h3> 
-<p class="date"></p> 
-{{item.summary}} <a href="{{item.link}}">... (continua)</a>
-{% comment %}
-{% for i in item.summary %}
-<p>{{i.value}}</p> 
-{%endfor%}
-{% endcomment %}
-{%endfor%}
-    </div>
-  </div>
-  <div title="dal Web" id="cont-web" >
-<script src="/js/jquery.zrssfeed.js" type="text/javascript"></script>
-<script src="/js/jquery.vticker.js" type="text/javascript"></script>
-<script type="text/javascript">
-$(document).ready(function () {
-	$('#tickerweb').rssfeed('http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast', {limit: 5, header: false });
-});
+<link rel="stylesheet" href="css/slider.css"> 
+<script src="js/slides.min.jquery.js"></script> 
+<script> 
+	$(function(){
+		// Set starting slide to 1
+		var startSlide = 1;
+		// Get slide number if it exists
+		if (window.location.hash) {
+			startSlide = window.location.hash.replace('#','');
+		}
+		// Initialize Slides
+		$(function(){
+			$('#slides').slides({
+				preload: true,
+				preloadImage: 'img/slider/loading.gif',
+				play: 5000,
+				pause: 2500,
+				hoverPause: true,
+				animationStart: function(current){
+					$('.caption').animate({
+						bottom:-35
+					},100);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationStart on slide: ', current);
+					};
+				},
+				animationComplete: function(current){
+					$('.caption').animate({
+						bottom:0
+					},200);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationComplete on slide: ', current);
+					};
+				},
+				slidesLoaded: function() {
+					$('.caption').animate({
+						bottom:0
+					},200);
+				}
+			});
+		});
+	});
 </script> 
-<div style="overflow:hidden;"><div id="tickerweb"></div></div>    
-{% comment %}
-<div style="overflow:hidden;">
-{%for item in news_web%} 
-<h3><a href="{{item.link}}">{{item.title}}</a></h3> 
-<p class="date"></p> 
-<p>{{item.summary}}</p> 
-{%endfor%}
-    </div>
-{% endcomment %}
-  </div>
-  <div id="cont-cal" title="Calendario">
-<!--iframe src="http://www.google.com/calendar/hosted/pappa-mi.it/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;showDate=0&amp;height=200&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=aiuto%40pappa-mi.it&amp;color=%23060D5E&amp;ctz=Europe%2FRome" style=" border-width:0 " width="100%" height="100%" frameborder="0" scrolling="no"></iframe-->  
-  </div>
-</div>
+<div id="slider_container"> 
+<div id="slider_sub"> 
+	<div id="slides"> 
+		<div class="slides_container"> 
+			<div class="slide" style="background:url('img/slider/slide1.jpg'); background-size:100%; width:940px;"> 
+				<div style="padding:20px; background:url('img/back_transp.png');">
+				<h1>Benvenuti in Pappa-Mi</h1>
+				<h2>Cosa e Come si mangia nelle mense scolastiche milanesi</h2>
+				<p><a class="btn primary" href="/login">Accedi &raquo;</a> oppure <a class="btn success" href="/signup">Registrati &raquo;</a></p>
+				</div> 
+				<div class="caption" style="bottom:0"> 
+					<p>Titolo</p> 					
+				</div> 
+			</div> 
+			<div class="slide" style="background:url('img/slider/slide2.jpg'); background-size:100%; width:940px;"> 
+				<div style="padding:20px; background:url('img/back_transp.png');">
+				<h1>Cosa si mangia ?</h1>
+				<p>Controlla cosa si mangia oggi nella scuola dei tuoi figli.</p>
+				<p>Scrivi le tue opinioni sui piatti.</p>
+				</div> 
+				<div class="caption" style="bottom:0"> 
+					<p>Partecipa !</p> 					
+				</div> 
+			</div>
+			<div class="slide" style="background:url('img/slider/slide1.jpg'); background-size:100%; width:940px;"> 
+				<div style="padding:20px; background:url('img/back_transp.png');">
+				<h1>Come si mangia ?</h1>
+				<p>Controlla i giudizi riportati dalle Commissioni Mensa e dagli altri genitori come te !</p>
+				<p>Chiedi consigli agli altri</p>
+				</div> 
+				<div class="caption" style="bottom:0"> 
+					<p>Partecipa !</p> 					
+				</div> 
+			</div>
+		</div> 
+		<a href="#" class="prev"><img src="img/slider/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a> 
+		<a href="#" class="next"><img src="img/slider/arrow-next.png" width="24" height="43" alt="Arrow Next"></a> 
+	</div> 
+</div> 
+</div> 
+
+<!-- Main hero unit for a primary marketing message or call to action
+      <div class="hero-unit">
+        <h1>Benvenuti in Pappa-Mi</h1>
+        <h2>Cosa e Come si mangia nelle mense scolastiche milanesi</h2>
+        <p><a class="btn primary large" href="/login">Accedi &raquo;</a> oppure <a class="btn success large" href="/signup">Registrati &raquo;</a></p>
+      </div>-->
+      <!-- Example row of columns -->
+      <div class="">
+	{%include "activities.html" %}
+      </div>
+      <div class="row">
+	<div class="span5">
+<script type="text/javascript">  
+$(document).ready(function () {
+  loadSmallMap({{geo.lat}},{{geo.lon}});  
+});  
+</script>	
+	  <h2>Commissioni iscritte</h2>
+	  <div id="map" style="height: 200px; border: 1px solid black; overflow:hidden;"></div>
+	  <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span5">
+	  <div id="stats">
+	    <h2>Dati raccolti {{stat.anno1}}/{{stat.anno2}}</h2>
+	    <table class="statsmall" cellspacing="0" width="100%">
+	    <tr>
+	    <td width="70%">Commissioni registrate</td><td align="right">{{stat.numeroCommissioni}}</td>
+	    </tr><tr>
+	    <td width="70%">Schede Ispezione</td><td align="right">{{stat.numeroSchede}}</td>
+	    </tr><tr>
+	    <td>Non conformit&agrave;</td><td align="right">{{stat.ncTotali}}</td>
+	    </tr><tr>
+	    <td width="70%">Schede Diete</td><td align="right">{{stat.diete}}</td>
+	    </tr><tr>
+	    <td width="70%">Note</td><td align="right">{{stat.note}}</td>
+	    </tr>
+	    </table>
+	  </div>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span6">
+          <h2>Social</h2>
+	    <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like-box href="http://www.facebook.com/pappami" width="240" show_faces="true" border_color="" stream="false" header="false"></fb:like-box>
+	  <div id="follow">
+	    <a href="http://twitter.com/pappa_mi"target="_new"><img src="/img/twitter-icon.png" alt="Twitter" title="Twitter" width="32" height="32"/></a>
+	    <a href="http://www.google.com/profiles/aiuto.pappami#buzz"target="_new"><img src="/img/gbuzz-icon.png" alt="Google Buzz" title="Google Buzz" width="32" height="32"/></a>
+	    <a href="/feed"><img src="/img/rss.png" alt="RSS" title="Feed RSS" width="32" height="32"/></a>	    
+          </div>
+        </div>
+      </div>
+

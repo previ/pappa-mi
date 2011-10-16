@@ -285,17 +285,17 @@ class CMFeedHandler(BasePage):
     template_values["content"] = "feed.html"
     self.getBase(template_values)
     
-application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
   ('/feed/isp', CMFeedIspHandler),
   ('/feed/ispnc', CMFeedIspNCHandler),
   ('/feed/nc', CMFeedNCHandler),
   ('/feed/dieta', CMFeedDietaHandler),
   ('/feed/nota', CMFeedNotaHandler),
   ('/feed', CMFeedHandler)  
-], debug=True)
+], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
 def main():
-  wsgiref.handlers.CGIHandler().run(application)
+  app.run();
 
 if __name__ == "__main__":
   main()

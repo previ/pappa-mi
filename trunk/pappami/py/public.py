@@ -24,12 +24,13 @@ import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
+import webapp2 as webapp
+
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
@@ -150,16 +151,17 @@ class CMDetailHandler(BasePage):
     template_values["main"] = temp + ".html"
     template_values["msg"] = msg
     
+    comment_root = msg
+    template_values["comments"] = True,
+    template_values["comment_root"] = comment_root
+    
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
-    logging.info("CMDetailHandler: " + template.render(path, template_values))
+    #logging.info("CMDetailHandler: " + template.render(path, template_values))
     
     self.getBase(template_values)
       
     
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
     ('/public/isp', CMIspezionePublicHandler),
     ('/public/nc', CMNonconfPublicHandler),
@@ -170,10 +172,10 @@ def main():
     ('/public/detail', CMDetailHandler),
     ('/public/getcm', CMCommissioniDataHandler),
     ('/public/getcity', CMCittaHandler)
-  ], debug=debug)
-  
-  wsgiref.handlers.CGIHandler().run(application)
-      
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+    
+def main():
+  app.run();
+
 if __name__ == "__main__":
   main()
-    

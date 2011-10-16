@@ -25,7 +25,7 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
@@ -312,9 +312,21 @@ class CMAdminHandler(BasePage):
 
   def get(self):    
 
+    """
+    Pappa-Mi 1 to 2.0 migration
+    1.initMenu
+    2.deploy app with citta = TextProperty
+    3.initCity1
+    4.deploy app with citta = ReferenceProperty
+    5.initCity2
+    6.initStream
+    """
+    
     if self.request.get("cmd") == "initConfig":
       dummy = Configurazione(nome="dummyname", valore="dummyvalue")
       dummy.put()
+      return
+      
 
      
     if self.request.get("cmd") == "initMenu":
@@ -403,9 +415,9 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
-          
-          
-      
+      self.response.out.write("initMenu Ok")
+      return      
+                
     if self.request.get("cmd") == "initCity1":
       for cm in Commissione.all().filter("citta","Milano"):
         cm.citta = None
@@ -414,6 +426,8 @@ class CMAdminHandler(BasePage):
       for cc in CentroCucina.all():
         cc.citta = None
         cc.put()
+      self.response.out.write("initCity1 Ok")
+      return
 
     if self.request.get("cmd") == "initCity2":
       c = Citta.all().get()
@@ -435,6 +449,8 @@ class CMAdminHandler(BasePage):
       for cs in Commissario.all():
         cs.citta = c
         cs.put()
+      self.response.out.write("initCity2 Ok")
+      return
         
     if self.request.get("cmd") == "initStream":
       for isp in Ispezione().all().order("-creato_il").fetch(50):
@@ -446,6 +462,8 @@ class CMAdminHandler(BasePage):
       for nota in Nota().all().order("-creato_il").fetch(50):
         messaggio = Messaggio(par = nota, root = nota, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
         messaggio.put()
+      self.response.out.write("initStream Ok")
+      return
       
       
     if self.request.get("cmd") == "initAnno":
@@ -471,6 +489,7 @@ class CMAdminHandler(BasePage):
         if nc.dataNonconf >= d2010da and nc.dataNonconf < d2010a :
           nc.anno = 2010
         nc.put()
+      return
           
     
     if self.request.get("cmd") == "initZone":
@@ -507,6 +526,8 @@ class CMAdminHandler(BasePage):
     
     if self.request.get("cmd") == "flush":
       memcache.flush_all()
+      self.response.out.write("flush Ok")
+      return
 
     if self.request.get("cmd") == "flushnews":
       #url = "http://groups.google.com/group/pappami-aggiornamenti/feed/atom_v1_0_msgs.xml"
@@ -521,6 +542,8 @@ class CMAdminHandler(BasePage):
       memcache.delete("news_pappami")
       memcache.delete("news_web")
       memcache.delete("news_cal")
+      self.response.out.write("flush Ok")
+      return
 
     if self.request.get("cmd") == "offset":
       ccs = CentroCucina.all()
@@ -658,18 +681,16 @@ class CMAdminCommissarioHandler(BasePage):
       }
       self.getBase(template_values)
         
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
   ('/admin/menu', CMAdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
-  ], debug=debug)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-  wsgiref.handlers.CGIHandler().run(application)
-  
+def main():
+  app.run();
+
 if __name__ == "__main__":
   main()

@@ -23,12 +23,10 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 
-from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from py.base import BasePage
 
@@ -37,37 +35,31 @@ class LoginPage(BasePage):
   def get(self):
     if not self.getCommissario(users.get_current_user()):
       self.redirect("/registrazione")
-    elif self.getCommissario(users.get_current_user()).isCommissario():
-      self.redirect("/commissario")
-    elif self.getCommissario(users.get_current_user()).isGenitore():
-      self.redirect("/genitore")
     else:
       self.redirect("/")
 
-class LoginReqPage(webapp.RequestHandler):
+class LoginReqPage(BasePage):
   
   def get(self):
     logging.info("called")
     template_values = dict()
     template_values["continue"] = self.request.get("continue")
+    template_values["continue"] = 'login_required.html'
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/login_required.html')
-    self.response.out.write(template.render(path, template_values))
-
+    self.getBase(template_values)
+    
   def post(self):
     self.redirect("/_ah/login_redir?claimid=" + self.request.get("openid_identifier") + "&" + "continue=" + self.request.get("continue"))
     
 
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
   ('/login', LoginPage),
   ('/_ah/login_required', LoginReqPage),
   ('/_ah/login_required', LoginReqPage)
-  ], debug=debug)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
   
-  wsgiref.handlers.CGIHandler().run(application)
+def main():
+  app.run();
 
 if __name__ == "__main__":
   main()

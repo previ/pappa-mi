@@ -1,12 +1,3 @@
-<script type="text/javascript">
-dojo.require("dijit.Tooltip");
-dojo.require("dijit.form.Form");
-dojo.require("dijit.form.Textarea");
-dojo.require("dijit.form.DateTextBox");
-dojo.require("dijit.form.ComboBox");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.form.FilteringSelect");
-</script>
 <script src="/js/form.js" type="text/javascript"></script>
 {% if preview %}
 <script type="text/javascript">
@@ -32,11 +23,6 @@ window.onbeforeunload = closeIt;
 <!-- AddThis Button END -->
 {%endif%}
 <div class="ss-form-container"><h1 class="table_separator">{{nota.commissione.nome}} - {{nota.commissione.tipoScuola}} - Nota del {{nota.dataNota|date:"d/m/Y"}}</h1>
-<form dojoType="dijit.form.Form" action="/commissario/nota" method="post" id="form0">
-<script type="dojo/method" event="onSubmit">
-dojo.byId("e_submit").disabled = true;
-dojo.byId("e_annulla").disabled = true;
-</script>
 <table width="100%">
 <tr>
 <th colspan="3" class="table_separator">
@@ -55,6 +41,17 @@ Nota
 </td>
 </tr>
 <tr>
+<td colspan="2">
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Categorie:</label>
+{%for tag in nota.tags()%}{{tag}}&nbsp; 
+{%endfor%}
+</div></div>
+</td>
+<td>
+</td>
+</tr>
+<tr>
 <td colspan="3">
 <br/> <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Testo
@@ -66,30 +63,28 @@ Nota
 {% if allegati %}<tr>
 <td colspan="3">
 <br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Allegati
+<div class="ss-form-entry"><label class="ss-q-title" for="e_attach">Allegati
 </label>
 {%for allegato in allegati%}
-<label class="ss-q-help" for="e_note"></label>
+<label class="ss-q-help" for="e_attch"></label>
 <a href="{{allegato.path}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}</div></div>
 </td>
 </tr>{% endif %}
-<tr>
+{% if nota.tags() %}<tr>
+<td colspan="3"><label class="ss-q-title" for="e_tags">Categorie:</label> {%for tag in nota.tags()%}{{tag}} {% endfor %}
+</td>
+</tr>
+<tr>{% endif %}
 <td colspan="3" align="center">
 {% if preview %}
-<form action="/commissario/nota" method="POST">
-<script type="dojo/method" event="onSubmit">
-dojo.byId("e_submit").disabled = true;
-dojo.byId("e_annulla").disabled = true;
-return true;
-</script>
+<form action="/isp/nota" method="POST" id="form1">
 <input type="hidden" name="preview" value="{{preview}}">
-<button type="submit" id="e_submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-<button onclick="ulmsg=false; location.href='/commissario/nota?cmd=edit&preview={{preview}}';return false;">Torna a modifiche</button>
+<button type="submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
+<button onclick="ulmsg=false; previewback();return false;">Torna a modifiche</button>
 </form>
 {% else %}
-<button dojoType="dijit.form.Button" id="e_annulla" onclick="location.href='/commissario/note';return false;">Pagina precedente</button>
+<button id="e_annulla" onclick="return onclosenewitem();">Chiudi</button>
 {% endif %}
-</form>
 </td>
 </tr>
 </table>

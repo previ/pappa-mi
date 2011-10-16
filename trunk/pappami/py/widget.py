@@ -12,7 +12,7 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
@@ -219,20 +219,17 @@ class CMWidgetHandler(BasePage):
     template_values["host"] = self.getHost()
     self.getBase(template_values)
     
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
   ('/widget/get', CMWidgetHandler),
   ('/widget/menu', CMMenuWidgetHandler),
   ('/widget/stat', CMStatWidgetHandler),
   ('/widget/list', CMListWidgetHandler),
   ('/widget/gadget', CMGadgetHandler),
   ('/widget/getcm', CMCommissioniDataHandler)
-  ], debug=debug)
-  
-  wsgiref.handlers.CGIHandler().run(application)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+    
+def main():
+  app.run();
 
 if __name__ == "__main__":
   main()
-    

@@ -26,7 +26,7 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
@@ -432,10 +432,7 @@ class CMGenitoreMenuHandler(CMMenuHandler):
     template_values["content_left"] = "genitore/leftbar.html"
     self.getBase(template_values)
     
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
     ('/genitore/isp', CMIspezioniGenitoreHandler),
     ('/genitore/nc', CMNonconfsGenitoreHandler),
     ('/genitore/diete', CMDieteGenitoreHandler),
@@ -452,9 +449,10 @@ def main():
     ('/genitore', CMGenitoreHandler),
     ('/genitore/getcm', CMCommissioniDataHandler),
     ('/genitore/getdata', CMGenitoreDataHandler)
-  ], debug=debug)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost')   )
   
-  wsgiref.handlers.CGIHandler().run(application)
-      
+def main():
+  app.run();
+
 if __name__ == "__main__":
   main()

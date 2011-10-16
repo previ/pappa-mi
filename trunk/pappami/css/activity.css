@@ -67,8 +67,12 @@ display: inline;
 }
 
 .activity_tags {
-color: rgb(59, 89, 152);
 display: block;
+}
+
+.activity_tag {
+color: rgb(59, 89, 152);
+text-decoration: none;
 }
 
 .activity_feedback, .activity_vote, .activity_vote_button {

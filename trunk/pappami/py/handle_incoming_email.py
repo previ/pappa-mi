@@ -171,14 +171,12 @@ Pappa-Mi staff """)
       decoded_text = text.decode('utf-8')
     return decoded_text
   
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-
-  application = webapp.WSGIApplication([
+app = webapp.WSGIApplication([
     MailHandler.mapping()
-  ], debug=debug)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-  run_wsgi_app(application)
+def main():
+  app.run();
 
 if __name__ == "__main__":
   main()

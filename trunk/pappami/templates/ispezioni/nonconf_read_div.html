@@ -34,7 +34,7 @@ window.onbeforeunload = closeIt;
 </div>
 {% endif %}
 <div class="ss-form-container"><h1 class="table_separator">{{nc.commissione.nome}} - {{nc.commissione.tipoScuola}} - Ispezione del {{nc.dataNonconf|date:"d/m/Y"}} - Turno {{nc.turno}}</h1>
-<form action="/commissario/nonconf_div" method="post" id="form1">
+<form action="/isp/nc" method="post" id="form1">
 <table width="100%">
 <tr>
 <th colspan="3" class="table_separator">
@@ -54,8 +54,8 @@ Non Conformit&agrave
 <div class="ss-form-entry"><label class="ss-q-title" for="e_rc">Richiesta campionatura
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="richiestaCampionatura" value="1" id="e_rc_1" {% ifequal nc.richiestaCampionatura 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="richiestaCampionatura" value="0" id="e_rc_2" {% ifequal nc.richiestaCampionatura 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="richiestaCampionatura" value="1" id="e_rc_1" {% if nc.richiestaCampionatura == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="richiestaCampionatura" value="0" id="e_rc_2" {% if nc.richiestaCampionatura == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -69,9 +69,20 @@ Non Conformit&agrave
 </td>
 </tr>
 <tr>
+<td colspan="2">
+<div class="errorbox-good">
+<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Categorie:</label>
+{%for tag in nc.tags()%}{{tag}}&nbsp; 
+{%endfor%}
+</div></div>
+</td>
+<td>
+</td>
+</tr>
+<tr>
 <td colspan="3" align="center">
 {% if preview %}
-<form action="/commissario/nonconf_div" method="POST" id="form1">
+<form action="/isp/nonconf" method="POST" id="form1">
 <script type="dojo/method" event="onSubmit">
 dojo.byId("e_submit").disabled = true;
 dojo.byId("e_annulla").disabled = true;
@@ -82,7 +93,7 @@ return true;
 <button onclick="previewback(); return false;">Torna a modifiche</button>
 </form>
 {% else %}
-<button id="e_annulla" onclick="ulmsg=false; $('#new-data').dialog('close'); return false;">Chiudi</button>
+<button id="e_annulla" onclick="return onclosenewitem();">Chiudi</button>
 {% endif %}
 </form>
 </td>

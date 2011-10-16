@@ -1,7 +1,8 @@
-application: test-pappa-mi
+application: test-pappa-mi-hr
 version: 1
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: false
 
 derived_file_type:
 - python_precompiled
@@ -10,6 +11,16 @@ builtins:
 - datastore_admin: on
 - remote_api: on 
 
+libraries:
+- name: PIL
+  version: latest
+- name: jinja2
+  version: latest
+- name: setuptools
+  version: latest
+- name: markupsafe
+  version: latest
+  
 inbound_services:
 - mail
 
@@ -61,8 +72,8 @@ handlers:
 - url: /public/.*
   script: py/public.py
 
-- url: /signup
-  script: py/main.py
+- url: /isp/.*
+  script: py/ispezioni.py
   login: required
   
 - url: /commissario/.*
@@ -141,6 +152,18 @@ handlers:
 
 - url: /comments/.*
   script: py/comments.py
+
+- url: /profilo/*
+  script: py/profilo.py
+  login: required
+
+- url: /profilo/.*
+  script: py/profilo.py
+  login: required
+
+- url: /signup
+  script: py/signup.py
+  login: required
   
 - url: .*
   script: py/main.py

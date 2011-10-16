@@ -2,24 +2,18 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
+from py.base import Const, BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
 
-import os
-import cgi
-import logging
-import urllib
+import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
-
-from django.utils import simplejson as json
 
 from py.gviz_api import *
 from py.model import *
@@ -32,9 +26,16 @@ from py.modelMsg import *
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
+"""
+comment handler
+handle both messages (comments not attached to other objects) and comments (comments attached to a "root" message object
+"""
 class CMCommentHandler(BasePage):
-  
-  def init(self, msg_rif, tipo):
+
+  """ 
+  init a comment structure, attaching an empty root message to an existing object
+  """
+  def init(self, msg_rif, tipo, tags):
     messaggio = Messaggio.all().filter("par", msg_rif).get()
     if not messaggio:  
       messaggio = Messaggio()
@@ -43,35 +44,44 @@ class CMCommentHandler(BasePage):
       messaggio.livello = 0
       messaggio.tipo = tipo
       messaggio.put()
+      if tags:
+        CMTagHandler().saveTags(messaggio, tags)
     return messaggio
 
-  def initActivity(self, msg_rif, tipo, last):    
+  """
+  init a comment structure, attaching a root message to an existing object
+  and return the delta activity stream html
+  """
+  def initActivity(self, msg_rif, tipo, last, tags=None):    
 
-    CMCommentHandler().init(msg_rif, tipo)
+    CMCommentHandler().init(msg_rif, tipo, tags)
     
     buff = ""
 
     activities = list()
-    for msg in Messaggio.all().filter("__key__ >", last):
+    for msg in Messaggio.all().filter("livello", 0).filter("__key__ >", last).fetch(Const.ACTIVITY_FETCH_LIMIT):
       activities.append(msg)
     activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
 
     template_values = {
-      'main': '../templates/activity.html'
+      'main': '../templates/activity.html',
+      'ease': True
     }
+    template_values['activities'] = activities       
 
-    path = os.path.join(os.path.dirname(__file__), template_values["main"])
-    
-    for activity in activities:
-      template_values['activity'] = activity 
-      buff += template.render(path, template_values)
+    return self.gateBase(template_values)
 
-    return buff
-
+  """
+  return the root object of a given message (comment)
+  """
   def getRoot(self, msg_rif):
     return Messaggio.all().filter("par", msg_rif).get()
   
-  
+  """
+  http post handler
+  handle both new message and new comment (livello is the discriminant)
+  return the delta activity stream in html
+  """
   def post(self):
     par = None
     rif = self.request.get("par")    
@@ -85,41 +95,85 @@ class CMCommentHandler(BasePage):
     messaggio.titolo = self.request.get("titolo")
     messaggio.testo = self.request.get("testo")
     messaggio.put()
-    
-    CMTagHandler().saveTags(messaggio, self.request.get_all("tags[]"))
-    
+   
+    CMTagHandler().saveTags(messaggio, self.request.get_all("tags"))
+  
     template_values = {
-      'main': '../templates/activity.html',
-      'activity': messaggio
+      'activity': messaggio,
+      'ease': True
     }
     
-    buff = ""
-    path = os.path.join(os.path.dirname(__file__), template_values["main"])
-
     activities = list()
-    for msg in Messaggio.all().filter("__key__ >", db.Key(self.request.get("last"))):
-      activities.append(msg)
-    activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
+    msgs = Messaggio.all()
+    if self.request.get("par"):
+      msgs = msgs.filter("par", db.Key(self.request.get("par")))
 
-    for activity in activities:
-      template_values['activity'] = activity 
-      buff += template.render(path, template_values)
+    if self.request.get("last"):
+      logging.info("last: " + self.request.get("last"))
+      msgs = msgs.filter("__key__ >", db.Key(self.request.get("last")))
+      
+    for msg in msgs.filter("livello", messaggio.livello):
+      logging.info("msg: " + msg.testo)
+      activities.append(msg)    
 
-    self.response.out.write(buff)
+    template_values['main'] = 'comments/comment.html'
+      
+    if messaggio.livello == 0: #posting root message      
+      activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
+      template_values['main'] = 'activity.html'
+  
+    template_values['activities'] = activities
+    template_values['comments'] = activities
+
+    return self.gateBase(template_values)
     
-    
+  """
+  load comments html put under a message
+  """
   def get(self):
     root = self.request.get("par")
     commento_root = Messaggio.get(db.Key(root))
     commenti = Messaggio.all().filter("par", commento_root).order("creato_il")
-    
+
+    comments = list()
+    for msg in commenti:
+      comments.append(msg)
+      
+    comment_last = None
+    if len(comments):
+      comment_last = comments[len(comments)-1].key()
+      
+    logging.info("comment_last: " + str(comment_last))
     template_values = {
       'main': '../templates/comments/comment.html',
       'comment_root': commento_root,
-      'commenti': commenti
+      'comments': comments,
+      'comment_last': str(comment_last),
+      'last': comment_last,
+      'ease': False
     }
     self.getBase(template_values)
-      
+
+class ActivityLoadHandler(BasePage):
+  def get(self):
+
+    template_values = {
+      'main': 'activity.html',
+      'ease': self.request.get("ease")
+    }
+
+    buff = ""
+    
+    
+    offset = 0
+    if self.request.get("offset") != "":
+      offset = int(self.request.get("offset"))
+    
+    template_values['activities'] = self.get_activities(offset)       
+
+    self.gateBase(template_values)
+    
+  
 class CMVoteHandler(BasePage):
   def get(self):
     messaggio = Messaggio.get(self.request.get('msg'))
@@ -163,7 +217,7 @@ class CMTagHandler(BasePage):
     self.response.out.write(buff)
     
   def post(self):
-    tagnames = self.request.get_all("tags[]")
+    tagnames = self.request.get_all("tags")
     msg = db.Key(self.request.get('msg'))
       
     self.saveTags(msg,tagnames)
@@ -172,14 +226,15 @@ class CMTagHandler(BasePage):
     self.response.out.write(buff)
     
   def saveTags(self,obj,tagnames):
+    logging.info("tags")
     tagobjs = TagObj.all().filter("obj", obj)
     tagold = dict()
     for tagobj in tagobjs:
       tagold[tagobj.tag.nome] = tagobj
     for tagname in tagnames:
-      #logging.info("tagname: " + tagname)
+      logging.info("tagname: " + tagname)
       if (tagname in tagold) is False:
-        #logging.info("adding: " + tagname)
+        logging.info("adding: " + tagname)
         tag = Tag.all().filter("nome",tagname).get()
         if not tag:
           tag = Tag(nome=tagname, numRef=0)
@@ -197,20 +252,24 @@ class CMTagHandler(BasePage):
         tagobj.tag.numRef-=1
         tagobj.tag.put()
         tagobj.delete()
-      
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
-   
-  application = webapp.WSGIApplication([
+        
+  def getTags(self):
+    tags = Tag.all().order("nome")
+    return tags
+    
+    
+app = webapp.WSGIApplication([
+    ('/comments/load', ActivityLoadHandler),
     ('/comments/message', CMCommentHandler),
     ('/comments/comment', CMCommentHandler),
     ('/comments/vote', CMVoteHandler),
     ('/comments/voters', CMVotersHandler),
     ('/comments/gettags', CMTagHandler), 
     ('/comments/updatetags', CMTagHandler)    
-  ], debug=debug)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-  wsgiref.handlers.CGIHandler().run(application)
-  
+def main():
+  app.run();
+
 if __name__ == "__main__":
   main()

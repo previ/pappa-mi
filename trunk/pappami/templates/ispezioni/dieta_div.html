@@ -1,25 +1,11 @@
 <script src="/js/jform.js" type="text/javascript"></script>
 <script type="text/javascript">
-var ulmsg = true;
-function closeIt() {
-if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
-}
-window.onbeforeunload = closeIt;
 </script>
-<div class="ss-form-container"><h1 class="table_separator">Nuova Ispezione Diete Sanitarie ed Etico-Religiose</h1>
-<p/>
-<p/>
-<span class="ss-required-asterisk">* Campo obbligatorio</span>
-<br/>
-<br/>
-{% if form.errors %}
-<div class="errorbox-bad" id="form-error">
-	<p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
-	<ul>
-{{form.errors}}
-	</ul>
+<div id="formwiz-error">
 </div>
-{% endif %}<form dojoType="dijit.form.Form" action="/commissario/dieta" method="post" id="form0">
+<div class="ss-form-container"><h1 class="table_separator" id="title">Nuova Ispezione Diete Sanitarie ed Etico-Religiose</h1>
+<span class="ss-required-asterisk">* Campo obbligatorio</span>
+<form action="/isp/dieta" method="post" id="form0" novalidate>
 <!--script type="dojo/method" event="onSubmit">
 dojo.byId("e_submit").disabled = true;
 dojo.byId("e_annulla").disabled = true;
@@ -33,6 +19,7 @@ if(this.validate()&&validateradio()){
 }
 return true;
 </script-->
+<div class="step" id="step1">
 <table width="100%">
 <tr>
 <td>
@@ -40,24 +27,22 @@ return true;
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
-<select dojoType="dijit.form.FilteringSelect" required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+<select required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
 <option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>
 <div class="errorbox-good">
-<div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataIspezione">Data Ispezione
+<div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataIspezioneViz">Data Ispezione
 <span class="ss-required-asterisk">*</span></label>
-<input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" onchange="getMenu()" required="true" name="dataIspezione" value="{{form.data.dataIspezione}}" class="ss-q-short" id="e_dataIspezione"/></div></div>
-<span style="display:none;" dojoType="dijit.Tooltip" connectId="e_di" position="above" id="tt_di"> 
-Inserire la data in cui &egrave; stata effettuata l'ispezione.
-</span> 
+<input type="text" title="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" required="true" name="dataIspezioneViz" value="" class="ss-q-short" id="e_dataIspezioneViz"/>
+<input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/></div></div>
 </td>
 <td>
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_turno">Turno
 <span class="ss-required-asterisk">*</span></label>
-<select name="turno" id="e_turno">
+<select name="turno" id="e_turno" required="true">
 <option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
 <option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
 </select></div></div>
@@ -68,7 +53,8 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <div class="errorbox-good">
 <div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Dieta
 <span class="ss-required-asterisk">*</span></label>
-<select name="tipoDieta" id="e_tipoDieto" dojoType="dijit.form.FilteringSelect" required="true" style="width:400px;" value="{{form.data.tipoDieta}}">
+<select name="tipoDieta" id="e_tipoDieto" required="true" style="width:400px;" value="{{form.data.tipoDieta}}" required="true">
+<option value=""></option>
 <option value="1">menu privo di fave e piselli</option>
 <option value="2">menu privo di cereali contenenti glutine</option>
 <option value="3">menu privo di proteine del latte</option>
@@ -93,10 +79,13 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <option value="22">menu privo di carni bovine e suine</option>
 <option value="23">menu privo di carni di origine animale</option>
 <option value="24">menu privo di carne e pesce</option>
-
 </select></div></div>
 </td>
 </tr>
+</table>
+</div>
+<div class="step" id="step2">
+<table width="100%">
 <tr>
 <th class="table_separator" colspan="3">Ambiente e Attrezzature</th>
 </tr>
@@ -111,10 +100,9 @@ Inserire la data in cui &egrave; stata effettuata l'ispezione.
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="etichettaLeggibile" value="1" id="e_aarc_1" {% ifequal form.data.etichettaLeggibile "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="etichettaLeggibile" value="0" id="e_aarc_2" {% ifequal form.data.etichettaLeggibile "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_etichetta" position="above" id="tt_capitolato"> 
-tip etichetta</span></div></div>
+<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="1" id="e_aarc_1" {% ifequal form.data.etichettaLeggibile "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="0" id="e_aarc_2" {% ifequal form.data.etichettaLeggibile "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -128,8 +116,8 @@ tip etichetta</span></div></div>
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="temperaturaVaschetta" value="1" id="e_aata_1" {% ifequal form.data.temperaturaVaschetta "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% ifequal form.data.temperaturaVaschetta "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="1" id="e_aata_1" {% ifequal form.data.temperaturaVaschetta "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% ifequal form.data.temperaturaVaschetta "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -144,8 +132,8 @@ tip etichetta</span></div></div>
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="vicinoEducatore" value="1" id="e_aatp_1" {% ifequal form.data.vicinoEducatore "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="vicinoEducatore" value="0" id="e_aatp_2" {% ifequal form.data.vicinoEducatore "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="1" id="e_aatp_1" {% ifequal form.data.vicinoEducatore "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="0" id="e_aatp_2" {% ifequal form.data.vicinoEducatore "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -156,15 +144,13 @@ tip etichetta</span></div></div>
 <span class="ss-required-asterisk">*</span></label>
 </td>
 <td align="center">
-<br/> <div class="errorbox-good">
+<br/> <div class="errorbox-good" title="Vaschetta travasata in altro piatto e conservata ?">
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="vaschettaOriginale" value="1" id="e_aaac_1" {% ifequal form.data.vaschettaOriginale "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="vaschettaOriginale" value="0" id="e_aaac_2" {% ifequal form.data.vaschettaOriginale "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_acqua" position="above" id="tt_acqua"> 
-Vaschetta travasata in altro piatto e conservata ?
-</span></div></div>
+<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="1" id="e_aaac_1" {% ifequal form.data.vaschettaOriginale "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="0" id="e_aaac_2" {% ifequal form.data.vaschettaOriginale "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -178,11 +164,15 @@ Vaschetta travasata in altro piatto e conservata ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="condimentiVicini" value="1" id="e_aata_1" {% ifequal form.data.condimentiVicini "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="condimentiVicini" value="0" id="e_aatp_2" {% ifequal form.data.condimentiVicini "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="1" id="e_aata_1" {% ifequal form.data.condimentiVicini "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="0" id="e_aatp_2" {% ifequal form.data.condimentiVicini "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
+</table>
+</div>
+<div class="step" id="step3">
+<table width="100%">
 <tr>
 <th class="table_separator" colspan="3">Gradimento</th>
 </tr>
@@ -197,11 +187,10 @@ Vaschetta travasata in altro piatto e conservata ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="primoAccettato" value="1" id="e_ncsv_1" {% ifequal form.data.primoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="primoAccettato" value="0" id="e_ncsv_2" {% ifequal form.data.primoAccettato "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_scaldaVivande" position="above" id="tt_scaldaVivande"> 
-Il bambino ha mangiato almeno met&agrave; del primo ?
-</span></div></div>
+<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="1" id="e_ncsv_1" {% ifequal form.data.primoAccettato "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="0" id="e_ncsv_2" {% ifequal form.data.primoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table>
+</div></div>
 </td>
 </tr>
 <tr>
@@ -215,8 +204,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="secondoAccettato" value="1" id="e_nclp_1" {% ifequal form.data.secondoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="secondoAccettato" value="0" id="e_nclp_2" {% ifequal form.data.secondoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="1" id="e_nclp_1" {% ifequal form.data.secondoAccettato "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="0" id="e_nclp_2" {% ifequal form.data.secondoAccettato "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -231,10 +220,9 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="contornoAccettato" value="1" id="e_ncte_1" {% ifequal form.data.contornoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="contornoAccettato" value="0" id="e_ncte_2" {% ifequal form.data.contornoAccettato "0" %}CHECKED{%endifequal%}/></td>
-<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_tabellaEsposta" position="above" id="tt_tabellaEsposta">Il bambino ha mangiato almeno met&agrave; del contorno ?
-</span></div></div>
+<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="1" id="e_ncte_1" {% ifequal form.data.contornoAccettato "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="0" id="e_ncte_2" {% ifequal form.data.contornoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
 <tr>
@@ -248,8 +236,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="fruttaAccettata" value="1" id="e_ncte_1" {% ifequal form.data.fruttaAccettata "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="fruttaAccettata" value="0" id="e_ncte_2" {% ifequal form.data.fruttaAccettata "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="1" id="e_ncte_1" {% ifequal form.data.fruttaAccettata "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="0" id="e_ncte_2" {% ifequal form.data.fruttaAccettata "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -264,8 +252,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="gradimentoPrimo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoPrimo "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="gradimentoPrimo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoPrimo "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoPrimo "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoPrimo "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -280,8 +268,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="gradimentoSecondo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoSecondo "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="gradimentoSecondo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoSecondo "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoSecondo "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoSecondo "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -296,8 +284,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="gradimentoContorno" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoContorno "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="gradimentoContorno" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoContorno "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoContorno "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoContorno "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -312,8 +300,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% ifequal form.data.comunicazioneGenitori "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% ifequal form.data.comunicazioneGenitori "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% ifequal form.data.comunicazioneGenitori "1" %}CHECKED{%endifequal%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% ifequal form.data.comunicazioneGenitori "0" %}CHECKED{%endifequal%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -327,10 +315,27 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 </textarea></div></div>
 </td>
 </tr>
-<tr>
-<td colspan="3" align="center">
-<button id="e_submit" type="submit" onclick="ulmsg=false;">Salva dati</button><button onclick="ulmsg=false; location.href='/commissario';return false;" id="e_annulla">Annulla</button>
-</td>
-</tr>
 </table>
-</form></div>w
+</div>
+<div id="formnav" style="float:right;">
+<input type="reset" onclick="" id="e_annulla" class="ui-wizard-content ui-button" value="Indietro"/><input id="e_submit" class="ui-button ui-wizard-content" type="submit" onclick="" value="Avanti"/>
+</div>
+</form></div>
+<script type="text/javascript">
+$(function() {
+ $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
+ $("#form0").validate();
+ $("[title]").mbTooltip({
+  opacity : .90, //opacity
+  wait:500, //before show
+  ancor:"mouse", //"parent"
+  cssClass:"default", // default = default
+  timePerWord:70, //time to show in milliseconds per word
+  hasArrow:false,
+  color:"white",
+  imgPath:"img/",
+  shadowColor:"black",
+  fade:500
+ });
+});
+</script>

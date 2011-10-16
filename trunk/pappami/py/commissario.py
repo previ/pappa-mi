@@ -15,9 +15,8 @@ import wsgiref.handlers
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp
+import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
@@ -34,32 +33,6 @@ from py.comments import CMCommentHandler
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
     
-class CMCommissarioHandler(BasePage):
-  
-  def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if commissario is None or not commissario.isCommissario() :
-      self.redirect("/commissario/registrazione")
-    else:
-  
-      c = None
-      geo = db.GeoPt(45.463681,9.188171)
-      commissario = self.getCommissario(users.get_current_user())
-      c = commissario.commissione()
-      geo = commissario.citta.geo
-      
-      template_values = dict()
-      template_values["bgcolor"] = "eeeeff"
-      template_values["fgcolor"] = "000000"    
-      template_values["activities"] = self.getActivities()
-      template_values["activity_last"] = self.getActivities()[0]
-      template_values["geo"] = geo
-      template_values["billboard"] = "navigation.html"
-      template_values["content"] = "activities.html"
-      template_values["host"] = self.getHost()  
-
-      self.getBase(template_values)
 
 class CMDatiHandler(BasePage):
   
@@ -1244,7 +1217,7 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 103, db.Key(self.request.get("last"))))
+      self.response.out.write(CMCommentHandler().initActivity(dieta.key(), 103, db.Key(self.request.get("last"))))
       
     else:
       key = self.request.get("key")
@@ -1524,7 +1497,7 @@ class NotaHandler(BasePage):
         nota.anno = nota.dataNota.year - 1
      
       nota.put()
-
+      
       username = Configurazione.all().filter("nome", "attach_user").get().valore
       password = Configurazione.all().filter("nome", "attach_password").get().valore
       site = Configurazione.all().filter("nome", "attach_site").get().valore
@@ -1539,7 +1512,7 @@ class NotaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last"))))
+      self.response.out.write(CMCommentHandler().initActivity(nota.key(), 104, db.Key(self.request.get("last")), nota.tags))
     else:
       key = self.request.get("key")
       if( key != "" ) :
@@ -1550,10 +1523,15 @@ class NotaHandler(BasePage):
       form = NotaForm(data=self.request.POST, instance=nota)
       #for field in form:
         #logging.info("%s, %s",field.name, field)
-
+      
       if form.is_valid():
         nota = form.save(commit=False)
         nota.commissario = commissario
+
+        nota.tags = list()
+        for tag in self.request.get_all("tags"):
+          logging.info(tag)
+          nota.tags.append(tag)
         
         if self.request.get("allegato_file"):
           nota.allegati = list()
@@ -1659,8 +1637,7 @@ class CMCommissarioCalendarioHandler(BasePage):
 def main():
   debug = os.environ['HTTP_HOST'].startswith('localhost')   
    
-  application = webapp.WSGIApplication([
-    ('/commissario', CMCommissarioHandler),
+app = webapp.WSGIApplication([
     ('/commissario/dati', CMDatiHandler),
     ('/commissario/isp', CMIspezioniCommissarioHandler),
     ('/commissario/nc', CMNonconfsCommissarioHandler),
@@ -1684,9 +1661,10 @@ def main():
     ('/commissario/getcm', CMCommissioniDataHandler),
     ('/commissario/getdata', CMCommissarioDataHandler),
     ('/commissario/getispdata', CMGetIspDataHandler),
-    ('/commissario/getcity', CMCittaHandler)])
+    ('/commissario/getcity', CMCittaHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-  wsgiref.handlers.CGIHandler().run(application)
-  
+def main():
+  app.run();
+
 if __name__ == "__main__":
   main()
