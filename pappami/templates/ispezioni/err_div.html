@@ -1,7 +1,11 @@
 <div id="form-error">
 <p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
-<ul>
-{% for error in form.errors.values %}<li>{{error}}</li>
+{% if form.errors %}
+<ul class="errors">
+{% for field_errors in form.errors if field_errors %}
+        <li>{{ field_errors }}</li>
 {% endfor %}
+</ul>
+{% endif %}
 </ul>
 </div>

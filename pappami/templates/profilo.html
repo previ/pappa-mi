@@ -32,7 +32,7 @@
       <div class="input">
 	<select class="xlarge required" id="citta" name="citta" value="">
 	<option value=""></option>
-	{%for cit in citta%}<option value="{{cit.key}}"{%if cit.key == cmsro.citta.key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+	{%for cit in citta%}<option value="{{cit.key()}}"{%if cit.key() == cmsro.citta.key()%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
 	</select>
       </div>
     </div>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="clearfix">
-      <div class="input" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">x</a><p><b>{{cm.desc}}</b></p></div>{%endfor%}
+      <div class="input" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">x</a><p><b>{{cm.desc}}</b></p></div>{%endfor%}
       </div>
     </div>
     </fieldset>

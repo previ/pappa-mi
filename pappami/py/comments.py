@@ -113,7 +113,7 @@ class CMCommentHandler(BasePage):
       msgs = msgs.filter("__key__ >", db.Key(self.request.get("last")))
       
     for msg in msgs.filter("livello", messaggio.livello):
-      logging.info("msg: " + msg.testo)
+      #logging.info("msg: " + msg.testo)
       activities.append(msg)    
 
     template_values['main'] = 'comments/comment.html'
@@ -125,7 +125,7 @@ class CMCommentHandler(BasePage):
     template_values['activities'] = activities
     template_values['comments'] = activities
 
-    return self.gateBase(template_values)
+    return self.getBase(template_values)
     
   """
   load comments html put under a message
@@ -171,7 +171,7 @@ class ActivityLoadHandler(BasePage):
     
     template_values['activities'] = self.get_activities(offset)       
 
-    self.gateBase(template_values)
+    self.getBase(template_values)
     
   
 class CMVoteHandler(BasePage):

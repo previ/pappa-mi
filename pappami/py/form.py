@@ -6,43 +6,35 @@ import logging
 from wtforms.ext.appengine.db import model_form
 from py.model import *
 
-class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario'])):
+class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','lavaggioFinale','contornoCottura','anno','stato'])):
 
-  def validate(self):
-    if super(IspezioneForm,self).validate():
-      data = self.data
-      #for f in cleaned_data:
-        #logging.info("data: %s, %s", f, cleaned_data.get(f))
-      pastiTotale = int(data.get("numeroPastiTotale"))
-      pastiBambini = int(data.get("numeroPastiBambini"))
-      pastiSpeciali = int(data.get("numeroPastiSpeciali"))
-      
-      if pastiTotale < pastiBambini or pastiBambini < pastiSpeciali:
-        raise ValidationError("Il numero di pasti serviti ai bambini deve essere minore del numero totale pasti serviti")
-      
-      if pastiBambini < pastiSpeciali:
-        raise ValidationError("Il numero di pasti speciali serviti deve essere minore del numero pasti serviti ai bambini")
+  def validate_dataIspezione(form, field):
+    dataIspezione = field.data
+    if Ispezione.all().filter("dataIspezione",dataIspezione).filter("commissione",form.commissione.data).filter("turno",form.turno.data).count() > 0 :
+      raise ValidationError("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
   
-      if Ispezione.all().filter("dataIspezione",cleaned_data.get("dataIspezione")).filter("commissione",cleaned_data.get("commissione")).filter("turno",cleaned_data.get("turno")).count() > 0 :
-        raise ValidationError("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
+    if dataIspezione.isoweekday() > 5 :
+      raise ValidationError("L'ispezione deve essere fatta in un giorno feriale")
   
-      if data.get("dataIspezione").isoweekday() > 5 :
-        raise ValidationError("L'ispezione deve essere fatta in un giorno feriale")
+    age = (date.today() - dataIspezione).days
+    #if age > 60 :
+    #  raise ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
   
-      age = (date.today() - data.get("dataIspezione")).days
-      #if age > 60 :
-      #  raise ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
-  
-      if age < 0 :
-        raise ValidationError("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
-  
+    if age < 0 :
+      raise ValidationError("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
+    
+  def validate_pastiTotale(form, field):
+    pastiTotale = int(form.numeroPastiTotale.data)
+    pastiBambini = int(form.numeroPastiBambini.data)
+    pastiSpeciali = int(form.numeroPastiSpeciali.data)
+    
+    if pastiTotale < pastiBambini or pastiBambini < pastiSpeciali:
+      raise ValidationError("Il numero di pasti serviti ai bambini deve essere minore del numero totale pasti serviti")
+    
+    if pastiBambini < pastiSpeciali:
+      raise ValidationError("Il numero di pasti speciali serviti deve essere minore del numero pasti serviti ai bambini")
 
-  #dataIspezione = djangoforms.DateField(blank=True)
-"""  
-  class Meta:
-    model = Ispezione
-    exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
-"""  
+
     
 class NonconformitaForm(model_form(Nonconformita)):
   def clean(self):
@@ -69,7 +61,7 @@ class NonconformitaForm(model_form(Nonconformita)):
 
   class Meta:
     model = Nonconformita
-    exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario']
+    exclude = ['creato_il','creato_da','modificato_il','modificato_da','commissario','lavaggioFinale','contornoCottura','anno','stato']
 
 class DietaForm(model_form(Dieta)):
   def clean(self):
