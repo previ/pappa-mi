@@ -32,7 +32,7 @@
       <div class="input">
 	<select class="xlarge required" id="citta" name="citta" value="">
 	<option value=""></option>
-	{%for cit in citta%}<option value="{{cit.key}}">{{cit.nome}}</option>{%endfor%}
+	{%for cit in citta%}<option value="{{cit.key()}}">{{cit.nome}}</option>{%endfor%}
 	</select>
       </div>
     </div>

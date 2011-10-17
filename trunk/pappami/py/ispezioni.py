@@ -422,10 +422,10 @@ class IspezioneHandler(BasePage):
       
       logging.info(preview)
       
-      if form.is_valid():
+      if form.validate():
         logging.info("valid")
 
-        isp = form.save(commit=False)
+        form.populate_obj(isp)
         
         isp.commissario = commissario
    
@@ -442,14 +442,14 @@ class IspezioneHandler(BasePage):
         self.getBase(template_values) 
       else:
         logging.info("data: %s", form.data)
-        for e in form.errors["__all__"] :
+        for e in form.errors :
           logging.info("errors: %s", e)
 
         template_values = {
           'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
           'form': form,
-          'form_errors': form.errors["__all__"]
+          'form_errors': form.errors
         }
 
         self.getBase(template_values)
@@ -825,7 +825,7 @@ class NotaHandler(BasePage):
       #for field in form:
         #logging.info("%s, %s",field.name, field)
       
-      if form.is_valid():
+      if form.validate():
         nota = form.save(commit=False)
         nota.commissario = commissario
 

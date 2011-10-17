@@ -754,7 +754,7 @@ $("#e_annulla").disabled = true;
 return true;
 </script>
 <input type="hidden" name="cmd" value="copy">
-<input type="hidden" name="key" value="{{isp.key}}">
+<input type="hidden" name="key" value="{{isp.key()}}">
 <P align="center">
 <button id="e_annulla" onclick="return onclosenewitem();">Chiudi</button>{%if cancopy %}<button type="submit">Crea copia</button>{% endif %}
 <P>

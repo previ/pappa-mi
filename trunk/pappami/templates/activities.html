@@ -275,7 +275,7 @@ function moreactivities() {
 </div>
 <div id="new-msg" style="display:none;">
  <form id="new-msg-form" action="/comments/message" method="post"> 
-  <input type="hidden" id="act_last" name="last" value="{{act_last.key}}" /> 
+  <input type="hidden" id="act_last" name="last" value="{{act_last.key()}}" /> 
   <input type="hidden" name="livello" value="0" />  
   <input type="hidden" name="tipo" value="201" /> 
   <div class="comment_avatar">

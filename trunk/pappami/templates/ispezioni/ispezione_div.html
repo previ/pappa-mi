@@ -33,9 +33,9 @@ var oldDisp_3 = "";
   <fieldset>
   <div class="span4 box1">
    <label class="label_isp_1" for="e_commissione">Commissione</label>
-   <select required="true" name="commissione" value="{{form.data.commissione.key}}" id="e_commissione" onchange="getPrevIspData()">
+   <select required="true" name="commissione" value="{%if form is defined%}{{form.commissione.data}}{%endif%}" id="e_commissione" onchange="getPrevIspData()">
    <option value=""></option>{% for cm in commissioni %}
-   <option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+   <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
   <div class="span4 box1">
@@ -47,8 +47,8 @@ var oldDisp_3 = "";
    <label class="label_isp_1" for="e_turno">Turno</label>
    <select name="turno" id="e_turno" required="true">
    <option value=""></option>
-   <option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
-   <option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
+   <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+   <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
    </select>
   </div>
   </fieldset>
@@ -84,9 +84,9 @@ var oldDisp_3 = "";
    <div class="span12">
     <label class="label_isp_1" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
     <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-     <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {% ifequal form.data.arrivoDist "1" %}CHECKED{%endifequal%}/>10 min.</label>
-     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {% ifequal form.data.arrivoDist "2" %}CHECKED{%endifequal%}/>20 min.</label>
-     <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {% ifequal form.data.arrivoDist "3" %}CHECKED{%endifequal%}/>30 min.</label>
+     <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
+     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
+     <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
     </div>
    </div>
   </fieldset>
@@ -97,19 +97,19 @@ var oldDisp_3 = "";
   <div class="span6 box1">
    <label class="label_isp_1" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
    <div class="radio-group btngroup" data-original-title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {% ifequal form.data.puliziaCentroCottura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {% ifequal form.data.puliziaCentroCottura "2" %}CHECKED{%endifequal%}/>Mediocre</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {% ifequal form.data.puliziaCentroCottura "3" %}CHECKED{%endifequal%}/>Sufficiente</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {% ifequal form.data.puliziaCentroCottura "3" %}CHECKED{%endifequal%}/>Buona</label>
+    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {%if form.data.puliziaCentroCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {%if form.data.puliziaCentroCottura == "2" %}CHECKED{%endif%}/>Mediocre</label>
+    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "3" %}CHECKED{%endif%}/>Sufficiente</label>
+    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "4" %}CHECKED{%endif%}/>Buona</label>
    </div>
   </div>
   <div class="span6 box1">
    <label class="label_isp_1" for="entry_15">Pulizia Refettorio</label>
    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {% ifequal form.data.puliziaRefettorio "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {% ifequal form.data.puliziaRefettorio "2" %}CHECKED{%endifequal%}/>Mediocre</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_3" {% ifequal form.data.puliziaRefettorio "3" %}CHECKED{%endifequal%}/>Sufficiente</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_4" {% ifequal form.data.puliziaRefettorio "3" %}CHECKED{%endifequal%}/>Buona</label>
+    <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {%if form.data.puliziaRefettorio == "1" %}CHECKED{%endif%}/>Scarsa</label>
+    <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {%if form.data.puliziaRefettorio == "2" %}CHECKED{%endif%}/>Mediocre</label>
+    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_3" {%if form.data.puliziaRefettorio == "3" %}CHECKED{%endif%}/>Sufficiente</label>
+    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_4" {%if form.data.puliziaRefettorio == "4" %}CHECKED{%endif%}/>Buona</label>
    </div>
   </div>
  </div>
@@ -118,15 +118,15 @@ var oldDisp_3 = "";
 Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.">
    <label class="label_isp_1" for="entry_42">Derrate alimentari come da capitolato?</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {% ifequal form.data.aaRispettoCapitolato "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {% ifequal form.data.aaRispettoCapitolato "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {%if form.data.aaRispettoCapitolato == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {%if form.data.aaRispettoCapitolato == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Tavoli coperti da tovaglie o tovagliette?</label>
    <div class="radio-group btngroup">  
-    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="1" class="required" id="e_aata_1" {% ifequal form.data.aaTavoliApparecchiati "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="0" class="required" id="e_aata_2" {% ifequal form.data.aaTavoliApparecchiati "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="1" class="required" id="e_aata_1" {%if form.data.aaTavoliApparecchiati == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="0" class="required" id="e_aata_2" {%if form.data.aaTavoliApparecchiati == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
  </div>
@@ -134,15 +134,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Contenitori termici puliti e in buone condizioni?</label>
    <div class="radio-group btngroup">     
-    <label class="btn"><input type="radio" name="aaTermichePulite" value="1" class="required" id="e_aatp_1" {% ifequal form.data.aaTermichePulite "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTermichePulite" value="0" class="required" id="e_aatp_2" {% ifequal form.data.aaTermichePulite "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaTermichePulite" value="1" class="required" id="e_aatp_1" {%if form.data.aaTermichePulite == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaTermichePulite" value="0" class="required" id="e_aatp_2" {%if form.data.aaTermichePulite == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">L'acqua servita proviene dalla cucina o dispensa</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaAcqua" value="1" class="required" id="e_aaac_1" {% ifequal form.data.aaAcqua "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaAcqua" value="0" class="required" id="e_aaac_2" {% ifequal form.data.aaAcqua "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaAcqua" value="1" class="required" id="e_aaac_1" {%if form.data.aaAcqua == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaAcqua" value="0" class="required" id="e_aaac_2" {%if form.data.aaAcqua == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
  </div>
@@ -150,15 +150,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   <div class="span6 box1" title="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
    <label class="label_isp_1" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {% ifequal form.data.aaScaldaVivande "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {% ifequal form.data.aaScaldaVivande "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {%if form.data.aaScaldaVivande == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {%if form.data.aaScaldaVivande == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Servizio in modalit&agrave; self service</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaSelfService" value="1" class="required" id="e_nclp_1" {% ifequal form.data.aaSelfService "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaSelfService" value="0" class="required" id="e_nclp_2" {% ifequal form.data.aaSelfService "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaSelfService" value="1" class="required" id="e_nclp_1" {%if form.data.aaSelfService == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaSelfService" value="0" class="required" id="e_nclp_2" {%if form.data.aaSelfService == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
  </div>
@@ -166,15 +166,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   <div class="span6 box1" title="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
    <label class="label_isp_1" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {% ifequal form.data.aaTabellaEsposta "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {% ifequal form.data.aaTabellaEsposta "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {%if form.data.aaTabellaEsposta == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {%if form.data.aaTabellaEsposta == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Stoviglie riutilizzabili</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloStoviglie" value="1" class="required" id="e_ncte_1" {% ifequal form.data.ricicloStoviglie "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloStoviglie" value="0" class="required" id="e_ncte_2" {% ifequal form.data.ricicloStoviglie "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="ricicloStoviglie" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloStoviglie == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="ricicloStoviglie" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloStoviglie == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
  </div>
@@ -182,15 +182,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Bicchieri riutilizzabili</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloBicchieri" value="1" class="required" id="e_ncte_1" {% ifequal form.data.ricicloBicchieri "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloBicchieri" value="0" class="required" id="e_ncte_2" {% ifequal form.data.ricicloBicchieri "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="ricicloBicchieri" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloBicchieri == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="ricicloBicchieri" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloBicchieri == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
   <div class="span6 box1" title="">
    <label class="label_isp_1" for="entry_42">Posate riutilizzabili</label>
    <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloPosate" value="1" class="required" id="e_ncte_1" {% ifequal form.data.ricicloPosate "1" %}CHECKED{%endifequal%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloPosate" value="0" class="required" id="e_ncte_2" {% ifequal form.data.ricicloPosate "0" %}CHECKED{%endifequal%}/>No</label>   
+    <label class="btn"><input type="radio" name="ricicloPosate" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloPosate == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="ricicloPosate" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloPosate == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
  </div>
@@ -208,9 +208,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="e_pd_1">Durata distribuzione</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoDist" value="1" class="required" id="e_pd_1" {% ifequal form.data.primoDist "1" %}CHECKED{%endifequal%}/>&lt; 10 min</label>
-      <label class="btn"><input type="radio" name="primoDist" value="2" class="required" id="e_pd_2" {% ifequal form.data.primoDist "2" %}CHECKED{%endifequal%}/>10 &lt; 20 min</label>   
-      <label class="btn"><input type="radio" name="primoDist" value="3" class="required" id="e_pd_3" {% ifequal form.data.primoDist "3" %}CHECKED{%endifequal%}/>&gt; 10 min</label>   
+      <label class="btn"><input type="radio" name="primoDist" value="1" class="required" id="e_pd_1" {%if form.data.primoDist == "1" %}CHECKED{%endif%}/>&lt; 10 min</label>
+      <label class="btn"><input type="radio" name="primoDist" value="2" class="required" id="e_pd_2" {%if form.data.primoDist == "2" %}CHECKED{%endif%}/>10 &lt; 20 min</label>   
+      <label class="btn"><input type="radio" name="primoDist" value="3" class="required" id="e_pd_3" {%if form.data.primoDist == "3" %}CHECKED{%endif%}/>&gt; 10 min</label>   
      </div>
     </div>
    </div>
@@ -218,8 +218,8 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="e_pd_1">Condito al momoento</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoCondito" value="1" class="required" id="e_pd_1" {% ifequal form.data.primoCondito "1" %}CHECKED{%endifequal%}/>Si</label>
-      <label class="btn"><input type="radio" name="primoCondito" value="0" class="required" id="e_pd_2" {% ifequal form.data.primoCondito "0" %}CHECKED{%endifequal%}/>No</label>   
+      <label class="btn"><input type="radio" name="primoCondito" value="1" class="required" id="e_pd_1" {%if form.data.primoCondito == "1" %}CHECKED{%endif%}/>Si</label>
+      <label class="btn"><input type="radio" name="primoCondito" value="0" class="required" id="e_pd_2" {%if form.data.primoCondito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
@@ -227,9 +227,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="e_pc_1">Cottura</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoCottura" value="1" class="required" id="e_pc_1" {% ifequal form.data.primoCottura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="primoCottura" value="2" class="required" id="e_pc_2" {% ifequal form.data.primoCottura "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="primoCottura" value="3" class="required" id="e_pc_3" {% ifequal form.data.primoCottura "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="primoCottura" value="1" class="required" id="e_pc_1" {%if form.data.primoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="primoCottura" value="2" class="required" id="e_pc_2" {%if form.data.primoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="primoCottura" value="3" class="required" id="e_pc_3" {%if form.data.primoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -237,9 +237,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="entry_42">Temperatura</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoTemperatura" value="1" class="required" id="e_primoTemperatura_1" {% ifequal form.data.primoTemperatura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="primoTemperatura" value="2" class="required" id="e_primoTemperatura_2" {% ifequal form.data.primoTemperatura "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="primoTemperatura" value="3" class="required" id="e_primoTemperatura_3" {% ifequal form.data.primoTemperatura "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="primoTemperatura" value="1" class="required" id="e_primoTemperatura_1" {%if form.data.primoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="primoTemperatura" value="2" class="required" id="e_primoTemperatura_2" {%if form.data.primoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="primoTemperatura" value="3" class="required" id="e_primoTemperatura_3" {%if form.data.primoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -247,9 +247,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoQuantita" value="1" class="required" id="e_primoQuantita_1" {% ifequal form.data.primoQuantita "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="primoQuantita" value="2" class="required" id="e_primoQuantita_2" {% ifequal form.data.primoQuantita "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="primoQuantita" value="3" class="required" id="e_primoQuantita_3" {% ifequal form.data.primoQuantita "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="primoQuantita" value="1" class="required" id="e_primoQuantita_1" {%if form.data.primoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="primoQuantita" value="2" class="required" id="e_primoQuantita_2" {%if form.data.primoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="primoQuantita" value="3" class="required" id="e_primoQuantita_3" {%if form.data.primoQuantita == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -257,9 +257,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
     <label class="" for="entry_42">Assaggio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoAssaggio" value="1" class="required" id="e_primoAssaggio_1" {% ifequal form.data.primoAssaggio "1" %}CHECKED{%endifequal%}/>Non Accettabile</label>
-      <label class="btn"><input type="radio" name="primoAssaggio" value="2" class="required" id="e_primoAssaggio_2" {% ifequal form.data.primoAssaggio "2" %}CHECKED{%endifequal%}/>Accettabile</label>   
-      <label class="btn"><input type="radio" name="primoAssaggio" value="3" class="required" id="e_primoAssaggio_3" {% ifequal form.data.primoAssaggio "3" %}CHECKED{%endifequal%}/>Gradevole</label>   
+      <label class="btn"><input type="radio" name="primoAssaggio" value="1" class="required" id="e_primoAssaggio_1" {%if form.data.primoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
+      <label class="btn"><input type="radio" name="primoAssaggio" value="2" class="required" id="e_primoAssaggio_2" {%if form.data.primoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
+      <label class="btn"><input type="radio" name="primoAssaggio" value="3" class="required" id="e_primoAssaggio_3" {%if form.data.primoAssaggio == "3" %}CHECKED{%endif%}/>Gradevole</label>   
      </div>
     </div>
    </div>
@@ -276,10 +276,10 @@ Selezionare:<br/>
     <label class="" for="entry_42">Gradimento (%)</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="primoGradimento" value="1" class="required" id="e_primoGradimento_1" {% ifequal form.data.primoGradimento "1" %}CHECKED{%endifequal%}/>Tot. Rifiutato</label>
-      <label class="btn"><input type="radio" name="primoGradimento" value="2" class="required" id="e_primoGradimento_2" {% ifequal form.data.primoGradimento "2" %}CHECKED{%endifequal%}/>Parz. Rifiutato</label>
-      <label class="btn"><input type="radio" name="primoGradimento" value="3" class="required" id="e_primoGradimento_3" {% ifequal form.data.primoGradimento "3" %}CHECKED{%endifequal%}/>Parz. Accettato</label>   
-      <label class="btn"><input type="radio" name="primoGradimento" value="4" class="required" id="e_primoGradimento_4" {% ifequal form.data.primoGradimento "4" %}CHECKED{%endifequal%}/>Accettato</label>   
+      <label class="btn"><input type="radio" name="primoGradimento" value="1" class="required" id="e_primoGradimento_1" {%if form.data.primoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
+      <label class="btn"><input type="radio" name="primoGradimento" value="2" class="required" id="e_primoGradimento_2" {%if form.data.primoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
+      <label class="btn"><input type="radio" name="primoGradimento" value="3" class="required" id="e_primoGradimento_3" {%if form.data.primoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
+      <label class="btn"><input type="radio" name="primoGradimento" value="4" class="required" id="e_primoGradimento_4" {%if form.data.primoGradimento == "4" %}CHECKED{%endif%}/>Accettato</label>   
      </div>
     </div>
    </div>
@@ -298,9 +298,9 @@ Selezionare:<br/>
     <label class="" for="e_pd_1">Durata distribuzione</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoDist" value="1" class="required" id="e_sd_1" {% ifequal form.data.secondoDist "1" %}CHECKED{%endifequal%}/>&lt; 10 min</label>
-      <label class="btn"><input type="radio" name="secondoDist" value="2" class="required" id="e_sd_2" {% ifequal form.data.secondoDist "2" %}CHECKED{%endifequal%}/>10 &lt; 20 min</label>   
-      <label class="btn"><input type="radio" name="secondoDist" value="3" class="required" id="e_sd_3" {% ifequal form.data.secondoDist "3" %}CHECKED{%endifequal%}/>&gt; 10 min</label>   
+      <label class="btn"><input type="radio" name="secondoDist" value="1" class="required" id="e_sd_1" {%if form.data.secondoDist == "1" %}CHECKED{%endif%}/>&lt; 10 min</label>
+      <label class="btn"><input type="radio" name="secondoDist" value="2" class="required" id="e_sd_2" {%if form.data.secondoDist == "2" %}CHECKED{%endif%}/>10 &lt; 20 min</label>   
+      <label class="btn"><input type="radio" name="secondoDist" value="3" class="required" id="e_sd_3" {%if form.data.secondoDist == "3" %}CHECKED{%endif%}/>&gt; 10 min</label>   
      </div>
     </div>
    </div>
@@ -308,9 +308,9 @@ Selezionare:<br/>
     <label class="" for="e_pc_1">Cottura</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoCottura" value="1" class="required" id="e_sc_1" {% ifequal form.data.secondoCottura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="secondoCottura" value="2" class="required" id="e_sc_2" {% ifequal form.data.secondoCottura "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="secondoCottura" value="3" class="required" id="e_sc_3" {% ifequal form.data.secondoCottura "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="secondoCottura" value="1" class="required" id="e_sc_1" {%if form.data.secondoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="secondoCottura" value="2" class="required" id="e_sc_2" {%if form.data.secondoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="secondoCottura" value="3" class="required" id="e_sc_3" {%if form.data.secondoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -318,9 +318,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Temperatura</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoTemperatura" value="1" class="required" id="e_st_1" {% ifequal form.data.secondoTemperatura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="secondoTemperatura" value="2" class="required" id="e_st_2" {% ifequal form.data.secondoTemperatura "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="secondoTemperatura" value="3" class="required" id="e_st_3" {% ifequal form.data.secondoTemperatura "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="secondoTemperatura" value="1" class="required" id="e_st_1" {%if form.data.secondoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="secondoTemperatura" value="2" class="required" id="e_st_2" {%if form.data.secondoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="secondoTemperatura" value="3" class="required" id="e_st_3" {%if form.data.secondoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -328,9 +328,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoQuantita" value="1" class="required" id="e_sq_1" {% ifequal form.data.secondoQuantita "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="secondoQuantita" value="2" class="required" id="e_sq_2" {% ifequal form.data.secondoQuantita "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="secondoQuantita" value="3" class="required" id="e_sq_3" {% ifequal form.data.secondoQuantita "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="secondoQuantita" value="1" class="required" id="e_sq_1" {%if form.data.secondoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="secondoQuantita" value="2" class="required" id="e_sq_2" {%if form.data.secondoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="secondoQuantita" value="3" class="required" id="e_sq_3" {%if form.data.secondoQuantita == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -338,9 +338,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Assaggio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoAssaggio" value="1" class="required" id="e_sa_1" {% ifequal form.data.secondoAssaggio "1" %}CHECKED{%endifequal%}/>Non Accettabile</label>
-      <label class="btn"><input type="radio" name="secondoAssaggio" value="2" class="required" id="e_sa_2" {% ifequal form.data.secondoAssaggio "2" %}CHECKED{%endifequal%}/>Accettabile</label>   
-      <label class="btn"><input type="radio" name="secondoAssaggio" value="3" class="required" id="e_sa_3" {% ifequal form.data.secondoAssaggio "3" %}CHECKED{%endifequal%}/>Gradevole</label>   
+      <label class="btn"><input type="radio" name="secondoAssaggio" value="1" class="required" id="e_sa_1" {%if form.data.secondoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
+      <label class="btn"><input type="radio" name="secondoAssaggio" value="2" class="required" id="e_sa_2" {%if form.data.secondoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
+      <label class="btn"><input type="radio" name="secondoAssaggio" value="3" class="required" id="e_sa_3" {%if form.data.secondoAssaggio == "3" %}CHECKED{%endif%}/>Gradevole</label>   
      </div>
     </div>
    </div>
@@ -357,10 +357,10 @@ Selezionare:<br/>
     <label class="" for="entry_42">Gradimento (%)</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="secondoGradimento" value="1" class="required" id="e_sg_1" {% ifequal form.data.secondoGradimento "1" %}CHECKED{%endifequal%}/>Tot. Rifiutato</label>
-      <label class="btn"><input type="radio" name="secondoGradimento" value="2" class="required" id="e_sg_2" {% ifequal form.data.secondoGradimento "2" %}CHECKED{%endifequal%}/>Parz. Rifiutato</label>
-      <label class="btn"><input type="radio" name="secondoGradimento" value="3" class="required" id="e_sg_3" {% ifequal form.data.secondoGradimento "3" %}CHECKED{%endifequal%}/>Parz. Accettato</label>   
-      <label class="btn"><input type="radio" name="secondoGradimento" value="4" class="required" id="e_sg_4" {% ifequal form.data.secondoGradimento "4" %}CHECKED{%endifequal%}/>Accettato</label>   
+      <label class="btn"><input type="radio" name="secondoGradimento" value="1" class="required" id="e_sg_1" {%if form.data.secondoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
+      <label class="btn"><input type="radio" name="secondoGradimento" value="2" class="required" id="e_sg_2" {%if form.data.secondoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
+      <label class="btn"><input type="radio" name="secondoGradimento" value="3" class="required" id="e_sg_3" {%if form.data.secondoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
+      <label class="btn"><input type="radio" name="secondoGradimento" value="4" class="required" id="e_sg_4" {%if form.data.secondoGradimento == "4" %}CHECKED{%endif%}/>Accettato</label>   
      </div>
     </div>
    </div>
@@ -379,8 +379,8 @@ Selezionare:<br/>
     <label class="" for="e_pd_1">Condito al momoento</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="contornoCondito" value="1" class="required" id="e_pd_1" {% ifequal form.data.contornoCondito "1" %}CHECKED{%endifequal%}/>Si</label>
-      <label class="btn"><input type="radio" name="contornoCondito" value="0" class="required" id="e_pd_2" {% ifequal form.data.contornoCondito "0" %}CHECKED{%endifequal%}/>No</label>   
+      <label class="btn"><input type="radio" name="contornoCondito" value="1" class="required" id="e_pd_1" {%if form.data.contornoCondito == "1" %}CHECKED{%endif%}/>Si</label>
+      <label class="btn"><input type="radio" name="contornoCondito" value="0" class="required" id="e_pd_2" {%if form.data.contornoCondito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
@@ -388,9 +388,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Temperatura</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="contornoTemperatura" value="1" class="required" id="e_ct_1" {% ifequal form.data.contornoTemperatura "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="contornoTemperatura" value="2" class="required" id="e_ct_2" {% ifequal form.data.contornoTemperatura "2" %}CHECKED{%endifequal%}/>Giusta</label>
-      <label class="btn"><input type="radio" name="contornoTemperatura" value="3" class="required" id="e_ct_3" {% ifequal form.data.contornoTemperatura "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="contornoTemperatura" value="1" class="required" id="e_ct_1" {%if form.data.contornoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="contornoTemperatura" value="2" class="required" id="e_ct_2" {%if form.data.contornoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>
+      <label class="btn"><input type="radio" name="contornoTemperatura" value="3" class="required" id="e_ct_3" {%if form.data.contornoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -398,9 +398,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="contornoQuantita" value="1" class="required" id="e_cq_1" {% ifequal form.data.contornoQuantita "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="contornoQuantita" value="2" class="required" id="e_cq_2" {% ifequal form.data.contornoQuantita "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="contornoQuantita" value="3" class="required" id="e_cq_3" {% ifequal form.data.contornoQuantita "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="contornoQuantita" value="1" class="required" id="e_cq_1" {%if form.data.contornoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="contornoQuantita" value="2" class="required" id="e_cq_2" {%if form.data.contornoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="contornoQuantita" value="3" class="required" id="e_cq_3" {%if form.data.contornoQuantita == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -408,9 +408,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Assaggio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="contornoAssaggio" value="1" class="required" id="e_ca_1" {% ifequal form.data.contornoAssaggio "1" %}CHECKED{%endifequal%}/>Non Accettabile</label>
-      <label class="btn"><input type="radio" name="contornoAssaggio" value="2" class="required" id="e_ca_2" {% ifequal form.data.contornoAssaggio "2" %}CHECKED{%endifequal%}/>Accettabile</label>   
-      <label class="btn"><input type="radio" name="contornoAssaggio" value="3" class="required" id="e_ca_3" {% ifequal form.data.contornoAssaggio "3" %}CHECKED{%endifequal%}/>Gradevole</label>   
+      <label class="btn"><input type="radio" name="contornoAssaggio" value="1" class="required" id="e_ca_1" {%if form.data.contornoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
+      <label class="btn"><input type="radio" name="contornoAssaggio" value="2" class="required" id="e_ca_2" {%if form.data.contornoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
+      <label class="btn"><input type="radio" name="contornoAssaggio" value="3" class="required" id="e_ca_3" {%if form.data.contornoAssaggio == "3" %}CHECKED{%endif%}/>Gradevole</label>   
      </div>
     </div>
    </div>
@@ -427,10 +427,10 @@ Selezionare:<br/>
     <label class="" for="entry_42">Gradimento (%)</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="contornoGradimento" value="1" class="required" id="e_cg_1" {% ifequal form.data.contornoGradimento "1" %}CHECKED{%endifequal%}/>Tot. Rifiutato</label>
-      <label class="btn"><input type="radio" name="contornoGradimento" value="2" class="required" id="e_cg_2" {% ifequal form.data.contornoGradimento "2" %}CHECKED{%endifequal%}/>Parz. Rifiutato</label>
-      <label class="btn"><input type="radio" name="contornoGradimento" value="3" class="required" id="e_cg_3" {% ifequal form.data.contornoGradimento "3" %}CHECKED{%endifequal%}/>Parz. Accettato</label>   
-      <label class="btn"><input type="radio" name="contornoGradimento" value="4" class="required" id="e_cg_4" {% ifequal form.data.contornoGradimento "4" %}CHECKED{%endifequal%}/>Accettato</label>   
+      <label class="btn"><input type="radio" name="contornoGradimento" value="1" class="required" id="e_cg_1" {%if form.data.contornoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
+      <label class="btn"><input type="radio" name="contornoGradimento" value="2" class="required" id="e_cg_2" {%if form.data.contornoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
+      <label class="btn"><input type="radio" name="contornoGradimento" value="3" class="required" id="e_cg_3" {%if form.data.contornoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
+      <label class="btn"><input type="radio" name="contornoGradimento" value="4" class="required" id="e_cg_4" {%if form.data.contornoGradimento == "4" %}CHECKED{%endif%}/>Accettato</label>   
      </div>
     </div>
    </div>
@@ -456,8 +456,8 @@ Selezionare:<br/>
     <label class="" for="e_pd_1">Presente in tavola a inizio pasto:</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="paneServito" value="1" class="required" id="e_bp_1" {% ifequal form.data.paneServito "1" %}CHECKED{%endifequal%}/>Si</label>
-      <label class="btn"><input type="radio" name="paneServito" value="0" class="required" id="e_bp_2" {% ifequal form.data.paneServito "0" %}CHECKED{%endifequal%}/>No</label>   
+      <label class="btn"><input type="radio" name="paneServito" value="1" class="required" id="e_bp_1" {%if form.data.paneServito == "1" %}CHECKED{%endif%}/>Si</label>
+      <label class="btn"><input type="radio" name="paneServito" value="0" class="required" id="e_bp_2" {%if form.data.paneServito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
@@ -465,9 +465,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="paneQuantita" value="1" class="required" id="e_bq_1" {% ifequal form.data.paneQuantita "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="paneQuantita" value="2" class="required" id="e_bq_2" {% ifequal form.data.paneQuantita "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="paneQuantita" value="3" class="required" id="e_bq_3" {% ifequal form.data.paneQuantita "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="paneQuantita" value="1" class="required" id="e_bq_1" {%if form.data.paneQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="paneQuantita" value="2" class="required" id="e_bq_2" {%if form.data.paneQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="paneQuantita" value="3" class="required" id="e_bq_3" {%if form.data.paneQuantita == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -475,9 +475,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Assaggio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="paneAssaggio" value="1" class="required" id="e_ba_1" {% ifequal form.data.paneAssaggio "1" %}CHECKED{%endifequal%}/>Non Accettabile</label>
-      <label class="btn"><input type="radio" name="paneAssaggio" value="2" class="required" id="e_ba_2" {% ifequal form.data.paneAssaggio "2" %}CHECKED{%endifequal%}/>Accettabile</label>   
-      <label class="btn"><input type="radio" name="paneAssaggio" value="3" class="required" id="e_ba_3" {% ifequal form.data.paneAssaggio "3" %}CHECKED{%endifequal%}/>Gradevole</label>   
+      <label class="btn"><input type="radio" name="paneAssaggio" value="1" class="required" id="e_ba_1" {%if form.data.paneAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
+      <label class="btn"><input type="radio" name="paneAssaggio" value="2" class="required" id="e_ba_2" {%if form.data.paneAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
+      <label class="btn"><input type="radio" name="paneAssaggio" value="3" class="required" id="e_ba_3" {%if form.data.paneAssaggio == "3" %}CHECKED{%endif%}/>Gradevole</label>   
      </div>
     </div>
    </div>
@@ -494,10 +494,10 @@ Selezionare:<br/>
     <label class="" for="entry_42">Gradimento (%)</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="paneGradimento" value="1" class="required" id="e_bg_1" {% ifequal form.data.paneGradimento "1" %}CHECKED{%endifequal%}/>Tot. Rifiutato</label>
-      <label class="btn"><input type="radio" name="paneGradimento" value="2" class="required" id="e_bg_2" {% ifequal form.data.paneGradimento "2" %}CHECKED{%endifequal%}/>Parz. Rifiutato</label>
-      <label class="btn"><input type="radio" name="paneGradimento" value="3" class="required" id="e_bg_3" {% ifequal form.data.paneGradimento "3" %}CHECKED{%endifequal%}/>Parz. Accettato</label>   
-      <label class="btn"><input type="radio" name="paneGradimento" value="4" class="required" id="e_bg_4" {% ifequal form.data.paneGradimento "4" %}CHECKED{%endifequal%}/>Accettato</label>   
+      <label class="btn"><input type="radio" name="paneGradimento" value="1" class="required" id="e_bg_1" {%if form.data.paneGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
+      <label class="btn"><input type="radio" name="paneGradimento" value="2" class="required" id="e_bg_2" {%if form.data.paneGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
+      <label class="btn"><input type="radio" name="paneGradimento" value="3" class="required" id="e_bg_3" {%if form.data.paneGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
+      <label class="btn"><input type="radio" name="paneGradimento" value="4" class="required" id="e_bg_4" {%if form.data.paneGradimento == "4" %}CHECKED{%endif%}/>Accettato</label>   
      </div>
     </div>
    </div>
@@ -527,9 +527,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="fruttaMaturazione" value="1" class="required" id="e_fq_1" {% ifequal form.data.fruttaMaturazione "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="fruttaMaturazione" value="2" class="required" id="e_fq_2" {% ifequal form.data.fruttaMaturazione "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="fruttaMaturazione" value="3" class="required" id="e_fq_3" {% ifequal form.data.fruttaMaturazione "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="fruttaMaturazione" value="1" class="required" id="e_fq_1" {%if form.data.fruttaMaturazione == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="fruttaMaturazione" value="2" class="required" id="e_fq_2" {%if form.data.fruttaMaturazione == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="fruttaMaturazione" value="3" class="required" id="e_fq_3" {%if form.data.fruttaMaturazione == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -537,9 +537,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Quantit&agrave;</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="fruttaQuantita" value="1" class="required" id="e_fq_1" {% ifequal form.data.fruttaQuantita "1" %}CHECKED{%endifequal%}/>Scarsa</label>
-      <label class="btn"><input type="radio" name="fruttaQuantita" value="2" class="required" id="e_fq_2" {% ifequal form.data.fruttaQuantita "2" %}CHECKED{%endifequal%}/>Giusta</label>   
-      <label class="btn"><input type="radio" name="fruttaQuantita" value="3" class="required" id="e_fq_3" {% ifequal form.data.fruttaQuantita "3" %}CHECKED{%endifequal%}/>Eccessiva</label>   
+      <label class="btn"><input type="radio" name="fruttaQuantita" value="1" class="required" id="e_fq_1" {%if form.data.fruttaQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
+      <label class="btn"><input type="radio" name="fruttaQuantita" value="2" class="required" id="e_fq_2" {%if form.data.fruttaQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
+      <label class="btn"><input type="radio" name="fruttaQuantita" value="3" class="required" id="e_fq_3" {%if form.data.fruttaQuantita == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
@@ -547,9 +547,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Assaggio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="fruttaAssaggio" value="1" class="required" id="e_fa_1" {% ifequal form.data.fruttaAssaggio "1" %}CHECKED{%endifequal%}/>Non Accettabile</label>
-      <label class="btn"><input type="radio" name="fruttaAssaggio" value="2" class="required" id="e_fa_2" {% ifequal form.data.fruttaAssaggio "2" %}CHECKED{%endifequal%}/>Accettabile</label>   
-      <label class="btn"><input type="radio" name="fruttaAssaggio" value="3" class="required" id="e_fa_3" {% ifequal form.data.fruttaAssaggio "3" %}CHECKED{%endifequal%}/>Gradevole</label>   
+      <label class="btn"><input type="radio" name="fruttaAssaggio" value="1" class="required" id="e_fa_1" {%if form.data.fruttaAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
+      <label class="btn"><input type="radio" name="fruttaAssaggio" value="2" class="required" id="e_fa_2" {%if form.data.fruttaAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
+      <label class="btn"><input type="radio" name="fruttaAssaggio" value="3" class="required" id="e_fa_3" {%if form.data.fruttaAssaggio == "3" %}CHECKED{%endif%}/>Gradevole</label>   
      </div>
     </div>
    </div>
@@ -566,10 +566,10 @@ Selezionare:<br/>
     <label class="" for="entry_42">Gradimento (%)</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="fruttaGradimento" value="1" class="required" id="e_fg_1" {% ifequal form.data.fruttaGradimento "1" %}CHECKED{%endifequal%}/>Tot. Rifiutato</label>
-      <label class="btn"><input type="radio" name="fruttaGradimento" value="2" class="required" id="e_fg_2" {% ifequal form.data.fruttaGradimento "2" %}CHECKED{%endifequal%}/>Parz. Rifiutato</label>
-      <label class="btn"><input type="radio" name="fruttaGradimento" value="3" class="required" id="e_fg_3" {% ifequal form.data.fruttaGradimento "3" %}CHECKED{%endifequal%}/>Parz. Accettato</label>   
-      <label class="btn"><input type="radio" name="fruttaGradimento" value="4" class="required" id="e_fg_4" {% ifequal form.data.fruttaGradimento "4" %}CHECKED{%endifequal%}/>Accettato</label>   
+      <label class="btn"><input type="radio" name="fruttaGradimento" value="1" class="required" id="e_fg_1" {%if form.data.fruttaGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
+      <label class="btn"><input type="radio" name="fruttaGradimento" value="2" class="required" id="e_fg_2" {%if form.data.fruttaGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
+      <label class="btn"><input type="radio" name="fruttaGradimento" value="3" class="required" id="e_fg_3" {%if form.data.fruttaGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
+      <label class="btn"><input type="radio" name="fruttaGradimento" value="4" class="required" id="e_fg_4" {%if form.data.fruttaGradimento == "4" %}CHECKED{%endif%}/>Accettato</label>   
      </div>
     </div>
    </div>
@@ -583,9 +583,9 @@ Selezionare:<br/>
     <label class="" for="entry_42">Durata complessiva pasto</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="durataPasto" value="1" class="required" id="e_pd_1" {% ifequal form.data.durataPasto "1" %}CHECKED{%endifequal%}/>&lt; 30 min.</label>
-      <label class="btn"><input type="radio" name="durataPasto" value="2" class="required" id="e_pd_2" {% ifequal form.data.durataPasto "2" %}CHECKED{%endifequal%}/>30 min. &lt; 60</label>   
-      <label class="btn"><input type="radio" name="durataPasto" value="3" class="required" id="e_pd_3" {% ifequal form.data.durataPasto "3" %}CHECKED{%endifequal%}/>&gt; 60 min.</label>   
+      <label class="btn"><input type="radio" name="durataPasto" value="1" class="required" id="e_pd_1" {%if form.data.durataPasto == "1" %}CHECKED{%endif%}/>&lt; 30 min.</label>
+      <label class="btn"><input type="radio" name="durataPasto" value="2" class="required" id="e_pd_2" {%if form.data.durataPasto == "2" %}CHECKED{%endif%}/>30 min. &lt; 60</label>   
+      <label class="btn"><input type="radio" name="durataPasto" value="3" class="required" id="e_pd_3" {%if form.data.durataPasto == "3" %}CHECKED{%endif%}/>&gt; 60 min.</label>   
      </div>
     </div>
    </div>
@@ -639,10 +639,10 @@ Specificare:<ul>
     <label class="" for="e_numeroAddetti">Smaltimento rifiuti</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="1" class="required" id="e_sr_1" {% ifequal form.data.smaltimentoRifiuti "1" %}CHECKED{%endifequal%}/>Scarso</label>
-      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="2" class="required" id="e_sr_2" {% ifequal form.data.smaltimentoRifiuti "2" %}CHECKED{%endifequal%}/>Mediocre</label>   
-      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_3" {% ifequal form.data.smaltimentoRifiuti "3" %}CHECKED{%endifequal%}/>Sufficiente</label>
-      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_4" {% ifequal form.data.smaltimentoRifiuti "3" %}CHECKED{%endifequal%}/>Ottimo</label>   
+      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="1" class="required" id="e_sr_1" {%if form.data.smaltimentoRifiuti == "1" %}CHECKED{%endif%}/>Scarso</label>
+      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="2" class="required" id="e_sr_2" {%if form.data.smaltimentoRifiuti == "2" %}CHECKED{%endif%}/>Mediocre</label>   
+      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_3" {%if form.data.smaltimentoRifiuti == "3" %}CHECKED{%endif%}/>Sufficiente</label>
+      <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_4" {%if form.data.smaltimentoRifiuti == "3" %}CHECKED{%endif%}/>Ottimo</label>   
      </div>
     </div>
    </div>
@@ -650,9 +650,9 @@ Specificare:<ul>
     <label class="" for="e_numeroAddetti">Giudizio globale sul servizio</label>
     <div class="input">
      <div class="radio-group btngroup">
-      <label class="btn"><input type="radio" name="giudizioGlobale" value="1" class="required" id="e_gg_1" {% ifequal form.data.giudizioGlobale "1" %}CHECKED{%endifequal%}/>Insufficiente</label>
-      <label class="btn"><input type="radio" name="giudizioGlobale" value="2" class="required" id="e_gg_2" {% ifequal form.data.giudizioGlobale "2" %}CHECKED{%endifequal%}/>Sufficiente</label>   
-      <label class="btn"><input type="radio" name="giudizioGlobale" value="3" class="required" id="e_gg_3" {% ifequal form.data.giudizioGlobale "3" %}CHECKED{%endifequal%}/>Buono</label>
+      <label class="btn"><input type="radio" name="giudizioGlobale" value="1" class="required" id="e_gg_1" {%if form.data.giudizioGlobale == "1" %}CHECKED{%endif%}/>Insufficiente</label>
+      <label class="btn"><input type="radio" name="giudizioGlobale" value="2" class="required" id="e_gg_2" {%if form.data.giudizioGlobale == "2" %}CHECKED{%endif%}/>Sufficiente</label>   
+      <label class="btn"><input type="radio" name="giudizioGlobale" value="3" class="required" id="e_gg_3" {%if form.data.giudizioGlobale == "3" %}CHECKED{%endif%}/>Buono</label>
      </div>
     </div>
    </div>
