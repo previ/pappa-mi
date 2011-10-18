@@ -59,12 +59,12 @@ class CMCommentHandler(BasePage):
     buff = ""
 
     activities = list()
-    for msg in Messaggio.all().filter("livello", 0).filter("__key__ >", last).fetch(Const.ACTIVITY_FETCH_LIMIT):
+    for msg in Messaggio.all().filter("livello", 0).filter("creato_il >", last.creato_il).fetch(Const.ACTIVITY_FETCH_LIMIT):
       activities.append(msg)
     activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
 
     template_values = {
-      'main': '../templates/activity.html',
+      'main': 'activity.html',
       'ease': True
     }
     template_values['activities'] = activities       
@@ -110,7 +110,7 @@ class CMCommentHandler(BasePage):
 
     if self.request.get("last"):
       logging.info("last: " + self.request.get("last"))
-      msgs = msgs.filter("__key__ >", db.Key(self.request.get("last")))
+      msgs = msgs.filter("creato_il >", Messaggio.get(db.Key(self.request.get("last"))).creato_il)
       
     for msg in msgs.filter("livello", messaggio.livello):
       #logging.info("msg: " + msg.testo)
@@ -145,7 +145,7 @@ class CMCommentHandler(BasePage):
       
     logging.info("comment_last: " + str(comment_last))
     template_values = {
-      'main': '../templates/comments/comment.html',
+      'main': 'comments/comment.html',
       'comment_root': commento_root,
       'comments': comments,
       'comment_last': str(comment_last),
@@ -195,7 +195,7 @@ class CMVotersHandler(BasePage):
   def get(self):
     messaggio = Messaggio.get(self.request.get('msg'))
     template_values = {
-      'main': '../templates/comments/voters.html',
+      'main': 'comments/voters.html',
       'voters': messaggio.voto_reference_set
     }
     self.getBase(template_values)    
