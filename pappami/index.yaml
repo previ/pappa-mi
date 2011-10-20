@@ -336,6 +336,12 @@ indexes:
   - name: creato_il
     direction: desc
 
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: par
+  - name: creato_il
+
 - kind: Nonconformita
   properties:
   - name: anno

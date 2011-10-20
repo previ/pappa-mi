@@ -1,7 +1,7 @@
 <div id="avatar_dialog" style="display:none;">
 <script src="http://connect.facebook.net/it_IT/all.js"></script> 
-<img id="avatar_edit" src="{{cmsro.avatar}}?size=normal" class="avatar-big"/>
-<form id="avatar_form" action="/commissario/avatar" method="POST">
+<img id="avatar_edit" src="{{cmsro.avatar()}}&size=big" class="avatar-big"/>
+<form id="avatar_form" action="/profilo/avatar" method="POST">
 <input type="hidden" name="cmd" value="upload"/>
 Carica una immagine: <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
 </form>

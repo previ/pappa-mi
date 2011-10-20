@@ -1653,7 +1653,6 @@ app = webapp.WSGIApplication([
     ('/commissario/nota_div', NotaHandler),
     ('/commissario/registrazione', CMRegistrazioneHandler),
     ('/commissario/profilo', CMProfiloCommissarioHandler),
-    ('/commissario/avatar', CMAvatarHandler),
     ('/commissario/stats', CMCommissarioStatsHandler),
     ('/commissario/commissioni', CMCommissarioCommissioniHandler),
     ('/commissario/menu', CMCommissarioMenuHandler),

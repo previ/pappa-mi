@@ -257,3 +257,8 @@ label.toggle {
   width:100%;
   text-align:left;
 }
+
+footer {
+background: url(../img/food_footer.jpg) repeat-x center bottom;
+height: 133px;
+}

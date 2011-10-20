@@ -17,7 +17,7 @@
     <legend>I tuoi dati</legend>
     <div class="clearfix">
       <label for="avatar">Immagine</label>
-      <div class="input"><img id="avatar" src="{{cmsro.avatar}}?size=normal" class="avatar-big"/></div>
+      <div class="input"><img id="avatar" src="{{cmsro.avatar()}}&size=big" class="avatar-big"/></div>
     </div>
     <div class="clearfix">
       <label for="nome">Nome</label>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="clearfix">
-      <div class="input" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">x</a><p><b>{{cm.desc}}</b></p></div>{%endfor%}
+      <div class="input" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">x</a><p><b>{{cm.desc()}}</b></p></div>{%endfor%}
       </div>
     </div>
     </fieldset>

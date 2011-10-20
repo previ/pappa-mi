@@ -561,38 +561,6 @@ class CMMenuHandlerOld(BasePage):
     #logging.info("CMMenuHandler.type: " + str(type(self)))
     super(CMMenuHandler,self).getBase(template_values)    
 
-class CMAvatarHandler(BasePage):
-  
-  def get(self):
-    commissario = self.getCommissario(users.get_current_user())
-    self.response.headers['Content-Type'] = "image/png"
-    img = commissario.avatar_data
-    if self.request.get("size") != "big":
-      img = images.resize(img, 48,48)
-    self.response.out.write(img)
-    
-  def post(self):
-    cmd = self.request.get("cmd")
-    logging.info("cmd:" + cmd)
-    if cmd == "upload":
-      commissario = self.getCommissario(users.get_current_user())
-      avatar_file = self.request.get("avatar_file")
-      logging.info("1")
-      if avatar_file:
-        if len(avatar_file) < 1000000 :
-          logging.info("2")
-          avatar = images.resize(self.request.get("avatar_file"), 128,128)
-          commissario.avatar_data = avatar
-          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key())
-          commissario.put()
-          self.response.out.write(commissario.avatar()+"?size=normal");
-        else:
-          logging.info("attachment is too big.")
-    if cmd == "saveurl":
-      commissario = self.getCommissario(users.get_current_user())
-      commissario.avatar_url = self.request.get("picture")
-      commissario.put()
-
 class CMCittaHandler(webapp.RequestHandler):
   def get(self):        
     citta = Citta.all()

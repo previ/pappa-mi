@@ -2,18 +2,33 @@
 <table>
 <tbody>
 <tr>
-<td>Piatto</td><td>Assaggio</td><td>Gradimento</td>
+<td>Piatto</td><td>Assaggio</td><td>Gradimento</td><td>Cottura<br/>Maturazione</td><td>Temperatura</td><td>Quantit&agrave;</td>
 </tr>
 <tr>
-<td>{{msg.root.primoEffettivo}}</td><td>{{msg.root.primoAssaggio}}</td><td>{{msg.root.primoGradimento}}</td>
+<td>Primo: {{msg.root.primoEffettivo}}</td><td>{{msg.root.primoAssaggio}}</td><td>{{msg.root.primoGradimento}}</td><td>{{msg.root.primoCottura}}</td><td>{{msg.root.primoTemperatura}}</td><td>{{msg.root.primoQuantita}}</td>
 </tr>
 <tr>
-<td>{{msg.root.secondoEffettivo}}</td><td>{{msg.root.secondoAssaggio}}</td><td>{{msg.root.secondoGradimento}}</td>
+<td>Secondo: {{msg.root.secondoEffettivo}}</td><td>{{msg.root.secondoAssaggio}}</td><td>{{msg.root.secondoGradimento}}</td><td>{{msg.root.secondoCottura}}</td><td>{{msg.root.secondoTemperatura}}</td><td>{{msg.root.secondoQuantita}}</td>
 </tr>
 <tr>
-<td>{{msg.root.contornoEffettivo}}</td><td>{{msg.root.contornoAssaggio}}</td><td>{{msg.root.contornoGradimento}}</td>
+<td>Contorno: {{msg.root.contornoEffettivo}}</td><td>{{msg.root.contornoAssaggio}}</td><td>{{msg.root.contornoGradimento}}</td><td>{{msg.root.contornoCottura}}</td><td>{{msg.root.contornoTemperatura}}</td><td>{{msg.root.contornoQuantita}}</td>
+</tr>
+<tr>
+<td>Pane</td><td>{{msg.root.paneAssaggio}}</td><td>{{msg.root.paneGradimento}}</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>Dessert</td><td>{{msg.root.fruttaAssaggio}}</td><td>{{msg.root.fruttaGradimento}}</td>{{msg.root.fruttaMaturazione}}<td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="5">Aspetti ambientali</td>
+</tr>
+<tr>
+<td colspan="5">Pasti serviti</td>
+</tr>
+<tr>
+<td colspan="5">Giudizio globale: </td>
 </tr>
 </tbody>
 </table>
 </div>
-{% include "../comments/comments.html" %}a
+{% include "comments/comments.html" %}a
