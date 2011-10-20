@@ -13,7 +13,7 @@
   <div class="activity_summary" id="summary_{{activity.key()}}">{{activity.summary()}}</div>
   <div class="activity_detail" id="detail_{{activity.key()}}"></div>
   <div class="activity_footer">   
-   <div class="activity_feedback" id="votes_{{activity.key()}}" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key()}}_me" {%if activity.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+   <div class="activity_feedback" id="votes_{{activity.key()}}" onclick="onshowvotes('{{activity.key()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key()}}_me" {%if activity.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
    <div class="activity_vote" id="vote_1_{{activity.key()}}" style="display:{%if activity.canvote() %}inline{%else%}none{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key()}}" onclick="onvote('{{activity.key()}}',1)">Mi piace</div>
     <!--button id="vote_{{activity.key()}}" onclick="onvote('{{activity.key()}}',-1)">Non mi piace</button-->

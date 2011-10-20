@@ -20,6 +20,7 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
+from py.form import CommissarioForm
 from py.base import BasePage, roleCommissario, CMCommissioniDataHandler
 from py.calendar import *
 
@@ -36,12 +37,11 @@ class CMProfiloHandler(BasePage):
     }
     self.getBase(template_values)
     
-  @login_required
   def post(self):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if(commissario):
-      form = CommissarioForm(self.request, commissario)
+      form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
       
       #commissario.nome = self.request.get("nome")
@@ -97,9 +97,34 @@ class CMProfiloHandler(BasePage):
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
         
     self.response.out.write("Dati salvati.")
+
+class CMAvatarHandler(BasePage):
+      
+  def post(self):
+    cmd = self.request.get("cmd")
+    logging.info("cmd:" + cmd)
+    if cmd == "upload":
+      commissario = self.getCommissario(users.get_current_user())
+      avatar_file = self.request.get("avatar_file")
+      logging.info("1")
+      if avatar_file:
+        if len(avatar_file) < 1000000 :
+          logging.info("2")
+          avatar = images.resize(self.request.get("avatar_file"), 128,128)
+          commissario.avatar_data = avatar
+          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key())
+          commissario.put()
+          self.response.out.write(commissario.avatar()+"&size=big");
+        else:
+          logging.info("attachment is too big.")
+    if cmd == "saveurl":
+      commissario = self.getCommissario(users.get_current_user())
+      commissario.avatar_url = self.request.get("picture")
+      commissario.put()
     
 app = webapp.WSGIApplication([
     ('/profilo', CMProfiloHandler),
+    ('/profilo/avatar', CMAvatarHandler),
     ('/profilo/getcm', CMCommissioniDataHandler)],
     debug = os.environ['HTTP_HOST'].startswith('localhost'))
 

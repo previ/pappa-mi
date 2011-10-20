@@ -53,7 +53,7 @@ class CMIspezionePublicHandler(BasePage):
     template_values = dict()
     template_values["isp"] = isp
     template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
-    template_values["main"] = "../templates/public/main.html"
+    template_values["main"] = "public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
     template_values["comments"] = True
     template_values["comment_root"] = CMCommentHandler().getRoot(isp.key())
@@ -67,7 +67,7 @@ class CMNonconfPublicHandler(BasePage):
     template_values = dict()
     template_values["nc"] = nc
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
-    template_values["main"] = "../templates/public/main.html"
+    template_values["main"] = "public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
     template_values["comments"] = True
     template_values["comment_root"] = CMCommentHandler().getRoot(nc.key())
@@ -80,7 +80,7 @@ class CMDietePublicHandler(BasePage):
     template_values = dict()
     template_values["dieta"] = dieta
     template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
-    template_values["main"] = "../templates/public/main.html"
+    template_values["main"] = "public/main.html"
     template_values["content"] = "../public/dieta_read.html"
     template_values["comments"] = True
     template_values["comment_root"] = CMCommentHandler().getRoot(dieta.key())
@@ -97,7 +97,7 @@ class CMNotePublicHandler(BasePage):
     template_values = dict()
     template_values["nota"] = nota
     template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key())
-    template_values["main"] = "../templates/public/main.html"
+    template_values["main"] = "public/main.html"
     template_values["content"] = "../public/nota_read.html"
     template_values["allegati"] = allegati
     template_values["comments"] = True
@@ -123,7 +123,7 @@ class CMRobotPublicHandler(BasePage):
       isps = Ispezione.all()
       template_values["isps"] = isps
       template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key="
-      template_values["main"] = "../templates/public/robot.html"
+      template_values["main"] = "public/robot.html"
       self.getBase(template_values)
     else:
       self.redirect("/")
@@ -134,7 +134,7 @@ class CMDetailHandler(BasePage):
     logging.info("CMDetailHandler")
     msg = Messaggio.get(self.request.get("key"))
     
-    temp = "../templates/public/detail_"
+    temp = "public/detail_"
     tipo = int(msg.tipo)
     if tipo == 101:
       temp += "isp"
@@ -160,6 +160,16 @@ class CMDetailHandler(BasePage):
     
     self.getBase(template_values)
       
+class CMAvatarRenderHandler(BasePage):
+  
+  def get(self):
+    commissario = self.getCommissario(users.get_current_user())
+    self.response.headers['Content-Type'] = "image/png"
+    img = commissario.avatar_data
+    logging.info("size: " + self.request.get("size"))
+    if self.request.get("size") != "big":
+      img = images.resize(img, 48,48)
+    self.response.out.write(img)
     
 app = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
@@ -168,7 +178,7 @@ app = webapp.WSGIApplication([
     ('/public/dieta', CMDietePublicHandler),
     ('/public/nota', CMNotePublicHandler),
     ('/public/allegato', CMAllegatoPublicHandler),
-    ('/public/avatar', CMAvatarHandler),
+    ('/public/avatar', CMAvatarRenderHandler),
     ('/public/detail', CMDetailHandler),
     ('/public/getcm', CMCommissioniDataHandler),
     ('/public/getcity', CMCittaHandler)

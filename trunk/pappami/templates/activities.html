@@ -4,6 +4,12 @@ label.error { float: none; color: red; padding-left: .5em; vertical-align: top; 
 .ui-button-icon-only .ui-button-text { padding: 0.35em; } 
 .ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }
 </style> 
+<link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
+<script type="text/javascript" src="/js/jquery.form.js"></script> 
+<script type="text/javascript" src="/js/jquery.taghandler.min.js"></script> 
+<script type="text/javascript" src="/js/comments.js"></script> 
+
 <script type="text/javascript"> 
 
 var query = "";
@@ -41,6 +47,7 @@ window.onbeforeunload = closeIt;
 
 function opennewmsg() {
   if($('#new-msg').is(':visible') ) {
+    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     $('#new-msg').slideUp();
   } else {     
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
