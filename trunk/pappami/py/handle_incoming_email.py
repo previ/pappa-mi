@@ -35,7 +35,7 @@ class MailHandler(InboundMailHandler):
     text_bodies = message.bodies('text/plain')
     for body in text_bodies:
       logging.info("body: " + body[1].decode())
-    commissario = Commissario.all().filter("user",users.User(parseaddr(message.sender)[1])).get()    
+    commissario = Commissario.all().filter("user_email_lower",parseaddr(message.sender)[1].lower()).get()    
     if commissario:
       feedback = list()
       logging.info("found commissario")      

@@ -102,6 +102,8 @@ class Commissario(db.Model):
   avatar_data = db.BlobProperty()
 
   emailComunicazioni = db.StringProperty()
+
+  user_email_lower = db.StringProperty()
   
   citta = db.ReferenceProperty(Citta)
   
