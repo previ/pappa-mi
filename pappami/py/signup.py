@@ -55,6 +55,8 @@ class CMSignupHandler(BasePage):
     #commissario.stato = int(self.request.get("tipo"))
     #commissario.emailComunicazioni = self.request.get("emailalert")
     commissario.put()
+    commissario.user_email_lower = commissario.user.email().lower()
+    commissario.put()
 
     old = list()
     for cc in CommissioneCommissario.all().filter("commissario",commissario):

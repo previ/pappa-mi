@@ -16,6 +16,9 @@ function onunvote(key) {
   else $('#votes_'+key).hide();}})
 }    
 function onshowvotes(key) {
+ if($("#voters").attr('id') == null) {
+  $("body").append('<div id="voters" title="Questa pagina &egrave; piaciuta a:"></div>');
+ }
  $('#voters').load('/comments/voters?msg='+key);
  $('#voters').dialog({
   modal: true,
