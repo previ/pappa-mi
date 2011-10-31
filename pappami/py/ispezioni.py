@@ -409,7 +409,9 @@ class IspezioneHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      self.response.out.write(CMCommentHandler().initActivity(isp.key(), 101, db.Key(self.request.get("last"))))
+      template_values = CMCommentHandler().initActivity(isp.key(), 101, db.Key(self.request.get("last")))
+
+      self.getBase(template_values) 
       
     else:
       key = self.request.get("key")
