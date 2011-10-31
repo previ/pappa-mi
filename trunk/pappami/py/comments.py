@@ -59,7 +59,7 @@ class CMCommentHandler(BasePage):
     buff = ""
 
     activities = list()
-    for msg in Messaggio.all().filter("livello", 0).filter("creato_il >", last.creato_il).fetch(Const.ACTIVITY_FETCH_LIMIT):
+    for msg in Messaggio.all().filter("livello", 0).filter("creato_il >", db.Model.get(last).creato_il).fetch(Const.ACTIVITY_FETCH_LIMIT):
       activities.append(msg)
     activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
 
@@ -69,7 +69,7 @@ class CMCommentHandler(BasePage):
     }
     template_values['activities'] = activities       
 
-    return self.gateBase(template_values)
+    return template_values
 
   """
   return the root object of a given message (comment)
@@ -124,6 +124,7 @@ class CMCommentHandler(BasePage):
   
     template_values['activities'] = activities
     template_values['comments'] = activities
+    template_values['comment_root'] = Messaggio.get(db.Key(self.request.get("root")))
 
     return self.getBase(template_values)
     

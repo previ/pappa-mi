@@ -41,7 +41,7 @@ skip_files: |
 handlers:
 
 - url: /_ah/mail/.+ 
-  script: py/handle_incoming_email.py 
+  script: py.handle_incoming_email.py 
   login: admin
   
 - url: /admin/dblog

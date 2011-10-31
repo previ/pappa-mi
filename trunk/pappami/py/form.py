@@ -4,6 +4,7 @@
 import logging
 
 from wtforms.ext.appengine.db import model_form
+from wtforms.validators import ValidationError
 from py.model import *
 
 class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','lavaggioFinale','contornoCottura','anno','stato'])):

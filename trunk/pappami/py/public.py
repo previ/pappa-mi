@@ -154,10 +154,7 @@ class CMDetailHandler(BasePage):
     comment_root = msg
     template_values["comments"] = True,
     template_values["comment_root"] = comment_root
-    
-    path = os.path.join(os.path.dirname(__file__), template_values["main"])
-    #logging.info("CMDetailHandler: " + template.render(path, template_values))
-    
+       
     self.getBase(template_values)
       
 class CMAvatarRenderHandler(BasePage):
