@@ -88,7 +88,9 @@ class Messaggio(db.Model):
       return self.testo
 
   def summary(self):
-    if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
+    if self.tipo == 101 :
+      return self.root.note
+    if self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
       return ""
     if self.tipo == 201 or self.tipo == 202:
       s = ""

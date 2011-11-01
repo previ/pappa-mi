@@ -5,11 +5,11 @@
   <img class="avatar" src="{{activity.author_avatar()}}" title="{{activity.author()}}">
  </div>
  <div class="activity_body">
-  <div class="activity_author">{{activity.author()}}</div>
+  <div class="activity_author">{{activity.author()}}</div>  
   <div class="activity_author_title">{{activity.author_title()}}</div>
   <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags()%}
   <div class="activity_tags">In: {%for tag in activity.tags()%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a> {%endfor%}</div>{%endif%}
-  <div class="activity_title" onclick="ondetail('{{activity.key()}}')">{{activity.title()}}</div>
+  <div class="activity_title" >{{activity.title()}}</div><span id="detail_exp_{{activity.key()}}" role="button" class="a-j ug exp" tabindex="0" onclick="ondetail('{{activity.key()}}')"></span>
   <div class="activity_summary" id="summary_{{activity.key()}}">{{activity.summary()}}</div>
   <div class="activity_detail" id="detail_{{activity.key()}}"></div>
   <div class="activity_footer">   
