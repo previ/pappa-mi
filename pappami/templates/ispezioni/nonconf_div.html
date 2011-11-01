@@ -1,33 +1,28 @@
-<script type="text/javascript">
-</script>
-<script src="/js/form.js" type="text/javascript"></script>
-<script type="text/javascript">
-</script>
-<div class="ss-form-container">
+<div>
 <h1 class="table_separator" id="title" style="display:none;">Nuova Non Conformit&agrave;</h1>
 <span class="ss-required-asterisk">* Campo obbligatorio</span>
 <form action="/isp/nc" method="post" id="form0" novalidate>
 <table width="100%">
 <tr>
 <td>
-<div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_commissione">Commissione
+<div>
+<div><label class="ss-q-title" for="e_commissione">Commissione
 <span class="ss-required-asterisk">*</span></label>
 <select required="true" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
 <option value="{{cm.key}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
 </select></div></div>
 </td>
 <td>
-<div class="errorbox-good">
-<div class="ss-form-entry" id="e_di"><label class="ss-q-title" for="e_dataNonconfViz">Data Ispezione
+<div>
+<div id="e_di"><label class="ss-q-title" for="e_dataNonconfViz">Data Ispezione
 <span class="ss-required-asterisk">*</span></label>
 <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" required="true" name="dataNonconfViz" value="" class="ss-q-short" id="e_dataNonconfViz"/>
 <input type="hidden" name="dataNonconf" value="" id="e_dataNonconf"/></div></div>
 </span> 
 </td>
 <td>
-<div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_turno">Turno
+<div>
+<div><label class="ss-q-title" for="e_turno">Turno
 <span class="ss-required-asterisk">*</span></label>
 <select name="turno" id="e_turno">
 <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
@@ -40,8 +35,8 @@
 <tr>
 <td colspan="2">
 <input type="hidden" name="key" value="{{key}}"/>
-<div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_tipo">Tipo Non Conformit&agrave
+<div>
+<div><label class="ss-q-title" for="e_tipo">Tipo Non Conformit&agrave
 <span class="ss-required-asterisk">*</span></label>
 <select name="tipo" id="e_tipo" dojoType="dijit.form.FilteringSelect" required="true" value="{{form.data.tipo}}">
 <option value=""></option>
@@ -61,8 +56,8 @@
 </select></div></div>
 </td>
 <td colspan="1">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_rc">Richiesta campionatura
+<br/> <div>
+<div><label class="ss-q-title" for="e_rc">Richiesta campionatura
 <span class="ss-required-asterisk">*</span></label>
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr>
@@ -73,8 +68,8 @@
 </tr>
 <tr>
 <td colspan="3">
-<br/> <div class="errorbox-good">
-<div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Note
+<br/> <div>
+<div><label class="ss-q-title" for="e_ncNote">Note
 </label>
 <label class="ss-q-help" for="e_note"></label>
 <textarea name="note" rows="8" cols="120" class="ss-q-long" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}

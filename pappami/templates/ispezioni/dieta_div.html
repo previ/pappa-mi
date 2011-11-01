@@ -43,8 +43,8 @@ return true;
 <div class="ss-form-entry"><label class="ss-q-title" for="e_turno">Turno
 <span class="ss-required-asterisk">*</span></label>
 <select name="turno" id="e_turno" required="true">
-<option value="1"{% ifequal form.data.turno "1" %} selected{% endifequal %}>Primo</option>
-<option value="2"{% ifequal form.data.turno "2" %} selected{% endifequal %}>Secondo</option>
+<option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+<option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
 </select></div></div>
 </td>
 </tr>
@@ -100,8 +100,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="1" id="e_aarc_1" {% ifequal form.data.etichettaLeggibile "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="0" id="e_aarc_2" {% ifequal form.data.etichettaLeggibile "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="1" id="e_aarc_1" {% if form.data.etichettaLeggibile == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="etichettaLeggibile" value="0" id="e_aarc_2" {% if form.data.etichettaLeggibile == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -116,8 +116,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="1" id="e_aata_1" {% ifequal form.data.temperaturaVaschetta "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% ifequal form.data.temperaturaVaschetta "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="1" id="e_aata_1" {% if form.data.temperaturaVaschetta == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% if form.data.temperaturaVaschetta == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -132,8 +132,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="1" id="e_aatp_1" {% ifequal form.data.vicinoEducatore "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="0" id="e_aatp_2" {% ifequal form.data.vicinoEducatore "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="1" id="e_aatp_1" {% if form.data.vicinoEducatore == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="vicinoEducatore" value="0" id="e_aatp_2" {% if form.data.vicinoEducatore == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -148,8 +148,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="1" id="e_aaac_1" {% ifequal form.data.vaschettaOriginale "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="0" id="e_aaac_2" {% ifequal form.data.vaschettaOriginale "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="1" id="e_aaac_1" {% if form.data.vaschettaOriginale == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="vaschettaOriginale" value="0" id="e_aaac_2" {% if form.data.vaschettaOriginale == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -164,8 +164,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="1" id="e_aata_1" {% ifequal form.data.condimentiVicini "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="0" id="e_aatp_2" {% ifequal form.data.condimentiVicini "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="1" id="e_aata_1" {% if form.data.condimentiVicini == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="condimentiVicini" value="0" id="e_aatp_2" {% if form.data.condimentiVicini == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -187,8 +187,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="1" id="e_ncsv_1" {% ifequal form.data.primoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="0" id="e_ncsv_2" {% ifequal form.data.primoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="1" id="e_ncsv_1" {% if form.data.primoAccettato == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="primoAccettato" value="0" id="e_ncsv_2" {% if form.data.primoAccettato == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table>
 </div></div>
 </td>
@@ -204,8 +204,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="1" id="e_nclp_1" {% ifequal form.data.secondoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="0" id="e_nclp_2" {% ifequal form.data.secondoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="1" id="e_nclp_1" {% if form.data.secondoAccettato == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="secondoAccettato" value="0" id="e_nclp_2" {% if form.data.secondoAccettato == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -220,8 +220,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="1" id="e_ncte_1" {% ifequal form.data.contornoAccettato "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="0" id="e_ncte_2" {% ifequal form.data.contornoAccettato "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="1" id="e_ncte_1" {% if form.data.contornoAccettato == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="contornoAccettato" value="0" id="e_ncte_2" {% if form.data.contornoAccettato == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -236,8 +236,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="1" id="e_ncte_1" {% ifequal form.data.fruttaAccettata "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="0" id="e_ncte_2" {% ifequal form.data.fruttaAccettata "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="1" id="e_ncte_1" {% if form.data.fruttaAccettata == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="fruttaAccettata" value="0" id="e_ncte_2" {% if form.data.fruttaAccettata == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -252,8 +252,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoPrimo "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoPrimo "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="1" id="e_ncte_1" {% if form.data.gradimentoPrimo == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoPrimo" value="0" id="e_ncte_2" {% if form.data.gradimentoPrimo == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -268,8 +268,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoSecondo "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoSecondo "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="1" id="e_ncte_1" {% if form.data.gradimentoSecondo == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoSecondo" value="0" id="e_ncte_2" {% if form.data.gradimentoSecondo == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -284,8 +284,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="1" id="e_ncte_1" {% ifequal form.data.gradimentoContorno "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="0" id="e_ncte_2" {% ifequal form.data.gradimentoContorno "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="1" id="e_ncte_1" {% if form.data.gradimentoContorno == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="gradimentoContorno" value="0" id="e_ncte_2" {% if form.data.gradimentoContorno == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -300,8 +300,8 @@ return true;
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% ifequal form.data.comunicazioneGenitori "1" %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% ifequal form.data.comunicazioneGenitori "0" %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% if form.data.comunicazioneGenitori == "1" %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" required="true" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% if form.data.comunicazioneGenitori == "0" %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>

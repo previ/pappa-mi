@@ -337,11 +337,7 @@ class IspezioneHandler(BasePage):
       memcache.delete(self.request.get("preview"))
      
       form = IspezioneForm(self.request.POST,obj=isp)
-      
-      #for field in form:
-        #logging.info(field.name)
-        #form.data[field.name] = unicode(form.initial[field.name])
-      
+            
       form.commissione.data = isp.commissione
 
       template_values = {
@@ -472,7 +468,6 @@ class NonconfHandler(BasePage):
       
       template_values = {
         'main': 'ispezioni/nonconf_read.html',
-        #'content_left': 'commissario/leftbar.html',
         'nc': nc,
         "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
         "comments": True,
@@ -484,19 +479,14 @@ class NonconfHandler(BasePage):
     elif( self.request.get("cmd") == "edit" ):
    
       nc = memcache.get(self.request.get("preview"))
-      memcache.delete(self.request.get("nc"))
-    
-      form = NonconformitaForm(instance=nc)
-      
-      for field in form:
-        #logging.info(field.name)
-        form.data[field.name] = unicode(form.initial[field.name])
+      memcache.delete(self.request.get("preview"))
+     
+      form = NonconformitaForm(self.request.POST,nc)
       
       form.commissione.data = isp.commissione
 
       template_values = {
         'content': 'commissario/nonconf_div.html',
-        'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
       }
@@ -506,14 +496,11 @@ class NonconfHandler(BasePage):
     else:     
   
       nc = Nonconformita(commissario = commissario) 
-      form = NonconformitaForm(instance=nc)
+      form = NonconformitaForm(self.request.POST,nc)
 
-      for field in form:
-        form.data[field.name] = str(form.initial[field.name])
         
       template_values = {
         'main': 'ispezioni/nonconf_div.html',
-        #'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
         }
@@ -543,7 +530,9 @@ class NonconfHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      self.response.out.write(CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last")), nc.tags))     
+      template_values = CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last")), nc.tags)
+
+      self.getBase(template_values) 
       
     else:
       key = self.request.get("key")
@@ -552,7 +541,7 @@ class NonconfHandler(BasePage):
       else:
         nc = Nonconformita()
     
-      form = NonconformitaForm(data=self.request.POST, instance=nc)
+      form = NonconformitaForm(self.request.POST,nc)
 
       #logging.info(nc)
       
@@ -570,7 +559,6 @@ class NonconfHandler(BasePage):
    
         template_values = {
           'main': 'ispezioni/nonconf_read_div.html',
-          #'content_left': 'commissario/leftbar.html',
           'nc': nc,
           'preview': preview
         }
@@ -580,10 +568,9 @@ class NonconfHandler(BasePage):
           logging.info(error)
         template_values = {
           'main': 'ispezioni/nonconf_read_div.html',
-          #'content_left': 'commissario/leftbar.html',
           'commissioni': commissario.commissioni(),
           'form': form,
-          'form_errors': form.errors["__all__"]
+          'form_errors': form.errors
         }
         
       self.getBase(template_values)
@@ -618,17 +605,12 @@ class DietaHandler(BasePage):
       dieta = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("dieta"))
     
-      form = DietaForm(instance=dieta)
+      form = DietaForm(self.request.POST,dieta)
       
-      for field in form:
-        #logging.info(field.name)
-        form.data[field.name] = unicode(form.initial[field.name])
-      
-      form.data["commissione"] = dieta.commissione
+      form.commissione.data = dieta.commissione
 
       template_values = {
         'content': 'commissario/dieta.html',
-        'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
       }
@@ -638,10 +620,8 @@ class DietaHandler(BasePage):
     else:     
   
       dieta = Dieta(commissario = commissario) 
-      form = DietaForm(instance=dieta)
+      form = NonconformitaForm(self.request.POST,dieta)
 
-      for field in form:
-        form.data[field.name] = str(form.initial[field.name])
         
       template_values = {
         'main': 'ispezioni/dieta_div.html',
@@ -674,7 +654,9 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      self.response.out.write(CMCommentHandler().initActivity(dieta.key(), 103, db.Key(self.request.get("last"))))
+      template_values = CMCommentHandler().initActivity(dieta.key(), 103, db.Key(self.request.get("last")))
+
+      self.getBase(template_values) 
       
     else:
       key = self.request.get("key")
@@ -683,9 +665,8 @@ class DietaHandler(BasePage):
       else:
         dieta = Dieta()
     
-      form = DietaForm(data=self.request.POST, instance=dieta)
-      #for field in form:
-        #logging.info("%s, %s",field.name, field)
+      nc = Nonconformita.get(key)
+      form = NonconformitaForm(self.request.POST,nc)
 
       if form.is_valid():
         dieta = form.save(commit=False)
@@ -709,7 +690,7 @@ class DietaHandler(BasePage):
           'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
           'form': form,
-          'form_errors': form.errors["__all__"]
+          'form_errors': form.errors
         }
         
       self.getBase(template_values)
@@ -746,18 +727,13 @@ class NotaHandler(BasePage):
    
       nota = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("nota"))
-    
-      form = NotaForm(instance=nota)
+
+      form = NotaForm(self.request.POST,nota)
       
-      for field in form:
-        #logging.info(field.name)
-        form.data[field.name] = unicode(form.initial[field.name])
-      
-      form.data["commissione"] = nota.commissione
+      form.commissione.data = nota.commissione
 
       template_values = {
         'content': 'commissario/nota.html',
-        'content_left': 'commissario/leftbar.html',
         'form': form,
         'commissioni': commissario.commissioni()
       }
@@ -767,11 +743,8 @@ class NotaHandler(BasePage):
     else:     
   
       nota = Nota(commissario = commissario) 
-      form = NotaForm(instance=nota)
-
-      for field in form:
-        form.data[field.name] = str(form.initial[field.name])
-        
+      form = NotaForm(obj=nota)
+       
       template_values = {
         'main': 'ispezioni/nota_div.html',
         'form': form,
@@ -815,7 +788,11 @@ class NotaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      self.response.out.write(CMCommentHandler().initActivity(nota.key(), 104, db.Key(self.request.get("last")), nota.tags))
+
+      template_values = CMCommentHandler().initActivity(nota.key(), 104, db.Key(self.request.get("last")), nota.tags)
+
+      self.getBase(template_values) 
+      
     else:
       key = self.request.get("key")
       if( key != "" ) :
@@ -823,7 +800,7 @@ class NotaHandler(BasePage):
       else:
         nota = Nota()
     
-      form = NotaForm(data=self.request.POST, instance=nota)
+      form = NotaForm(self.request.POST,nota)
       #for field in form:
         #logging.info("%s, %s",field.name, field)
       

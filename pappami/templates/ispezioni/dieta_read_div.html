@@ -62,8 +62,8 @@ Ispezione Diete Sanitarie ed Etico-Religiose
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" required="true" name="etichettaLeggibile" value="1" id="e_aarc_1" {% ifequal dieta.etichettaLeggibile 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" required="true" name="etichettaLeggibile" value="0" id="e_aarc_2" {% ifequal dieta.etichettaLeggibile 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" required="true" name="etichettaLeggibile" value="1" id="e_aarc_1" {% if dieta.etichettaLeggibile == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" required="true" name="etichettaLeggibile" value="0" id="e_aarc_2" {% if dieta.etichettaLeggibile == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_etichetta" position="above" id="tt_capitolato"> 
 tip etichetta</span></div></div>
 </td>
@@ -79,8 +79,8 @@ tip etichetta</span></div></div>
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="temperaturaVaschetta" value="1" id="e_aata_1" {% ifequal dieta.temperaturaVaschetta 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% ifequal dieta.temperaturaVaschetta 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="temperaturaVaschetta" value="1" id="e_aata_1" {% if dieta.temperaturaVaschetta == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="temperaturaVaschetta" value="0" id="e_aatp_2" {% if dieta.temperaturaVaschetta == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -95,8 +95,8 @@ tip etichetta</span></div></div>
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="vicinoEducatore" value="1" id="e_aatp_1" {% ifequal dieta.vicinoEducatore 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="vicinoEducatore" value="0" id="e_aatp_2" {% ifequal dieta.vicinoEducatore 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="vicinoEducatore" value="1" id="e_aatp_1" {% if dieta.vicinoEducatore == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="vicinoEducatore" value="0" id="e_aatp_2" {% if dieta.vicinoEducatore == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -111,8 +111,8 @@ tip etichetta</span></div></div>
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="vaschettaOriginale" value="1" id="e_aaac_1" {% ifequal dieta.vaschettaOriginale 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="vaschettaOriginale" value="0" id="e_aaac_2" {% ifequal dieta.vaschettaOriginale 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="vaschettaOriginale" value="1" id="e_aaac_1" {% if dieta.vaschettaOriginale == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="vaschettaOriginale" value="0" id="e_aaac_2" {% if dieta.vaschettaOriginale == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_acqua" position="above" id="tt_acqua"> 
 Vaschetta travasata in altro piatto e conservata ?
 </span></div></div>
@@ -129,8 +129,8 @@ Vaschetta travasata in altro piatto e conservata ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="condimentiVicini" value="1" id="e_aata_1" {% ifequal dieta.condimentiVicini 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="condimentiVicini" value="0" id="e_aatp_2" {% ifequal dieta.condimentiVicini 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="condimentiVicini" value="1" id="e_aata_1" {% if dieta.condimentiVicini == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="condimentiVicini" value="0" id="e_aatp_2" {% if dieta.condimentiVicini == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -148,8 +148,8 @@ Vaschetta travasata in altro piatto e conservata ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="primoAccettato" value="1" id="e_ncsv_1" {% ifequal dieta.primoAccettato 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="primoAccettato" value="0" id="e_ncsv_2" {% ifequal dieta.primoAccettato 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="primoAccettato" value="1" id="e_ncsv_1" {% if dieta.primoAccettato == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="primoAccettato" value="0" id="e_ncsv_2" {% if dieta.primoAccettato == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_scaldaVivande" position="above" id="tt_scaldaVivande"> 
 Il bambino ha mangiato almeno met&agrave; del primo ?
 </span></div></div>
@@ -166,8 +166,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="secondoAccettato" value="1" id="e_nclp_1" {% ifequal dieta.secondoAccettato 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="secondoAccettato" value="0" id="e_nclp_2" {% ifequal dieta.secondoAccettato 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="secondoAccettato" value="1" id="e_nclp_1" {% if dieta.secondoAccettato == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="secondoAccettato" value="0" id="e_nclp_2" {% if dieta.secondoAccettato == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -182,8 +182,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="contornoAccettato" value="1" id="e_ncte_1" {% ifequal dieta.contornoAccettato 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="contornoAccettato" value="0" id="e_ncte_2" {% ifequal dieta.contornoAccettato 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="contornoAccettato" value="1" id="e_ncte_1" {% if dieta.contornoAccettato == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="contornoAccettato" value="0" id="e_ncte_2" {% if dieta.contornoAccettato == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table><span style="display:none;" dojoType="dijit.Tooltip" connectId="l_tabellaEsposta" position="above" id="tt_tabellaEsposta">Il bambino ha mangiato almeno met&agrave; del contorno ?
 </span></div></div>
 </td>
@@ -199,8 +199,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="fruttaAccettata" value="1" id="e_ncte_1" {% ifequal dieta.fruttaAccettata 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="fruttaAccettata" value="0" id="e_ncte_2" {% ifequal dieta.fruttaAccettata 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="fruttaAccettata" value="1" id="e_ncte_1" {% if dieta.fruttaAccettata == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="fruttaAccettata" value="0" id="e_ncte_2" {% if dieta.fruttaAccettata == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -215,8 +215,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoPrimo" value="1" id="e_ncte_1" {% ifequal dieta.gradimentoPrimo 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoPrimo" value="0" id="e_ncte_2" {% ifequal dieta.gradimentoPrimo 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoPrimo" value="1" id="e_ncte_1" {% if dieta.gradimentoPrimo == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoPrimo" value="0" id="e_ncte_2" {% if dieta.gradimentoPrimo == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -231,8 +231,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoSecondo" value="1" id="e_ncte_1" {% ifequal dieta.gradimentoSecondo 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoSecondo" value="0" id="e_ncte_2" {% ifequal dieta.gradimentoSecondo 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoSecondo" value="1" id="e_ncte_1" {% if dieta.gradimentoSecondo == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoSecondo" value="0" id="e_ncte_2" {% if dieta.gradimentoSecondo == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -247,8 +247,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoContorno" value="1" id="e_ncte_1" {% ifequal dieta.gradimentoContorno 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoContorno" value="0" id="e_ncte_2" {% ifequal dieta.gradimentoContorno 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoContorno" value="1" id="e_ncte_1" {% if dieta.gradimentoContorno == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="gradimentoContorno" value="0" id="e_ncte_2" {% if dieta.gradimentoContorno == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
@@ -263,8 +263,8 @@ Il bambino ha mangiato almeno met&agrave; del primo ?
 <div class="ss-form-entry">
 <table border="0" cellpadding="5" cellspacing="0"><tbody>
 <tr><td class="ss-scalerow ss-leftlabel">Si</td>
-<td class="ss-scalerow"><input type="radio" disabled="true" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% ifequal dieta.comunicazioneGenitori 1 %}CHECKED{%endifequal%}/></td> 
-<td class="ss-scalerow"><input type="radio" disabled="true" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% ifequal dieta.comunicazioneGenitori 0 %}CHECKED{%endifequal%}/></td>
+<td class="ss-scalerow"><input type="radio" disabled="true" name="comunicazioneGenitori" value="1" id="e_ncte_1" {% if dieta.comunicazioneGenitori == 1 %}CHECKED{%endif%}/></td> 
+<td class="ss-scalerow"><input type="radio" disabled="true" name="comunicazioneGenitori" value="0" id="e_ncte_2" {% if dieta.comunicazioneGenitori == 0 %}CHECKED{%endif%}/></td>
 <td class="ss-scalerow ss-rightlabel">No</td></tr></tbody></table></div></div>
 </td>
 </tr>
