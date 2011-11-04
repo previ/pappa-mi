@@ -545,8 +545,8 @@ class NonconfHandler(BasePage):
 
       #logging.info(nc)
       
-      if form.is_valid():
-        nc = form.save(commit=False)
+      if form.validate():
+        form.populate_obj(nc)
         nc.commissario = commissario
    
         nc.tags = list()
@@ -564,15 +564,17 @@ class NonconfHandler(BasePage):
         }
         
       else:
-        for error in form.errors["__all__"]:
-          logging.info(error)
+        logging.info("data: %s", form.data)
+        for e in form.errors :
+          logging.info("errors: %s", e)
+
         template_values = {
-          'main': 'ispezioni/nonconf_read_div.html',
+          'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
           'form': form,
           'form_errors': form.errors
         }
-        
+
       self.getBase(template_values)
       
 
@@ -665,11 +667,11 @@ class DietaHandler(BasePage):
       else:
         dieta = Dieta()
     
-      nc = Nonconformita.get(key)
-      form = NonconformitaForm(self.request.POST,nc)
+      dieta = Dieta.get(key)
+      form = DietaForm(self.request.POST,dieta)
 
-      if form.is_valid():
-        dieta = form.save(commit=False)
+      if form.validate():
+        form.populate_obj(dieta)
         dieta.commissario = commissario
    
         preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
@@ -682,10 +684,10 @@ class DietaHandler(BasePage):
         }
         
       else:
-        #logging.info("data: %s", form.data)
-        #for e in form.errors["__all__"] :
-          #logging.info("errors: %s", e)
-          
+        logging.info("data: %s", form.data)
+        for e in form.errors :
+          logging.info("errors: %s", e)
+
         template_values = {
           'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
@@ -805,7 +807,7 @@ class NotaHandler(BasePage):
         #logging.info("%s, %s",field.name, field)
       
       if form.validate():
-        nota = form.save(commit=False)
+        form.populate_obj(nota)
         nota.commissario = commissario
 
         nota.tags = list()
@@ -835,18 +837,16 @@ class NotaHandler(BasePage):
         }
         
       else:
-        #logging.info("data: %s", form.data)
-        #for e in form.errors["__all__"] :
-          #logging.info("errors: %s", e)
-  
-        
+        logging.info("data: %s", form.data)
+        for e in form.errors :
+          logging.info("errors: %s", e)
+
         template_values = {
-          'main': 'ispezioni/nota_div.html',
+          'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
-          'form': form
+          'form': form,
+          'form_errors': form.errors
         }
-        
-      self.getBase(template_values)
       
     
 app = webapp.WSGIApplication([

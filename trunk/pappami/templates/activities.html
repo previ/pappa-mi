@@ -192,7 +192,7 @@ function onopennewitem() {
       required: "Inserire o selezionare un valore",
       range: "Inserire un valore compreso tra {0} e {1}" };
   $('#new-data-form').show();
-  $('#new-data').dialog({ title: $('#title').text(), modal: true, width: "720px;", zIndex: 2, autoOpen: false,  beforeClose: closeIt });
+  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 500, width: 820, zIndex: 2, autoOpen: false,  beforeClose: closeIt });
   $('#new-data').dialog('open');
 }
 
