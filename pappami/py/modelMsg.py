@@ -19,8 +19,8 @@ class Messaggio(db.Model):
   tipo = db.IntegerProperty()
   livello = db.IntegerProperty()
   pop = db.IntegerProperty()
-  titolo = db.StringProperty()
-  testo = db.TextProperty()
+  titolo = db.StringProperty(indexed=False)
+  testo = db.TextProperty(indexed=False)
   
   creato_da = db.UserProperty(auto_current_user_add=True)
   creato_il = db.DateTimeProperty(auto_now_add=True)
