@@ -1,2 +1,3 @@
-<div>{{msg.root.note|linebreaksbr}}</div>
-{% include "../comments/comments.html" %}
+{% set nc = msg.root %}
+{% include "ispezioni/nonconf_read_div.html" %}
+{% include "comments/comments.html" %}

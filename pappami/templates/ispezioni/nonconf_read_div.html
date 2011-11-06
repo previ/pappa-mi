@@ -22,45 +22,42 @@ window.onbeforeunload = closeIt;
 <!-- AddThis Button END -->
 {%endif%}
 <div>
-<table>
-<tr><td colspan="3">{{nc.commissione.nome}} - {{nc.commissione.tipoScuola}} - Ispezione del {{nc.dataNonconf}} - Turno {{nc.turno}}</td>
-</tr>
-<tr>
-<td colspan="2">
-<label class="" for="e_tipo">Tipo Non Conformit&agrave;</label>{{nc.tipoNome()}}
-</td>
-<td>
-<label class="" for="e_rc">Richiesta campionatura <span class="label">{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</span><br/>
-</td>
-</tr>
-<tr>
-<td>
-    <label class="ss-q-title" for="e_ncNote">Note</label>
-</td>
-<td colspan="2">
-{{nc.note}}
-</td>
-</tr>
-<tr>
-<td colspan="3">
-<label class="ss-q-title" for="e_tipo">Categorie</label><br/>
-{%for tag in nc.tags%}{{tag}}&nbsp; 
-{%endfor%}
-</td>
-</tr>
-<tr>
-<td colspan="3" align="center">
+ <div class="row rowspaced">
+  <div class="span12">
+   <h3>{{nc.commissione.nome}} - {{nc.commissione.tipoScuola}} - Ispezione del {{nc.dataNonconf}} - Turno {{nc.turno}}</h3>
+  </div>
+ </div>
+ <div class="row rowspaced">
+  <div class="span8">
+   Tipo Non Conformit&agrave; <span class="label">{{nc.tipoNome()}}</span>
+  </div>
+  <div class="span4">
+  Richiesta campionatura <span class="label">{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</span>
+  </div>
+ </div>
+ <div class="row rowspaced">
+  <div class="span2">
+    Note
+  </div>
+  <div class="span10">
+  {{nc.note}}
+  </div>
+ </div>
+ <div class="row rowspaced">
+  <div class="span2">
+  Categorie
+  </div>
+  <div class="span10">
+ {%for tag in nc.tags%}{{tag}}&nbsp;{%endfor%}
+  </div>
+ </div>
 {% if preview %}
-<form action="/isp/nc" method="POST" id="form1">
-<input type="hidden" name="preview" value="{{preview}}">
-<button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-<button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
-</form>
+ <div class="actions">
+  <form action="/isp/nc" method="POST" id="form1">
+  <input type="hidden" name="preview" value="{{preview}}">
+  <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
+  <button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
+  </form>
+ </div>
 {% endif %}
-</td>
-</tr>
-</table>
 </div>
-{% if comments %}
-{% include "comments/comments.html" %}
-{% endif %}

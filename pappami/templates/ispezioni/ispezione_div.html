@@ -22,7 +22,8 @@ var oldDisp_3 = "";
 </ul>
 </div>
 <div id="formwiz-error"></div>
-<div class="ui-widget ui-widget-content" style="border:none;"><h1 id="title" class="table_separator" style="display:none;">Nuova Ispezione</h1>
+<div class="ui-widget ui-widget-content" style="border:none;">
+<h1 id="title" class="table_separator" style="display:none;">Nuova Ispezione</h1>
 <form action="/isp/isp" method="post" id="form0" novalidate>
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="step form-stacked" id="step1">
@@ -656,14 +657,13 @@ Specificare:<ul>
    <div class="clearfix">
     <label class="" for="e_numeroAddetti">Note</label>
     <div class="input">
-     <textarea name="note" rows="4" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; ">{{form.data.note}}
-</textarea>
+     <textarea name="note" rows="4" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
     </div>
    </div>
   </div>
  </div>
 </div>
-<div id="formnav" style="float:right;">
+<div id="formnav" class="actions" style="float:right;">
  <input type="reset" onclick="" id="e_annulla" class="btn" value="Indietro"/><input id="e_submit" class="btn primary" type="submit" onclick="" value="Avanti"/>
 </div>
 </form>
