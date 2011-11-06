@@ -667,7 +667,6 @@ class DietaHandler(BasePage):
       else:
         dieta = Dieta()
     
-      dieta = Dieta.get(key)
       form = DietaForm(self.request.POST,dieta)
 
       if form.validate():

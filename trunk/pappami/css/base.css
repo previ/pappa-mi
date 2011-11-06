@@ -313,3 +313,7 @@ text-decoration: none;
 background-image: url(//ssl.gstatic.com/s2/oz/images/stream/collapse.png);
 background-position: 0 5px;
 }
+
+.row.rowspaced {
+  margin-bottom: 10px;
+}

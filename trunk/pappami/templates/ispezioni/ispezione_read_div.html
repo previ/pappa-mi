@@ -63,18 +63,17 @@
 </tbody>
 </table>
 {% if preview %}
+<div class="actions">
 <form id="form1" action="/isp/isp" method="POST">
 <script type="dojo/method" event="onSubmit">
 $("#e_submit").disabled = true;
 $("#e_annulla").disabled = true;
 return true;
 </script>
-<P align="center">
 <input type="hidden" name="preview" value="{{preview}}">
 <button class="btn primary" type="submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
 <button class="btn" onclick="ulmsg=false; previewback();return false;">Torna a modifiche</button>
-<P>
 </form>
+</div>
 {% endif %}
 </div>
-

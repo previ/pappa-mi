@@ -1,5 +1,5 @@
 <div id="form-error"></div>
-<div class="ui-widget ui-widget-content" style="border:none;"><h1 id="title" class="table_separator" style="display:none;">Nuova Ispezione</h1>
+<div class="ui-widget ui-widget-content" style="border:none;">
 <h1 class="table_separator" id="title" style="display:none;">Nuova Non Conformit&agrave;</h1>
 <form action="/isp/nc" method="post" id="form0" novalidate>
 <input type="hidden" name="key" value="{{key}}"/>
@@ -62,8 +62,7 @@
     <div class="clearfix"> 
      <label class="label_isp_1" for="e_ncNote">Note</label>
      <div class="input">    
-      <textarea name="note" rows="8" cols="120" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}
-      </textarea>
+      <textarea name="note" rows="8" cols="120" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
      </div>
     </div>
    </div>
@@ -87,7 +86,26 @@
 $().ready(function() {
  $( "#e_dataNonconfViz" ).datepicker({ altField: '#e_dataNonconf', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '+0d' });
  $( "[type='radio']" ).button();
- $("#form0").validate();
+ $("#form0").validate({
+	errorClass: "error",
+	errorPlacement: function(error, element) {	
+	  //error.appendTo( element.parent().parent() );
+	  //alert(error.text());
+	  $($($(element).parent()).parent()).attr("title", error.text());
+	  $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
+	  $($($(element).parent()).parent()).twipsy('show');
+        },
+	highlight: function(element, errorClass, validClass) {
+	    $($($(element).parent()).parent()).twipsy('show');
+	    //alert("pippo");
+	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
+	 },
+	unhighlight: function(element, errorClass, validClass) {
+	    $($($(element).parent()).parent()).twipsy('hide');
+	    //alert("pappo");	
+	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
+	 }
+       });
  $("[title]").mbTooltip({
     opacity : .90, //opacity
     wait:500, //before show

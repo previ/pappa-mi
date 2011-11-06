@@ -155,7 +155,7 @@ function opennewwiz(url) {
     });
     $('#new-data').show();
     $("#formwiz-progress-step1").toggleClass("active");
-    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 500, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeIt });
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 600, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeIt });
     $('#new-data').dialog('open');
   });
 }
@@ -164,7 +164,7 @@ function onopennewitem() {
   ulmsg=true;  
   $('#form0').ajaxForm({clearForm: false, success: function(data) { 
     $('#new-data-preview').html(data);
-    if($('#form-error').html()) {
+    if(data.indexOf('form-error')>0) {
       $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	{ text: "Ok",
           click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
