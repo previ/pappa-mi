@@ -29,13 +29,17 @@ function onshowvotes(key) {
   }
  });
 }
-
 function ondetail(key) {
-if( $('#detail_'+key).css("display") == "none") {
- $('#detail_'+key).load('/public/detail?key='+key, function(){$('#summary_'+key).hide();$('#detail_'+key).slideDown();$('#detail_exp_'+key).addClass("col");});
-} else {
- $('#detail_'+key).slideUp();
- $('#summary_'+key).show(); 
- $('#detail_exp_'+key).removeClass("col")
-}
+ if( $('#detail_'+key).css("display") == "none") {
+  $('#detail_'+key).load('/public/detail?key='+key, function(){$('#summary_'+key).hide();$('#detail_'+key).slideDown();$('#detail_exp_'+key).addClass("col");});
+ } else {
+  $('#detail_'+key).slideUp();
+  $('#summary_'+key).show(); 
+  $('#detail_exp_'+key).removeClass("col")
+ }
 } 
+function permalink(key) {
+ url = "/public/act?key="+key;
+ window.open(url);
+} 
+
