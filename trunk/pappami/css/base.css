@@ -70,7 +70,7 @@ container { background:url('/img/back_transp.png'); !important; }
   float: right;
   margin-top: -2px;
   color: #000000;
-  font-size: 20px;
+  /*font-size: 20px;*/
   font-weight: bold;
   text-shadow: 0 1px 0 #ffffff;
   filter: alpha(opacity=20);
@@ -241,14 +241,14 @@ label.toggle {
 
 .label_sep_1 {
   padding-top: 4px;
-  font-size:12px;  
+  /*font-size:12px;*/
 }
 
 .box1 {
   margin-top:5px;
 }
 .section_2_isp {
-  font-size:18px;
+  /*font-size:18px;*/
   font-weight:bold;
   padding-top: 2px;
   padding-bottom: 4px;
@@ -312,6 +312,21 @@ text-decoration: none;
 .col {
 background-image: url(//ssl.gstatic.com/s2/oz/images/stream/collapse.png);
 background-position: 0 5px;
+}
+
+.permalink {
+background: no-repeat url(//ssl.gstatic.com/s2/tt/images/sharebox/sprite4.png) -69px -15px;
+float: right;
+text-decoration: none;
+width: 17px;
+height: 14px;
+cursor: default;
+margin: 7px 10px;
+}
+
+.permalink:hover {
+background: no-repeat url(//ssl.gstatic.com/s2/tt/images/sharebox/sprite4.png) -18px -34px;
+cursor: pointer;
 }
 
 .row.rowspaced {

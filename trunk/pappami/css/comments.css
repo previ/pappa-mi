@@ -9,14 +9,14 @@ padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
 font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
-font-size: 11px;
+/*font-size: 11px;*/
 }
 
 .comment_root {
 padding-bottom: 10px;
 padding-top: 10px;
 font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
-font-size: 14px;
+/*font-size: 14px;*/
 }
 
 .comment_box {
@@ -79,7 +79,7 @@ padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
 font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
-font-size: 11px;
+/*font-size: 11px;*/
 }
 
 .voter_box {

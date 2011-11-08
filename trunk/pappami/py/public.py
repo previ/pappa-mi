@@ -105,6 +105,34 @@ class CMNotePublicHandler(BasePage):
     
     self.getBase(template_values)
 
+class ActivityPublicHandler(BasePage):
+  
+  def get(self): 
+    message = Messaggio.get(self.request.get("key"))
+
+    template_values = dict()
+    template_values["activity"] = message
+    if isinstance(message.root, Messaggio):
+      template_values["msg"] = message
+      template_values["detail"] = "public/detail_msg.html"      
+    elif isinstance(message.root, Ispezione):
+      template_values["isp"] = message.root
+      template_values["detail"] = "ispezioni/isp_read_div.html"      
+    elif isinstance(message.root, Nonconformita):
+      template_values["nc"] = message.root
+      template_values["detail"] = "ispezioni/nonconf_read_div.html"
+    elif isinstance(message.root, Dieta):
+      template_values["dieta"] = message.root
+      template_values["detail"] = "ispezioni/dieta_read_div.html"
+    elif isinstance(message.root, Nota):
+      template_values["nota"] = message.root
+      template_values["detail"] = "ispezioni/nota_read_div.html"
+    
+    template_values["content"] = "public/activity.html"
+    template_values["comment_root"] = message
+    
+    self.getBase(template_values)
+    
 class CMAllegatoPublicHandler(BasePage):
   
   def get(self): 
@@ -177,6 +205,7 @@ app = webapp.WSGIApplication([
     ('/public/allegato', CMAllegatoPublicHandler),
     ('/public/avatar', CMAvatarRenderHandler),
     ('/public/detail', CMDetailHandler),
+    ('/public/act', ActivityPublicHandler),
     ('/public/getcm', CMCommissioniDataHandler),
     ('/public/getcity', CMCittaHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
