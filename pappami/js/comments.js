@@ -31,13 +31,59 @@ function onshowvotes(key) {
 }
 function ondetail(key) {
  if( $('#detail_'+key).css("display") == "none") {
-  $('#detail_'+key).load('/public/detail?key='+key, function(){$('#summary_'+key).hide();$('#detail_'+key).slideDown();$('#detail_exp_'+key).addClass("col");});
+  $('#detail_'+key).load('/public/detail?key='+key, function(){
+   $('#summary_'+key).hide();
+   $('#detail_'+key).slideDown();
+   $('#detail_exp_'+key).addClass("col");
+  });
  } else {
   $('#detail_'+key).slideUp();
   $('#summary_'+key).show(); 
   $('#detail_exp_'+key).removeClass("col")
  }
 } 
+function onexpcomments(key) {
+ if( $('#comments_container_'+key).css("display") == "none") {
+  $('#comment_list_'+key).load('/comments/comment?par='+key, function(){
+   $('#comments_container_'+key).slideDown();
+   $('#comment_new_exp_'+key).show();
+   $('#comments_exp_'+key).addClass("colcmt");
+  });
+ } else {
+  $('#comment_new_container_'+key).hide();
+  $('#comment_new_exp_'+key).hide();
+  $('#comments_container_'+key).slideUp();
+  $('#comments_exp_'+key).removeClass("colcmt")
+  $('#comment_new_exp_'+key).hide();
+ }
+} 
+function onexpcommentnew(key) {
+ if( $('#comments_container_'+key).css("display") == "none" &&
+     $('#comment_new_container_'+key).css("display") == "none") {
+  $('#comment_list_'+key).load('/comments/comment?par='+key, function(){
+   if($('#comment_list_'+key).children()>0) {
+    last = $('#comment_list_'+key).children().last().children().first().attr('id').substring("comment_".length);
+    $('#comment_last_'+key).val(last); 
+   }
+   $('#comments_container_'+key).slideDown();
+   $('#comment_new_exp_'+key).show();
+   $('#comments_exp_'+key).addClass("colcmt");
+   $('#comment_new_exp_'+key).hide();
+   $('#comment_new_container_'+key).show();
+  });
+ } else if( $('#comment_new_container_'+key).css("display") == "none") {
+  if($('#comment_list_'+key).children()>0) {
+   last = $('#comment_list_'+key).children().last().children().first().attr('id').substring("comment_".length);
+   $('#comment_last_'+key).val(last); 
+  }
+  $('#comment_new_exp_'+key).hide();
+  $('#comment_new_container_'+key).show();
+ } else {
+  $('#comment_new_container_'+key).hide();
+  $('#comment_new_exp_'+key).show();
+ }
+} 
+
 function permalink(key) {
  url = "/public/act?key="+key;
  window.open(url);

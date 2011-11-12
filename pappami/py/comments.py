@@ -43,6 +43,7 @@ class CMCommentHandler(BasePage):
       messaggio.root = msg_rif
       messaggio.livello = 0
       messaggio.tipo = tipo
+      messaggio.commenti = 0
       messaggio.put()
       if tags:
         CMTagHandler().saveTags(messaggio, tags)
@@ -94,7 +95,18 @@ class CMCommentHandler(BasePage):
     messaggio.livello = int(self.request.get("livello"))
     messaggio.titolo = self.request.get("titolo")
     messaggio.testo = self.request.get("testo")
+    messaggio.commenti = 0
     messaggio.put()
+
+    logging.info("testo: " + self.request.get("testo"))
+    logging.info("last: " + self.request.get("last"))
+    
+    if messaggio.livello > 0:
+      commenti = messaggio.par.commenti
+      if commenti is None:
+        commenti = 0
+      messaggio.par.commenti = commenti + 1
+      messaggio.par.put()
    
     CMTagHandler().saveTags(messaggio, self.request.get_all("tags"))
   
@@ -108,6 +120,7 @@ class CMCommentHandler(BasePage):
     if self.request.get("par"):
       msgs = msgs.filter("par", db.Key(self.request.get("par")))
 
+    
     if self.request.get("last"):
       logging.info("last: " + self.request.get("last"))
       msgs = msgs.filter("creato_il >", Messaggio.get(db.Key(self.request.get("last"))).creato_il)
@@ -117,14 +130,17 @@ class CMCommentHandler(BasePage):
       activities.append(msg)    
 
     template_values['main'] = 'comments/comment.html'
-      
+          
     if messaggio.livello == 0: #posting root message      
       activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
       template_values['main'] = 'activity.html'
+      comment_root = messaggio
+    else:
+      comment_root = Messaggio.get(db.Key(self.request.get("root")))
   
     template_values['activities'] = activities
     template_values['comments'] = activities
-    template_values['comment_root'] = Messaggio.get(db.Key(self.request.get("root")))
+    template_values['comment_root'] = comment_root
 
     return self.getBase(template_values)
     

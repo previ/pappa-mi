@@ -51,7 +51,7 @@ container { background:url('/img/back_transp.png'); !important; }
   border-color: #eeeeee #bebebe #bbbbbb;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   margin-bottom: 6px;
-  padding: 7px 14px;
+  padding: 3px 3px;
   color: #404040;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   border-width: 1px;
@@ -314,6 +314,23 @@ background-image: url(//ssl.gstatic.com/s2/oz/images/stream/collapse.png);
 background-position: 0 5px;
 }
 
+.expcmt {
+background-image: url(//ssl.gstatic.com/s2/oz/images/stream/expand.png);
+background-repeat: no-repeat;
+background-position: 0 5px;
+height: 7px;
+width: 8px;
+padding-top: 5px;
+cursor: pointer;
+outline: none;
+text-decoration: none;
+}
+
+.colcmt {
+background-image: url(//ssl.gstatic.com/s2/oz/images/stream/collapse.png);
+background-position: 0 5px;
+}
+
 .permalink {
 background: no-repeat url(//ssl.gstatic.com/s2/tt/images/sharebox/sprite4.png) -69px -15px;
 float: right;
@@ -321,12 +338,24 @@ text-decoration: none;
 width: 17px;
 height: 14px;
 cursor: default;
-margin: 7px 10px;
+margin: 3px 3px;
 }
 
 .permalink:hover {
 background: no-repeat url(//ssl.gstatic.com/s2/tt/images/sharebox/sprite4.png) -18px -34px;
 cursor: pointer;
+}
+
+.expcommentnew {
+border: 1px solid #DDD;
+color: #999;
+cursor: text;
+display:none;
+padding: 2px 7px;
+margin-right: 24px;
+box-sizing: border-box;
+-moz-box-sizing: border-box;
+-webkit-box-sizing: border-box;
 }
 
 .row.rowspaced {

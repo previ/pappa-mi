@@ -302,8 +302,18 @@ function moreactivities() {
  <div id="new-data-preview" style="display:none;"></div> 
 </div> 
 {%endif%}
-<ul class="activity_list" id="activity_list">{#{%for activity in activities %}
-{%include "activity.html"%}{%endfor%}#}
-</ul>
+<div class="row">
+  <div class="span12">
+    <ul class="activity_list" id="activity_list"></ul>
+  </div>
+  <div class="span4">
+  <h3>Categorie</h3>
+  <ul>
+  {%for tag in tags%}
+  <li><a href="#" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a></li>
+  {%endfor%}
+  </ul>
+  </div>
+</div>
 </div>
 <div style="border-style:solid; border-width:1px; width:100%; text-align: center; background-color:#eee;" id="e_act_more">Altri...</div>
