@@ -18,6 +18,7 @@ class Messaggio(db.Model):
   par = db.ReferenceProperty(db.Model, collection_name="children_set")
   tipo = db.IntegerProperty()
   livello = db.IntegerProperty()
+  commenti = db.IntegerProperty()
   pop = db.IntegerProperty()
   titolo = db.StringProperty(indexed=False)
   testo = db.TextProperty(indexed=False)
@@ -100,7 +101,12 @@ class Messaggio(db.Model):
         s = self.testo
         
       return s
-    
+
+  def comments(self):
+    if self.commenti is None:
+      return 0
+    else:
+      return self.commenti
   
   def tipodesc(self):
     return self._tipi[int(self.tipo)]

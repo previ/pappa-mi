@@ -112,12 +112,12 @@ class ActivityPublicHandler(BasePage):
 
     template_values = dict()
     template_values["activity"] = message
-    if isinstance(message.root, Messaggio):
+    if message.root is None:
       template_values["msg"] = message
       template_values["detail"] = "public/detail_msg.html"      
     elif isinstance(message.root, Ispezione):
       template_values["isp"] = message.root
-      template_values["detail"] = "ispezioni/isp_read_div.html"      
+      template_values["detail"] = "ispezioni/ispezione_read_div.html"      
     elif isinstance(message.root, Nonconformita):
       template_values["nc"] = message.root
       template_values["detail"] = "ispezioni/nonconf_read_div.html"
@@ -129,7 +129,7 @@ class ActivityPublicHandler(BasePage):
       template_values["detail"] = "ispezioni/nota_read_div.html"
     
     template_values["content"] = "public/activity.html"
-    template_values["comment_root"] = message
+    template_values["activities"] = [message]
     
     self.getBase(template_values)
     

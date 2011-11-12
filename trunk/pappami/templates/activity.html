@@ -1,19 +1,31 @@
 {%for activity in activities %}
+<script type="text/javascript"> 
+    // wait for the DOM to be loaded 
+    $(document).ready(function() { 
+        // bind 'myForm' and provide a simple callback function 
+        $('#comment_{{activity.key()}}').ajaxForm({clearForm: true, success:function(data) { 
+           $('#comment_list_{{activity.key()}}').append(data);
+           last = $('#comment_list_{{activity.key()}}').children().last().children().first().attr('id').substring("comment_".length);
+           $('#comment_last_{{activity.key()}}').val(last);
+           //$('#comments_{{activity.key()}}').load('/comments/comment?par={{activity.key()}}')
+        }}); 
+        {%if detail is defined%}onexpcomments('{{activity.key()}}');{%endif%}
+    });
+</script> 
 <li class="activity_item" id="activity_{{activity.key()}}">
 <div class="activity_box">
  <div class="activity_avatar">
   <img class="avatar" src="{{activity.author_avatar()}}" title="{{activity.author()}}">
  </div>
+ <span class="permalink" onclick="permalink('{{activity.key()}}')"></span>
  <div class="activity_body">
   <div class="activity_author">{{activity.author()}}</div>  
-  <div class="activity_author_title">{{activity.author_title()}}</div>
+  <div class="activity_author_title">A: {{activity.author_title()}}</div>
   <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags()%}
   <div class="activity_tags">In: {%for tag in activity.tags()%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a> {%endfor%}</div>{%endif%}
-  <span id=":24.l" class="f-oa-t f-oa-t-j" title="Add link"></span>
   <div class="activity_title" >{{activity.title()}}</div>
-  <span class="permalink" onclick="permalink('{{activity.key()}}')"></span>
-  <span id="detail_exp_{{activity.key()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key()}}')"></span>
-  <div class="activity_summary" id="summary_{{activity.key()}}">{{activity.summary()}}</div>
+  {%if detail is defined%}{% include detail %}{%else%}<span id="detail_exp_{{activity.key()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key()}}')"></span>{%endif%}
+  <div class="activity_summary" id="summary_{{activity.key()}}">{{activity.summary()}}</div>  
   <div class="activity_detail" id="detail_{{activity.key()}}"></div>
   <div class="activity_footer">   
    <div class="activity_feedback" id="votes_{{activity.key()}}" onclick="onshowvotes('{{activity.key()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key()}}_me" {%if activity.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
@@ -24,18 +36,50 @@
    <div class="activity_vote" id="vote_2_{{activity.key()}}" style="display:{%if activity.canvote() %}none{%else%}inline{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key()}}" onclick="onunvote('{{activity.key()}}')">Ho cambiato idea</div>
    </div>
-  </div>{%endif%}  
+   {%if activity.comments() > 0 %}<div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcomments('{{activity.key()}}')">{{activity.comments()}} commenti</div>
+   <span id="comments_exp_{{activity.key()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key()}}')"></span>{%endif%}
+   <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key()}}')">Aggiungi un commento</div>
+   
+   <div id="comments_container_{{activity.key()}}" style="display:none;">
+    <ul class="comment_list" id="comment_list_{{activity.key()}}"></ul>
+   </div>   
+   <div id="comment_new_exp_{{activity.key()}}" class="expcommentnew" tabindex="0" role="button" onclick="onexpcommentnew('{{activity.key()}}')">Aggiungi un commento</div>
+   <div class="activity_comment_new" id="comment_new_container_{{activity.key()}}">
+    {%if user%}
+    <div class="comment_form">
+    <form id="comment_{{activity.key()}}" action="/comments/comment" method="post"> 
+    <input type="hidden" name="tipo" value="202" /> 
+    <input type="hidden" name="livello" value="1" /> 
+    <input type="hidden" name="last" id="comment_last_{{activity.key()}}" value="{{comment_last}}" /> 
+    <input type="hidden" name="par" value="{{activity.key()}}" /> 
+    <input type="hidden" name="root" value="{{activity.key()}}" /> 
+     <div class="comment_avatar">
+     <img src="{{user.avatar}}" title="{{user.fullname}}">
+     </div>
+     <div class="comment_body">
+      <div class="comment_author">{{user.fullname}} </div>
+      <div class="comment_author_title">{{user.title}}</div>
+      <div class="comment_text"><textarea class="comment_textarea" name="testo"></textarea></div>
+      <div><button class="btn primary" type="submit">Invia</button><button class="btn"  type="button" onclick="onexpcommentnew('{{activity.key()}}')">Annulla</button></div>
+     </div>
+    </form>
+    </div>
+    {%else%}
+    <div onclick="location.href='{{login_url}}'">Accedi per aggiungere un commento</div>
+    {%endif%}
+   </div>
+   </div>{%endif%}  
  </div>
 </div>
 </li>
+{%endfor%}
 {%if ease%}
 <script type="text/javascript"> 
 $(function() {
+{%for activity in activities %}
 $( "#activity_{{activity.key()}}" ).css("background-color", "#aaa");
-$( "#activity_{{activity.key()}}" ).animate({
-	 backgroundColor: "#fff"
-}, 2000 );
+$( "#activity_{{activity.key()}}" ).animate({ backgroundColor: "#fff"}, 2000 );
+{%endfor%}
 });
 </script>
 {%endif%}
-{%endfor%}

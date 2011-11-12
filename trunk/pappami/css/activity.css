@@ -35,7 +35,7 @@ padding-right: 5px;
 
 .activity_body {
 display: table-cell;
-min-width:600px;
+min-width:586px;
 max-width:866px;
 padding-left: 5px;
 padding-right: 5px;
@@ -57,7 +57,7 @@ display: none;
 
 .activity_textarea, .activity_text {
 display: block;
-width: 600px;
+width: 500px;
 }
 
 .activity_footer {
@@ -77,8 +77,12 @@ color: rgb(59, 89, 152);
 text-decoration: none;
 }
 
-.activity_feedback, .activity_vote, .activity_vote_button {
+.activity_feedback, .activity_vote, .activity_vote_button, .activity_comments {
 display: inline;
+}
+
+.activity_comment_new {
+display: none;
 }
 
 .activity_vote_button {
