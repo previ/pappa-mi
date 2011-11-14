@@ -23,7 +23,7 @@
                  }
 %}
 {% macro label(t, a) -%}
-<span class="label {{cls[t][a]}}">{{testi[t][a]}}</span>
+<span class="label {{cls[t][a]}}" title="{{testi[t][a]}}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 {%- endmacro %}
 <div>
 <table>
@@ -32,7 +32,7 @@
 <table>
 <tbody>
 <tr>
-<td>Piatto</td><td>Assaggio</td><td>Gradimento</td><td>Cottura<br/>Maturazione</td><td>Temperatura</td><td>Quantit&agrave;</td><td>Condito<br/>al momento</td>
+<td>Piatto</td><td><span title="Assaggio">A</span></td><td><span title="Gradimento">G</span></td><td><span title="Cottura o Maturazione">Q</span><br/><span title="Maturazione">M</span></td><td><span title="Temperatura">T</span></td><td><span title="Quantit&agrave;">Q</span></td><td><span title="Condito al momento">C</span></td>
 </tr>
 <tr>
 <td>Primo: {{isp.primoEffettivo}}</td><td>{{label("assaggio", isp.primoAssaggio)}}</td><td>{{label("gradimento", isp.primoGradimento)}}</td><td>{{label("cottura", isp.primoCottura)}}</td><td>{{label("temperatura", isp.primoTemperatura)}}</td><td>{{label("quantita", isp.primoQuantita)}}</td><td>{{label("condito", isp.primoCondito)}}</td>
@@ -52,13 +52,16 @@
 </tbody>
 </table>
 <tr>
-<td>Servizio</td><td>Durata distribuzione<br/>{{label("distribuzione", isp.arrivoDist)}}</td><td>Durata pasto<br/>{{label("distribuzione", isp.durataPasto)}}</td><td>Pasti serviti totali<br/><span class="label">{{isp.numeroPastiTotale}}</span></td><td>ai Bambini<br/><span class="label">{{isp.numeroPastiBambini}}</span></td><td>Diete<br/><span class="label">{{isp.numeroPastiSpeciali}}</span></td><td>Addetti<br/><span class="label">{{isp.numeroAddetti}}</span></td>
+<td>Servizio</td><td>Durata distribuzione<br/>{{label("distribuzione", isp.arrivoDist)}}</td><td>Durata pasto<br/>{{label("distribuzione", isp.durataPasto)}}</td><td colspan="4"></td>
+</tr>
+<tr>
+<td></td><td>Pasti serviti totali<br/><span class="label">{{isp.numeroPastiTotale}}</span></td><td>ai Bambini<br/><span class="label">{{isp.numeroPastiBambini}}</span></td><td>Diete<br/><span class="label">{{isp.numeroPastiSpeciali}}</span></td><td colspan="3">Addetti<br/><span class="label">{{isp.numeroAddetti}}</span></td>
 </tr>
 <tr>
 <td></td><td>Smaltimento Rifiuti<br/>{{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura<br/>{{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio<br/>{{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale<br/>{{label("giudizio", isp.giudizioGlobale)}}</td>
 </tr>
 <tr>
-<td>Note</td><td colspan="6">{{isp.note}}</td>
+<td>Note</td><td colspan="6">{{isp.note|replace("\n","<br/>")}}</td>
 </tr>
 </tbody>
 </table>

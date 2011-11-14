@@ -56,7 +56,7 @@ Nota
 <div class="ss-form-entry"><label class="ss-q-title" for="e_ncNote">Testo
 </label>
 <label class="ss-q-help" for="e_note"></label>
-{{nota.note|linebreaksbr}}</div></div>
+{{nota.note|replace("\n","<br/>")}}</div></div>
 </td>
 </tr>
 {% if allegati %}<tr>

@@ -7,6 +7,7 @@
            $('#comment_list_{{activity.key()}}').append(data);
            last = $('#comment_list_{{activity.key()}}').children().last().children().first().attr('id').substring("comment_".length);
            $('#comment_last_{{activity.key()}}').val(last);
+           $('#comments_num_{{activity.key()}}').text($('#comment_list_{{activity.key()}}').children().length);
            //$('#comments_{{activity.key()}}').load('/comments/comment?par={{activity.key()}}')
         }}); 
         {%if detail is defined%}onexpcomments('{{activity.key()}}');{%endif%}
@@ -20,7 +21,7 @@
  <span class="permalink" onclick="permalink('{{activity.key()}}')"></span>
  <div class="activity_body">
   <div class="activity_author">{{activity.author()}}</div>  
-  <div class="activity_author_title">A: {{activity.author_title()}}</div>
+  <div class="activity_author_title">{{activity.author_title()}}</div>
   <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags()%}
   <div class="activity_tags">In: {%for tag in activity.tags()%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a> {%endfor%}</div>{%endif%}
   <div class="activity_title" >{{activity.title()}}</div>
@@ -36,9 +37,9 @@
    <div class="activity_vote" id="vote_2_{{activity.key()}}" style="display:{%if activity.canvote() %}none{%else%}inline{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key()}}" onclick="onunvote('{{activity.key()}}')">Ho cambiato idea</div>
    </div>
-   {%if activity.comments() > 0 %}<div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcomments('{{activity.key()}}')">{{activity.comments()}} commenti</div>
-   <span id="comments_exp_{{activity.key()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key()}}')"></span>{%endif%}
-   <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key()}}')">Aggiungi un commento</div>
+   {%if activity.comments() > 0 %}<div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcomments('{{activity.key()}}')"><span id="comments_num_{{activity.key()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key()}}')">&nbsp;&nbsp;</span></div>
+   {%endif%}
+   <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key()}}')">Aggiungi un commento</span></div>
    
    <div id="comments_container_{{activity.key()}}" style="display:none;">
     <ul class="comment_list" id="comment_list_{{activity.key()}}"></ul>
@@ -50,7 +51,7 @@
     <form id="comment_{{activity.key()}}" action="/comments/comment" method="post"> 
     <input type="hidden" name="tipo" value="202" /> 
     <input type="hidden" name="livello" value="1" /> 
-    <input type="hidden" name="last" id="comment_last_{{activity.key()}}" value="{{comment_last}}" /> 
+    <input type="hidden" name="last" id="comment_last_{{activity.key()}}" value="" /> 
     <input type="hidden" name="par" value="{{activity.key()}}" /> 
     <input type="hidden" name="root" value="{{activity.key()}}" /> 
      <div class="comment_avatar">
