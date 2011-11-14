@@ -48,6 +48,7 @@ function onexpcomments(key) {
    $('#comments_container_'+key).slideDown();
    $('#comment_new_exp_'+key).show();
    $('#comments_exp_'+key).addClass("colcmt");
+   $('#comments_num_'+key).text($('#comment_list_'+key).children().length);
   });
  } else {
   $('#comment_new_container_'+key).hide();
@@ -61,9 +62,10 @@ function onexpcommentnew(key) {
  if( $('#comments_container_'+key).css("display") == "none" &&
      $('#comment_new_container_'+key).css("display") == "none") {
   $('#comment_list_'+key).load('/comments/comment?par='+key, function(){
-   if($('#comment_list_'+key).children()>0) {
+   if($('#comment_list_'+key).children().length > 0) {
     last = $('#comment_list_'+key).children().last().children().first().attr('id').substring("comment_".length);
-    $('#comment_last_'+key).val(last); 
+    $('#comment_last_'+key).val(last);
+    $('#comments_num_'+key).text($('#comment_list_'+key).children().length);
    }
    $('#comments_container_'+key).slideDown();
    $('#comment_new_exp_'+key).show();
@@ -72,7 +74,7 @@ function onexpcommentnew(key) {
    $('#comment_new_container_'+key).show();
   });
  } else if( $('#comment_new_container_'+key).css("display") == "none") {
-  if($('#comment_list_'+key).children()>0) {
+  if($('#comment_list_'+key).children().length > 0) {
    last = $('#comment_list_'+key).children().last().children().first().attr('id').substring("comment_".length);
    $('#comment_last_'+key).val(last); 
   }

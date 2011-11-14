@@ -24,8 +24,10 @@ import wsgiref.handlers
 from google.appengine.ext import db
 from google.appengine.api import users
 import webapp2 as webapp
-from google.appengine.api import memcache
+#from webapp2_extras import jinja2
 import jinja2
+from webapp2_extras import sessions
+from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 
@@ -54,6 +56,28 @@ class ActivityFilter():
   group = None
   
 class BasePage(webapp.RequestHandler):  
+  
+  #@webapp.cached_property
+  #def jinja2(self):
+        #return jinja2.get_jinja2(app=self.app)  
+
+  def dispatch(self):
+    # Get a session store for this request.
+    sessions.default_config['secret_key'] = "secretsecretsecret" 
+    self.session_store = sessions.get_store(request=self.request)
+
+    try:
+        # Dispatch the request.
+        webapp.RequestHandler.dispatch(self)
+    finally:
+        # Save all sessions.
+        self.session_store.save_sessions(self.response)
+
+  @webapp.cached_property
+  def session(self):
+      # Returns a session using the default cookie key.
+      return self.session_store.get_session()      
+
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
@@ -99,8 +123,11 @@ class BasePage(webapp.RequestHandler):
     template_values["host"] = self.getHost()
     template_values["version"] = "1.4.0.36 - 2011.04.30"
     
+    #logging.info("content: " + template_values["content"])
+    #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
+    
     template = jinja_environment.get_template(template_values["main"])
-    self.response.out.write(template.render(template_values))
+    self.response.write(template.render(template_values))
     
   def getCommissario(self,user):
     commissario = None
@@ -169,10 +196,19 @@ class BasePage(webapp.RequestHandler):
   
   def get_activities(self, offset=0):
     logging.info("get_activities")
+    
     activities = None
     logging.info("tag: " + self.request.get("tag"))
-    if self.request.get("tag") != "":
-      activities = self.get_activities_by_tagname(self.request.get("tag"),offset)
+    
+    tag = self.request.get("tag")
+      
+    if tag != "":
+      tag = self.session['tag'] = tag
+    
+    tag = self.session.get('tag')
+
+    if tag != "!" and tag != "":
+      activities = self.get_activities_by_tagname(tag,offset)
     elif self.request.get("msgtype") != "":
       activities = self.get_activities_by_msgtype(int(self.request.get("msgtype")),offset)
     elif self.request.get("user") != "":

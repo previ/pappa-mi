@@ -291,8 +291,8 @@ function moreactivities() {
   </div>
   <div class="comment_body">
    <div class="comment_author">{{user.fullname}} </div>
-   <div class="comment_author_title"><input type="text" name="titolo" size="80"; maxsize="200"/></div>
-   <div class="comment_text"><textarea required="true" class="comment_textarea" name="testo"></textarea></div>
+   <div class="comment_author_title"><input type="text" class="xlarge" name="titolo" size="80"></div>
+   <div class="comment_text"><textarea required="true" class="xxlarge comment_textarea" name="testo"></textarea></div>
    <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="message_tags_handler"></ul><input type="submit" value="Invia" /></div></div>
   </div>   
  </form>
@@ -309,6 +309,7 @@ function moreactivities() {
   <div class="span4">
   <h3>Categorie</h3>
   <ul>
+  <li><a href="#" onclick="filteractivities('tag=!');">Tutte le categorie</a></li>
   {%for tag in tags%}
   <li><a href="#" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a></li>
   {%endfor%}
