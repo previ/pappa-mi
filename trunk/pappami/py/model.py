@@ -130,12 +130,14 @@ class Commissario(db.Model):
     return self.stato == 0
   def isRegGenitore(self):
     return self.stato == 10
-  
+
+  _commissioni = None
   def commissioni(self):
-    commissioni = []
-    for cc in CommissioneCommissario.all().filter("commissario", self):
-      commissioni.append(cc.commissione)
-    return commissioni
+    if self._commissioni is None:
+      self._commissioni = []
+      for cc in CommissioneCommissario.all().filter("commissario", self):
+        self._commissioni.append(cc.commissione)      
+    return self._commissioni
 
   def setCMDefault(self):
     if len(self.commissioni()) > 0:
