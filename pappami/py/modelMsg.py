@@ -13,6 +13,8 @@ from google.appengine.ext import db
 TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%d/%m/%Y"
 
+cache = dict()
+
 class Messaggio(db.Model):
   root = db.ReferenceProperty(db.Model, collection_name="children_all_set")
   par = db.ReferenceProperty(db.Model, collection_name="children_set")
@@ -29,19 +31,33 @@ class Messaggio(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   
   commissario = None
-  
+  def get_commissario(self):
+    if not self.commissario:
+      self.commissario = cache.get(self.modificato_da)
+      if self.commissario is None:
+        self.commissario = Commissario.all().filter("user", self.modificato_da).get()
+        cache[self.modificato_da] = self.commissario
+    return self.commissario
+    
   __tags__ = None
 
+  _likes = None
   def likes(self):
-    return self.voto_reference_set.count()
+    if self._likes == None:
+      self._likes = self.voto_reference_set.count()
+    return self._likes
+
+  _canvote = None
   def canvote(self):
-    canvote = True
-    for p_voto in self.voto_reference_set:
-      if p_voto.creato_da == users.get_current_user():
-        canvote = False
-        break;
+    if self._canvote is None:
+      canvote = True
+      for p_voto in self.voto_reference_set:
+        if p_voto.creato_da == users.get_current_user():
+          canvote = False
+          break;
+      self._canvote = canvote
       
-    return canvote
+    return self._canvote
   def data(self):
     delta = datetime.now() - self.creato_il
     if delta.days == 0 and delta.seconds < 3600:
@@ -51,17 +67,11 @@ class Messaggio(db.Model):
     else:
       return "il " + datetime.strftime(self.creato_il, DATE_FORMAT + " alle " + TIME_FORMAT)
   def author(self):
-    if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.modificato_da).get()
-    return self.commissario.nomecompleto()
+    return self.get_commissario().nomecompleto()
   def author_title(self):
-    if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.modificato_da).get()
-    return self.commissario.titolo()
+    return self.get_commissario().titolo()
   def author_avatar(self):
-    if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.modificato_da).get()
-    return self.commissario.avatar()
+    return self.get_commissario().avatar()
 
   def tags(self):
     if not self.__tags__:
