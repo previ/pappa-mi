@@ -198,21 +198,40 @@ class BasePage(webapp.RequestHandler):
     logging.info("get_activities")
     
     activities = None
-    logging.info("tag: " + self.request.get("tag"))
-    
-    tag = self.request.get("tag")
-      
-    if tag != "":
-      tag = self.session['tag'] = tag
-    
-    tag = self.session.get('tag')
 
+    tag = self.request.get("tag")     
+    if tag != "":
+      self.session['tag'] = tag
+
+    tag = self.session.get('tag')     
+    if tag is None:
+      tag = "!"
+      self.session['tag'] = tag
+        
+    msgtype = self.request.get("type")     
+    if msgtype != "":
+      self.session['type'] = msgtype
+
+    msgtype = self.session.get('type')     
+    if msgtype is None:
+      msgtype = "!"
+      self.session['type'] = msgtype
+
+    user = self.request.get("user")     
+    if user != "":
+      self.session['user'] = user
+
+    user = self.session.get('user')     
+    if user is None:
+      user = "!"
+      self.session['user'] = user
+    
     if tag != "!" and tag != "":
       activities = self.get_activities_by_tagname(tag,offset)
-    elif self.request.get("msgtype") != "":
-      activities = self.get_activities_by_msgtype(int(self.request.get("msgtype")),offset)
-    elif self.request.get("user") != "":
-      activities = self.get_activities_by_user(self.request.get("user"),offset)
+    elif msgtype != "!" and msgtype != "":
+      activities = self.get_activities_by_msgtype(int(msgtype),offset)
+    elif user != "!" and user != "":
+      activities = self.get_activities_by_user(user,offset)
     else:
       activities = self.get_activities_all(offset)
     

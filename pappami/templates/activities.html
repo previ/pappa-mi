@@ -46,15 +46,17 @@ function closeIt() {
 
 window.onbeforeunload = closeIt;
 
-function opennewmsg() {
+function opennewmsg() {  
   if($('#new-msg').is(':visible') ) {
     $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     $('#new-msg').slideUp();
   } else {     
+    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
       $('#activity_list').prepend(data);
-      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+      //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     }, beforeSubmit: function(arr,$form) {
+     
       $("[name='tags']").attr('value','');
       $('.tagItem').each(function() {
 	arr.push({name: "tags", value: $(this).text()});
@@ -237,9 +239,11 @@ function filteractivities(q) {
 }
 
 function moreactivities() {
+  $('#e_act_more').button('loading');
   $.ajax({url:'/comments/load?'+query+'&ease=1'+'&offset='+offset, success: function(data){
-    $('#activity_list').append(data);    
+    $('#activity_list').append(data);
     offset += 1;
+    $('#e_act_more').button('reset');
   }}); 
 }
 
@@ -249,11 +253,11 @@ function moreactivities() {
 </style>
 {%include "navigation.html"%}
 <div id="activities" class="activity_container">
-<div style="height:60px;"></div>
+{#<div style="height:60px;"></div>#}
 {%if commissario or genitore%}
 <div id="nav-priv-cnt"></div>
 <ul id="message_tags_handler_test"></ul>
-<div class="well">
+<div class="well">{#
   <div class="dropdown" data-dropdown="dropdown">
     <a href="#" class="btn primary dropdown-toggle">Nuovo ...</a>
     <ul class="dropdown-menu">
@@ -264,11 +268,16 @@ function moreactivities() {
       <li><a href="#" onclick="opennewnc();">Non conformit&agrave;</a></li>
       <li><a href="#" onclick="opennewnota();">Nota</a></li>
     </ul>
-  </div>
+  </div>#}
+<button class="btn primary" onclick="opennewmsg();">Messaggio</button>
+<button class="btn primary" onclick="opennewisp();">Ispezione</button>
+<button class="btn primary" onclick="opennewdieta();">Ispezione Diete</button>
+<button class="btn primary" onclick="opennewnc();">Non conformit&agrave;</button>
+<button class="btn primary" onclick="opennewnota();">Nota</button>
 </div>
 <div id="new-msg" style="display:none;">
  <form id="new-msg-form" action="/comments/message" method="post"> 
-  <input type="hidden" id="act_last" name="last" value="{{act_last.key()}}" /> 
+  <input type="hidden" id="act_last" name="last" value="" />  
   <input type="hidden" name="livello" value="0" />  
   <input type="hidden" name="tipo" value="201" /> 
   <div class="comment_avatar">
@@ -278,7 +287,7 @@ function moreactivities() {
    <div class="comment_author">{{user.fullname}} </div>
    <div class="comment_author_title"><input type="text" class="xlarge" name="titolo" size="80"></div>
    <div class="comment_text"><textarea required="true" class="xxlarge comment_textarea" name="testo"></textarea></div>
-   <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="message_tags_handler"></ul><input type="submit" value="Invia" /></div></div>
+   <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="message_tags_handler"></ul><button class="btn primary" type="submit">Invia</button></div></div>
   </div>   
  </form>
 </div>
@@ -292,29 +301,46 @@ function moreactivities() {
     <ul class="activity_list" id="activity_list"></ul>
   </div>
   <div class="span4">
-  <div class="dropdown secondary-nav" data-dropdown="dropdown">
+    <h3>Tipo dati</h3>
+    <ul class="">
+      <li><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></li>
+      <li class="divider"></li>{%if commissario or genitore%}
+      <li><a href="#" onclick="filteractivities('user={{user.email()}}')">Inseriti da me</a></li>
+      <li><a href="#">Mia Scuola</a></li>
+      <li class="divider"></li>{%endif%}
+      <li><a href="#" onclick="filteractivities('type=201')">Messaggi</a></li>
+      <li><a href="#" onclick="filteractivities('type=101')">Ispezioni</a></li>
+      <li><a href="#" onclick="filteractivities('type=102')">Ispezioni Diete</a></li>
+      <li><a href="#" onclick="filteractivities('type=103')">Non conformit&agrave;</a></li>
+      <li><a href="#" onclick="filteractivities('type=104')">Note</a></li>    
+    </ul>
+    <h3>Categorie</h3>
+    <ul class="">
+      {%for tag in tags%}<li><a href="#" onclick="filteractivities('tag={{tag.nome}}')">{{tag.nome}}</a></li>
+{%endfor%}
+    </ul>
+  {#<div class="dropdown secondary-nav" data-dropdown="dropdown">
     <a href="#" class="btn dropdown-toggle">Filtra dati</a>
     <ul class="dropdown-menu">
-      <li><a href="#">Tutto</a></li>
-      <li class="divider"></li>
-      <li><a href="#">Inseriti da me</a></li>
+      <li><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></li>
+      <li class="divider"></li>{%if commissario or genitore%}
+      <li><a href="#" onclick="filteractivities('user={{user.email()}}')">Inseriti da me</a></li>
       <li><a href="#">Mia Scuola</a></li>
-      <li class="divider"></li>
-      <li><a href="#">Messaggi</a></li>
-      <li><a href="#">Ispezioni</a></li>
-      <li><a href="#">Ispezioni Diete</a></li>
-      <li><a href="#">Non conformit&agrave;</a></li>
-      <li><a href="#">Note</a></li>
+      <li class="divider"></li>{%endif%}
+      <li><a href="#" onclick="filteractivities('type=201')">Messaggi</a></li>
+      <li><a href="#" onclick="filteractivities('type=101')">Ispezioni</a></li>
+      <li><a href="#" onclick="filteractivities('type=102')">Ispezioni Diete</a></li>
+      <li><a href="#" onclick="filteractivities('type=103')">Non conformit&agrave;</a></li>
+      <li><a href="#" onclick="filteractivities('type=104')">Note</a></li>
     </ul>
-  </div>  
-  <h3>Categorie</h3>
-  <ul>
-  <li><a href="#" onclick="filteractivities('tag=!');">Tutte le categorie</a></li>
+  </div>#}
+  {#<ul>
+  <li><a href="#" onclick="filteractivities('user=!&type=!&tag=!')">Tutte le categorie</a></li>
   {%for tag in tags%}
-  <li><a href="#" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a></li>
+  <li><a href="#" onclick="filteractivities('tag={{tag.nome}}')">{{tag.nome}}</a></li>
   {%endfor%}
-  </ul>
-  </div>
+  </ul>#}
+  </div>  
 </div>
+  <div class="span12" style="text-aling:center"><button data-loading-text="caricamento in corso..." class="btn" id="e_act_more">Carica altri...</button></div>    
 </div>
-<div style="border-style:solid; border-width:1px; width:100%; text-align: center; background-color:#eee;" id="e_act_more">Altri...</div>
