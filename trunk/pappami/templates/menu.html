@@ -1,15 +1,5 @@
 <style>#content-main {padding:0em;width:67.5em;}</style>
 <script type="text/javascript">
-dojo.require("dijit.form.Form");
-dojo.require("dijit.form.ComboBox");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.Dialog");
-dojo.require("dijit.Tooltip");
-dojo.require("dijit.form.DateTextBox");
-dojo.require("dijit.form.DropDownButton");
-dojo.require("dijit.form.FilteringSelect");
-dojo.require("dojo.data.ItemFileReadStore");
-dojo.require("dojo.parser");
 </script>
 <style>
 .mt {font-size:10px;}
@@ -55,7 +45,7 @@ searchAttr="nome" name="cm" id="e_cm">
 <tr>
 <td>
 <div class="dayheader">
-<div class="md">Dal {{data1|date:"d/m/Y"}}</div>
+<div class="md">Dal {{data1}}</div>
 <div class="md">Primo piatto</div>
 <div class="md">Secondo piatto</div>
 <div class="md">Contorno</div>
@@ -75,7 +65,7 @@ searchAttr="nome" name="cm" id="e_cm">
 <tr>
 <td>
 <div class="dayheader">
-<div class="md">Dal {{data2|date:"d/m/Y"}}</div>
+<div class="md">Dal {{data2}}</div>
 <div class="md">Primo piatto</div>
 <div class="md">Secondo piatto</div>
 <div class="md">Contorno</div>

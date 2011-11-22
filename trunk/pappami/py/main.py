@@ -84,7 +84,7 @@ class MainPage(BasePage):
     activities = self.get_activities(offset)
     template_values["activities"] = activities
     template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
-    template_values["act_last"] = activities[0]
+    #template_values["act_last"] = activities[0]
     template_values["geo"] = geo
     template_values["billboard"] = "navigation.html"
     template_values["content"] = "activities.html"
@@ -259,7 +259,11 @@ class CMMenuDataHandler(CMMenuHandler):
       self.response.out.write("|")
       self.response.out.write(menu.contorno.nome)
       self.response.out.write("\n")
-        
+
+    else:
+      template_values = dict()
+      self.getBase(template_values)
+      
 class CMMapDataHandler(webapp.RequestHandler):
   
   def get(self): 
