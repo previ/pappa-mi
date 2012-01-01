@@ -317,6 +317,39 @@ class CMMapDataHandler(webapp.RequestHandler):
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
 
+class CalendarioHandler(BasePage):
+  def post(self):
+    return self.get()
+  def get(self):    
+    commissario = self.getCommissario(users.get_current_user())
+    if self.request.get("cmd") == "create":
+      cm = Commissione.get(self.request.get("cm"))
+      if((cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None):
+        calendario = Calendario()
+        calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+        calendario.create(cm.nome + " - " + cm.tipoScuola)
+        for c in cm.commissari():
+          if c.isCommissario() :
+            calendario.share(c.user.email())
+        cm.calendario = str(calendario.GetId())
+        cm.put()
+      
+    else:
+      cm = None
+      if self.request.get("cm") != "":
+        cm = Commissione.get(self.request.get("cm"))
+      elif commissario and commissario.commissione() :
+        cm = commissario.commissione()
+      else:
+        cm = Commissione.all().get()
+        
+    template_values = dict()
+    template_values["content"] = "calendario/calendario.html"
+    template_values["commissioni"] = commissario.commissioni()
+    template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None
+    template_values["cm"] = cm
+    self.getBase(template_values)
+      
 class TagsPage(BasePage):
   
   def get(self):
@@ -365,6 +398,7 @@ app = webapp.WSGIApplication([
   ('/chi', ChiSiamoPage),
   ('/map', CMMapDataHandler),
   ('/menu', CMMenuDataHandler),
+  ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
   ('/registrazione', CMRegistrazioneHandler),

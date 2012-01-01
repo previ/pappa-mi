@@ -28,7 +28,6 @@ var oldDisp_3 = "";
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="step form-stacked" id="step1">
  <div class="row">
-  <fieldset>
   <div class="span4 box1">
    <label class="label_isp_1" for="e_commissione">Commissione</label>
    <select required="true" name="commissione" value="{%if form is defined%}{{form.commissione.data}}{%endif%}" id="e_commissione" onchange="getPrevIspData()">
@@ -49,45 +48,48 @@ var oldDisp_3 = "";
    <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
    </select>
   </div>
-  </fieldset>
-  <fieldset>
+ </div>
+ <div class="row">
+  <div class="span12 box1">
    <legend class="label_sep_1">Men&ugrave; previsto per il giorno</legend>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_primoPrevisto">Primo</label>
-    <input type="text" name="primoPrevisto" readonly="readonly" value="{{form.data.primoPrevisto}}" size="40" id="e_primoPrevisto"/>
-   </div>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_secondoPrevisto">Secondo</label>
-    <input type="text" name="secondoPrevisto" readonly="readonly" value="{{form.data.secondoPrevisto}}" size="40" id="e_secondoPrevisto"/>
-   </div>
-   <div class="span4 box1">
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_primoPrevisto">Primo</label>
+   <input type="text" name="primoPrevisto" readonly="readonly" value="{{form.data.primoPrevisto}}" size="40" id="e_primoPrevisto"/>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_secondoPrevisto">Secondo</label>
+   <input type="text" name="secondoPrevisto" readonly="readonly" value="{{form.data.secondoPrevisto}}" size="40" id="e_secondoPrevisto"/>
+  </div>
+  <div class="span4 box1">
    <label class="label_isp_1" for="e_contornoPrevisto">Contorno</label>
    <input type="text" name="contornoPrevisto" readonly="readonly" value="{{form.data.contornoPrevisto}}" size="40" id="e_contornoPrevisto"/>
-   </div>
-  </fieldset>
-  <fieldset>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span12 box1">
    <legend class="label_sep_1">Men&ugrave; effettivo</legend>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_primoEffettivo">Primo</label>
-    <input type="text" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo" onchange="onMenuChanged()"/>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_primoEffettivo">Primo</label>
+   <input type="text" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo" onchange="onMenuChanged()"/>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_secondoEffettivo">Secondo</label>
+   <input type="text" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_contornoEffettivo">Contorno</label>
+   <input type="text" name="contornoEffettivo" required="true" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo" onchange="onMenuChanged()"/>
+  </div>
+  <div class="span12">
+   <label class="label_isp_1" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
+   <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+    <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
+    <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
+    <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
    </div>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_secondoEffettivo">Secondo</label>
-    <input type="text" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
-   </div>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_contornoEffettivo">Contorno</label>
-    <input type="text" name="contornoEffettivo" required="true" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo" onchange="onMenuChanged()"/>
-   </div>
-   <div class="span12">
-    <label class="label_isp_1" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
-    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-     <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
-     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
-     <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
-    </div>
-   </div>
-  </fieldset>
+  </div>
  </div>
 </div>
 <div class="step form-stacked" id="step2">
@@ -663,7 +665,7 @@ Specificare:<ul>
   </div>
  </div>
 </div>
-<div id="formnav" class="actions" style="float:right;">
+<div id="formnav" class="span10 actions" style="float:right;">
  <input type="reset" onclick="" id="e_annulla" class="btn" value="Indietro"/><input id="e_submit" class="btn primary" type="submit" onclick="" value="Avanti"/>
 </div>
 </form>
