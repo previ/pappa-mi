@@ -165,6 +165,16 @@ handlers:
 - url: /signup
   script: py/signup.py
   login: required
+
+- url: /blob/*
+  script: py/blob.py
+
+- url: /blob/.*
+  script: py/blob.py
   
 - url: .*
   script: py/main.py
+
+
+  
+  

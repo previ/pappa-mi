@@ -23,6 +23,7 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.site import *
+from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario, Const
 from py.modelMsg import *
@@ -756,6 +757,7 @@ class NotaHandler(BasePage):
 
   def post(self):    
    
+    logging.info("nota.1")
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
 
@@ -764,6 +766,7 @@ class NotaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
+      logging.info("nota.2")
       nota = memcache.get(preview)
       memcache.delete(preview)
 
@@ -773,26 +776,22 @@ class NotaHandler(BasePage):
         nota.anno = nota.dataNota.year - 1
      
       nota.put()
-      
-      saveTags
-      username = Configurazione.all().filter("nome", "attach_user").get().valore
-      password = Configurazione.all().filter("nome", "attach_password").get().valore
-      site = Configurazione.all().filter("nome", "attach_site").get().valore
-      path = Configurazione.all().filter("nome", "attach_path").get().valore
-      site = Site(username, password, site)
+            
+      #username = Configurazione.all().filter("nome", "attach_user").get().valore
+      #password = Configurazione.all().filter("nome", "attach_password").get().valore
+      #site = Configurazione.all().filter("nome", "attach_site").get().valore
+      #path = Configurazione.all().filter("nome", "attach_path").get().valore
+      #site = Site(username, password, site)
 
       for allegato in nota.allegati:
         allegato.obj = nota
-        allegato.path = site.uploadDoc(allegato.dati, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), path)
+        #allegato.path = site.uploadDoc(allegato.dati, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), path)
         allegato.put()
 
       memcache.delete("stats")
       memcache.delete("statsMese")
-      
 
       template_values = CMCommentHandler().initActivity(nota.key(), 104, db.Key(self.request.get("last")), nota.tags)
-
-      self.getBase(template_values) 
       
     else:
       key = self.request.get("key")
@@ -814,16 +813,20 @@ class NotaHandler(BasePage):
           logging.info(tag)
           nota.tags.append(tag)
         
-        if self.request.get("allegato_file"):
-          nota.allegati = list()
-          allegato = Allegato()
-          allegato.descrizione = self.request.get('allegato_desc')
-          allegato.nome = self.request.POST['allegato_file'].filename
-          allegato.dati = self.request.get("allegato_file")
-          if len(allegato.dati) < 1000000 :         
-            nota.allegati.append(allegato)
-          else:
-            logging.info("attachment is too big.")
+        nota.allegati = list()
+        for i in range(1,10):
+          if self.request.get('allegato_file_' + str(i)):
+            if len(self.request.get('allegato_file' + str(i))) < 10000000 :
+              allegato = Allegato()
+              allegato.descrizione = self.request.get('allegato_desc_' + str(i))
+              allegato.nome = self.request.POST['allegato_file_' + str(i)].filename
+              blob = Blob()
+              blob.create(allegato.nome)
+              allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
+              allegato.put()
+              nota.allegati.append(allegato)
+            else:
+              logging.info("attachment is too big.")
             
         preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
         memcache.add(preview, nota, 3600)
@@ -847,6 +850,7 @@ class NotaHandler(BasePage):
           'form_errors': form.errors
         }
       
+    self.getBase(template_values) 
     
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),

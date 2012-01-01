@@ -5,8 +5,10 @@
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
+import google.appengine.api.images
 
 from google.appengine.ext import db
+from google.appengine.ext import blobstore
 
 class Citta(db.Model):
   nome = db.StringProperty()
@@ -218,6 +220,17 @@ class Piatto(db.Model):
   #creato_da = db.UserProperty(auto_current_user_add=True)
   #creato_il = db.DateTimeProperty(auto_now_add=True)
   #stato = db.IntegerProperty()
+  
+class Ingrediente(db.Model):
+  nome = db.StringProperty()
+
+  #creato_da = db.UserProperty(auto_current_user_add=True)
+  #creato_il = db.DateTimeProperty(auto_now_add=True)
+  #stato = db.IntegerProperty()
+
+class PiattoIngrediente(db.Model):
+  piatto = db.ReferenceProperty(Piatto)
+  ingrediente = db.ReferenceProperty(Ingrediente)
   
 class PiattoGiorno(db.Model):
   menu = db.ReferenceProperty(MenuNew)
@@ -544,6 +557,9 @@ class Nota(db.Model):
   tags = None
 
   def data(self): return self.dataNota  
+
+  def allegati(self): 
+    return Allegato.all().filter("obj", self)
   
 class Tag(db.Model):
   obj = db.ReferenceProperty(db.Model)
@@ -552,6 +568,7 @@ class Tag(db.Model):
 class Allegato(db.Model):
   obj = db.ReferenceProperty(db.Model)
   path = db.StringProperty()
+  blob_key = blobstore.BlobReferenceProperty()
   nome = db.StringProperty(default="")
   descrizione = db.StringProperty(default="",indexed=False)
   
@@ -561,7 +578,14 @@ class Allegato(db.Model):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
   def contentType(self):
     return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
+  
+  def imgthumb(self):
+    if self.isImage():
+      return google.appengine.api.images.get_serving_url(blob_key=self.blob_key,size=128)
 
+  def path(self):
+    return "/blob/get?key=" + str(self.blob_key.key())
+    
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
            ".jpeg":"image/jpeg",

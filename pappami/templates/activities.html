@@ -10,7 +10,6 @@ label.error { float: none; color: red; padding-left: .5em; vertical-align: top; 
 <script type="text/javascript" src="/js/jquery.taghandler.min.js"></script> 
 <script type="text/javascript" src="/js/comments.js"></script> 
 <script src="/js/jform.js" type="text/javascript"></script>
-
 <script type="text/javascript"> 
 
 var query = "";
@@ -75,7 +74,7 @@ function opennewmsg() {
 function opennewwiz(url) {
   $('#new-data-form').load(url, function(){
     ulmsg=true;
-    $('#act_last').clone().appendTo('#form1');
+    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));    
     $("#form0").formwizard({ 
       formPluginEnabled: true,
       validationEnabled: true,
@@ -141,6 +140,7 @@ function opennewwiz(url) {
 	    $('#new-data-preview').html('');
 	    $('#activity_list').prepend(data);
 	    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+	    $('#act_last').clone().appendTo('#form1');
 	  });
 	},
 	//beforeSubmit: function(data){$("#data").html("data sent to the server: " + $.param(data));},
@@ -172,16 +172,17 @@ function onopennewitem() {
           click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
       $('#form-error').dialog('open');      
     } else {
-      $('#act_last').clone().appendTo('#form1');
       $('#new-data-form').hide();  
       $('#new-data-preview').show();
+      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+      $('#act_last').clone().appendTo('#form1');
+      alert($('#act_last').val());
     }
     $('#form1').ajaxForm(function(data) {      
       $('#new-data').dialog('close');
       $('#new-data-form').html('');
       $('#new-data-preview').html('');
       $('#activity_list').prepend(data);
-      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     });
   }, beforeSubmit: function(arr,$form) {
     $("[name='tags']").attr('value','');
@@ -248,9 +249,7 @@ function moreactivities() {
 }
 
 </script> 
-<style>
-#content-main {width: 58em;}
-</style>
+{%set tab_activity="active"%}
 {%include "navigation.html"%}
 <div id="activities" class="activity_container">
 {#<div style="height:60px;"></div>#}
@@ -302,18 +301,16 @@ function moreactivities() {
   </div>
   <div class="span4">
     <h3>Tipo dati</h3>
-    <ul class="">
-      <li><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></li>
-      <li class="divider"></li>{%if commissario or genitore%}
-      <li><a href="#" onclick="filteractivities('user={{user.email()}}')">Inseriti da me</a></li>
-      <li><a href="#">Mia Scuola</a></li>
-      <li class="divider"></li>{%endif%}
-      <li><a href="#" onclick="filteractivities('type=201')">Messaggi</a></li>
-      <li><a href="#" onclick="filteractivities('type=101')">Ispezioni</a></li>
-      <li><a href="#" onclick="filteractivities('type=102')">Ispezioni Diete</a></li>
-      <li><a href="#" onclick="filteractivities('type=103')">Non conformit&agrave;</a></li>
-      <li><a href="#" onclick="filteractivities('type=104')">Note</a></li>    
-    </ul>
+      <div><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></div>
+      <div class="divider"></div>{%if commissario or genitore%}
+      <div><a href="#" onclick="filteractivities('user={{user.email()}}')">Inseriti da me</a></div>
+      <div><a href="#">Mia Scuola</a></div>
+      <div class="divider"></div>{%endif%}
+      <div><a href="#" onclick="filteractivities('type=201')">Messaggi</a></div>
+      <div><a href="#" onclick="filteractivities('type=101')">Ispezioni</a></div>
+      <div><a href="#" onclick="filteractivities('type=102')">Ispezioni Diete</a></div>
+      <div><a href="#" onclick="filteractivities('type=103')">Non conformit&agrave;</a></div>
+      <div><a href="#" onclick="filteractivities('type=104')">Note</a></div>    
     <h3>Categorie</h3>
     <ul class="">
       {%for tag in tags%}<li><a href="#" onclick="filteractivities('tag={{tag.nome}}')">{{tag.nome}}</a></li>

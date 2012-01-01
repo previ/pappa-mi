@@ -1,1 +1,2 @@
 <div>{{msg.root.note|replace("\n","<br/>")}}</div>
+<div>{%for allegato in msg.root.allegati()%}<a href="{{allegato.path()}}" target="_new"><img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/></a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}</div>

@@ -75,7 +75,7 @@ class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modifi
 
 class NotaForm(model_form(model=Nota, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato'])):
   def validate_dataNota(form, field):
-    dataIspezione = field.data
+    dataNota = field.data
 
     if dataNota.isoweekday() > 5 :
       raise ValidationError(u"La Nota deve far riferimento a un giorno feriale")

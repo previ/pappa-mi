@@ -1,85 +1,91 @@
-<style>#content-main {padding:0em;width:67.5em;}</style>
-<script type="text/javascript">
-</script>
+<link rel="stylesheet" href="css/slider_menu.css"> 
+<script src="js/slides.min.jquery.js"></script> 
 <style>
-.mt {font-size:10px;}
-.md {font-size:8pt;height:50px; margin:2px;}
+.mt {padding:8px;}
+.md {padding:8px;}
 .cg {cursor: hand;}
 a {text-decoration:none;}
-.dayheader {float:left;font-size:12px;width:130px; margin-left:2px; margin-right:2px;background: #d2d9e3;}
-.day1 {background: #ffffff;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
-.day2 {background: #efefef;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
-.today {background: #eff3f6;float:left;font-size:8pt;width:125px; margin-left:2px; margin-right:2px;}
+.dayheader {font-size:24px; }
+.day1 {font-size:24px;}
+.day2 {font-size:24px;}
+.today {font-size:24px;}
 </style>
-<H1 class="ss-form-title">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</H1>
-<div dojoType="dijit.form.DropDownButton">
-<span>Cambia Scuola e Data</span>
-<div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati"
-    execute=";">
-<form dojoType="dijit.form.Form" action="{{action}}" method="get" id="form0">
-<input type="hidden" name="tab" value="mn">
-<table>
-<tr>
-<td>
-<div dojoType="dojo.data.ItemFileReadStore" jsId="cmStore" url="/genitore/getcm">
-<LABEL class="ss-q-title" for="e_cm">Scuole</LABEL>
-<input dojoType="dijit.form.FilteringSelect" value="{{cm.key}}" store="cmStore"
-searchAttr="nome" name="cm" id="e_cm">
-</td>
-</tr>
-<tr>
-<td>
-<LABEL class="ss-q-title" for="e_aa">Data</LABEL>
-<input type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" required="true" name="data" value="{{data}}" class="ss-q-short" id="e_data"/></td>
-</tr>
-<tr>
-<td>
-<button dojoType="dijit.form.Button" type="submit">Applica</button>
-</td>
-</tr>
-</table>
-</form>
-</div>
-</div>
-<table>
-<tr>
-<td>
-<div class="dayheader">
-<div class="md">Dal {{data1}}</div>
-<div class="md">Primo piatto</div>
-<div class="md">Secondo piatto</div>
-<div class="md">Contorno</div>
-<div class="md">Dessert</div>
-</div>
+<script> 
+	$(function(){
+		// Set starting slide to 1
+		var startSlide = 1;
+		// Get slide number if it exists
+		if (window.location.hash) {
+			startSlide = window.location.hash.replace('#','');
+		}
+		// Initialize Slides
+		$(function(){
+			$('#slides').slides({
+				preload: true,
+				preloadImage: 'img/slider/loading.gif',
+				play: 5000,
+				pause: 2500,
+				hoverPause: true,
+				animationStart: function(current){
+					$('.caption').animate({
+						bottom:-35
+					},100);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationStart on slide: ', current);
+					};
+				},
+				animationComplete: function(current){
+					$('.caption').animate({
+						bottom:0
+					},200);
+					if (window.console && console.log) {
+						// example return of current slide number
+						console.log('animationComplete on slide: ', current);
+					};
+				},
+				slidesLoaded: function() {
+					$('.caption').animate({
+						bottom:0
+					},200);
+				}
+			});
+		});
+	});
+</script>
+{%set tab_menu="active"%}
+{%include "navigation.html"%}
+<h3 class="ss-form-title">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</h3>
+<div class="row">
+ <div class="span4">
+  <div class="dayheader">
+   <div class="mt">Giorno</div>
+   <div class="mt">Primo piatto</div>
+   <div class="mt">Secondo piatto</div>
+   <div class="mt">Contorno</div>
+   <div class="mt">Dessert</div>
+  </div>
+ </div>
+ <div class="span12">
+  <div id="slider_container"> 
+  <div id="slider_sub"> 
+   <div id="slides"> 
+    <div class="slides_container"> 
 {%for m in menu1%}
-<div class="{%if m.today%}today{%else%}day1{%endif%}">
-<div class="md">{{m.getData}}</div>
-<div class="md" title="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</div>
-<div class="md" title="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</div>
-<div class="md" title="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</div>
-<div class="md" title="Calorie: {{m.dessert.calorie}} Carboidrati: {{m.dessert.carboidrati}} Proteine: {{m.dessert.proteine}} Grassi: {{m.dessert.grassi}}">{{m.dessert.nome}}</div>
-</div>
+     <div class="slide" style="background:url('img/slider/slide_menu.jpg'); background-size:100%;"> 
+      <div class="{%if m.today%}today{%else%}day1{%endif%}">
+       <div class="md">{{m.getData()}} {{m.data}}</div>
+       <div class="md" title="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</div>
+       <div class="md" title="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</div>
+       <div class="md" title="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</div>
+       <div class="md" title="Calorie: {{m.dessert.calorie}} Carboidrati: {{m.dessert.carboidrati}} Proteine: {{m.dessert.proteine}} Grassi: {{m.dessert.grassi}}">{{m.dessert.nome}}</div>
+      </div>
+     </div>
 {%endfor%}
-</td>
-</tr>
-<tr>
-<td>
-<div class="dayheader">
-<div class="md">Dal {{data2}}</div>
-<div class="md">Primo piatto</div>
-<div class="md">Secondo piatto</div>
-<div class="md">Contorno</div>
-<div class="md">Dessert</div>
-</div>
-{%for m in menu2%}
-<div class="day2">
-<div class="md">{{m.getData}}</div>
-<div class="md" title="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</div>
-<div class="md" title="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</div>
-<div class="md" title="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</div>
-<div class="md" title="Calorie: {{m.dessert.calorie}} Carboidrati: {{m.dessert.carboidrati}} Proteine: {{m.dessert.proteine}} Grassi: {{m.dessert.grassi}}">{{m.dessert.nome}}</div>
-</div>
-{%endfor%}
-</td>
-</tr>
-</table>
+    </div>
+    <a href="#" class="prev"><img src="img/slider/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a> 
+    <a href="#" class="next"><img src="img/slider/arrow-next.png" width="24" height="43" alt="Arrow Next"></a> 
+   </div> 
+  </div> 
+ </div> 
+</div> 
