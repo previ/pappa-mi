@@ -176,7 +176,6 @@ function onopennewitem() {
       $('#new-data-preview').show();
       $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
       $('#act_last').clone().appendTo('#form1');
-      alert($('#act_last').val());
     }
     $('#form1').ajaxForm(function(data) {      
       $('#new-data').dialog('close');
@@ -268,6 +267,7 @@ function moreactivities() {
       <li><a href="#" onclick="opennewnota();">Nota</a></li>
     </ul>
   </div>#}
+<div>Aggiungi nuovo:</div>
 <button class="btn primary" onclick="opennewmsg();">Messaggio</button>
 <button class="btn primary" onclick="opennewisp();">Ispezione</button>
 <button class="btn primary" onclick="opennewdieta();">Ispezione Diete</button>
