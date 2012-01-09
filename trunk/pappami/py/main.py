@@ -262,7 +262,15 @@ class CMMenuDataHandler(CMMenuHandler):
 
     else:
       template_values = dict()
+      template_values['content'] = 'menu.html'      
       self.getBase(template_values)
+
+class CMMenuSlideHandler(CMMenuHandler):
+  
+  def get(self): 
+    template_values = dict()
+    template_values['main'] = 'menu_slides.html'    
+    self.getBase(template_values)
       
 class CMMapDataHandler(webapp.RequestHandler):
   
@@ -398,6 +406,7 @@ app = webapp.WSGIApplication([
   ('/chi', ChiSiamoPage),
   ('/map', CMMapDataHandler),
   ('/menu', CMMenuDataHandler),
+  ('/menuslide', CMMenuSlideHandler),
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),

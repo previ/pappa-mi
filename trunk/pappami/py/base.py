@@ -444,44 +444,34 @@ class CMMenuHandler(BasePage):
     
 
   def getMenuWeek(self, data, cm): 
-    logging.info("getMenuWeek.1")
-
-    menu = list();
-
-    logging.info("getMenuWeek.data: %s", data)
 
     offset = cm.getCentroCucina(data).getMenuOffset(data)
 
     if offset == None:
       offset = 0
-
-    if data >= date(2010,6,14) and data < date(2010,8,31):
-      offset = 0
       
     # settimana corrente
-    menu = MenuNew.all().filter("citta",cm.citta).filter("validitaDa <=", data).order("-validitaDa").get()
+    menu = MenuNew.get_by(cm.citta, data)
 
-    giorni = dict()
-    for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
-      if not pg.giorno in giorni:
-        giorni[pg.giorno] = dict()
-      giorni[pg.giorno][pg.tipo] = pg.piatto
+    giorni = Piatto.get_by((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
+    #for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+      #if not pg.giorno in giorni:
+        #giorni[pg.giorno] = dict()
+      #giorni[pg.giorno][pg.tipo] = pg.piatto
 
-    logging.info("getMenuWeek.1")
+    data = data + timedelta(data.isoweekday()-1)      
       
     mlist = list()
     for i in range(1,6):
       piatti = giorni[i]
       mh = MenuHelper()
-      mh.data = data + timedelta(data.isoweekday()-1)      
+      mh.data = data + timedelta(i - 1) 
       mh.giorno = i
       mh.primo = piatti["p"]
       mh.secondo = piatti["s"]
       mh.contorno = piatti["c"]
       mh.dessert = piatti["d"]
       mlist.append(mh)
-
-    logging.info("getMenuWeek.2")
       
     return mlist
       
@@ -501,22 +491,23 @@ class CMMenuHandler(BasePage):
       date = datetime.now().date()
     
     date1 = date - timedelta(date.isoweekday() - 1)
-    date2 = date1 + timedelta(7)
+    datep = date1 - timedelta(7)
+    daten = date1 + timedelta(7)
 
     logging.info("cm:" + cm.nome)
     logging.info("date1:" + str(date1))
-    logging.info("date2:" + str(date2))
+    logging.info("datep:" + str(datep))
+    logging.info("daten:" + str(daten))
 
-    template_values['content'] = 'menu.html'
-    template_values['menu1'] = self.getMenuWeek(date1, cm )
-    template_values['menu2'] = self.getMenuWeek(date2, cm )
+    template_values['menu'] = self.getMenuWeek(date1, cm )
     template_values['data'] = date
     template_values['data1'] = date1
-    template_values['data2'] = date2
+    template_values['datap'] = datep
+    template_values['datan'] = daten
     template_values['cm'] = cm
     template_values['action'] = self.request.path
     logging.info("CMMenuHandler.type: " + str(type(self)))
-    super(CMMenuHandler,self).getBase(template_values)    
+    super(CMMenuHandler,self).getBase(template_values)
     
 
 class CMCittaHandler(webapp.RequestHandler):
