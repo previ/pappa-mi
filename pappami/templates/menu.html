@@ -1,91 +1,93 @@
-<link rel="stylesheet" href="css/slider_menu.css"> 
-<script src="js/slides.min.jquery.js"></script> 
+<!-- Anything Slider -->
+<link rel="stylesheet" href="/css/anythingslider.css">
+<script src="/js/jquery.anythingslider.min.js"></script>
 <style>
-.mt {padding:8px;}
-.md {padding:8px;}
+#slider { width: 870px; height: 350px; }
+
+.mt {padding:0px;}
+.md {padding:0px;}
 .cg {cursor: hand;}
 a {text-decoration:none;}
-.dayheader {font-size:24px; }
-.day1 {font-size:24px;}
-.day2 {font-size:24px;}
-.today {font-size:24px;}
+.dayheader {}
+.day1 {}
+.day2 {}
+.today {}
 </style>
 <script> 
-	$(function(){
-		// Set starting slide to 1
-		var startSlide = 1;
-		// Get slide number if it exists
-		if (window.location.hash) {
-			startSlide = window.location.hash.replace('#','');
-		}
-		// Initialize Slides
-		$(function(){
-			$('#slides').slides({
-				preload: true,
-				preloadImage: 'img/slider/loading.gif',
-				play: 5000,
-				pause: 2500,
-				hoverPause: true,
-				animationStart: function(current){
-					$('.caption').animate({
-						bottom:-35
-					},100);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationStart on slide: ', current);
-					};
-				},
-				animationComplete: function(current){
-					$('.caption').animate({
-						bottom:0
-					},200);
-					if (window.console && console.log) {
-						// example return of current slide number
-						console.log('animationComplete on slide: ', current);
-					};
-				},
-				slidesLoaded: function() {
-					$('.caption').animate({
-						bottom:0
-					},200);
-				}
-			});
-		});
-	});
+$(function(){
+ // Initialize Slides
+ // DOM Ready
+
+ date = new Date("{{data1}}");
+ 
+ $('#slider').anythingSlider({ 
+  buildStartStop : false,
+  buildNavigation: false,
+  navigationFormatter : function(index, panel){ return ['Luned&igrave;', 'Marted&igrave;', 'Mercoled&igrave;', 'Gioved&igrave;', 'Venerd&igrave;'][index - 1];}
+ });
+ 
+ $('#slider').data("AnythingSlider").goForwardBase = $('#slider').data("AnythingSlider").goForward;
+ $('#slider').data("AnythingSlider").goForward = function() {  
+  if($('#slider').data("AnythingSlider").currentPage == 5) {
+   date.setDate(date.getDate() + 7);
+   $('#slider').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+    $('#slider').anythingSlider(); 
+    $('#slider').data("AnythingSlider").goForwardBase();
+   });   
+  } else {
+   $('#slider').data("AnythingSlider").goForwardBase();
+  }
+ }; 
+ $('#slider').data("AnythingSlider").goBackBase = $('#slider').data("AnythingSlider").goBack;
+ $('#slider').data("AnythingSlider").goBack = function() {  
+  if($('#slider').data("AnythingSlider").currentPage == 1) {
+   date.setDate(date.getDate() + 7);
+   $('#slider').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+    $('#slider').anythingSlider(); 
+    $('#slider').data("AnythingSlider").goBackBase();
+   });  
+  } else {
+   $('#slider').data("AnythingSlider").goBackBase();
+  }
+ }; 
+
+ $('#slider').load("/menuslide", function() {$('#slider').anythingSlider(); });
+
+ $("#e_chgscope").popover({html: true, trigger: "manual", placement: "below", content:function(){return $("#d_chgscope").html();}}); 
+ $('#e_chgscope').click(chgscope);
+});
+
+function chgscope() {
+ if($('#f_chgscope').is(':visible')) {
+  $("#e_chgscope").popover('hide');
+ } else {
+  $("#e_chgscope").popover('show');
+ }
+}
 </script>
 {%set tab_menu="active"%}
 {%include "navigation.html"%}
-<h3 class="ss-form-title">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</h3>
+<h3 style="display:inline;">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</h3>&nbsp;<button id="e_chgscope" class="btn">Cambia...</button>
 <div class="row">
- <div class="span4">
-  <div class="dayheader">
-   <div class="mt">Giorno</div>
-   <div class="mt">Primo piatto</div>
-   <div class="mt">Secondo piatto</div>
-   <div class="mt">Contorno</div>
-   <div class="mt">Dessert</div>
-  </div>
- </div>
- <div class="span12">
-  <div id="slider_container"> 
-  <div id="slider_sub"> 
-   <div id="slides"> 
-    <div class="slides_container"> 
-{%for m in menu1%}
-     <div class="slide" style="background:url('img/slider/slide_menu.jpg'); background-size:100%;"> 
-      <div class="{%if m.today%}today{%else%}day1{%endif%}">
-       <div class="md">{{m.getData()}} {{m.data}}</div>
-       <div class="md" title="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</div>
-       <div class="md" title="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</div>
-       <div class="md" title="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</div>
-       <div class="md" title="Calorie: {{m.dessert.calorie}} Carboidrati: {{m.dessert.carboidrati}} Proteine: {{m.dessert.proteine}} Grassi: {{m.dessert.grassi}}">{{m.dessert.nome}}</div>
-      </div>
-     </div>
-{%endfor%}
-    </div>
-    <a href="#" class="prev"><img src="img/slider/arrow-prev.png" width="24" height="43" alt="Arrow Prev"></a> 
-    <a href="#" class="next"><img src="img/slider/arrow-next.png" width="24" height="43" alt="Arrow Next"></a> 
-   </div> 
-  </div> 
+ <div class="span16">
+  <ul id="slider"> 
+  </ul>
  </div> 
 </div> 
+<div id="d_chgscope" style="display:none;">
+ <div class="row">
+  <div class="span6">
+   <form class="form-stacked" id="f_chgscope" onsubmit="$('#d_chgscope').popover('hide');return false;">
+    <div class="clearfix">
+     <label>Scuola: </label>
+     <div class="input">
+      <input type="text">
+     </div>
+     <div class="actions">
+      <button type="submit" class="btn primary">Ok</button>&nbsp;<button type="reset" class="btn" onclick="$('#d_chgscope').popover('hide');">Annulla</button>
+     </div>  
+    </div>
+   </form>
+  </div>
+ </div>
+</div>

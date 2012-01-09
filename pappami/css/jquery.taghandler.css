@@ -7,18 +7,14 @@
     -moz-border-radius: 7px;
     border: 1px solid #DFDFDF;
     overflow: hidden;
-    min-height: 36px;
+    min-height: 30px;
     line-height: 30px;
     cursor: text;
-    font-family: verdana, arial, helvetica, sans-serif;
     padding: 0px 5px;
     margin: 10px 0px;
 }
 .tagHandler ul.tagHandlerContainer li {
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
-    height: 16px;
+    height: 14px;
     line-height: 14px;
     display: block;
     float: left;
@@ -26,14 +22,38 @@
     margin: 5px 5px 5px 0;
     white-space: nowrap;
 }
-.tagHandler ul.tagHandlerContainer li.tagItem {
-    background-color: #0066bd;
-    color: #FFF;
-    padding: 3px 8px;
-    cursor: url('../img/tag_remove.cur'), pointer;
+.tagHandler a.tagItemRemove {
+    text-decoration:none;
+    cursor: pointer;
+    color: #404040;
 }
-.tagHandler ul.tagHandlerContainer li.tagItem:hover {
-    background-color: #008afb;
+.tagHandler .tagItem {
+  position: relative;
+  padding: 3px 8px;
+  margin-bottom: 0px;
+  color: #404040;
+  background-color: #eeeeee;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#fceec1), to(#eedc94));
+  background-image: -moz-linear-gradient(top, #fceec1, #eedc94);
+  background-image: -ms-linear-gradient(top, #fceec1, #eedc94);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fceec1), color-stop(100%, #eedc94));
+  background-image: -webkit-linear-gradient(top, #fceec1, #eedc94);
+  background-image: -o-linear-gradient(top, #fceec1, #eedc94);
+  background-image: linear-gradient(top, #fceec1, #eedc94);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fceec1', endColorstr='#eedc94', GradientType=0);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border-color: #eedc94 #eedc94 #e4c652;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  border-width: 1px;
+  border-style: solid;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 .tagHandler ul.tagHandlerContainer li.tagInput {
     padding: 3px 4px;
@@ -53,7 +73,7 @@
     right: -24px;
     top: 12px;
     display: none;
-    background: url('../img/loader.gif') center center no-repeat;
+    background: url('../images/loader.gif') center center no-repeat;
     width: 16px;
     height: 18px;
     cursor: default;
@@ -62,7 +82,7 @@
     position: absolute;
     right: -24px;
     top: 14px;
-    background: url('../img/tag_update.png') center center no-repeat;
+    background: url('../images/tag_update.png') center center no-repeat;
     width: 16px;
     height: 16px;
     cursor: pointer;

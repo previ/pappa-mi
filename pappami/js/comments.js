@@ -30,7 +30,7 @@ function onshowvotes(key) {
  });
 }
 function ondetail(key) {
- if( $('#detail_'+key).css("display") == "none") {
+ if( !$('#detail_'+key).is(':visible') ) {
   $('#detail_'+key).load('/public/detail?key='+key, function(){
    $('#summary_'+key).hide();
    $('#detail_'+key).slideDown();
@@ -43,7 +43,7 @@ function ondetail(key) {
  }
 } 
 function onexpcomments(key) {
- if( $('#comments_container_'+key).css("display") == "none") {
+ if( !$('#comments_container_'+key).is(':visible')) {
   $('#comment_list_'+key).load('/comments/comment?par='+key, function(){
    $('#comments_container_'+key).slideDown();
    $('#comment_new_exp_'+key).show();

@@ -48,11 +48,17 @@ class CentroCucina(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
+  _ce_cu_zo_cache = None
   def getZona(self, data=datetime.now().date()):
-    return CentroCucinaZona.all().filter("centroCucina",self).filter("validitaDa <=",data).order("-validitaDa").get().zona
-
+    if not(CentroCucina._ce_cu_zo_cache and CentroCucina._ce_cu_zo_cache.validitaDa <= data and CentroCucina._ce_cu_zo_cache.validitaA >= data):
+      CentroCucina._ce_cu_zo_cache = CentroCucinaZona.all().filter("centroCucina",self).filter("validitaDa <=",data).order("-validitaDa").get().zona
+    return CentroCucina._ce_cu_zo_cache
+  
+  _zo_of_cache = None
   def getMenuOffset(self, data=datetime.now().date()):
-    return ZonaOffset.all().filter("zona",self.getZona(data)).filter("validitaDa <=",data).order("-validitaDa").get().offset
+    if not(CentroCucina._zo_of_cache and CentroCucina._zo_of_cache.validitaDa <= data and CentroCucina._zo_of_cache.validitaA >= data):
+      CentroCucina._zo_of_cache = ZonaOffset.all().filter("zona",self.getZona(data)).filter("validitaDa <=",data).order("-validitaDa").get()
+    return CentroCucina._zo_of_cache.offset
   
 class Commissione(db.Model):
   nome = db.StringProperty(default="")
@@ -89,8 +95,12 @@ class Commissione(db.Model):
       commissari.append(cc.commissario)
     return commissari
 
+  _com_cen_cuc_last = None
+  
   def getCentroCucina(self, data=datetime.now().date()):
-    return CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get().centroCucina
+    if not (Commissione._com_cen_cuc_last and Commissione._com_cen_cuc_last.validitaDa <= data and Commissione._com_cen_cuc_last.validitaA >= data):
+      Commissione._com_cen_cuc_last = CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get()
+    return Commissione._com_cen_cuc_last.centroCucina
 
   def desc(self):
     return self.nome + " " + self.tipoScuola
@@ -209,6 +219,20 @@ class MenuNew(db.Model):
   creato_il = db.DateTimeProperty(auto_now_add=True)
   stato = db.IntegerProperty()
 
+  _menu_cache = dict()
+  
+  @staticmethod
+  def get_by(citta, data):
+    menu = None
+    if citta in MenuNew._menu_cache:
+      menu = MenuNew._menu_cache[citta]
+      if not(menu and menu.validitaDa <= data and menu.validitaDa >= data):
+        MenuNew._menu_cache[citta] = menu
+    else:
+      menu = MenuNew.all().filter("citta", citta).filter("validitaDa <=", data).order("-validitaDa").get()
+      MenuNew._menu_cache[citta] = menu
+    return menu
+  
 class Piatto(db.Model):
   nome = db.StringProperty()
   calorie = db.IntegerProperty()
@@ -216,7 +240,24 @@ class Piatto(db.Model):
   grassi = db.IntegerProperty()
   carboidrati = db.IntegerProperty()
   gi = db.IntegerProperty()
-
+  
+  _pi_gi_cache = dict()
+  
+  @staticmethod
+  def get_by(settimana):
+    pi_gi = None
+    if settimana not in Piatto._pi_gi_cache:
+      pi_gi = dict()
+      for pg in PiattoGiorno.all().filter("settimana", settimana ):
+        if not pg.giorno in pi_gi:
+          pi_gi[pg.giorno] = dict()
+        pi_gi[pg.giorno][pg.tipo] = pg.piatto
+      Piatto._pi_gi_cache[settimana] = pi_gi
+    else:
+      pi_gi = Piatto._pi_gi_cache[settimana]
+    return pi_gi
+        
+  
   #creato_da = db.UserProperty(auto_current_user_add=True)
   #creato_il = db.DateTimeProperty(auto_now_add=True)
   #stato = db.IntegerProperty()

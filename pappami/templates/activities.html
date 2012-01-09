@@ -7,9 +7,10 @@ label.error { float: none; color: red; padding-left: .5em; vertical-align: top; 
 <link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
 <link href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
 <script type="text/javascript" src="/js/jquery.form.js"></script> 
-<script type="text/javascript" src="/js/jquery.taghandler.min.js"></script> 
+<script type="text/javascript" src="/js/jquery.taghandler.js"></script> 
 <script type="text/javascript" src="/js/comments.js"></script> 
 <script src="/js/jform.js" type="text/javascript"></script>
+<script type="text/javascript" src="/js/tiny_mce/jquery.tinymce.js"></script>
 <script type="text/javascript"> 
 
 var query = "";
@@ -27,6 +28,25 @@ $(document).ready(function() {
       offset = 1;
       $('#activity_list').text('');
       $('#activity_list').load('/comments/load?'+query); return false;}
+    });
+    
+    $('#e_message').tinymce({
+     // Location of TinyMCE script
+     script_url : '/js/tiny_mce/tiny_mce.js',     
+     // General options
+     width : "530",
+     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+     theme : "advanced",
+     plugins : "autolink, autoresize", 
+     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+     theme_advanced_buttons2 : "",
+     theme_advanced_buttons3 : "",			
+     theme_advanced_toolbar_location : "top",
+     theme_advanced_toolbar_align : "left",
+     theme_advanced_toolbar_align : "left",
+     theme_advanced_resizing : false     
     });
 }); 
 
@@ -54,12 +74,12 @@ function opennewmsg() {
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
       $('#activity_list').prepend(data);
       //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
-    }, beforeSubmit: function(arr,$form) {
-     
+    }, beforeSubmit: function(arr,$form) {     
       $("[name='tags']").attr('value','');
-      $('.tagItem').each(function() {
-	arr.push({name: "tags", value: $(this).text()});
-       });
+      tags = $("#message_tags_handler").tagHandler("getTags")
+      for(tag in tags) {
+	arr.push({name: "tags", value: tags[tag]});
+      }
       $('#new-msg').slideUp();
     }}); 
     $("#message_tags_handler").tagHandler({
@@ -254,7 +274,6 @@ function moreactivities() {
 {#<div style="height:60px;"></div>#}
 {%if commissario or genitore%}
 <div id="nav-priv-cnt"></div>
-<ul id="message_tags_handler_test"></ul>
 <div class="well">{#
   <div class="dropdown" data-dropdown="dropdown">
     <a href="#" class="btn primary dropdown-toggle">Nuovo ...</a>
@@ -274,22 +293,6 @@ function moreactivities() {
 <button class="btn primary" onclick="opennewnc();">Non conformit&agrave;</button>
 <button class="btn primary" onclick="opennewnota();">Nota</button>
 </div>
-<div id="new-msg" style="display:none;">
- <form id="new-msg-form" action="/comments/message" method="post"> 
-  <input type="hidden" id="act_last" name="last" value="" />  
-  <input type="hidden" name="livello" value="0" />  
-  <input type="hidden" name="tipo" value="201" /> 
-  <div class="comment_avatar">
-   <img src="{{user.avatar}}" title="{{user.fullname}}">
-  </div>
-  <div class="comment_body">
-   <div class="comment_author">{{user.fullname}} </div>
-   <div class="comment_author_title"><input type="text" class="xlarge" name="titolo" size="80"></div>
-   <div class="comment_text"><textarea required="true" class="xxlarge comment_textarea" name="testo"></textarea></div>
-   <div class="comment_tags">Categorie: <div style="width:40em; display:inline;"><ul id="message_tags_handler"></ul><button class="btn primary" type="submit">Invia</button></div></div>
-  </div>   
- </form>
-</div>
 <div id="new-data" style="display:none;">
  <div id="new-data-form" style="border: none;"></div> 
  <div id="new-data-preview" style="display:none;"></div> 
@@ -297,6 +300,42 @@ function moreactivities() {
 {%endif%}
 <div class="row">
   <div class="span12">
+{%if commissario or genitore%}  
+    <div id="new-msg" style="display:none;">
+     <form id="new-msg-form" action="/comments/message" method="post" class="form-stacked" novalidate="true"> 
+      <input type="hidden" id="act_last" name="last" value="" />  
+      <input type="hidden" name="livello" value="0" />  
+      <input type="hidden" name="tipo" value="201" /> 
+      <div class="comment_avatar">
+       <img src="{{user.avatar}}" title="{{user.fullname}}">
+      </div>
+      <div class="comment_body">
+       <div class="comment_author">{{user.fullname}}</div>
+       <div class="comment_author_title"></div>       
+       <div class="comment_text">
+	<div class="clearfix">
+	 <label>Titolo:</label>
+	 <div class="input">
+	  <input type="text" class="xxlarge" name="titolo">
+	 </div>
+	 <label>Testo:</label>
+	 <div class="input">
+    	  <textarea cols="80" rows="4" class="xxlarge comment_textarea required" name="testo" id="e_message"></textarea>
+	 </div>
+	 <label>Categorie:</label>	 
+	 <div class="input">  	  
+	  <ul id="message_tags_handler"></ul>
+	 </div>
+	</div>
+	<div class="actions">
+	 <button class="btn primary" type="submit">Invia</button>
+	 <button class="btn" type="reset" onclick="opennewmsg();">Annulla</button>
+	</div>
+       </div>  
+     </form>
+    </div>
+   </div>     
+{%endif%}
     <ul class="activity_list" id="activity_list"></ul>
   </div>
   <div class="span4">

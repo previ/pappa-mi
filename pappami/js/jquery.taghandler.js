@@ -1,5 +1,5 @@
 /*
-    jQuery Tag Handler v1.1.0
+    jQuery Tag Handler v1.2.1
     Copyright (C) 2010-2011 Mark Jubenville
     Mark Jubenville - ioncache@gmail.com
     http://ioncache.github.com/Tag-Handler
@@ -82,7 +82,6 @@
     
     * A sample CSS file is included that can be used to help with formatting tags.
     
-    
     ------------------------------------------------------------------------------
     Plugin Examples
     ------------------------------------------------------------------------------
@@ -102,62 +101,8 @@
             autocomplete: true
         });
     
-    Example 3: The Tag Handler will be initialized and pull data via ajax, also
-               sending some data to the server:
+    See http://ioncache.github.com/Tag-Handler for more examples
     
-        $("#ajaxget_tag_handler").tagHandler({
-            getData: { id: 'user123', type: 'user' },
-            getURL: '/ajaxtest/get',
-            autocomplete: true
-        });
-    
-    Example 4: Same as Example 3, but a different user is set in the getData /
-               UpdateData options and now the tags will save when clicking the save
-               button:
-               
-        $("#ajaxupdate_tag_handler").tagHandler({
-            getData: { id: 'user234', type: 'user' },
-            getURL: '/ajaxtest/get',
-            updateData: { id: 'user234', type: 'user' },
-            updateURL: '/ajaxtest/update',
-            autocomplete: true
-        });
-    
-    Example 5: Same as Example 4, but autoUpdate is true, tags will save
-               automatically (no save button will be shown):
-    
-        $("#ajaxautoupdate_tag_handler").tagHandler({
-            getData: { id: 'user234', type: 'user' },
-            getURL: '/ajaxtest/get',
-            updateData: { id: 'user234', type: 'user' },
-            updateURL: '/ajaxtest/update',
-            autocomplete: true,
-            autoUpdate: true
-        });
-    
-    Example 6: The Tag Handler will be initialized but it will request the tag list
-    when the user writes more than 2 chars, also sending some data to the server:
-    
-        $("#ajaxget_tag_handler").tagHandler({
-            getData: { id: 'user123', type: 'user' },
-            initLoad: false,
-            getURL: '/ajaxtest/get',
-            autocomplete: true,
-            minChars: 2
-        });
-    
-    Example 7: Same as example 6, but the user cannot create new tags:
-    
-        $("#ajaxget_tag_handler").tagHandler({
-            getData: { id: 'user123', type: 'user' },
-            initLoad: false,
-            getURL: '/ajaxtest/get',
-            autocomplete: true,
-            minChars: 2,
-            allowAdd: false
-        });
-        
-            
     ------------------------------------------------------------------------------
     Plugin Options
     ------------------------------------------------------------------------------
@@ -170,10 +115,17 @@
     assignedTags    array to pass a list of already assigned tags   []
     availableTags   array to pass a list of all available tags      []
     getData         data field with info for getURL                 ''
-    getURL          URL for retrieving tag lists via ajax           ''
-    initLoad:       indicates if load all tags at init              true
-    updatetData     data field with additional info for updtateURL  ''
+    getURL          URL for retrieving tag lists via ajax           {}
+    initLoad        indicates if all tags should be loaded on init  true
+    updateData      data field with additional info for updtateURL  {}
     updateURL       URL for saving tags via ajax                    ''
+
+    Callback options:
+    -----------------
+    Option          Description                                     Default Value
+    --------------  ----------------------------------------------  --------------
+    onAdd           function to be called when a new tag is added   {}
+    onDelete        function to be called when a tag is deleted     {}
     
     Miscellaneous options:
     ----------------------
@@ -202,8 +154,17 @@
                     tag                                             permission to
                                                                     create a new
                                                                     tag.'
-    queryname       variable name to query the server               'q'
+    queryname       query term used to send user typed data         'q'
     sortTags        sets sorting of tag names alphabetically        true
+
+    Methods
+    ----------------------
+    
+    Name               Description               Usage
+    -----------------  -----------------------  --------------------------------
+    getTags            returns an array of tags .tagHandler("getTags")
+    getSerializedTags  returns comma separated  .tagHandler("getSerializedTags")
+                       string of tags
     
     ------------------------------------------------------------------------------
     License
@@ -226,263 +187,298 @@
 
 (function($) {
 
+    // some help methods
+    var methods = {
+        getSerializedTags: function() {
+            var currentTags = [];
+            $(this).find("li.tagItem").each(function(i, e) {
+                currentTags.push($(e).text());
+            });
+            return currentTags.join(',');            
+        },
+        getTags: function() {
+            var currentTags = [];
+            $(this).find("li.tagItem").each(function(i, e) {
+                currentTags.push($(e).find("span").text());
+            });
+            return currentTags;
+        }
+    };
+
+    // main plugin initialization
     $.fn.tagHandler = function(options) {
-        var opts = $.extend({}, $.fn.tagHandler.defaults, options);
-        debug($(this), opts);
+        if ( typeof(options) == 'object' || typeof(options) == 'undefined' ) {
 
-        // processes each specified object and adds a tag handler to each
-        return this.each(function() {
-            // checks to make sure the supplied element is a <ul>
-            if (!$(this).is('ul')) {
-                return true;
-            }
+            var opts = $.extend({}, $.fn.tagHandler.defaults, options);
+            debug($(this), opts);
 
-            // caches the container to avoid scope issues.
-            var tagContainer = this;
-            var tagContainerObject = $(tagContainer);
-
-            // adds an id to the tagContainer in case it doesn't have one
-            if ( !tagContainer.id ) {
-                var d = new Date();
-                tagContainer.id = d.getTime();
-            }
-
-            // wraps the <ul> element in a div mainly for use in positioning
-            // the save button and loader image.
-            tagContainerObject.wrap('<div class="' + opts.className + '" />');
-
-            // adds the the tag class to the tagContainer and creates the tag
-            // input field
-            tagContainerObject.addClass(opts.className + "Container");
-            if (opts.allowEdit) {
-                tagContainerObject.html('<li class="tagInput"><input class="tagInputField" type="text" /></li>');
-            }
-            var inputField = tagContainerObject.find(".tagInputField");
-
-            // master tag list, will contain 3 arrays of tags
-            var tags = [];
-            tags.availableTags = [];
-            tags.originalTags = [];
-            tags.assignedTags = [];
-
-            // adds a save/loader divs to the tagContainer if needed
-            if (opts.updateURL !== '') {
-                if (!opts.autoUpdate) {
-                    $("<div />").attr({ id: tagContainer.id + "_save", title: "Save Tags" }).addClass("tagUpdate").click(function() {
-                        saveTags(tags, opts, tagContainer.id);
-                    }).appendTo(tagContainerObject.parent());
+            // processes each specified object and adds a tag handler to each
+            return this.each(function() {
+    
+                // checks to make sure the supplied element is a <ul>
+                if (!$(this).is('ul')) {
+                    return true;
                 }
-                $("<div />").attr({ id: tagContainer.id + "_loader", title: "Saving Tags" }).addClass("tagLoader").appendTo(tagContainerObject.parent());
-            }
-
-            // initializes the tag lists
-            // tag lists will be pulled from a URL
-            if (opts.getURL !== '' && opts.initLoad) {
-                
-                $.ajax({
-                    url: opts.getURL,
-                    cache: false,
-                    data: opts.getData,
-                    dataType: 'json',
-                    success: function(data, text, xhr) {
-                        if (data.availableTags.length) {
-                            tags.availableTags = data.availableTags.slice();
-                            tags.originalTags = tags.availableTags.slice();
+    
+                // caches the container to avoid scope issues.
+                var tagContainer = this;
+                var tagContainerObject = $(tagContainer);
+    
+                // adds an id to the tagContainer in case it doesn't have one
+                if ( !tagContainer.id ) {
+                    var d = new Date();
+                    tagContainer.id = d.getTime();
+                }
+    
+                // wraps the <ul> element in a div mainly for use in positioning
+                // the save button and loader image.
+                tagContainerObject.wrap('<div class="' + opts.className + '" />');
+    
+                // adds the the tag class to the tagContainer and creates the tag
+                // input field
+                tagContainerObject.addClass(opts.className + "Container");
+                if (opts.allowEdit) {
+                    tagContainerObject.html('<li class="tagInput"><input class="tagInputField" type="text" /></li>');
+                }
+                var inputField = tagContainerObject.find(".tagInputField");
+    
+                // master tag list, will contain 3 arrays of tags
+                var tags = [];
+                tags.availableTags = [];
+                tags.originalTags = [];
+                tags.assignedTags = [];
+    
+                // adds a save/loader divs to the tagContainer if needed
+                if (opts.updateURL !== '') {
+                    if (!opts.autoUpdate) {
+                        $("<div />").attr({ id: tagContainer.id + "_save", title: "Save Tags" }).addClass("tagUpdate").click(function() {
+                            saveTags(tags, opts, tagContainer.id);
+                        }).appendTo(tagContainerObject.parent());
+                    }
+                    $("<div />").attr({ id: tagContainer.id + "_loader", title: "Saving Tags" }).addClass("tagLoader").appendTo(tagContainerObject.parent());
+                }
+    
+                // initializes the tag lists
+                // tag lists will be pulled from a URL
+                if (opts.getURL !== '' && opts.initLoad) {
+                    
+                    $.ajax({
+                        url: opts.getURL,
+                        cache: false,
+                        data: opts.getData,
+                        dataType: 'json',
+                        success: function(data, text, xhr) {
+                            if (data.availableTags.length) {
+                                tags.availableTags = data.availableTags.slice();
+                                tags.originalTags = tags.availableTags.slice();
+                            }
+                            if (opts.sortTags) {
+                                tags = sortTags(tags);
+                            }
+                            if (data.assignedTags.length) {
+                                tags.assignedTags = data.assignedTags.slice();
+                                if (opts.sortTags) {
+                                    tags = sortTags(tags);
+                                }     
+    
+                                tags = addAssignedTags(opts, tags, inputField, tagContainer);
+    
+                            }
+                            if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.allowEdit) {
+                                $(inputField).autocomplete("option", "source", tags.availableTags);
+                            }
+                        },
+                        error: function(xhr, text, error) {
+                            debug(xhr, text, error);
+                            alert(opts.msgError);
                         }
+                    });              
+                
+                // show assigned tags only if we load the data as we write
+                } else if( opts.getURL !== '' ) {
+    
+                    tags.assignedTags = opts.assignedTags.slice();
+                    if (opts.sortTags) {
+                      tags = sortTags(tags);
+                    }
+    
+                    tags = addAssignedTags(opts, tags, inputField, tagContainer);
+    
+                // or load the lists of tags   
+                } else {
+                    
+                    if (opts.availableTags.length) {
+                        tags.availableTags = opts.availableTags.slice();
+                        tags.originalTags = tags.availableTags.slice();
+                    }
+                    if (opts.sortTags) {
+                        tags = sortTags(tags);
+                    }  
+                    if (opts.assignedTags.length) {
+                        tags.assignedTags = opts.assignedTags.slice();
                         if (opts.sortTags) {
                             tags = sortTags(tags);
                         }
-                        if (data.assignedTags.length) {
-                            tags.assignedTags = data.assignedTags.slice();
-                            if (opts.sortTags) {
-                                tags = sortTags(tags);
-                            }     
-
-                            tags = addAssignedTags(opts, tags, inputField, tagContainer);
-
+    
+                        tags = addAssignedTags(opts, tags, inputField, tagContainer);
+                    }
+                    if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.allowEdit && opts.initLoad) {
+                        $(inputField).autocomplete("option", "source", tags.availableTags);
+                    }
+                }
+    
+                // all tag editing functionality only activated if set in options
+                if (opts.allowEdit) {
+                    // delegates a click event function to all future <li> elements with
+                    // the tagItem class that will remove the tag upon click
+                    tagContainerObject.delegate("a.tagItemRemove", "click", function() {
+                        if ( typeof(opts.onDelete) == "function" ) {
+                            opts.onDelete.call(this, $.trim($(this).prev().text()));
                         }
-                        if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.allowEdit) {
-                            $(inputField).autocomplete("option", "source", tags.availableTags);
-                        }
-                    },
-                    error: function(xhr, text, error) {
-                        debug(xhr, text, error);
-                        alert(opts.msgError);
-                    }
-                });              
-            
-            // show assigned tags only if we load the data as we write
-            } else if( opts.getURL !== '' ) {
-
-                tags.assignedTags = opts.assignedTags.slice();
-                if (opts.sortTags) {
-                  tags = sortTags(tags);
-                }
-
-                tags = addAssignedTags(opts, tags, inputField, tagContainer);
-
-            // or load the lists of tags   
-            } else {
-                
-                if (opts.availableTags.length) {
-                    tags.availableTags = opts.availableTags.slice();
-                    tags.originalTags = tags.availableTags.slice();
-                }
-                if (opts.sortTags) {
-                    tags = sortTags(tags);
-                }  
-                if (opts.assignedTags.length) {
-                    tags.assignedTags = opts.assignedTags.slice();
-                    if (opts.sortTags) {
-                        tags = sortTags(tags);
-                    }
-
-                    tags = addAssignedTags(opts, tags, inputField, tagContainer);
-                }
-                if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.allowEdit && opts.initLoad) {
-                    $(inputField).autocomplete("option", "source", tags.availableTags);
-                }
-            }
-
-            // all tag editing functionality only activated if set in options
-            if (opts.allowEdit) {
-                // delegates a click event function to all future <li> elements with
-                // the tagItem class that will remove the tag upon click
-                tagContainerObject.delegate("li.tagItem", "click", function() {
-                    tags = removeTag($(this), tags, opts.sortTags);
-                    if (opts.updateURL !=='' && opts.autoUpdate) {
-                        saveTags(tags, opts, tagContainer.id);
-                    }
-                    if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
-                      $(inputField).autocomplete("option", "source", tags.availableTags);
-                    }
-                });
-
-                // checks the keypress event for enter or comma, and adds a new tag
-                // when either of those keys are pressed
-                $(inputField).keypress(function(e) {
-                    if (e.which === 13 || e.which === 44 || e.which === opts.delimiter.charCodeAt(0)) {
-                        e.preventDefault();
-                        if ($(this).val() !=="" && !checkTag($.trim($(this).val()), tags.assignedTags)) {
-                            
-                            // check if the tag is in availableTags
-                            if( !opts.allowAdd && !checkTag($.trim($(this).val()), tags.availableTags)){
-                              alert(opts.msgNoNewTag);
-                              return;
-                            }
-                            
-                            if ( opts.maxTags > 0 && tags.assignedTags.length >= opts.maxTags ) {
-                                alert('Maximum tags allowed: ' + opts.maxTags);
-                            } else {
-                                tags = addTag(this, $.trim($(this).val()), tags, opts.sortTags);
-                                if (opts.updateURL !=='' && opts.autoUpdate) {
-                                    saveTags(tags, opts, tagContainer.id);
-                                }
-                                if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
-                                    $(inputField).autocomplete("option", "source", tags.availableTags);
-                                }
-                            }
-                            $(this).val("");
-                            $(this).focus();
-                        }
-                    }
-                });
-
-                // checks the keydown event for the backspace key as checking the
-                // keypress event doesn't work in IE
-                $(inputField).keydown(function(e) {
-                    if (e.which === 8 && $(this).val() === "") {
-                        tags = removeTag(tagContainerObject.find(".tagItem:last"), tags, opts.sortTags);
+                        tags = removeTag($(this).prev(), tags, opts.sortTags);
                         if (opts.updateURL !=='' && opts.autoUpdate) {
                             saveTags(tags, opts, tagContainer.id);
                         }
                         if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
                           $(inputField).autocomplete("option", "source", tags.availableTags);
                         }
-                        $(this).focus();
-                    }
-                });
-
-                // adds autocomplete functionality for the tag names
-                if  ( opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad ) {
-                    
-                    $(inputField).autocomplete({
-                        source: tags.availableTags,
-                        select: function(event, ui) {
-                            if (!checkTag($.trim(ui.item.value), tags.assignedTags)) {
-                                if ( opts.maxTags > 0 && tags.assignedTags.length >= opts.maxTags ) {
-                                    alert('Maximum tags allowed: ' + opts.maxTags);
-                                } else {
-                                    tags = addTag(this, $.trim(ui.item.value), tags, opts.sortTags);
-                                    if (opts.updateURL !=='' && opts.autoUpdate) {
-                                        saveTags(tags, opts, tagContainer.id);
-                                    }
-                                    $(inputField).autocomplete("option", "source", tags.availableTags);
-                                }
-                                $(this).focus();
-                            }
-                            $(this).val("");
-                            return false;
-                        },
-                        minLength: opts.minChars
                     });
-
-                // Make an AJAX request to get the list of tags
-                } else if ( opts.autocomplete && typeof($.fn.autocomplete) == 'function' ) {
-
-                    var cache = {};
-
-                    $(inputField).autocomplete({
-                        source: function( request, response ) {
-                            var term = request.term;
-                            if ( term in cache ) {
-                              response( cache[ term ] );
-                              return;
-                            }
-                            // Add term to search on the server
-                            opts.getData[opts.queryName] = term;
-                            lastXhr = $.getJSON( opts.getURL, opts.getData, function( data, status, xhr ) {
-                                cache[ term ] = data;
-                                if ( xhr === lastXhr ) {
-                                    response( data );
+    
+                    // checks the keypress event for enter or comma, and adds a new tag
+                    // when either of those keys are pressed
+                    $(inputField).keypress(function(e) {
+                        if (e.which === 13 || e.which === 44 || e.which === opts.delimiter.charCodeAt(0)) {
+                            e.preventDefault();
+                            if ($(this).val() !=="" && !checkTag($.trim($(this).val()), tags.assignedTags)) {
+                                
+                                // check if the tag is in availableTags
+                                if( !opts.allowAdd && !checkTag($.trim($(this).val()), tags.availableTags)){
+                                  alert(opts.msgNoNewTag);
+                                  return;
                                 }
-                            });
-                        },
-                        select: function(event, ui) {
-                            if ( !checkTag($.trim(ui.item.value), tags.assignedTags) ) {
+                                
                                 if ( opts.maxTags > 0 && tags.assignedTags.length >= opts.maxTags ) {
                                     alert('Maximum tags allowed: ' + opts.maxTags);
                                 } else {
-                                    tags = addTag(this, $.trim(ui.item.value), tags, opts.sortTags);
+                                    var newTag = $.trim($(this).val());
+                                    tags = addTag(this, newTag, tags, opts.sortTags);
                                     if (opts.updateURL !=='' && opts.autoUpdate) {
                                         saveTags(tags, opts, tagContainer.id);
                                     }
+                                    if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
+                                        $(inputField).autocomplete("option", "source", tags.availableTags);
+                                    }
+                                    if ( typeof(opts.onAdd) == "function" ) {
+                                        opts.onAdd.call(this, newTag);
+                                    }
                                 }
+                                $(this).val("");
                                 $(this).focus();
                             }
-                            $(this).val('');
-                            return false;
-                        },
-                        minLength: opts.minChars
+                        }
+                    });
+    
+                    // checks the keydown event for the backspace key as checking the
+                    // keypress event doesn't work in IE
+                    $(inputField).keydown(function(e) {
+                        if (e.which === 8 && $(this).val() === "") {
+                            if ( typeof(opts.onDelete) == "function" ) {
+                                opts.onDelete.call(this, $.trim($(this).val()));
+                            }
+                            tags = removeTag(tagContainerObject.find(".tagItem:last"), tags, opts.sortTags);
+                            if (opts.updateURL !=='' && opts.autoUpdate) {
+                                saveTags(tags, opts, tagContainer.id);
+                            }
+                            if (opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
+                                $(inputField).autocomplete("option", "source", tags.availableTags);
+                            }
+                            $(this).focus();
+                        }
+                    });
+    
+                    // adds autocomplete functionality for the tag names
+                    if  ( opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad ) {
+                        
+                        $(inputField).autocomplete({
+                            source: tags.availableTags,
+                            select: function(event, ui) {
+                                if (!checkTag($.trim(ui.item.value), tags.assignedTags)) {
+                                    if ( opts.maxTags > 0 && tags.assignedTags.length >= opts.maxTags ) {
+                                        alert('Maximum tags allowed: ' + opts.maxTags);
+                                    } else {
+                                        var newTag = $.trim(ui.item.value);
+                                        tags = addTag(this, newTag, tags, opts.sortTags);
+                                        if (opts.updateURL !=='' && opts.autoUpdate) {
+                                            saveTags(tags, opts, tagContainer.id);
+                                        }
+                                        $(inputField).autocomplete("option", "source", tags.availableTags);
+                                        if ( typeof(opts.onAdd) == "function" ) {
+                                            opts.onAdd.call(this, newTag);
+                                        }
+                                    }
+                                    $(this).focus();
+                                }
+                                $(this).val("");
+                                return false;
+                            },
+                            minLength: opts.minChars
+                        });
+    
+                    // Make an AJAX request to get the list of tags based on typed data
+                    } else if ( opts.autocomplete && typeof($.fn.autocomplete) == 'function' ) {
+                        $(inputField).autocomplete({
+                            source: function( request, response ) {
+                                opts.getData[opts.queryname] = request.term;
+                                lastXhr = $.getJSON( opts.getURL, opts.getData, function( data, status, xhr ) {
+                                    response( data.availableTags );
+                                });
+                            },
+                            select: function(event, ui) {
+                                if ( !checkTag($.trim(ui.item.value), tags.assignedTags) ) {
+                                    if ( opts.maxTags > 0 && tags.assignedTags.length >= opts.maxTags ) {
+                                        alert('Maximum tags allowed: ' + opts.maxTags);
+                                    } else {
+                                        var newTag = $.trim(ui.item.value);
+                                        tags = addTag(this, $.trim(ui.item.value), tags, opts.sortTags);
+                                        if (opts.updateURL !=='' && opts.autoUpdate) {
+                                            saveTags(tags, opts, tagContainer.id);
+                                        }
+                                        if ( typeof(opts.onAdd) == "function" ) {
+                                            opts.onAdd.call(this, newTag);
+                                        }
+                                    }
+                                    $(this).focus();
+                                }
+                                $(this).val('');
+                                return false;
+                            },
+                            minLength: opts.minChars
+                        });
+                    }
+    
+                    // sets the input field to show the autocomplete list on focus
+                    // when there is no value
+                    $(inputField).focus(function() {
+                        if ($(inputField).val() === '' && opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
+                            $(inputField).autocomplete("search", "");
+                        }
+                    });
+    
+                    // sets the focus to the input field whenever the user clicks
+                    // anywhere on the tagContainer -- since the input field by default
+                    // has no border it isn't obvious where to click to access it
+                    tagContainerObject.click(function() {
+                        $(inputField).focus();
                     });
                 }
-
-                // sets the input field to show the autocomplete list on focus
-                // when there is no value
-                $(inputField).focus(function() {
-                    if ($(inputField).val() === '' && opts.autocomplete && typeof($.fn.autocomplete) == 'function' && opts.initLoad) {
-                        $(inputField).autocomplete("search", "");
-                    }
-                });
-
-                // sets the focus to the input field whenever the user clicks
-                // anywhere on the tagContainer -- since the input field by default
-                // has no border it isn't obvious where to click to access it
-                tagContainerObject.click(function() {
-                    $(inputField).focus();
-                });
-            }
-        });
+                this.getTags = function() {
+                    return tags.assignedTags;
+                };
+                return 1;
+            });
+        } else if ( typeof(options) == "string" && methods[options] ) {
+            return methods[ options ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+        }
     };
 
     // plugin option defaults
@@ -496,16 +492,18 @@
         className: 'tagHandler',
         debug: false,
         delimiter: '',
-        getData: '',
+        getData: {},
         getURL: '',
         initLoad: true,
         maxTags: 0,
         minChars: 0,
         msgNoNewTag: "You don't have permission to create a new tag.",
         msgError: "There was an error getting the tag list.",
-        queryName: 'q',
+        onAdd: {},
+        onDelete: {},
+        queryname: 'q',
         sortTags: true,
-        updatetData: '',
+        updateData: {},
         updateURL: ''
     };
     
@@ -537,7 +535,7 @@
     function addTag(tagField, value, tags, sort) {
         tags.assignedTags.push(value);
         tags.availableTags = removeTagFromList(value, tags.availableTags);
-        $("<li />").addClass("tagItem").html(value).insertBefore($(tagField).parent());
+        $("<li />").addClass("tagItem").html("<span>"+value+"</span>&nbsp;|&nbsp;<a class='tagItemRemove' href='#'>x</a>").insertBefore($(tagField).parent());
 
         if (sort) {
             tags = sortTags(tags);
@@ -552,7 +550,7 @@
         if (checkTag(value, tags.originalTags)) {
             tags.availableTags.push(value);
         }
-        $(tag).remove();
+        $(tag).parent().remove();
 
         if (sort) {
             tags = sortTags(tags);
@@ -618,7 +616,7 @@
 
     // some debugging information
     function debug(tagContainer, options) {
-        if (window.console && window.console.log && options.debug) {
+        if (options.debug && window.console && window.console.log) {
             window.console.log(tagContainer);
             window.console.log(options);
             window.console.log($.fn.tagHandler.defaults);

@@ -106,7 +106,7 @@ class Messaggio(db.Model):
     if self.tipo == 201 or self.tipo == 202:
       s = ""
       if len(self.testo) > 77:
-        s = self.testo[0:77] + " ..."
+        s = "(leggi...)"
       else:
         s = self.testo
         
