@@ -278,6 +278,8 @@ class CMStatsHandler(BasePage):
     template_values["statCM"] = statCM
     template_values['action'] = self.request.path
     template_values["content"] = "stats/statindex.html"
+    template_values["cmsro"] = self.getCommissario(users.get_current_user())
+    template_values["citta"] = Citta.all().order("nome")
     super(CMStatsHandler, self).getBase(template_values)
 
     

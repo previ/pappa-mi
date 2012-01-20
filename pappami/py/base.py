@@ -84,12 +84,12 @@ class BasePage(webapp.RequestHandler):
       self.redirect("http://www.pappa-mi.it")
         
     user = users.get_current_user()
+    url = None
     if user:
       url = users.create_logout_url("/")
       url_linktext = 'Esci'
     else:
-      url = "/login"
-      template_values["login_url"] = users.create_login_url(self.request.uri)
+      url = users.create_login_url(self.request.uri)
       url_linktext = 'Entra'
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
@@ -361,16 +361,6 @@ class CMCommissioniDataHandler(BasePage):
     self.response.headers.add_header("Expires", expires_str)
     self.response.out.write(buff)
 
-class CMCommissioniHandler(BasePage):
-      
-  def getBase(self,template_values):
-    template_values["content"] = "map.html"
-    template_values["limit"] = 100
-    template_values["centriCucina"] = CentroCucina.all().order("nome")
-    template_values['action'] = self.request.path
-    template_values['geo'] = self.getCommissario(users.get_current_user()).citta.geo
-    super(CMCommissioniHandler,self).getBase(template_values)
-
 class CMMenuHandler(BasePage):
 
   def createMenu(self,request,c,template_values):
@@ -506,7 +496,6 @@ class CMMenuHandler(BasePage):
     template_values['datan'] = daten
     template_values['cm'] = cm
     template_values['action'] = self.request.path
-    logging.info("CMMenuHandler.type: " + str(type(self)))
     super(CMMenuHandler,self).getBase(template_values)
     
 
@@ -521,11 +510,20 @@ class CMCittaHandler(webapp.RequestHandler):
     
     
     
-def roleCommissario(func):
+def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     commissario = basePage.getCommissario(users.get_current_user())
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/")
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf    
+
+def user_required(func):
+  def callf(basePage, *args, **kwargs):
+    commissario = basePage.getCommissario(users.get_current_user())
+    if commissario == None:
+      basePage.redirect("/signup")
     else:
       return func(basePage, *args, **kwargs)
   return callf    

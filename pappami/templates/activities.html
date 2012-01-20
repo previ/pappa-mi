@@ -52,7 +52,8 @@ $(document).ready(function() {
 
 
 var ulmsg=false;
-function closeIt() {
+
+function closeAlert() {
   if(ulmsg) {
     if( confirm("Attenzione, la pagina contiene dati non salvati, uscire comunque ?") ) {
       ulmsg=false;  
@@ -63,7 +64,16 @@ function closeIt() {
   }
 }
 
-window.onbeforeunload = closeIt;
+function closedialog() {
+  cleardirty();
+  $('#new-data').dialog('close');
+}
+
+function cleardirty() {
+  ulmsg=false;
+}
+
+window.onbeforeunload = closeAlert;
 
 function opennewmsg() {  
   if($('#new-msg').is(':visible') ) {
@@ -177,7 +187,7 @@ function opennewwiz(url) {
     });
     $('#new-data').show();
     $("#formwiz-progress-step1").toggleClass("active");
-    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 600, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeIt });
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 600, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeAlert, beforeClose: closeAlert});
     $('#new-data').dialog('open');
   });
 }
@@ -214,7 +224,7 @@ function onopennewitem() {
       required: "Inserire o selezionare un valore",
       range: "Inserire un valore compreso tra {0} e {1}" };
   $('#new-data-form').show();
-  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 500, width: 820, zIndex: 2, autoOpen: false,  beforeClose: closeIt });
+  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 820, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
   $('#new-data').dialog('open');
 }
 

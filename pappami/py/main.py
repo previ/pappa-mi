@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter
+from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -23,9 +23,8 @@ import wsgiref.handlers
 from google.appengine.ext import db
 from google.appengine.api import users
 import webapp2 as webapp
-from jinja2 import Template
+from jinja2.filters import do_pprint
 from google.appengine.api import memcache
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 import py.feedparser
@@ -36,25 +35,28 @@ from py.model import *
 from py.modelMsg import *
 from py.comments import *
 
+if 'lib' not in sys.path:
+  sys.path[0:0] = ['lib']
+    
 class MainPage(BasePage):
   
   def get(self):
     template_values = dict()
     template_values["host"] = self.getHost()
-
+        
     commissario = self.getCommissario(users.get_current_user())
     if commissario and commissario.isCommissario():
       return self.getPrivate(template_values)
     if commissario and commissario.isGenitore():
       return self.getPrivate(template_values)
-      
+          
     activities = self.get_activities()
     template_values["activities"] = activities
     template_values["content"] = "public.html"
     template_values["billboard"] = "billboard.html"
     template_values["content_right"] = "rightbar.html"
     template_values["stat"] = stats = self.getStats()
-
+    
     geo = db.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(users.get_current_user())
     
@@ -152,97 +154,7 @@ class CMCondizioniHandler(BasePage):
   def get(self):
     template_values = dict()
     template_values["main"] = "../templates/condizioni.html"
-    self.getBase(template_values)
-
-class CMRegistrazioneHandler(BasePage):
-  
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "registrazione.html"
-    self.getBase(template_values)
-
-class CMSignupHandler(BasePage):
-  
-  def get(self):
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if(commissario == None):
-      stato = 11
-      if self.request.get("iscm") == "S":
-        stato = 0
-      
-      commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = stato)
-      if self.request.get("citta"):
-        commissario.citta = db.Key(self.request.get("citta"))
-      commissario.emailComunicazioni = "S"
-      commissario.put()
-          
-      for c_key in self.request.get_all("commissione"):
-        commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
-        commissioneCommissario.put()
-
-      commissario.setCMDefault()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
-        
-      self.sendRegistrationRequestMail(commissario)
-    template_values = dict()
-    template_values['cmsro'] = commissario
-    if commissario.isRegCommissario():
-      template_values['content'] = 'commissario/registrazione_ok.html'
-      self.getBase(template_values)
-    else:
-      self.redirect("/genitore")
-
-  def sendRegistrationRequestMail(self, commissario):
-    if commissario.isGenitore():
-      self.sendRegistrationGenitoreRequestMail(commissario)
-    else:
-      self.sendRegistrationCommissarioRequestMail(commissario)      
-
-  def sendRegistrationGenitoreRequestMail(self, commissario) :
-
-    host = self.getHost()
-
-    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
-    
-    message = mail.EmailMessage()
-    message.sender = sender
-    message.to = commissario.user.email()
-    message.bcc = sender
-    message.subject = "Benvenuto in Pappa-Mi"
-    message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
-    
-    Ora puoi accedere all'area a te riservata:
-    http://"""  + host + """/genitore
-
-    PappaPedia (documenti):
-    http://pappapedia.pappa-mi.it
-    
-    Ciao !
-    Pappa-Mi staff
-    
-    """
-      
-    message.send()
-
-  def sendRegistrationCommissarioRequestMail(self, commissario) :
-
-    host = self.getHost()
-    
-    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
-    
-    message = mail.EmailMessage()
-    message.sender = sender
-    message.to = sender
-    message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
-    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
-    
-    Per abilitarlo usare il seguente link:
-    
-    """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key())
-
-    message.send()
-    
+    self.getBase(template_values)    
     
 class CMMenuDataHandler(CMMenuHandler):
   
@@ -326,8 +238,10 @@ class CMMapDataHandler(webapp.RequestHandler):
       self.response.out.write(markers)
 
 class CalendarioHandler(BasePage):
+  @user_required
   def post(self):
     return self.get()
+  @user_required
   def get(self):    
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cmd") == "create":
@@ -360,6 +274,7 @@ class CalendarioHandler(BasePage):
       
 class TagsPage(BasePage):
   
+  @user_required
   def get(self):
     template_values = dict()
     template_values["content"] = "tags.html"
@@ -367,29 +282,6 @@ class TagsPage(BasePage):
     
     self.getBase(template_values)
       
-class DocPage(BasePage):
-  
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "docs.html"
-    template_values["iframesrc"] = "http://docs.pappa-mi.it/allegati"
-    self.getBase(template_values)
-
-class BlogPage(BasePage):
-  
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "docs.html"
-    template_values["iframesrc"] = "http://blog.pappa-mi.it/"
-    self.getBase(template_values)
-
-class FbPage(BasePage):
-  
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "fb.html"
-    self.getBase(template_values)
-
 class ChiSiamoPage(BasePage):
   
   def get(self):
@@ -397,22 +289,32 @@ class ChiSiamoPage(BasePage):
     template_values["content"] = "chi.html"
     self.getBase(template_values)
 
+config = {
+    'webapp2_extras.sessions': {
+        'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
+    },
+    'webapp2_extras.auth': {
+        #        'user_model': 'models.User',
+        'user_attributes': ['displayName', 'email'],
+        },
+    'webapp2_extras.jinja2': {
+        'filters': {
+            'do_pprint': do_pprint,
+            },
+        },
+    }
+
 app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/tags', TagsPage),
-  #('/fb', FbPage),
-  ('/docs', DocPage),
-  #('/blog', BlogPage),
   ('/chi', ChiSiamoPage),
   ('/map', CMMapDataHandler),
   ('/menu', CMMenuDataHandler),
   ('/menuslide', CMMenuSlideHandler),
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
-  ('/condizioni', CMCondizioniHandler),
-  ('/registrazione', CMRegistrazioneHandler),
-  ('/signup', CMSignupHandler)
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ('/condizioni', CMCondizioniHandler)
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
   app.run();

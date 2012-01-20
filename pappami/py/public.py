@@ -38,9 +38,8 @@ from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler
+from py.base import BasePage, CMCommissioniDataHandler
 from py.stats import CMStatsHandler
-from py.commissario import CMCommissarioDataHandler
 from py.comments import CMCommentHandler
 
 TIME_FORMAT = "%H:%M"
