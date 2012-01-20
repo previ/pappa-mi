@@ -1,51 +1,32 @@
-{% if preview %}
-<script type="text/javascript">
-var ulmsg=true;
-function closeIt() {
-if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
-}
-window.onbeforeunload = closeIt;
-</script>
-{% endif %}
-{%if public_url%}
-{%endif%}
 <div>
  <div class="row">
   <div class="span12">
    <h3>{{nota.commissione.nome}} - {{nota.commissione.tipoScuola}} - Nota del {{nota.dataNota}}</h3>
-  </div>
- </div>
- <div class="row">
-  <div class="span12 box1">
-   <label class="" for="e_titolo">Titolo</label>
-   {{nota.titolo}}
-  </div>
- </div>     
- <div class="row">
-  <div class="span12 box1">
-   <label class="" for="e_titolo">Testo</label>
-   {{nota.note|replace("\n","<br/>")}}
-  </div>
- </div>   
+   <div>Titolo</div>
+   <h4>{{nota.titolo}}</h4>
+   <div>Testo</div>
+   <div class="input" style="height:348px; overflow:auto;">
+    <div>{{nota.note|replace("\n","<br/>")}}</div>
+   </div>
 {% if allegati %}
- <div class="row">
-  <div class="span12 box1">
-   <label class="label_isp_1" for="e_attach">Allegati</label>{%for allegato in allegati%}
-   <a href="{{allegato.path()}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}   
-  </div>
- </div>   
+   <div for="e_attach">Allegati</div>
+   <div>{%for allegato in allegati%}
+    <a href="{{allegato.path()}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}   
+   </div>
 {% endif %}  
- <div class="span12 box1">
-  <label class="label_isp_1">Categorie</label>
-  {%for tag in nota.tags%}{{tag}}&nbsp;{%endfor%}  
- </div>
+   <div>Categorie</div>
+   <div>
+    {%for tag in nota.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
+   </div>
 {% if preview %}
- <div class="actions">
-  <form action="/isp/nota" method="POST" id="form1">
-  <input type="hidden" name="preview" value="{{preview}}">
-  <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-  <button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
-  </form>
+   <div class="modal-footer modal-footer-ex">
+    <form action="/isp/nota" method="POST" id="form1">
+     <input type="hidden" name="preview" value="{{preview}}">
+     <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
+     <button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
+    </form>
+   </div>
+ {% endif %}
+  </div>
  </div>
-{% endif %}
 </div>

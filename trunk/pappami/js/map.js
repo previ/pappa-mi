@@ -40,9 +40,9 @@ var fstyles = {
 };
 
 function drawMap(data) {
-  var f_cc = dojo.byId("e_cc").value;
-  var f_type = dojo.byId("e_tipo").value;
-  var f_numcm = dojo.byId("e_numcm").value;
+  var f_cc = $("#e_cc").val();
+  var f_type = $("#e_tipo").val();
+  var f_numcm = $("#e_numcm").val();
   jdata = jQuery(data).find("marker");
   
   jdata.each(function() {
@@ -72,9 +72,7 @@ function drawMap(data) {
 
 function redraw() {
   $("#loading").show();
-  while (list.firstChild) {
-    list.removeChild(list.firstChild);
-  }
+  list.children().remove();
   list.lenght = 0;
   for (var i = 0; i < markersArray.length; i++) {
    markersArray[i].setMap(null);
@@ -99,7 +97,7 @@ function load(lat, lon) {
   }    
   map = new google.maps.Map(document.getElementById("map"), myOptions);
 
-  list = dojo.byId("left_list");
+  list = $("#left_list");
 
   redraw();
 }
@@ -135,7 +133,7 @@ function addLocationToList(list, school, marker,openiw) {
     itm.addEventListener("click", openiw);
  } else {
   }
-  list.appendChild(itm);
+  list.append(itm);
 }     
 
 function loadSmallMap(lat,lon) {

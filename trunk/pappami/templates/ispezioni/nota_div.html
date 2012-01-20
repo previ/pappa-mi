@@ -7,55 +7,58 @@ window.onbeforeunload = closeIt;
 </script>
 <div id="form-error"></div>
 <div class="ui-widget ui-widget-content" style="border:none;">
-<h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
-<form action="/isp/nota" method="post" id="form0" ENCTYPE="multipart/form-data" novalidate>
-<input type="hidden" name="key" value="{{key}}"/>
-<div class="step form-stacked">
- <div class="row">
-   <div class="span6 box1">
-    <label class="label_isp_1" for="e_commissione">Commissione</label>
-    <select class="required" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
-     <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
-    </select>
+ <form action="/isp/nota" method="post" id="form0" ENCTYPE="multipart/form-data" novalidate style="margin-bottom:0">
+  <h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
+  <div class="modal-body">
+   <input type="hidden" name="key" value="{{key}}"/>
+   <div class="step form-stacked">
+    <div class="row">
+      <div class="span6 box1">
+       <label class="label_isp_1" for="e_commissione">Commissione</label>
+       <select class="required" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+        <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+       </select>
+      </div>
+      <div class="span6 box1">
+       <label class="label_isp_1" for="e_dataNotaViz">Data Ispezione</label>
+       <input title="Inserire la data a cui si riferisce la segnalazione." type="text" class="required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
+       <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
+      </div>   
+    </div>   
+    <div class="row">
+     <div class="span12 box1">
+      <label class="label_isp_1" for="e_titolo">Titolo</label>
+      <input type="text" id="e_titolo" class="required span12" name="titolo" value="{{form.data.titolo}}"></input>
+     </div>
+    </div>   
+    <div class="row">
+     <div class="span12 box1">
+      <label class="label_isp_1" for="e_titolo">Testo</label>
+      <textarea required="true" name="note" rows="3" class="required span12" id="e_note">{{form.data.note}}</textarea>
+     </div>
+    </div>   
+    <div class="row">
+     <div class="span12 box1">
+      <label class="label_isp_1" for="e_attach">Allegati</label>
+      <input type="file" name="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_1" allow="*"/>
+      {#<input type="file" name="allegato_file_2" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_2" allow="*"/>
+      <input type="file" name="allegato_file_3" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_3" allow="*"/>#}
+     </div>
+    </div>   
+    <div class="span12 box1">
+     <label class="label_isp_1">Categorie</label>
+     <div class="comment_tags">  
+      <div style="width:40em; display:inline;">
+       <ul id="nota_tags_handler"></ul>
+      </div>
+     </div>
+    </div>
    </div>
-   <div class="span6 box1">
-    <label class="label_isp_1" for="e_dataNotaViz">Data Ispezione</label>
-    <input title="Inserire la data a cui si riferisce la segnalazione." type="text" class="required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
-    <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
-   </div>   
- </div>   
- <div class="row">
-  <div class="span12 box1">
-   <label class="label_isp_1" for="e_titolo">Titolo</label>
-   <input type="text" id="e_titolo" class="required span12" name="titolo" value="{{form.data.titolo}}"></input>
   </div>
- </div>   
- <div class="row">
-  <div class="span12 box1">
-   <label class="label_isp_1" for="e_titolo">Testo</label>
-   <textarea required="true" name="note" rows="3" class="required span12" id="e_note">{{form.data.note}}</textarea>
+  <div class="modal-footer">
+   <button id="e_submit" type="submit" onclick="" class="btn primary">Salva dati</button><button onclick="closedialog();" id="e_annulla" class="btn">Annulla</button>
   </div>
- </div>   
- <div class="row">
-  <div class="span12 box1">
-   <label class="label_isp_1" for="e_attach">Allegati</label>
-   <input type="file" name="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_1" allow="*"/>
-   {#<input type="file" name="allegato_file_2" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_2" allow="*"/>
-   <input type="file" name="allegato_file_3" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_3" allow="*"/>#}
-  </div>
- </div>   
- <div class="span12 box1">
-  <label class="label_isp_1">Categorie</label>
-  <div class="comment_tags">  
-   <div style="width:40em; display:inline;">
-    <ul id="nota_tags_handler"></ul>
-   </div>
-  </div>
- </div>
- <div class="actions">
-  <button id="e_submit" type="submit" onclick="ulmsg=false;" class="btn primary">Salva dati</button><button onclick="return onclosenewitem();" id="e_annulla" class="btn">Annulla</button>
- </div>
-</form>
+ </form>
 </div>
 
 <script type="text/javascript">
@@ -82,6 +85,9 @@ $(document).ready(function() {
   
   // General options
   width : "690",
+  content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+  theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+  font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
   theme : "advanced",
   plugins : "autolink", 
   theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",

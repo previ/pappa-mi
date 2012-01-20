@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import Const, BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario
+from py.base import Const, BasePage, commissario_required, user_required
 
 import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
@@ -20,7 +20,7 @@ from py.model import *
 from py.site import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.stats import CMStatsHandler
-from py.calendar import *
+from py.gcalendar import *
 from py.modelMsg import *
 
 TIME_FORMAT = "%H:%M"

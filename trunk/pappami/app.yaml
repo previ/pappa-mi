@@ -11,6 +11,7 @@ builtins:
 - datastore_admin: on
 - remote_api: on 
 - appstats: on
+- deferred: on
 
 libraries:
 - name: PIL
@@ -42,15 +43,15 @@ skip_files: |
 handlers:
 
 - url: /_ah/mail/.+ 
-  script: py.handle_incoming_email.py 
+  script: py.handle_incoming_email.app 
   login: admin
   
 - url: /admin/dblog
-  script: py/dblog.py
+  script: py.dblog.app
   login: admin
 
 - url: /_ah/remote_api
-  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.app
   login: admin
   
 - url: /css
@@ -70,110 +71,102 @@ handlers:
   static_files: img/favicon.ico
   upload: img/favicon.ico
 
-- url: /public/.*
-  script: py/public.py
-
-- url: /isp/.*
-  script: py/ispezioni.py
-  login: required
-  
-- url: /commissario/.*
-  script: py/commissario.py
-  login: required
-
-- url: /commissario/*
-  script: py/commissario.py
-  login: required
-
-- url: /genitore/.*
-  script: py/genitore.py
-  login: required
-
-- url: /genitore/*
-  script: py/genitore.py
-  login: required
-  
 - url: /admin/stats/*
-  script: py/stats.py
+  script: py.stats.app
   login: admin  
 
 - url: /admin/stats/.*
-  script: py/stats.py
+  script: py.stats.app
   login: admin  
   
 - url: /admin/.*
-  script: py/admin.py
+  script: py.admin.app
   login: admin
 
 - url: /admin/*
-  script: py/admin.py
+  script: py.admin.app
   login: admin
   
+- url: /public/.*
+  script: py.public.app
+
+- url: /isp/.*
+  script: py.ispezioni.app   
+  
 - url: /stats/.*
-  script: py/stats.py
+  script: py.stats.app
   login: required
 
 - url: /stats/*
-  script: py/stats.py
+  script: py.stats.app
   login: required
 
 - url: /feed/.*
-  script: py/feed.py
+  script: py.feed.app
 
 - url: /feed/*
-  script: py/feed.py
+  script: py.feed.app
 
 - url: /widget/.*
-  script: py/widget.py
+  script: py.widget.app
   
 - url: /widget/*
-  script: py/widget.py
+  script: py.widget.app
  
-- url: /_ah/login_required
-  script: py/login.py
+#- url: /_ah/login_required
+#  script: py.login.app
 
-- url: /_ah/login_required
-  script: py/login.py
+#- url: /_ah/login_required
+#  script: py.login.app
 
-- url: /login
-  script: py/login.py
-  login: required
+#- url: /login
+#  script: py.login.app
+#  login: required
 
 - url: /fb
-  script: py/fb.py
+  script: py.fb.app
 
 - url: /fb/*
-  script: py/fb.py
+  script: py.fb.app
 
 - url: /fb/.*
-  script: py/fb.py
+  script: py.fb.app
 
 - url: /comments/*
-  script: py/comments.py
+  script: py.comments.app
 
 - url: /comments/.*
-  script: py/comments.py
+  script: py.comments.app
 
 - url: /profilo/*
-  script: py/profilo.py
-  login: required
+  script: py.profilo.app
 
 - url: /profilo/.*
-  script: py/profilo.py
-  login: required
+  script: py.profilo.app
 
 - url: /signup
-  script: py/signup.py
-  login: required
+  script: py.signup.app
 
 - url: /blob/*
-  script: py/blob.py
+  script: py.blob.app
 
 - url: /blob/.*
-  script: py/blob.py
+  script: py.blob.app
+
+- url: /commissioni/.*
+  script: py.commissioni.app
+
+- url: /commissioni/*
+  script: py.commissioni.app
+  
+- url: /contatti/.*
+  script: py.commissioni.app
+
+- url: /contatti/*
+  script: py.commissioni.app
   
 - url: .*
-  script: py/main.py
+  script: py.main.app
 
 
   

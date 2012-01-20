@@ -323,6 +323,11 @@ indexes:
   properties:
   - name: livello
   - name: creato_il
+
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: creato_il
     direction: desc
 
 - kind: Messaggio

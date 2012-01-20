@@ -25,7 +25,7 @@ from py.model import *
 from py.site import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMCommissioniHandler, CMMenuHandler, roleCommissario, Const
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, user_required, Const
 from py.modelMsg import *
 from py.comments import CMCommentHandler
 
@@ -256,6 +256,8 @@ class CMCommissarioDataHandler(BasePage):
 
 
 class CMGetIspDataHandler(BasePage):
+
+  @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -306,7 +308,8 @@ class DietaValidationHandler(BasePage):
     
   
 class IspezioneHandler(BasePage):
-  
+
+  @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -365,6 +368,7 @@ class IspezioneHandler(BasePage):
 
     self.getBase(template_values)
 
+  @commissario_required
   def post(self):    
    
     user = users.get_current_user()
@@ -456,6 +460,7 @@ class IspezioneHandler(BasePage):
 
 class NonconfHandler(BasePage):
   
+  @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -508,6 +513,7 @@ class NonconfHandler(BasePage):
 
       self.getBase(template_values)
 
+  @commissario_required
   def post(self):    
    
     user = users.get_current_user()
@@ -581,6 +587,7 @@ class NonconfHandler(BasePage):
 
 class DietaHandler(BasePage):
   
+  @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -634,6 +641,7 @@ class DietaHandler(BasePage):
 
       self.getBase(template_values)
 
+  @commissario_required
   def post(self):    
    
     user = users.get_current_user()
@@ -699,6 +707,7 @@ class DietaHandler(BasePage):
       
 class NotaHandler(BasePage):
   
+  @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -755,9 +764,9 @@ class NotaHandler(BasePage):
 
       self.getBase(template_values)
 
+  @commissario_required
   def post(self):    
    
-    logging.info("nota.1")
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
 
@@ -766,7 +775,6 @@ class NotaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      logging.info("nota.2")
       nota = memcache.get(preview)
       memcache.delete(preview)
 

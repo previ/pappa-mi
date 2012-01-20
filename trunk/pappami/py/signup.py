@@ -20,17 +20,18 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
-from py.base import BasePage, roleCommissario, CMCommissioniDataHandler
+from py.base import BasePage, roleCommissario, CMCommissioniDataHandler, commissario_required, user_required
 from py.calendar import *
 from py.form import CommissarioForm
 
 class CMSignupHandler(BasePage):
   
+  @login_required
   def get(self):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if commissario:
-      self.redirect("/login")
+      self.redirect("/")
     else:
       commissario = CommissarioForm()
       
@@ -41,6 +42,7 @@ class CMSignupHandler(BasePage):
     }
     self.getBase(template_values)
     
+  @login_required
   def post(self):
     user = users.get_current_user()
     form = CommissarioForm(self.request)
@@ -109,6 +111,88 @@ class CMSignupHandler(BasePage):
       message = "Grazie per esserti registrato, riceverai una mail quando il tuo profilo sarà stato attivato."
       
     self.response.out.write(message)
+
+class CMSignupHandlerOld(BasePage):
+  
+  def get(self):
+    user = users.get_current_user()
+    commissario = self.getCommissario(users.get_current_user())
+    if(commissario == None):
+      stato = 11
+      if self.request.get("iscm") == "S":
+        stato = 0
+      
+      commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = stato)
+      if self.request.get("citta"):
+        commissario.citta = db.Key(self.request.get("citta"))
+      commissario.emailComunicazioni = "S"
+      commissario.put()
+          
+      for c_key in self.request.get_all("commissione"):
+        commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
+        commissioneCommissario.put()
+
+      commissario.setCMDefault()
+      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        
+      self.sendRegistrationRequestMail(commissario)
+    template_values = dict()
+    template_values['cmsro'] = commissario
+    if commissario.isRegCommissario():
+      template_values['content'] = 'commissario/registrazione_ok.html'
+      self.getBase(template_values)
+    else:
+      self.redirect("/genitore")
+
+  def sendRegistrationRequestMail(self, commissario):
+    if commissario.isGenitore():
+      self.sendRegistrationGenitoreRequestMail(commissario)
+    else:
+      self.sendRegistrationCommissarioRequestMail(commissario)      
+
+  def sendRegistrationGenitoreRequestMail(self, commissario) :
+
+    host = self.getHost()
+
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+    
+    message = mail.EmailMessage()
+    message.sender = sender
+    message.to = commissario.user.email()
+    message.bcc = sender
+    message.subject = "Benvenuto in Pappa-Mi"
+    message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
+    
+    Ora puoi accedere all'area a te riservata:
+    http://"""  + host + """/genitore
+
+    PappaPedia (documenti):
+    http://pappapedia.pappa-mi.it
+    
+    Ciao !
+    Pappa-Mi staff
+    
+    """
+      
+    message.send()
+
+  def sendRegistrationCommissarioRequestMail(self, commissario) :
+
+    host = self.getHost()
+    
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+    
+    message = mail.EmailMessage()
+    message.sender = sender
+    message.to = sender
+    message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
+    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
+    
+    Per abilitarlo usare il seguente link:
+    
+    """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key())
+
+    message.send()
     
 app = webapp.WSGIApplication([
   ('/signup', CMSignupHandler),
