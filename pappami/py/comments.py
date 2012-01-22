@@ -36,7 +36,7 @@ class CMCommentHandler(BasePage):
   init a comment structure, attaching an empty root message to an existing object
   """
   def init(self, msg_rif, tipo, tags):
-    messaggio = Messaggio.all().filter("par", msg_rif).get()
+    messaggio = Messaggio.get_by_parent(msg_rif)
     if not messaggio:  
       messaggio = Messaggio()
       messaggio.par = msg_rif
@@ -59,10 +59,7 @@ class CMCommentHandler(BasePage):
     
     buff = ""
 
-    activities = list()
-    for msg in Messaggio.all().filter("livello", 0).filter("creato_il >", db.Model.get(last).creato_il).fetch(Const.ACTIVITY_FETCH_LIMIT):
-      activities.append(msg)
-    activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
+    activities = Messaggio.get_all_from_item(last)
 
     template_values = {
       'main': 'activity.html',
@@ -75,8 +72,9 @@ class CMCommentHandler(BasePage):
   """
   return the root object of a given message (comment)
   """
-  def getRoot(self, msg_rif):
-    return Messaggio.all().filter("par", msg_rif).get()
+  @classmethod
+  def getRoot(cls, msg_rif):
+    return Message.get_parent(msg_rif)
   
   """
   http post handler
@@ -115,24 +113,11 @@ class CMCommentHandler(BasePage):
       'ease': True
     }
     
-    activities = list()
-    msgs = Messaggio.all()
-    if self.request.get("par"):
-      msgs = msgs.filter("par", db.Key(self.request.get("par")))
-
-    
-    if self.request.get("last"):
-      logging.info("last: " + self.request.get("last"))
-      msgs = msgs.filter("creato_il >", Messaggio.get(db.Key(self.request.get("last"))).creato_il)
-      
-    for msg in msgs.filter("livello", messaggio.livello):
-      #logging.info("msg: " + msg.testo)
-      activities.append(msg)    
+    activities = Messaggio.get_all_from_item_parent(self.request.get("last"), messaggio)
 
     template_values['main'] = 'comments/comment.html'
           
     if messaggio.livello == 0: #posting root message      
-      activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
       template_values['main'] = 'activity.html'
       comment_root = messaggio
     else:
@@ -150,7 +135,7 @@ class CMCommentHandler(BasePage):
   def get(self):
     root = self.request.get("par")
     commento_root = Messaggio.get(db.Key(root))
-    commenti = Messaggio.all().filter("par", commento_root).order("creato_il")
+    commenti = Messaggio.get_by_parent(commento_root)
 
     comments = list()
     for msg in commenti:
@@ -235,16 +220,15 @@ class CMTagHandler(BasePage):
     
   def post(self):
     tagnames = self.request.get_all("tags")
-    msg = db.Key(self.request.get('msg'))
       
-    self.saveTags(msg,tagnames)
+    self.saveTags(self.request.get('msg'),tagnames)
 
     buff = json.JSONEncoder().encode({'status': 'ok'})      
     self.response.out.write(buff)
     
   def saveTags(self,obj,tagnames):
     logging.info("tags")
-    tagobjs = TagObj.all().filter("obj", obj)
+    tagobjs = TagObj.get_by_obj(obj)
     tagold = dict()
     for tagobj in tagobjs:
       tagold[tagobj.tag.nome] = tagobj
@@ -252,7 +236,7 @@ class CMTagHandler(BasePage):
       logging.info("tagname: " + tagname)
       if (tagname in tagold) is False:
         logging.info("adding: " + tagname)
-        tag = Tag.all().filter("nome",tagname).get()
+        tag = Tag.get_by_name(tagname)
         if not tag:
           tag = Tag(nome=tagname, numRef=0)
           tag.put()
@@ -271,7 +255,7 @@ class CMTagHandler(BasePage):
         tagobj.delete()
         
   def getTags(self):
-    tags = Tag.all().order("nome")
+    tags = Tag.get_all()
     return tags
     
     

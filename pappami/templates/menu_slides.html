@@ -1,0 +1,20 @@
+{%for m in menu%}
+   <li> 
+    <div class="{%if m.today%}today{%else%}day1{%endif%}">
+     <h3>{{m.getData()}} {{m.data}}</h3>
+     <h4>Primo Piatto</h4>
+     <div class="md" title="Aspetti nutrizionali" data-content="Calorie: {{m.primo.calorie}} Carboidrati: {{m.primo.carboidrati}} Proteine: {{m.primo.proteine}} Grassi: {{m.primo.grassi}}">{{m.primo.nome}}</div>
+     <h4>Secondo Piatto</h4>
+     <div class="md" title="Aspetti nutrizionali" data-content="Calorie: {{m.secondo.calorie}} Carboidrati: {{m.secondo.carboidrati}} Proteine: {{m.secondo.proteine}} Grassi: {{m.secondo.grassi}}">{{m.secondo.nome}}</div>
+     <h4>Contorno</h4>
+     <div class="md" title="Aspetti nutrizionali" data-content="Calorie: {{m.contorno.calorie}} Carboidrati: {{m.contorno.carboidrati}} Proteine: {{m.contorno.proteine}} Grassi: {{m.contorno.grassi}}">{{m.contorno.nome}}</div>
+     <h4>Dessert</h4>
+     <div class="md" title="Aspetti nutrizionali" data-content="<div><b>Calorie:</b> {{m.dessert.calorie}}</div><div><b>Carboidrati:</b> {{m.dessert.carboidrati}}</div><div><b>Proteine:</b> {{m.dessert.proteine}}</div><div><b>Grassi:</b> {{m.dessert.grassi}}</div>">{{m.dessert.nome}}</div>
+    </div>
+   </li>
+{%endfor%}
+<script>
+$(function(){
+ $("div.md").popover({offset: 10,html: true, placement: "above"});
+});
+</script>

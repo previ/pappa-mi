@@ -126,7 +126,7 @@ class MainPage(BasePage):
         anno = anno - 1
       
       stats = Statistiche()
-      stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
+      stats.numeroCommissioni = Commissione.get_active()
       try:
         stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
         stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
@@ -187,9 +187,8 @@ class CMMenuSlideHandler(CMMenuHandler):
 class CMMapDataHandler(webapp.RequestHandler):
   
   def get(self): 
-    limit = 100
-    if self.request.get("limit"):
-      limit = int(self.request.get("limit"))    
+    cursor = self.request.get("cur")
+
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))    
@@ -198,40 +197,59 @@ class CMMapDataHandler(webapp.RequestHandler):
       markers = memcache.get("markers_all"+str(offset))
       if(markers == None):
           
-        commissioni = Commissione.all().order("nome").fetch(limit, offset);
+        commissioni = Commissione.get_all_cursor(cursor)
           
-        markers = "<markers>\n"
+        limit = Const.ENTITY_FETCH_LIMIT
+        i = 0
+        markers_list = list()
         try:
           for c in commissioni :
+            i += 1
+            if i >= limit:
+              break
             if c.geo:
-              markers = markers + '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"'
-              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n'
+              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n')
         except db.Timeout:
           logging.error("Timeout")
+        if i >= limit:
+          markers = "<markers cur='" + commissioni.cursor() + "'>\n"
+        else:
+          markers = "<markers>\n"
           
-        markers = markers + "</markers>"    
+        markers = markers + "".join(markers_list) + "</markers>"
+        
         memcache.add("markers_all"+str(offset), markers)
       
       #logging.info(markers)
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)      
     else:
-      markers = memcache.get("markers")
+      markers = memcache.get("markers"+str(offset))
       if(markers == None):
           
-        commissioni = Commissione.all().filter("numCommissari >", 0)
+        commissioni = Commissione.get_active_cursor(cursor)
           
-        markers = "<markers>\n"
+        limit = Const.ENTITY_FETCH_LIMIT
+        i = 0
+        markers_list = list()
         try:
           for c in commissioni :
+            i += 1
+            if i >= limit:
+              break
             if c.geo :
-              markers = markers + '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"'
-              markers = markers + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n'
+              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n')
         except db.Timeout:
           logging.error("Timeout")
           
-        markers = markers + "</markers>"    
-        memcache.add("markers", markers)
+        logging.info(markers_list)
+        if i >= limit:
+          markers = "<markers cur='" + commissioni.cursor() + "'>\n"
+        else:
+          markers = "<markers>\n"
+          
+        markers = markers + "".join(markers_list) + "</markers>"
+        memcache.add("markers"+str(offset), markers)
       
       #logging.info(markers)
       self.response.headers["Content-Type"] = "text/xml"
@@ -246,9 +264,9 @@ class CalendarioHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cmd") == "create":
       cm = Commissione.get(self.request.get("cm"))
-      if((cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None):
+      if((cm.calendario == None or cm.calendario == "") and commissario.is_registered(cm)):
         calendario = Calendario()
-        calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+        calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
         calendario.create(cm.nome + " - " + cm.tipoScuola)
         for c in cm.commissari():
           if c.isCommissario() :
@@ -268,7 +286,7 @@ class CalendarioHandler(BasePage):
     template_values = dict()
     template_values["content"] = "calendario/calendario.html"
     template_values["commissioni"] = commissario.commissioni()
-    template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and CommissioneCommissario.all().filter("commissario",commissario).filter("commissione", cm).get() is not None
+    template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and commissario.is_registered(cm)
     template_values["cm"] = cm
     self.getBase(template_values)
       
