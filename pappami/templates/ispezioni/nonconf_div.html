@@ -3,82 +3,83 @@
 <h1 class="table_separator" id="title" style="display:none;">Nuova Non Conformit&agrave;</h1>
 <form action="/isp/nc" method="post" id="form0" novalidate>
 <input type="hidden" name="key" value="{{key}}"/>
-<div class="step form-stacked">
+<div class="form-stacked">
  <div class="row">
-  <fieldset>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_commissione">Commissione</label>
-    <select class="required" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
-     <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
-    </select>
-   </div>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_dataNonconfViz">Data Ispezione</label>
-    <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="required" name="dataNonconfViz" value="" id="e_dataNonconfViz"/>
-    <input type="hidden" name="dataNonconf" value="" id="e_dataNonconf"/>
-   </div>
-   <div class="span4 box1">
-    <label class="label_isp_1" for="e_turno">Turno</label>
-    <select name="turno" id="e_turno" class="required">
-     <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
-     <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
-    </select>
-   </div>
-  </fieldset>
-  <fieldset>
-   <div class="span8 box1">
-    <div class="clearfix"> 
-     <label class="label_isp_1" for="e_tipo">Tipo Non Conformit&agrave</label>
-     <div class="input">    
-      <select name="tipo" id="e_tipo" class="required" value="{{form.data.tipo}}">
-       <option value=""></option>
-       <option value="1">Cambiamenti di men&ugrave</option>
-       <option value="2">Cibo avanzato oltre 30%</option>
-       <option value="3">Quantit&agrave insufficiente di una vivanda</option>
-       <option value="4">Tavoli o apparecchiatura tavoli non adeguata</option>
-       <option value="5">Arredi e attrezzature inadeguate della sala di rigoverno</option>
-       <option value="6">Inadeguata pulizia dei locali</option>
-       <option value="7">Errata / mancata consegna o distribuzione delle diete speciali</option>
-       <option value="8">Ritardo o anticipo nella consegna delle termiche</option>
-       <option value="9">Corpo estraneo</option>
-       <option value="10">Temperatura non conforme alla legge</option>
-       <option value="11">Temperatura della dieta sanitaria giudicata inadeguata</option>
-       <option value="12">Inadeguato smaltimento della spazzatura</option>
-       <option value="99">Altro</option>
-      </select>
-     </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_commissione">Commissione</label>
+   <select class="required" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
+    <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+   </select>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_dataNonconfViz">Data Ispezione</label>
+   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="required" name="dataNonconfViz" value="" id="e_dataNonconfViz"/>
+   <input type="hidden" name="dataNonconf" value="" id="e_dataNonconf"/>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1" for="e_turno">Turno</label>
+   <select name="turno" id="e_turno" class="required">
+    <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+    <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
+   </select>
+  </div>
+ </div>   
+ <div class="row">
+  <div class="span8 box1">
+   <div class="clearfix"> 
+    <label class="label_isp_1" for="e_tipo">Tipo Non Conformit&agrave</label>
+    <div class="input">    
+     <select name="tipo" id="e_tipo" class="required span8" value="{{form.data.tipo}}">
+      <option value=""></option>
+      <option value="1">Cambiamenti di men&ugrave</option>
+      <option value="2">Cibo avanzato oltre 30%</option>
+      <option value="3">Quantit&agrave insufficiente di una vivanda</option>
+      <option value="4">Tavoli o apparecchiatura tavoli non adeguata</option>
+      <option value="5">Arredi e attrezzature inadeguate della sala di rigoverno</option>
+      <option value="6">Inadeguata pulizia dei locali</option>
+      <option value="7">Errata / mancata consegna o distribuzione delle diete speciali</option>
+      <option value="8">Ritardo o anticipo nella consegna delle termiche</option>
+      <option value="9">Corpo estraneo</option>
+      <option value="10">Temperatura non conforme alla legge</option>
+      <option value="11">Temperatura della dieta sanitaria giudicata inadeguata</option>
+      <option value="12">Inadeguato smaltimento della spazzatura</option>
+      <option value="99">Altro</option>
+     </select>
     </div>
    </div>
-   <div class="span4 box1">
-    <label class="label_isp_1">Richiesta campionatura</label>
-    <div class="radio-group btngroup">
-     <label class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" id="e_rc_1" {%if form.data.richiestaCampionatura == "1" %}CHECKED{%endif%}/>Si</label>
-     <label class="btn"><input type="radio" name="richiestaCampionatura" value="0" class="required" id="e_rc_2" {%if form.data.richiestaCampionatura == "0" %}CHECKED{%endif%}/>No</label>
+  </div>
+  <div class="span4 box1">
+   <label class="label_isp_1">Richiesta campionatura</label>
+   <div class="radio-group btngroup">
+    <label class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" id="e_rc_1" {%if form.data.richiestaCampionatura == "1" %}CHECKED{%endif%}/>Si</label>
+    <label class="btn"><input type="radio" name="richiestaCampionatura" value="0" class="required" id="e_rc_2" {%if form.data.richiestaCampionatura == "0" %}CHECKED{%endif%}/>No</label>
+   </div>
+  </div>
+ </div>   
+ <div class="row">
+  <div class="span12 box1">
+   <div class="clearfix"> 
+    <label class="label_isp_1" for="e_ncNote">Note</label>
+    <div class="input">    
+     <textarea name="note" rows="8" cols="120" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
     </div>
    </div>
-  </fieldset>
-  <fieldset>
-   <div class="span12 box1">
-    <div class="clearfix"> 
-     <label class="label_isp_1" for="e_ncNote">Note</label>
-     <div class="input">    
-      <textarea name="note" rows="8" cols="120" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
-     </div>
+  </div>
+ </div>   
+ <div class="row">
+  <div class="span12 box1">
+   <label class="label_isp_1">Categorie</label>
+   <div class="comment_tags">  
+    <div style="width:40em; display:inline;">
+     <ul id="nota_tags_handler"></ul>
     </div>
    </div>
-   <div class="span12 box1">
-    <label class="label_isp_1">Categorie</label>
-    <div class="comment_tags">  
-     <div style="width:40em; display:inline;">
-      <ul id="nota_tags_handler"></ul>
-     </div>
-    </div>
-   </div>
-  </fieldset>
+  </div>
  </div>
- <div class="actions">
-  <button id="e_submit" type="submit" onclick="ulmsg=false;" class="btn primary">Salva dati</button><button onclick="return onclosenewitem();" id="e_annulla" class="btn">Annulla</button>
- </div>
+</div>
+<div class="actions modal-actions">
+ <button id="e_submit" type="submit" class="btn primary" style="float:right;">Salva dati</button>
+ <button onclick="closedialog();" id="e_annulla" class="btn" style="float:right;">Annulla</button>
 </div>
 </form>
 </div>

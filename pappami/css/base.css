@@ -267,6 +267,10 @@ width:100%;
 z-index=-1;
 }
 
+.label.labelbox {
+  width:20px;
+  height:20px;
+}
 .label.label41 {
   background-color: #c43c35;
 }
@@ -410,3 +414,61 @@ box-sizing: border-box;
   width:820px;
 }
 
+.modal-actions {
+  float:right;
+  position:absolute;
+  bottom:0;
+  width:630px;
+}
+
+i {
+  background-image: url(/img/icons32.png);
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: text-top;
+  width: 32px;
+  height: 32px;
+}
+
+.temperatura {
+  background-position: 0 0;
+}
+.assaggio {
+  background-position: -32px 0;
+}
+.gradimento {
+  background-position: -64px 0;
+}
+.pane {
+  background-position: -96px 0;
+}
+.cottura {
+  background-position: -128px 0;
+}
+.condito {
+  background-position: -160px 0;
+}
+.dessert {
+  background-position: -192px 0;
+}
+.quantita {
+  background-position: -224px 0;
+}
+.primo {
+  background-position: -256px 0;
+}
+.secondo {
+  background-position: -288px 0;
+}
+.contorno {
+  background-position: -320px 0;
+}
+
+table th, table td, table tbody, table thead .compact {
+padding: 2px 2px 2px 2px;
+}
+
+.data {
+font-weight: bold;
+}

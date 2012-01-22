@@ -100,11 +100,11 @@ window.onbeforeunload = closeIt;
   </div>
  </div>
 {% if preview %}
-<div class="actions">
+<div class="actions modal-actions">
  <form action="/isp/dieta" method="post" id="form1">
  <input type="hidden" name="preview" value="{{preview}}">
- <button type="submit" onclick="ulmsg=false;">Conferma salvataggio dati</button>
- <button onclick="ulmsg=false; previewback();return false;">Torna a modifiche</button>
+ <button type="reset" onclick="previewback();" style="float:right;">Torna a modifiche</button>
+ <button type="submit" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
  </form>
 </div>
 {% endif %}

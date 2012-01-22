@@ -1,14 +1,3 @@
-{% if preview %}
-<script type="text/javascript">
-var ulmsg=true;
-function closeIt() {
-if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
-}
-window.onbeforeunload = closeIt;
-</script>
-{% endif %}
-{%if public_url%}
-{%endif%}
 <div>
  <div class="row rowspaced">
   <div class="span12">
@@ -40,11 +29,11 @@ window.onbeforeunload = closeIt;
   </div>
  </div>
 {% if preview %}
- <div class="actions">
+ <div class="actions modal-actions">
   <form action="/isp/nc" method="POST" id="form1">
-  <input type="hidden" name="preview" value="{{preview}}">
-  <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-  <button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
+  <input type="hidden" name="preview" value="{{preview}}" >
+  <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+  <button class="btn" onclick="previewback(); return false;" style="float:right;">Torna a modifiche</button>
   </form>
  </div>
 {% endif %}

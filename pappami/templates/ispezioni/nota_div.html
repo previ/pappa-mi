@@ -55,8 +55,9 @@ window.onbeforeunload = closeIt;
     </div>
    </div>
   </div>
-  <div class="modal-footer">
-   <button id="e_submit" type="submit" onclick="" class="btn primary">Salva dati</button><button onclick="closedialog();" id="e_annulla" class="btn">Annulla</button>
+  <div id="formnav" class="actions modal-actions">
+   <input id="e_submit" class="btn primary" type="submit" onclick="" value="Salva dati" style="float:right;"/> 
+   <input type="reset" onclick="closedialog();" id="e_annulla" class="btn" value="Annulla" style="float:right;"/>
   </div>
  </form>
 </div>
