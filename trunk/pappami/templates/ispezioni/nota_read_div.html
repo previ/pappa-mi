@@ -5,7 +5,7 @@
    <div>Titolo</div>
    <h4>{{nota.titolo}}</h4>
    <div>Testo</div>
-   <div class="input" style="height:348px; overflow:auto;">
+   <div class="input" style="height:248px; overflow:auto;">
     <div>{{nota.note|replace("\n","<br/>")}}</div>
    </div>
 {% if allegati %}
@@ -19,11 +19,11 @@
     {%for tag in nota.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
    </div>
 {% if preview %}
-   <div class="modal-footer modal-footer-ex">
+   <div class="actions modal-actions">
     <form action="/isp/nota" method="POST" id="form1">
      <input type="hidden" name="preview" value="{{preview}}">
-     <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;">Conferma salvataggio dati</button>
-     <button class="btn" onclick="previewback(); return false;">Torna a modifiche</button>
+     <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+     <button class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
     </form>
    </div>
  {% endif %}
