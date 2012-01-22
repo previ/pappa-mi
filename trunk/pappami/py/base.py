@@ -36,11 +36,7 @@ import py.feedparser
 from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
-
-class Const:
-  TIME_FORMAT = "T%H:%M:%S"
-  DATE_FORMAT = "%Y-%m-%d"
-  ACTIVITY_FETCH_LIMIT = 5
+from common import Const
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
@@ -121,63 +117,28 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "1.4.0.36 - 2011.04.30"
+    template_values["version"] = "2.0.0.37 - 2012.01.21"
     
     #logging.info("content: " + template_values["content"])
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
     
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
-    
-  def getCommissario(self,user):
-    commissario = None
+
+  @classmethod
+  def getCommissario(cls, user):
     if(user):
-      commissario = memcache.get("user" + str(user.user_id()))
-      if not commissario:
-        logging.info(user.email())
-      #commissario = db.GqlQuery("SELECT * FROM Commissario where user = USER('" + user.email() + "')").get()
-      commissario = Commissario.all().filter("user", user).get()
-      memcache.add("user" + str(user.user_id()), commissario, 600)
-    return commissario
-
-  def getCommissioni(self):
-    commissioni = memcache.get("commissioni")
-    if commissioni == None:
-      commissioni = Commissione.all().order("nome");
-      memcache.add("commissioni", commissioni)
-    return commissioni
-
-  def getTopTags(self):
-    tags = memcache.get("toptags")
-    if not tags:
-      tags = list()
-      for tag in Tag.all().order("-numRef").fetch(40):
-        tags.append(tag)
-      memcache.add("toptags", tags, 60)      
-    return tags
-    
-  def getActivities(self, tagname = ""):
-    activities = None
-    if tagname != "":
-      activities = memcache.get("public_activities_" + tagname)
-      if activities == None:
-        activities = list()
-        tag = Tag.all().filter("nome", tagname).get()
-        if tag:
-          for tagobj in tag.tagobj_reference_set:
-            activities.append(tagobj.obj)
-          activities = sorted(activities, key=lambda student: student.creato_il, reverse=True)
-        memcache.add("public_activities_" + tagname, activities, 60)
-      
+      return Commissario.get_by_user(user)
     else:
-      activities = memcache.get("public_activities")
-      if not activities:
-        activities = list()
-        for msg in Messaggio.all().filter("livello", 0).order("-creato_il").fetch(50):
-          #logging.info("tags: " + msg.tags())
-          activities.append(msg)
-        memcache.add("public_activities", activities, 60)
-    return activities
+      return None
+  
+  #def getCommissioni(self):
+    #return Commissioni.get_all()
+
+  @classmethod
+  def getTopTags(cls):
+    return Tag.get_top_referenced(40)
+  
 
   """
   Algo A: 
@@ -195,7 +156,7 @@ class BasePage(webapp.RequestHandler):
   """
   
   def get_activities(self, offset=0):
-    logging.info("get_activities")
+    #logging.info("get_activities")
     
     activities = None
 
@@ -227,83 +188,33 @@ class BasePage(webapp.RequestHandler):
       self.session['user'] = user
     
     if tag != "!" and tag != "":
-      activities = self.get_activities_by_tagname(tag,offset)
+      activities = Messaggio.get_by_tagname(tag,offset)
     elif msgtype != "!" and msgtype != "":
-      activities = self.get_activities_by_msgtype(int(msgtype),offset)
+      activities = Messaggio.get_by_msgtype(int(msgtype),offset)
     elif user != "!" and user != "":
-      activities = self.get_activities_by_user(user,offset)
+      activities = Messaggio.get_by_user(user,offset)
     else:
-      activities = self.get_activities_all(offset)
+      activities = Messaggio.get_all(offset)
     
     return activities
   
   def get_activities_by_filter(self, activity_filter):
     activities = list()    
     for tagname in activity_filter.tagnames:
-      activities.extend(self.get_activities_by_tagname(tagname))
+      activities.extend(Messaggio.get_by_tagname(tagname))
     for msgtype in activity_filter.msgtypes:
-      activities.extend(self.get_activities_by_msgtype(msgtype))
+      activities.extend(Messaggio.get_by_msgtype(msgtype))
     for user in activity_filter.users:
-      activities.extend(self.get_activities_by_user(user))
+      activities.extend(Messaggio.get_by_user(user))
     for group in activity_filter.groups:
-      activities.extend(self.get_activities_by_group(group))
+      activities.extend(Messaggio.get_by_group(group))
 
     activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
       
     return activities
 
-  def get_activities_by_tagname(self,tagname,offset=0):
-    logging.info("get_activities_by_tagname")
-    activities = memcache.get("public_activities_tag_" + tagname + "_" + str(offset))
-    if activities == None:
-      activities = list()
-      tag = Tag.all().filter("nome", tagname).get()
-      if tag:
-        count = 0
-        for tagobj in tag.tagobj_reference_set[offset*Const.ACTIVITY_FETCH_LIMIT:(offset+1)*Const.ACTIVITY_FETCH_LIMIT]:
-          count += 1
-          if count > Const.ACTIVITY_FETCH_LIMIT:
-            break
-          activities.append(tagobj.obj)
-      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("public_activities_tag_" + tagname + "_" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, 60)
-    return activities
-
-  def get_activities_by_msgtype(self, msgtype, offset=0):
-    logging.info("get_activities_by_msgtype")
-    activities = memcache.get("public_activities_type_" + str(msgtype) + "_" + str(offset))
-    if activities == None:
-      activities = list()
-      logging.info("get_activities_by_msgtype: " + str(msgtype))
-      for msg in Messaggio.all().filter("tipo", msgtype).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
-        logging.info("get_activities_by_msgtype: " + str(msg.tipo))
-        activities.append(msg)
-      memcache.add("public_activities_type_" + str(msgtype) + "_" + str(offset), activities, 60)
-    return activities
-
-  def get_activities_by_user(self, user_email, offset=0):
-    activities = memcache.get("public_activities_user_" + user_email + "_" + str(offset))
-    if activities == None:
-      activities = list()
-      for msg in Messaggio.all().filter("creato_da", users.User(user_email)).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
-        activities.append(msg)
-      memcache.add("public_activities_user_" + user_email + "_" + str(offset), activities, 60)
-    return activities
-
   def get_activities_by_group(self, user):
     return list()
-
-  def get_activities_all(self, offset=0):
-    logging.info('get_activities_all')
-    activities = memcache.get("activities_all_" + str(offset))
-    if not activities:
-      activities = list()
-      for msg in Messaggio.all().filter("livello", 0).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
-        activities.append(msg)
-        
-      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("public_activities_" + str(offset), activities, 60)
-    return activities
   
   def getHost(self):
     host = self.request.url[len("http://"):]
@@ -314,6 +225,8 @@ class BasePage(webapp.RequestHandler):
   _news = {"news_pappami":"http://blog.pappa-mi.it/feeds/posts/default",
           "news_web": "http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast",
           "news_cal": "http://www.google.com/calendar/feeds/aiuto%40pappa-mi.it/public/basic"}
+  
+  @classmethod
   def getNews(self,name):
     news = memcache.get(name)
     i = 0
@@ -343,7 +256,7 @@ class CMCommissioniDataHandler(BasePage):
 
     buff = ""
     if city:
-      buff = memcache.get("cmall"+str(city))
+      buff = memcache.get("cm_city_json_"+str(city))
       if(buff is None):
         cmlist = list()  
         cms = Commissione.all().filter("citta", city).order("nome")
@@ -354,7 +267,7 @@ class CMCommissioniDataHandler(BasePage):
         #buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
         buff = json.JSONEncoder().encode(cmlist)      
           
-        memcache.add("cmall"+str(city), buff)
+        memcache.add("cm_city_json_"+str(city), buff)
           
     expires_date = datetime.utcnow() + timedelta(20)
     expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
@@ -379,13 +292,10 @@ class CMMenuHandler(BasePage):
     
   def getMenu(self, data, c):
     offset = -1
-    citta = Citta.all().get()
+    citta = Citta.get_first()
     if c and c.getCentroCucina(data).getMenuOffset(data) is not None:
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
-
-    if data >= date(2010,6,14) and data < date(2010,8,31):
-      offset = 0
       
     menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
@@ -403,8 +313,7 @@ class CMMenuHandler(BasePage):
     
     piatti = dict()
     if offset > 0:
-      for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()).filter("settimana", (((((data-mn.validitaDa).days) / 7)+offset)%4 + 1) ):
-        piatti[pg.tipo] = pg.piatto    
+      piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
       mh = MenuHelper()
       mh.data = data + timedelta(data.isoweekday()-1)      
       mh.giorno = data.isoweekday()
@@ -414,11 +323,7 @@ class CMMenuHandler(BasePage):
       mh.dessert = piatti["d"]
       menu.append(mh)
     else:
-      settimane = dict()
-      for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()):
-        if not pg.settimana in settimane:
-          settimane[pg.settimana] = dict()
-        settimane[pg.settimana][pg.tipo] = pg.piatto
+      settimane = Piatto.get_by_date(data)
     
       for i in range(1,5):
         piatti = settimane[i]
@@ -443,7 +348,7 @@ class CMMenuHandler(BasePage):
     # settimana corrente
     menu = MenuNew.get_by(cm.citta, data)
 
-    giorni = Piatto.get_by((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
+    giorni = Piatto.get_by_settimana((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
     #for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
       #if not pg.giorno in giorni:
         #giorni[pg.giorno] = dict()
@@ -484,11 +389,6 @@ class CMMenuHandler(BasePage):
     datep = date1 - timedelta(7)
     daten = date1 + timedelta(7)
 
-    logging.info("cm:" + cm.nome)
-    logging.info("date1:" + str(date1))
-    logging.info("datep:" + str(datep))
-    logging.info("daten:" + str(daten))
-
     template_values['menu'] = self.getMenuWeek(date1, cm )
     template_values['data'] = date
     template_values['data1'] = date1
@@ -501,7 +401,7 @@ class CMMenuHandler(BasePage):
 
 class CMCittaHandler(webapp.RequestHandler):
   def get(self):        
-    citta = Citta.all()
+    citta = Citta.get_all()
     citlist = list()
     for c in citta:
       citlist.append({'key': str(c.key()), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})

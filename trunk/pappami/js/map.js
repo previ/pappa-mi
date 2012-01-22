@@ -43,9 +43,10 @@ function drawMap(data) {
   var f_cc = $("#e_cc").val();
   var f_type = $("#e_tipo").val();
   var f_numcm = $("#e_numcm").val();
-  jdata = jQuery(data).find("marker");
+  jmarkers = jQuery(data);
+  jmarker = jmarkers.find("marker");
   
-  jdata.each(function() {
+  jmarker.each(function() {
     var marker = jQuery(this);          
     var key = marker.attr("key");
     var name = marker.attr("nome");
@@ -61,9 +62,9 @@ function drawMap(data) {
     }
   });
 
-  if( jdata.length == limit) {
-    offset = offset + limit;
-    jQuery.get("/map?cmd=all&offset="+offset, {}, drawMap);
+  if( jmarkers.find("markers").attr('cur') ) {
+    offset = offset + 1;
+    jQuery.get("/map?cmd=all&cur="+jmarkers.find("markers").attr('cur')+"&offset="+offset, {}, drawMap);
   } else {
     $("#loading").hide();
     fluster.initialize();
@@ -86,7 +87,7 @@ function redraw() {
   // These are the same styles as default, assignment is only for demonstration ...
   fluster.styles = fstyles;
   
-  jQuery.get("/map?cmd=all&limit="+limit, {}, drawMap );
+  jQuery.get("/map?cmd=all", {}, drawMap );
 }
 
 function load(lat, lon) {
@@ -136,7 +137,7 @@ function addLocationToList(list, school, marker,openiw) {
   list.append(itm);
 }     
 
-function loadSmallMap(lat,lon) {
+function loadSmallMapOld(lat,lon) {
   var myOptions = {
     zoom: 10,
     center: new google.maps.LatLng(lat,lon),
@@ -168,4 +169,55 @@ function loadSmallMap(lat,lon) {
     });
     fluster.initialize();
   });
+}  
+
+function drawSmallMap(data) {
+  jmarkers = jQuery(data);
+  jmarker = jmarkers.find("marker");
+  
+  jmarker.each(function() {
+    var marker = jQuery(this);
+    var name = marker.attr("nome");
+    var address = marker.attr("indirizzo");
+    var type = marker.attr("tipo");
+    var latlng = new google.maps.LatLng(parseFloat(marker.attr("lat")),
+			    parseFloat(marker.attr("lon")));
+    var marker = new google.maps.Marker({position:latlng, icon: image, shadow: shadow});
+    fluster.addMarker(marker);
+  });
+
+  if( jmarkers.find("markers").attr('cur') ) {
+    offset = offset + 1;
+    jQuery.get("/map?cur="+jmarkers.find("markers").attr('cur')+"&offset="+offset, {}, drawSmallMap);
+  } else {
+    fluster.initialize();
+  }
+}    
+
+function loadSmallMap(lat,lon) {
+  var myOptions = {
+    zoom: 10,
+    center: new google.maps.LatLng(lat,lon),
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false
+  }    
+  var map = new google.maps.Map(document.getElementById("map"), myOptions);
+  fluster = new Fluster2(map); 
+  
+  var image = new google.maps.MarkerImage('/img/school.png',
+        new google.maps.Size(16, 18),
+        new google.maps.Point(0,0),
+        new google.maps.Point(8, 0));
+  var shadow = new google.maps.MarkerImage('/img/shadow.png',
+        new google.maps.Size(26, 19),
+        new google.maps.Point(0,0),
+        new google.maps.Point(8, 0));
+
+  fluster = new Fluster2(map);
+
+  // Set styles
+  // These are the same styles as default, assignment is only for demonstration ...
+  fluster.styles = fstyles;
+  
+  jQuery.get("/map?cmd=all", {}, drawSmallMap );
 }  

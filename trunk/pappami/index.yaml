@@ -23,6 +23,16 @@ indexes:
 
 - kind: Commissione
   properties:
+  - name: numCommissari>
+  - name: nome
+
+- kind: Commissione
+  properties:
+  - name: stato
+  - name: nome
+
+- kind: Commissione
+  properties:
   - name: tipoScuola
   - name: numCommissari
 

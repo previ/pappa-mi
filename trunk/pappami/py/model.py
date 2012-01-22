@@ -10,6 +10,8 @@ import google.appengine.api.images
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
 
+from common import Const
+
 class Citta(db.Model):
   nome = db.StringProperty()
   codice =  db.StringProperty()
@@ -23,9 +25,22 @@ class Citta(db.Model):
 
   stato = db.IntegerProperty()
   
+  @classmethod
+  def get_all(cls):
+    return cls.all()
+
+  @classmethod
+  def get_first(cls):
+    return cls.all().get()
+  
+  
 class Configurazione(db.Model):
   nome = db.StringProperty()
   valore = db.StringProperty()
+  
+  @classmethod
+  def get_value_by_name(cls, name):
+    return Configurazione.all().filter("nome", name).get().valore
   
 class CentroCucina(db.Model):
   nome = db.StringProperty()
@@ -47,6 +62,10 @@ class CentroCucina(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
+  
+  @classmethod
+  def get_by_citta(cls, citta):
+    CentroCucina.all().filter("citta",citta).order("nome")
 
   _ce_cu_zo_cache = None
   def getZona(self, data=datetime.now().date()):
@@ -88,7 +107,33 @@ class Commissione(db.Model):
   modificato_da = db.UserProperty(auto_current_user=True)
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
+
+  @classmethod
+  def get_by_citta(cls, citta):
+    commissioni = memcache.get("cm-citta-"+citta.key().id())
+    if commissioni == None:
+      commissioni = Commissione.all().filter("citta", citta).order("nome");
+      memcache.add("cm-citta-"+citta.key().id(), commissioni)
+    return commissioni
+
+  @classmethod
+  def get_active(cls):
+    return Commissione.all().filter("stato",1).count()
   
+  @classmethod
+  def get_all_cursor(cls, cursor):
+    if cursor and cursor != "":
+      return Commissione.all().with_cursor(cursor);
+    else:
+      return Commissione.all()
+
+  @classmethod
+  def get_active_cursor(cls, cursor):
+    if cursor:
+      return Commissione.all().with_cursor(cursor);
+    else:
+      return Commissione.all().filter("numCommissari >",0)
+    
   def commissari(self):
     commissari = []
     for cc in CommissioneCommissario.all().filter("commissione", self):
@@ -128,8 +173,35 @@ class Commissario(db.Model):
 
   stato = db.IntegerProperty()
   
-  cmdefault = None
+  cmdefault = None  
+
+  _commissario_cache = dict()
+  @classmethod
+  def get_by_user(cls, user):
+    commissario = cls._commissario_cache.get(user.email())
+    if not commissario:
+      commissario = cls.all().filter("user", user).get()
+      cls._commissario_cache[user.email()] = commissario
+    return commissario
   
+  @classmethod
+  def get_by_email_lower(cls, email):
+    return Commissario.all().filter("user_email_lower",email).get()
+      
+  def is_registered(cm):
+    return CommissioneCommissario.all().filter("commissario",self).filter("commissione", cm).get() is not None
+
+  def register(commissione):
+    cc = CommissioneCommissario(commissione = commissione, commissario = self)
+    cc.put()
+    commissione.numCommissari += 1
+    commissione.put()
+  
+  def unregister(commissione):
+    CommissioneCommissario.all().filter("commissario",self).filter("commissione",commissione).remove()
+    commissione.numCommissari -= 1
+    commissione.put()
+    
   def isCommissario(self):
     return self.stato == 1
   def isGenitore(self):
@@ -142,7 +214,7 @@ class Commissario(db.Model):
     return self.stato == 0
   def isRegGenitore(self):
     return self.stato == 10
-
+  
   _commissioni = None
   def commissioni(self):
     if self._commissioni is None:
@@ -240,23 +312,38 @@ class Piatto(db.Model):
   grassi = db.IntegerProperty()
   carboidrati = db.IntegerProperty()
   gi = db.IntegerProperty()
-  
+    
   _pi_gi_cache = dict()
-  
-  @staticmethod
-  def get_by(settimana):
+  @classmethod
+  def get_by_settimana(cls, settimana):
     pi_gi = None
-    if settimana not in Piatto._pi_gi_cache:
+    if settimana not in cls._pi_gi_cache:
       pi_gi = dict()
       for pg in PiattoGiorno.all().filter("settimana", settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto
-      Piatto._pi_gi_cache[settimana] = pi_gi
+      cls._pi_gi_cache[settimana] = pi_gi
     else:
-      pi_gi = Piatto._pi_gi_cache[settimana]
+      pi_gi = cls._pi_gi_cache[settimana]
     return pi_gi
         
+  @classmethod
+  def get_by_menu_date_offset(cls, menu, date, offset):
+    piatti = dict()
+    for pg in PiattoGiorno.all().filter("giorno", date.isoweekday()).filter("settimana", (((((date-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+      piatti[pg.tipo] = pg.piatto
+    return piatti
+
+  @classmethod
+  def get_by_data(cls, data):
+    settimane = dict()  
+    for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()):
+      if not pg.settimana in settimane:
+        settimane[pg.settimana] = dict()
+      settimane[pg.settimana][pg.tipo] = pg.piatto
+    return settimane
+  
   
   #creato_da = db.UserProperty(auto_current_user_add=True)
   #creato_il = db.DateTimeProperty(auto_now_add=True)
@@ -434,6 +521,18 @@ class Ispezione(db.Model):
   
   def data(self): 
     return self.dataIspezione  
+  
+  @classmethod
+  def get_last_by_cm(cls, cm_key):
+    return Ispezione.all().filter("commissione",db.Key(cm_key)).order("-dataIspezione").get()
+  
+  @classmethod
+  def get_by_cm_data_turno(cls, cm, data, turno):
+    return Ispezione.all().filter("dataIspezione",data).filter("commissione",db.Key(cm)).filter("turno",turno).get()
+
+  @classmethod
+  def get_by_cm(cls, cm):
+    return Ispezione.all().filter("commissione", cm).order("-dataIspezione")
 
 class Nonconformita(db.Model):
   commissione = db.ReferenceProperty(Commissione)
@@ -455,6 +554,10 @@ class Nonconformita(db.Model):
   modificato_il = db.DateTimeProperty(auto_now=True)
   stato = db.IntegerProperty()
 
+  @classmethod
+  def get_by_cm(cls, cm):
+    return Nonconformita.all().filter("commissione", cm).order("-dataNonconf")
+  
   def data(self): return self.dataNonconf  
 
   _tipi = {1:0,
@@ -523,7 +626,15 @@ class Dieta(db.Model):
   stato = db.IntegerProperty()
 
   def data(self): return self.dataIspezione
+  
+  @classmethod
+  def get_by_cm_data_turno(cls, cm, data, turno):
+    return Dieta.all().filter("dataIspezione",data).filter("commissione",db.Key(cm)).filter("turno",turno).get()
 
+  @classmethod
+  def get_by_cm(cls, cm):
+    return Dieta.all().filter("commissione", cm).order("-dataIspezione")
+  
   _tipi = {1:0,
            2:1,
            3:2,
@@ -601,6 +712,10 @@ class Nota(db.Model):
 
   def allegati(self): 
     return Allegato.all().filter("obj", self)
+
+  @classmethod
+  def get_by_cm(cls, cm):
+    return Nota.all().filter("commissione", cm).order("-dataNota")
   
 class Tag(db.Model):
   obj = db.ReferenceProperty(db.Model)
@@ -710,6 +825,14 @@ class StatisticheIspezioni(db.Model):
   fruttaAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
   fruttaGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
 
+  @classmethod
+  def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
+    return StatisticheIspezioni.all().filter("commissione",cm).filter("centroCucina",cc).filter("timeId", timeId)
+  
+  @classmethod
+  def get_from_date(cls, data):
+    return StatisticheIspezioni.all().filter("dataInizio >=", data)
+  
   def primoAssaggioNorm(self):
     return fpformat.fix(float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede,2)
   def primoGradimentoNorm(self):

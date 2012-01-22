@@ -17,17 +17,17 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
 class MailHandler(InboundMailHandler):
-  site = None
+  #site = None
   host = "www.pappa-mi.it"
-  path = None
+  #path = None
 
-  def __init__(self):
-    super(InboundMailHandler, self).__init__()
-    username = Configurazione.all().filter("nome", "attach_user").get().valore
-    password = Configurazione.all().filter("nome", "attach_password").get().valore
-    site = Configurazione.all().filter("nome", "attach_site").get().valore
-    self.path = Configurazione.all().filter("nome", "attach_path").get().valore
-    self.site = Site(username, password, site)    
+  #def __init__(self):
+    #super(InboundMailHandler, self).__init__()
+    #username = Configurazione.get_value_by_name("attach_user")
+    #password = Configurazione.get_value_by_name("attach_password")
+    #site = Configurazione.get_value_by_name("attach_site")
+    #self.path = Configurazione.get_value_by_name("attach_path")
+    #self.site = Site(username, password, site)    
 
   def receive(self, message):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
@@ -35,7 +35,7 @@ class MailHandler(InboundMailHandler):
     text_bodies = message.bodies('text/plain')
     for body in text_bodies:
       logging.info("body: " + body[1].decode())
-    commissario = Commissario.all().filter("user_email_lower",parseaddr(message.sender)[1].lower()).get()    
+    commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
     if commissario:
       feedback = list()
       logging.info("found commissario")      
@@ -119,13 +119,16 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         allegato.nome = self.decode(attach[0])
         logging.info("allegato: " + allegato.nome)
         allegato_decode = attach[1].decode()
-        if len(allegato_decode) > 1000000:
+        if len(allegato_decode) > 5000000:
           logging.info("attachment too big")
-          feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 1MB\r\n")
+          feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 5MB\r\n")
         elif len(allegato_decode) < 5000: 
           logging.info("attachment too small")
         else:
-          allegato.path = self.site.uploadDoc(allegato_decode, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), self.path)
+          #allegato.path = self.site.uploadDoc(allegato_decode, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), self.path)
+          blob = Blob()
+          blob.create(allegato.nome)
+          allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
           allegato.put()
          
     linkpath="genitore"

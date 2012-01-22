@@ -1,0 +1,15 @@
+<link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
+{%set tab_community="active"%}
+{%include "navigation.html"%}
+<div class="row">
+<div class="span16">
+<ul class="media-grid">
+{%for c in commissari%}<li><div class="span8">
+  <img class="avatar" src="{{c.avatar()}}" title="{{c.nomecompleto()}}">
+  <div class="activity_author">{{c.nomecompleto()}}</div>  
+  <div class="activity_author_title">{{c.titolo()}}</div>
+  </div>
+</li>{%endfor%}
+</ul>
+</div>
+</div>

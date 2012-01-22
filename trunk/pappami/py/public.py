@@ -55,7 +55,7 @@ class CMIspezionePublicHandler(BasePage):
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler().getRoot(isp.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(isp.key())
     
     self.getBase(template_values)
  
@@ -69,7 +69,7 @@ class CMNonconfPublicHandler(BasePage):
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler().getRoot(nc.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nc.key())
     self.getBase(template_values)
 
 class CMDietePublicHandler(BasePage):
@@ -82,7 +82,7 @@ class CMDietePublicHandler(BasePage):
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/dieta_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler().getRoot(dieta.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key())
     self.getBase(template_values)
 
 class CMNotePublicHandler(BasePage):
@@ -100,7 +100,7 @@ class CMNotePublicHandler(BasePage):
     template_values["content"] = "../public/nota_read.html"
     template_values["allegati"] = allegati
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler().getRoot(nota.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nota.key())
     
     self.getBase(template_values)
 

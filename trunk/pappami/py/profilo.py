@@ -18,15 +18,15 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
-from py.gviz_api import *
-from py.model import *
-from py.form import CommissarioForm
-from py.base import BasePage, roleCommissario, CMCommissioniDataHandler
-from py.calendar import *
+from gviz_api import *
+from model import *
+from form import CommissarioForm
+from base import BasePage, CMCommissioniDataHandler, user_required
+from gcalendar import *
 
 class CMProfiloHandler(BasePage):
   
-  @login_required
+  @user_required
   def get(self):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
@@ -37,17 +37,13 @@ class CMProfiloHandler(BasePage):
     }
     self.getBase(template_values)
     
+  @user_required
   def post(self):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
-      
-      #commissario.nome = self.request.get("nome")
-      #commissario.cognome = self.request.get("cognome")
-      #commissario.citta = db.Key(self.request.get("citta"))
-      #commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
 
       old = list()
@@ -66,35 +62,24 @@ class CMProfiloHandler(BasePage):
       toadd = new - old
 
       for cm in todel:
-        cmd = Commissione.get(db.Key(cm))
-        logging.info("delete " + cmd.nome)
-        
-        cc = CommissioneCommissario.all().filter("commissario",commissario).filter("commissione",cmd).get()
-        """if cc.commissione.calendario :
+        commissione = Commissione.get(cm)
+        commissario.unregister(cm)
+        if commissione.calendario :
           calendario = Calendario();        
-          calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
-          calendario.load(cc.commissione.calendario)
-          calendario.unShare(commissario.user.email())"""
-        cc.delete()
-        cmd.numCommissari -= 1
-        cmd.put()                
+          calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
+          calendario.load(commissione.calendario)
+          calendario.unShare(commissario.user.email())
         
       for cm in toadd:
-        cma = Commissione.get(db.Key(cm))
-        logging.info("add " + cma.nome)
-
-        cc = CommissioneCommissario(commissione = cma, commissario = commissario)
-        cc.put()
-        cma.numCommissari += 1
-        cma.put()
+        commissione = Commissione.get(cm)
+        commissario.register(cm)
         if cc.commissione.calendario :
           calendario = Calendario();        
-          calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+          calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
           calendario.load(cc.commissione.calendario)
           calendario.share(commissario.user.email())
 
       commissario.setCMDefault()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
         
     self.response.out.write("Dati salvati.")
 

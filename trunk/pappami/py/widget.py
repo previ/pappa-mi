@@ -95,7 +95,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     stats = memcache.get("statAll")
     if not stats:
       logging.info("statAll miss")
-      stats = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId", year).get()
+      stats = StatisticheIspezioni.get_cc_cm_time(timeId=year).get()
       memcache.set("statAll", stats, 3600)
 
     statCC = None
@@ -104,12 +104,12 @@ class CMStatWidgetHandler(webapp.RequestHandler):
       statCC = memcache.get("statCC" + str(c.centroCucina.key()))
       if not statCC:
         logging.info("statCC miss")
-        statCC = StatisticheIspezioni.all().filter("centroCucina",c.centroCucina).filter("timeId", year).get()
+        statCC = StatisticheIspezioni.get_cc_cm_time(cc=c.centroCucina, timeId=year).get()
         memcache.set("statCC" + str(c.centroCucina.key()), statCC, 3600)
       statCM = memcache.get("statCM" + str(c.key()))
       if not statCM:
         logging.info("statCM miss")
-        statCM = StatisticheIspezioni.all().filter("commissione",c).filter("timeId", year).get()
+        statCM = StatisticheIspezioni.StatisticheIspezioni.get_cc_cm_time(cm=c, timeId=year).get()
         memcache.set("statCM" + str(c.key()), statCM, 3600)
       
     template_values["stats"] = stats
@@ -176,19 +176,19 @@ class CMListWidgetHandler(BasePage):
     items=list()
     cm = Commissione.get(self.request.get("cm"))
     if cm:
-      isps = Ispezione.all().filter("commissione", cm).order("-dataIspezione")
+      isps = Ispezione.get_by_cm(cm)
       for isp in isps:
         items.append(WidgetListitem(isp, isp.dataIspezione))
       
-      ncs = Nonconformita.all().filter("commissione", cm).order("-dataNonconf")
+      ncs = Nonconformita.get_by_cm(cm)
       for nc in ncs:
         items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
 
-      diete = Dieta.all().filter("commissione", cm).order("-dataIspezione")
+      diete = Dieta.get_by_cm(cm)
       for dieta in diete:
         items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
 
-      note = Nota.all().filter("commissione", cm).order("-dataNota")
+      note = Nota.get_by_cm(cm)
       for nota in note:
         items.append(WidgetListitem(item=nota, date=nota.dataNota))
         

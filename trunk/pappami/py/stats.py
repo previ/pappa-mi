@@ -92,12 +92,12 @@ class CMStatsHandler(BasePage):
       anno = int(self.request.get("anno"))
 
     anni = list()
-    sts = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina", None)
+    sts = StatisticheIspezioni.get_cc_cm_time()
     for st in sts:
       anni.append(st.timeId)
       
 
-    stat = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",None).filter("centroCucina", None).get()
+    stat = StatisticheIspezioni.get_cc_cm_time(timeId=anno).get()
       
     #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
     #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
@@ -105,8 +105,8 @@ class CMStatsHandler(BasePage):
       cm = Commissione.get(self.request.get("cm"))
     if cm:
       cc = cm.getCentroCucina(now)
-      statCC = StatisticheIspezioni.all().filter("timeId", anno).filter("centroCucina",cc).get()
-      statCM = StatisticheIspezioni.all().filter("timeId", anno).filter("commissione",cm).get()
+      statCC = StatisticheIspezioni.get_cc_cm_time(cc=cc, timeId=anno).get()
+      statCM = StatisticheIspezioni.get_cc_cm_time(cm=cm, timeId=anno).get()
     stats = [stat,statCC,statCM]
     
     z_desc = {"group": ("string", "Gruppo"), 
@@ -340,7 +340,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
-    for s in StatisticheNonconf.all().filter("dataInizio >=", dataInizio):
+    for s in StatisticheNonconf.get_from_date(dataInizio):
       if s.commissione is None and s.centroCucina is None:
         stats = s
       elif s.commissione is None and s.centroCucina is not None:
@@ -463,7 +463,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     #logging.info("wtot: " + str(wtot))
     
     # carica gli elementi creati successivamente all'ultimo calcolo
-    for s in StatisticheIspezioni.all().filter("dataInizio >=", dataInizio):
+    for s in StatisticheIspezioni.get_from_date(dataInizio):
       if s.commissione is None and s.centroCucina is None:
         stats = s
       elif s.commissione is None and s.centroCucina is not None:

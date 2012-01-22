@@ -28,242 +28,18 @@ from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, user_required, Const
 from py.modelMsg import *
 from py.comments import CMCommentHandler
-
          
-class CMCommissarioDataHandler(BasePage):
-  def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if( commissario is not None):    
-      tq = urllib.unquote(self.request.get("tq"))
-      #logging.info(tq)
-      query = tq[:tq.find("limit")]
-      #logging.info(query)
-      
-      orderby = "-data"
-      if(query.find("by") > 0):
-        orderby = query[query.find("`"):query.rfind("`")].strip("` ")
-      if(query.find("desc") > 0):
-        orderby = "-" + orderby
-
-      frm = ""
-      if(query.find("from") >= 0):
-        frm = query[(query.find("from ") + len("from ")):]
-        frm = frm[:frm.find(" ")]
-
-      cm = ""
-      if(query.find("commissione") >= 0):
-        cm = query[(query.find("commissione ") + len("commissione ")):]
-        cm = cm[:cm.find(" ")]
-
-      me = "on"
-      if(query.find("me") >= 0):
-        me = query[(query.find("me ") + len("me ")):]
-        me = me[:me.find(" ")]
-
-      anno = ""
-      if(query.find("anno") >= 0):
-        anno = query[(query.find("anno ") + len("anno ")):]
-        anno = anno[:anno.find(" ")]
-        
-      #logging.info(orderby)
-      
-      params = tq[tq.find("limit"):].split()
-      #logging.info(params)
-      limit = int(params[1])
-      offset = int(params[3])
-      
-      if params[3] >= 0:
-        offset = int(params[3])
-      else:
-        offset = 0
-        
-      if offset > 0:
-        prev = offset - 10
-      else:
-        prev = None
-      next = offset + 10
-
-      if frm == "nc":
-        
-        # Creating the data
-        description_nc = {"commissione": ("string", "Commissione"), 
-                       "data": ("date", "Data"),
-                       "turno": ("string", "Turno"),
-                       "tipo": ("string", "Tipo"),
-                       "key": ("string", "")}
-        
-        data_nc = list()
-
-        ncs = Nonconformita.all()
-
-        if me == "on":
-          ncs = ncs.filter("commissario",commissario)
-
-        if anno != "":
-          ncs = ncs.filter("anno",int(anno))      
-        
-        if cm != "":
-          ncs = ncs.filter("commissione",Commissione.get(cm))
-        
-        url_path = "commissario"
-        if commissario.isGenitore():
-          url_path = "genitore"
-          
-        if(orderby.find("data") != -1):
-          orderby = orderby + "Nonconf"
-        for nc in ncs.order(orderby).fetch(limit, offset):
-          data_nc.append({"commissione": (nc.commissione.nome + " - " + nc.commissione.tipoScuola), "data": nc.dataNonconf, "turno": str(nc.turno), "tipo": nc.tipoNome(), 
-                       "key":"<a class='btn' href='/" + url_path + "/nonconf?cmd=open&key="+str(nc.key())+"'>Apri</a>"})
-  
-        # Loading it into gviz_api.DataTable
-        data_table_nc = DataTable(description_nc)
-        data_table_nc.LoadData(data_nc)
-        
-        # Creating a JSon string
-        self.response.out.write(data_table_nc.ToJSonResponse(columns_order=("commissione", "data", "turno", "tipo", "key")))
-
-      elif frm == "isp":
-
-        # Creating the data
-        description = {"commissione": ("string", "Commissione"),
-                       "data": ("date", "Data"),
-                       "turno": ("string", "Turno"),
-                       #"complessivo": ("string", "Glob"),
-                       "primo": ("string", "Primo"),
-                       "secondo": ("string", "Secondo"),
-                       "contorno": ("string", "Contorno"),
-                       "frutta": ("string", "Frutta"),
-                       "pasti": ("string", "Pasti serviti"),
-                       "key": ("string", "")}
-        
-        data = list()
-        isps = Ispezione.all()
-        
-        if me == "on":
-          isps = isps.filter("commissario",commissario)
-          me = "on"
-
-        if anno != "":
-          isps = isps.filter("anno",long(anno))
-        
-        if cm != "":
-          isps = isps.filter("commissione",Commissione.get(cm))
-
-        url_path = "commissario"
-        if commissario.isGenitore():
-          url_path = "genitore"
-          
-        if(orderby.find("data") != -1):
-          orderby = orderby + "Ispezione"
-        for ispezione in isps.order(orderby).fetch(limit, offset):
-          data.append({"commissione": (ispezione.commissione.nome + " - " + ispezione.commissione.tipoScuola), "data": ispezione.dataIspezione, "turno": ispezione.turno, 
-                       #"complessivo": "<img src='/img/icon" + str(ispezione.giudizioGlobale) + ".png'/>", 
-                       "primo": "<img src='/img/icoasg" + str(ispezione.primoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.primoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" + str(ispezione.primoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.primoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.primoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "secondo": "<img src='/img/icoasg" + str(ispezione.secondoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.secondoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" +str(ispezione.secondoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.secondoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.secondoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "contorno": "<img src='/img/icoasg" + str(ispezione.contornoAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.contornoGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icocot" + str(ispezione.contornoCottura) + ".png' title='Cottura'/>"+ "<img src='/img/icotmp" + str(ispezione.contornoTemperatura) + ".png' title='Temperatura'/>" + "<img src='/img/icoqta" + str(ispezione.contornoQuantita) + ".png' title='Quantit&agrave;'/>",
-                       "frutta": "<img src='/img/icoasg" + str(ispezione.fruttaAssaggio) + ".png' title='Assaggio'/>" + "<img src='/img/icogra" + str(ispezione.fruttaGradimento) + ".png' title='Gradimento'/>" + "<img src='/img/icomat" + str(ispezione.fruttaMaturazione) + ".png' title='Maturazione'/>" + "<img src='/img/icoqta" + str(ispezione.fruttaQuantita) + ".png' title='Quantit&agrave;'/>", 
-                       "pasti":str(ispezione.numeroPastiTotale) + " " + str(ispezione.numeroPastiBambini), "key":"<a class='btn' href='/" + url_path + "/ispezione?cmd=open&key="+str(ispezione.key())+"'>Apri</a>"})
-  
-        # Loading it into gviz_api.DataTable
-        data_table = DataTable(description)
-        data_table.LoadData(data)
-  
-        # Creating a JSon string
-        self.response.out.write(data_table.ToJSonResponse(columns_order=("commissione", "data", "turno", "primo", "secondo", "contorno", "frutta", "pasti", "key")))
-
-      elif frm == 'dieta':
-        # Creating the data
-        description_dieta = {"commissione": ("string", "Commissione"), 
-                       "data": ("date", "Data"),
-                       "turno": ("string", "Turno"),
-                       "tipoDieta": ("string", "Tipo"),
-                       "key": ("string", "")}
-        
-        data_dieta = list()
-
-        diete = Dieta.all()
-
-        if me == "on":
-          diete= diete.filter("commissario",commissario)
-
-        if anno != "":
-          diete = diete.filter("anno",int(anno))      
-        
-        if cm != "":
-          diete = diete.filter("commissione",Commissione.get(cm))
-        
-        url_path = "commissario"
-        if commissario.isGenitore():
-          url_path = "genitore"
-          
-        if(orderby.find("data") != -1):
-          orderby = orderby + "Ispezione"
-        for dieta in diete.order(orderby).fetch(limit, offset):
-          data_dieta.append({"commissione": (dieta.commissione.nome + " - " + dieta.commissione.tipoScuola), "data": dieta.dataIspezione, "turno": str(dieta.turno), "tipoDieta": dieta.tipoNome(), 
-                       "key":"<a class='btn' href='/" + url_path + "/dieta?cmd=open&key="+str(dieta.key())+"'>Apri</a>"})
-  
-        # Loading it into gviz_api.DataTable
-        data_table_dieta = DataTable(description_dieta)
-        data_table_dieta.LoadData(data_dieta)
-        
-        # Creating a JSon string
-        self.response.out.write(data_table_dieta.ToJSonResponse(columns_order=("commissione", "data", "turno", "tipoDieta", "key")))
-
-      elif frm == "note":
-
-        # Creating the data
-        description = {"commissione": ("string", "Commissione"),
-                       "data": ("date", "Data"),
-                       "titolo": ("string", "Titolo"),
-                       "testo": ("string", "Testo"),
-                       "key": ("string", "")}
-        
-        data = list()
-        note = Nota.all()
-        
-        if me == "on":
-          note = note.filter("commissario",commissario)
-          me = "on"
-
-        if anno != "":
-          note = note.filter("anno",long(anno))
-        
-        if cm != "":
-          note = note.filter("commissione",Commissione.get(cm))
-
-        url_path = "commissario"
-        if commissario.isGenitore():
-          url_path = "genitore"
-          
-        if(orderby.find("data") != -1):
-          orderby = orderby + "Nota"
-        for nota in note.order(orderby).fetch(limit, offset):
-          titolo = nota.titolo
-          if len(titolo) > 30: titolo = titolo[0:30] + "..."
-          testo = nota.note
-          if len(testo) > 50: testo = testo[0:50] + "..."
-            
-          data.append({"commissione": (nota.commissione.nome + " - " + nota.commissione.tipoScuola), "data": nota.dataNota,
-                       "titolo": titolo, "testo": testo, "key":"<a class='btn' href='/" + url_path + "/nota?cmd=open&key="+str(nota.key())+"'>Apri</a>"})
-  
-        # Loading it into gviz_api.DataTable
-        data_table = DataTable(description)
-        data_table.LoadData(data)
-  
-        # Creating a JSon string
-        self.response.out.write(data_table.ToJSonResponse(columns_order=("commissione", "data", "titolo", "testo", "key")))
-
-
 class CMGetIspDataHandler(BasePage):
 
   @commissario_required
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
+    logging.info("isp1")
     if( commissario is not None):    
       cm = self.request.get("cm")
-      isp = Ispezione.all().filter("commissione",Commissione.get(cm)).order("-dataIspezione").get()
+      isp = Ispezione.get_last_from_cm(cm)
+      logging.info("isp: " + str(isp))
         
       buff = ""
       if( isp ):
@@ -274,20 +50,15 @@ class CMGetIspDataHandler(BasePage):
 
 class IspezioneValidationHandler(BasePage):    
   def post(self):
-    #logging.info(self.request.get("commissione"));
-    #logging.info(self.request.get("dataIspezione"));
-    #logging.info(self.request.get("turno"));
     turno = int(self.request.get("turno"))
     commissione = self.request.get("commissione")
     dataIspezione = datetime.strptime(self.request.get("dataIspezione"),Const.DATE_FORMAT).date()
 
-    logging.info(dataIspezione);
     
     message = "Ok"
-    if Ispezione.all().filter("dataIspezione",dataIspezione).filter("commissione",db.Key(commissione)).filter("turno",turno).count() > 0 :
+    if Ispezione.get_by_cm_data_turno(commissione, dataIspezione, turno) :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
-    logging.info(message);
     self.response.out.write(message)
     
 class DietaValidationHandler(BasePage):    
@@ -300,7 +71,7 @@ class DietaValidationHandler(BasePage):
     logging.info(dataIspezione);
     
     message = "Ok"
-    if Dieta.all().filter("dataIspezione",dataIspezione).filter("commissione",db.Key(commissione)).filter("turno",turno).filter("tipoDieta",tipo).count() > 0 :
+    if Dieta.get_by_cm_data_turno(commissione, dataIspezione, turno) :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
     logging.info(message);
