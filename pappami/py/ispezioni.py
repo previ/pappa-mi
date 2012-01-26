@@ -38,7 +38,7 @@ class CMGetIspDataHandler(BasePage):
     logging.info("isp1")
     if( commissario is not None):    
       cm = self.request.get("cm")
-      isp = Ispezione.get_last_from_cm(cm)
+      isp = Ispezione.get_last_by_cm(cm)
       logging.info("isp: " + str(isp))
         
       buff = ""
