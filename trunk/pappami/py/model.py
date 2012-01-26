@@ -129,8 +129,8 @@ class Commissione(db.Model):
 
   @classmethod
   def get_active_cursor(cls, cursor):
-    if cursor:
-      return Commissione.all().with_cursor(cursor);
+    if cursor and cursor != "":
+      return Commissione.all().filter("numCommissari >",0).with_cursor(cursor);
     else:
       return Commissione.all().filter("numCommissari >",0)
     

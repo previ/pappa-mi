@@ -20,9 +20,16 @@ height: 220px;
 </style>
 {%set tab_map="active"%}
 {%include "navigation.html"%}
-<div style="position:relative;">
 <div style="position:absolute; top:20em; left:18em; width:30em; background: #ffffff; border: 1px;z-index:999;display:none;" id="loading"><center><img src="/img/loading.gif"/><br/>Caricamento in corso ...</center></div>
-<h3 class="ss-form-title"style="display:inline;">Commissioni</h3><br/>
+<h3 class="ss-form-title"style="display:inline;">Commissioni</h3>
+<div class="row">
+ <div class="span4">
+  <div id="left_list" style="height: 600px; overflow: auto;"></div>
+ </div>
+ <div class="span12">
+  <div id="map" style="height: 600px;"></div>
+ </div>
+</div>
 {#<div dojoType="dijit.form.DropDownButton">
   <span>Filtra dati</span>
   <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtro dati">
@@ -64,6 +71,3 @@ height: 220px;
 </table>
 </div>
 </div>#}
-<div id="left_list" style="height: 600px; width: 14em; float:left; border: 0px solid black; overflow: auto;"></div>
-<div id="map" style="height: 600px; width: 51em; float:left; border: 1px solid black"></div>
-</div>

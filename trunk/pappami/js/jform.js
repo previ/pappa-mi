@@ -55,7 +55,7 @@ function getPrevIspData() {
      return;
   }
 
-  $.ajax({url:"/commissario/getispdata?cm="+commissione, success: function(data){ 
+  $.ajax({url:"/isp/getispdata?cm="+commissione, success: function(data){ 
 	var ispdata = data.split("|");
 	if(ispdata.length > 1) {
 	  $('[name="aaRispettoCapitolato"]')[0].checked = ispdata[0] == 1;
