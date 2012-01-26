@@ -16,6 +16,8 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
+
 import py.feedparser
 
 from py.model import *
@@ -24,6 +26,8 @@ TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
 class CMMenuWidgetHandler(CMMenuHandler):
+
+  menu_cache = dict()
   
   def get(self): 
     menu = Menu();
@@ -40,11 +44,18 @@ class CMMenuWidgetHandler(CMMenuHandler):
     template_values["fcolor"] = fcolor
 
     c = None
-    if self.request.get("cm"):
-      c = Commissione.get(self.request.get("cm"))
-    
-    self.createMenu(self.request,c,template_values)
+    tmp_template_values = memcache.get("menu_widge_cache_" + self.request.get("cm"))
+    if tmp_template_values is None:
+      if self.request.get("cm"):
+        c = Commissione.get(self.request.get("cm"))     
 
+      tmp_template_values = dict()
+      self.createMenu(self.request,c,tmp_template_values)
+        
+      memcache.set("menu_widge_cache_" + self.request.get("cm"), tmp_template_values, 7200)
+
+    template_values = dict(template_values.items() + tmp_template_values.items())
+    
     if self.request.get("i") == "n":
       path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
     else:
@@ -157,6 +168,33 @@ class WidgetListitem:
     u += str(self.item.key())
     return u
 
+  def desc(self):
+    desc = ""
+    if isinstance(self.item, Ispezione):
+      if self.item.note:
+        if len(self.item.note) <= 40:
+          desc = self.item.note
+        else:
+          desc = self.item.note[0:37] + "..."
+    if isinstance(self.item, Nonconformita):
+      if self.item.note:
+        if len(self.item.note) <= 40:
+          desc = self.item.note
+        else:
+          desc = self.item.note[0:37] + "..."
+    if isinstance(self.item, Dieta):
+      if self.item.note:
+        if len(self.item.note) <= 40:
+          desc = self.item.note
+        else:
+          desc = self.item.note[0:37] + "..."
+    if isinstance(self.item, Nota):      
+      if self.item.titolo:
+        if len(self.item.titolo) <= 40:
+          desc = self.item.titolo
+        else:
+          desc = self.item.titolo[0:37] + "..."
+    return desc
   
 class CMListWidgetHandler(BasePage):
   
@@ -231,7 +269,7 @@ def main():
   ('/widget/getcm', CMCommissioniDataHandler)
   ], debug=debug)
   
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
 if __name__ == "__main__":
   main()

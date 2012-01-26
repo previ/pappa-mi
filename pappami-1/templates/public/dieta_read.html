@@ -9,17 +9,7 @@ dojo.require("dijit.form.FilteringSelect");
 </script>
 <script src="/js/form.js" type="text/javascript"></script>
 {%if public_url%}
-<!-- AddThis Button BEGIN -->
-<div class="addthis_toolbox addthis_default_style ">
-<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4cdb224129b45357" class="addthis_button_compact" addthis:url="{{public_url}}">Share</a>
-<span class="addthis_separator">|</span>
-<a class="addthis_button_googlebuzz" addthis:url="{{public_url}}"></a>
-<a class="addthis_button_facebook" addthis:url="{{public_url}}"></a>
-<a class="addthis_button_twitter" addthis:url="{{public_url}}"></a>
-<a class="addthis_button_email" addthis:url="{{public_url}}"></a>
 <a href="{{public_url}}" target="_new">Link pubblico a questa pagina</a>
-</div>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cdb224129b45357"></script>
 <!-- AddThis Button END -->
 {%endif%}
 <div class="ss-form-container"><h1 class="table_separator">{{dieta.commissione.nome}} - {{dieta.commissione.tipoScuola}} - Ispezione del {{dieta.dataIspezione|date:"d/m/Y"}} - Turno {{dieta.turno}}</h1>

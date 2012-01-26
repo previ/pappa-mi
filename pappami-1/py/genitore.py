@@ -30,6 +30,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
 from py.gviz_api import *
@@ -100,7 +101,7 @@ class CMRegistrazioneGenitoreHandler(BasePage):
         commissioneCommissario.put()
 
       commissario.setCMDefault()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+      self.setCommissario(commissario)
         
       self.sendRegistrationRequestMail(commissario)
     
@@ -154,7 +155,9 @@ class CMProfiloGenitoreHandler(BasePage):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
       commissario.emailComunicazioni = self.request.get("emailalert")
-      commissario.put()      
+      commissario.put()
+      commissario.user_email_lower = commissario.user.email().lower()
+      commissario.put()
 
       for cc in CommissioneCommissario.all().filter("commissario",commissario):
         cc.delete()
@@ -163,7 +166,7 @@ class CMProfiloGenitoreHandler(BasePage):
         commissioneCommissario.put()
 
       commissario.setCMDefault()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+      self.setCommissario(commissario)
         
     template_values = {
       'content_left': 'genitore/leftbar.html',
@@ -268,15 +271,17 @@ class CMNotaGenitoreHandler(BasePage):
   
   def get(self): 
     user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if commissario is None or not commissario.isGenitore() :
-      self.redirect("/genitore/registrazione")
-      return
+    commissario = self.getCommissario(user)
     
     if( self.request.get("key") or self.request.get("cmd") == "open" ):
       if commissario is not None and commissario.isCommissario() :
         self.redirect("/commissario/nota?cmd=open&key="+self.request.get("key"))
         return
+
+      if commissario is None or not commissario.isGenitore() :
+        self.redirect("/genitore/registrazione")
+        return
+
       nota = Nota.get(self.request.get("key"))
       allegati = None
       if nota.allegato_set.count():
@@ -292,6 +297,7 @@ class CMNotaGenitoreHandler(BasePage):
 
       self.getBase(template_values)
 
+      
     elif( self.request.get("cmd") == "edit" ):
    
       nota = memcache.get(self.request.get("preview"))
@@ -434,7 +440,7 @@ def main():
     ('/genitore/getdata', CMGenitoreDataHandler)
   ], debug=debug)
   
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
       
 if __name__ == "__main__":
   main()

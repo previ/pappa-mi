@@ -29,6 +29,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
 from py.model import *
@@ -311,6 +312,19 @@ class CMAdminHandler(BasePage):
 
   def get(self):    
 
+    if self.request.get("cmd") == "initCmEmail":
+      for c in Commissario.all():
+        c.user_email_lower = c.user.email().lower()
+        c.put()      
+      
+    if self.request.get("cmd") == "initNotaAnno":
+      for nota in Nota.all().filter("anno", None):
+        if nota.dataNota.month >= 9:
+          nota.anno = nota.dataNota.year
+        else:
+          nota.anno = nota.dataNota.year - 1
+        nota.put()
+      
     if self.request.get("cmd") == "initConfig":
       dummy = Configurazione(nome="dummyname", valore="dummyvalue")
       dummy.put()
@@ -441,7 +455,7 @@ class CMAdminCommissarioHandler(BasePage):
           commissario.stato = 10
         
       commissario.put()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+      self.setCommissario(commissario)
       
      
       if commissario.stato == 1:              
@@ -536,7 +550,7 @@ def main():
   ('/admin', CMAdminHandler)
   ], debug=debug)
 
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
   
 if __name__ == "__main__":
   main()

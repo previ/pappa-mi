@@ -35,7 +35,7 @@ class MailHandler(InboundMailHandler):
     text_bodies = message.bodies('text/plain')
     for body in text_bodies:
       logging.info("body: " + body[1].decode())
-    commissario = Commissario.all().filter("user",users.User(parseaddr(message.sender)[1])).get()    
+    commissario = Commissario.all().filter("user_email_lower",parseaddr(message.sender)[1].lower()).get()    
     if commissario:
       feedback = list()
       logging.info("found commissario")      
@@ -89,12 +89,20 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
       for giorno in ["luned","marted","mercoled","gioved","venerd"]:
         i = i + 1
         if nota.titolo.lower().find(giorno) >= 0:
+          if nota.dataNota.isoweekday() < i:
+            nota.dataNota = nota.dataNota - timedelta(7)
+            
           nota.dataNota = nota.dataNota - timedelta(nota.dataNota.isoweekday()-i)
           break;
         
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
 
+    if nota.dataNota.month >= 9:
+      nota.anno = nota.dataNota.year
+    else:
+      nota.anno = nota.dataNota.year - 1
+      
     nota.put()
       
     # tags

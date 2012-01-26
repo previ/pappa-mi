@@ -18,6 +18,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
 from py.gviz_api import *
@@ -349,13 +350,15 @@ class CMRegistrazioneHandler(BasePage):
       commissario = Commissario(nome = self.request.get("nome"), cognome = self.request.get("cognome"), user = user, stato = 0)
       commissario.emailComunicazioni = self.request.get("emailalert")
       commissario.put()
+      commissario.user_email_lower = commissario.user.email().lower()
+      commissario.put()
           
       for c_key in self.request.get_all("commissione"):
         commissioneCommissario = CommissioneCommissario(commissione = Commissione.get(db.Key(c_key)), commissario = commissario)
         commissioneCommissario.put()
 
       commissario.setCMDefault()
-      memcache.set("commissario" + str(user.user_id()), commissario, 600)
+      self.setCommissario(commissario)
         
       self.sendRegistrationRequestMail(commissario)
     
@@ -402,6 +405,8 @@ class CMProfiloCommissarioHandler(BasePage):
       commissario.nome = self.request.get("nome")
       commissario.cognome = self.request.get("cognome")
       commissario.emailComunicazioni = self.request.get("emailalert")
+      commissario.put()
+      commissario.user_email_lower = commissario.user.email().lower()
       commissario.put()
 
       old = list()
@@ -1074,7 +1079,7 @@ def main():
     ('/commissario/getispdata', CMGetIspDataHandler)
   ], debug=debug)
 
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
   
 if __name__ == "__main__":
   main()

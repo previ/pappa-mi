@@ -15,17 +15,10 @@
 # limitations under the License.
 #
 
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-
-from google.appengine.dist import use_library
-use_library('django', '0.96')
-
 import cgi
 import logging
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
-
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -33,6 +26,9 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
+
+import os
 
 import py.feedparser
 
@@ -44,6 +40,7 @@ DATE_FORMAT = "%Y-%m-%d"
 
 
 class BasePage(webapp.RequestHandler):
+
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1:
@@ -81,22 +78,23 @@ class BasePage(webapp.RequestHandler):
     template_values["shownote"] = True
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
-    template_values["version"] = "1.4.0.36 - 2011.04.30"
+    template_values["version"] = "1.4.1.38 - 2012.01.23"
 
     path = os.path.join(os.path.dirname(__file__), template_values["main"])
     self.response.out.write(template.render(path, template_values))
-
+    
   def getCommissario(self,user):
     commissario = None
     if(user):
-      #commissario = memcache.get("user" + str(user.user_id()))
-      #if not commissario:
-      #logging.info(user.email())
-      #commissario = db.GqlQuery("SELECT * FROM Commissario where user = USER('" + user.email() + "')").get()
-      commissario = Commissario.all().filter("user", user).get()
-      #memcache.add("user" + str(user.user_id()), commissario, 600)
+      commissario = memcache.get("commissario-"+str(user.user_id()))
+      if commissario is None:
+        commissario = Commissario.all().filter("user", user).get()
+        memcache.add("commissario-"+user.user_id(), commissario)
     return commissario
 
+  def setCommissario(self,commissario):
+    memcache.add("commissario-"+str(commissario.user.user_id()), commissario)
+  
   def getCommissioni(self):
     commissioni = memcache.get("commissioni")
     if commissioni == None:
@@ -158,9 +156,17 @@ class CMMenuHandler(BasePage):
        
     data = self.workingDay(datetime.now().date())
 
-    menu = self.getMenu(data, c)    
+    ckey = ""
+    if c:
+      ckey = c.key()
+    
+    menu = memcache.get("menu_cache_"+str(data)+"_"+str(ckey))
+    if menu is None:
+      menu = self.getMenu(data, c)
+      memcache.set("menu_cache_"+str(data)+"_"+str(ckey), menu, 7200)
+      
     template_values["sett"] = len(menu) > 2
-    template_values["menu"] = self.getMenu(data, c)
+    template_values["menu"] = menu
     
   def workingDay(self, data):
     while data.isoweekday() > 5:
@@ -189,7 +195,7 @@ class CMMenuHandler(BasePage):
       if offset < 0:
         menu = sorted(menu, key=lambda menu: menu.settimana)
         
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu, 60)
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu, 7200)
     return menu
 
   def getMenuHelper(self, menu, data, offset, tipoScuola):

@@ -102,6 +102,8 @@ class Commissario(db.Model):
 
   stato = db.IntegerProperty()
   
+  user_email_lower = db.StringProperty()
+  
   cmdefault = None
   
   def isCommissario(self):
@@ -126,12 +128,12 @@ class Commissario(db.Model):
       self.cmdefault = self.commissioni()[0]
   
   def commissione(self):
-    #if not self.cmdefault and len(self.commissioni()) > 0:
-      #self.cmdefault = self.commissioni()[0]
-    #return self.cmdefault
-    cms = self.commissioni()
-    if len(cms) > 0:
-      return cms[0]
+    if self.cmdefault is None and len(self.commissioni()) > 0:
+      self.cmdefault = self.commissioni()[0]
+    return self.cmdefault
+    #cms = self.commissioni()
+    #if len(cms) > 0:
+      #return cms[0]
   
 class CommissioneCommissario(db.Model):
   commissione = db.ReferenceProperty(Commissione)

@@ -27,6 +27,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -37,10 +38,6 @@ class LoginPage(BasePage):
   def get(self):
     if not self.getCommissario(users.get_current_user()):
       self.redirect("/registrazione")
-    elif self.getCommissario(users.get_current_user()).isCommissario():
-      self.redirect("/commissario")
-    elif self.getCommissario(users.get_current_user()).isGenitore():
-      self.redirect("/genitore")
     else:
       self.redirect("/")
 
@@ -67,7 +64,7 @@ def main():
   ('/_ah/login_required', LoginReqPage)
   ], debug=debug)
   
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
 if __name__ == "__main__":
   main()

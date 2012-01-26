@@ -1,6 +1,7 @@
 from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import memcache
 from google.appengine.datastore import datastore_index
+from google.appengine.ext.webapp.util import run_wsgi_app
 import logging
 import operator
 

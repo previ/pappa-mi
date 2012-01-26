@@ -28,6 +28,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 from google.appengine.api.taskqueue import Task, Queue
 
@@ -456,8 +457,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
-    #logging.info("dataInizio: " + str(dataInizio))
-    #logging.info("dataFine: " + str(dataFine))
+    logging.info("dataInizio: " + str(dataInizio))
+    logging.info("dataFine: " + str(dataFine))
     #logging.info("wtot: " + str(wtot))
     
     # carica gli elementi creati successivamente all'ultimo calcolo
@@ -483,6 +484,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
 
     count = 0
 
+    logging.info("dataCalcolo: " + str(stats.dataCalcolo))
       
     for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
       if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
@@ -617,7 +619,7 @@ application = webapp.WSGIApplication([
   ('/admin/stats/calcnc', CMStatNCCalcHandler)], debug=True)
 
 def main():
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
 if __name__ == "__main__":
   main()  
