@@ -28,6 +28,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 import py.feedparser
 
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
@@ -60,7 +61,7 @@ class MainPage(BasePage):
         
       memcache.add(name,news)
     return news
-  
+    
   def get(self):
     template_values = dict()
     template_values["content"] = "public.html"
@@ -73,7 +74,7 @@ class MainPage(BasePage):
     stats = self.getStats()
 
     c = None
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(users.get_current_user())     
     if commissario:
       c = commissario.commissione()
     
@@ -103,10 +104,14 @@ class MainPage(BasePage):
       
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.all().filter("numCommissari >",0).count()
-      stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
-      stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
-      stats.diete = Dieta.all().count()
-      stats.note = Nota.all().count()
+      statispezioni = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get()
+      if statispezioni:
+        stats.numeroSchede = statispezioni.numeroSchede
+      statnonconf = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get()
+      if statnonconf:
+        stats.ncTotali = statnonconf.numeroNonconf
+      stats.diete = Dieta.all().filter("anno", anno).count()
+      stats.note = Nota.all().filter("anno", anno).count()
       stats.anno1 = anno
       stats.anno2 = anno + 1
       memcache.add("stats", stats)
@@ -249,7 +254,7 @@ def main():
   ('/registrazione', CMRegistrazioneHandler)
   ], debug=debug)
   
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
 #def profile_main():
     ## This is the main function for profiling

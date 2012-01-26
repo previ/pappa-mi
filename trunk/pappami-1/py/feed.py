@@ -30,6 +30,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
 from py.model import *
@@ -295,7 +296,7 @@ application = webapp.WSGIApplication([
 ], debug=True)
 
 def main():
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
 if __name__ == "__main__":
   main()
