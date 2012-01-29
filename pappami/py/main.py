@@ -19,6 +19,7 @@ from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
+import fixpath
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -165,12 +166,8 @@ class CMMenuDataHandler(CMMenuHandler):
       c = Commissione.get(self.request.get("commissione"))
       menu = self.getMenu(data, c)[0]
       
-      self.response.out.write(menu.primo.nome)
-      self.response.out.write("|")
-      self.response.out.write(menu.secondo.nome)
-      self.response.out.write("|")
-      self.response.out.write(menu.contorno.nome)
-      self.response.out.write("\n")
+      json.dump(menu.to_dict(), self.response.out)
+      logging.info(json.dumps(menu.to_dict()))
 
     else:
       template_values = dict()

@@ -34,7 +34,7 @@ cursor: pointer;
 /* SETUP */
 
 /*body {background: url('/img/background.jpg') no-repeat fixed top center; background-color:#3986c8; color:#303030;}*/
-container { background:url('/img/back_transp.png'); !important; }
+.main { background:url('/img/back_transp.png'); }
 
 .list-item {
   background-color: #eeeeee;
@@ -257,14 +257,17 @@ label.toggle {
   width:100%;
   text-align:left;
 }
-
+.container {
+background-color:transparent;
+}
 footer {
 background: url(../img/food_footer.jpg) repeat-x center bottom;
 height: 133px;
-#position:fixed; 
-#bottom:0; 
+position:fixed; 
+bottom:0; 
 width:100%; 
-z-index=-1;
+z-index:-1000;
+border: 0;
 }
 
 .label.labelbox {
@@ -432,37 +435,76 @@ i {
 }
 
 .temperatura {
-  background-position: 0 0;
+  background-position: 0 -32px;
 }
 .assaggio {
-  background-position: -32px 0;
+  background-position: -32px -32px;
 }
 .gradimento {
-  background-position: -64px 0;
+  background-position: -64px -32px;
 }
 .pane {
-  background-position: -96px 0;
+  background-position: -96px -32px;
 }
 .cottura {
-  background-position: -128px 0;
+  background-position: -128px -32px;
 }
 .condito {
-  background-position: -160px 0;
+  background-position: -160px -32px;
 }
 .dessert {
-  background-position: -192px 0;
+  background-position: -192px -32px;
 }
 .quantita {
-  background-position: -224px 0;
+  background-position: -224px -32px;
 }
 .primo {
-  background-position: -256px 0;
+  background-position: -256px -32px;
 }
 .secondo {
-  background-position: -288px 0;
+  background-position: -288px -32px;
 }
 .contorno {
+  background-position: -320px -32px;
+}
+.servizio {
+  background-position: -480px -32px;
+}
+.temperatura:hover {
+  background-position: 0 0;
+}
+.assaggio:hover {
+  background-position: -32px 0;
+}
+.gradimento:hover {
+  background-position: -64px 0;
+}
+.pane:hover {
+  background-position: -96px 0;
+}
+.cottura:hover {
+  background-position: -128px 0;
+}
+.condito:hover {
+  background-position: -160px 0;
+}
+.dessert:hover {
+  background-position: -192px 0;
+}
+.quantita:hover {
+  background-position: -224px 0;
+}
+.primo:hover {
+  background-position: -256px 0;
+}
+.secondo:hover {
+  background-position: -288px 0;
+}
+.contorno:hover {
   background-position: -320px 0;
+}
+.servizio:hover {
+  background-position: -480px 0;
 }
 
 table th, table td, table tbody, table thead .compact {
@@ -471,4 +513,26 @@ padding: 2px 2px 2px 2px;
 
 .data {
 font-weight: bold;
+}
+
+.slide_container {
+	position:relative;
+	width: 100%; 
+	height: 100%;
+}
+.caption {
+	z-index:500;
+	position:absolute;
+	bottom:-35px;
+	left:0;
+	height:30px;
+	padding:5px 20px 0 20px;
+	background:#000;
+	background:rgba(0,0,0,.5);
+	width:940px;
+	font-size:1.3em;
+	line-height:1.33;
+	color:#fff;
+	border-top:1px solid #000;
+	text-shadow:none;
 }

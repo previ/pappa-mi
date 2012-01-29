@@ -5,13 +5,16 @@ var getMenu = function(){
     //dateArr = date.split("/");
     //date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
     $.ajax({url:"/menu?cmd=getbydate&data="+date+"&commissione="+commissione, success:function(data){ 
-	var menu = data.split("|");				        	
-	$('#e_primoPrevisto').val(menu[0]);
-	$('#e_secondoPrevisto').val(menu[1]);
-	$('#e_contornoPrevisto').val(menu[2]);
-	$('#e_primoEffettivo').val(menu[0]);
-	$('#e_secondoEffettivo').val(menu[1]);
-	$('#e_contornoEffettivo').val( menu[2]);	
+	var menu = eval("("+data+")");				        	
+	$('#e_primoPrevisto').val(menu["primo"]);
+	$('#e_secondoPrevisto').val(menu["secondo"]);
+	$('#e_contornoPrevisto').val(menu["contorno"]);
+	$('#e_primoEffettivo').val(menu["primo"]);
+	$('#e_secondoEffettivo').val(menu["secondo"]);
+	$('#e_contornoEffettivo').val( menu["contorno"]);	
+	$('#e_primoPiattoEffettivo').val(menu["primo_key"]);
+	$('#e_secondoPiattoEffettivo').val(menu["secondo_key"]);
+	$('#e_contornoPiattoEffettivo').val( menu["contorno_key"]);	
 	onMenuChanged();
     }});
   }

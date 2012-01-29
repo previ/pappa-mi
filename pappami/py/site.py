@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import logging
+import fixpath
 
 import gdata.sites.client
 import gdata.data

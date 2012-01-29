@@ -35,27 +35,30 @@ class CMCommentHandler(BasePage):
   """ 
   init a comment structure, attaching an empty root message to an existing object
   """
-  def init(self, msg_rif, tipo, tags):
+  def init(self, msg_rif, msg_grp, tipo, tags):
     messaggio = Messaggio.get_by_parent(msg_rif)
     if not messaggio:  
       messaggio = Messaggio()
       messaggio.par = msg_rif
       messaggio.root = msg_rif
+      messaggio.grp = msg_grp
       messaggio.livello = 0
       messaggio.tipo = tipo
       messaggio.commenti = 0
       messaggio.put()
       if tags:
         CMTagHandler().saveTags(messaggio, tags)
+        
+      messaggio.invalidate_cache();
     return messaggio
 
   """
   init a comment structure, attaching a root message to an existing object
   and return the delta activity stream html
   """
-  def initActivity(self, msg_rif, tipo, last, tags=None):    
+  def initActivity(self, msg_rif, msg_grp, tipo, last, tags=None):    
 
-    CMCommentHandler().init(msg_rif, tipo, tags)
+    CMCommentHandler().init(msg_rif, msg_grp, tipo, tags)
     
     buff = ""
 
@@ -112,6 +115,7 @@ class CMCommentHandler(BasePage):
       'activity': messaggio,
       'ease': True
     }
+    messaggio.invalidate_cache();
     
     activities = Messaggio.get_all_from_item_parent(self.request.get("last"), messaggio)
 

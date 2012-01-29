@@ -78,9 +78,10 @@
 <script type="text/javascript"> 
 $(function() {
 {%for activity in activities %}
-$( "#activity_{{activity.key()}}" ).css("background-color", "#aaa");
-$( "#activity_{{activity.key()}}" ).animate({ backgroundColor: "#fff"}, 2000 );
+$( "#activity_{{activity.key()}}" ).css("opacity", "0");
+$( "#activity_{{activity.key()}}" ).animate({ opacity: 1}, 2000 );
 {%endfor%}
+location.href="#"+$("#activity_list").children().last().attr("id");
 });
 </script>
 {%endif%}

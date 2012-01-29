@@ -4,6 +4,8 @@ runtime: python27
 api_version: 1
 threadsafe: false
 
+default_expiration: "1d"
+
 derived_file_type:
 - python_precompiled
 
@@ -95,11 +97,9 @@ handlers:
   
 - url: /stats/.*
   script: py.stats.app
-  login: required
 
 - url: /stats/*
   script: py.stats.app
-  login: required
 
 - url: /feed/.*
   script: py.feed.app

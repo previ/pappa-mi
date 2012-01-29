@@ -19,7 +19,7 @@ import cgi
 import os, logging, json
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
-
+import fixpath
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -72,7 +72,23 @@ class BasePage(webapp.RequestHandler):
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
-      return self.session_store.get_session()      
+      return self.session_store.get_session()   
+    
+  def get_context(self):
+    ctx = self.session.get("ctx")
+    if ctx == None:
+      ctx = dict()
+      commissario = self.getCommissario(users.get_current_user())
+      if commissario:
+        ctx["citta_key"] = str(commissario.citta.key())
+        ctx["cm_key"] = str(commissario.commissione().key())
+        ctx["cm_name"] = str(commissario.commissione().desc())
+      anno = datetime.now().date().year
+      if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
+        anno = anno - 1
+      ctx["anno"] = str(anno)
+      self.session["ctx"] = ctx
+    return ctx
 
   def getBase(self, template_values):
     
@@ -96,10 +112,10 @@ class BasePage(webapp.RequestHandler):
     if( commissario is not None ) :
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
-        commissario.put()
-        memcache.set("commissario" + str(user.user_id()), commissario, 600)
+        db.put_async(commissario)
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
+      template_values["cmsro"] = commissario
       user.fullname = commissario.nomecompleto()
       user.title = commissario.titolo()
       user.avatar = commissario.avatar()
@@ -118,6 +134,7 @@ class BasePage(webapp.RequestHandler):
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
     template_values["version"] = "2.0.0.37 - 2012.01.21"
+    template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
@@ -186,32 +203,39 @@ class BasePage(webapp.RequestHandler):
     if user is None:
       user = "!"
       self.session['user'] = user
-    
+
+    cm = self.request.get("cm")     
+    if cm != "":
+      self.session['cm'] = cm
+      
     if tag != "!" and tag != "":
       activities = Messaggio.get_by_tagname(tag,offset)
     elif msgtype != "!" and msgtype != "":
       activities = Messaggio.get_by_msgtype(int(msgtype),offset)
     elif user != "!" and user != "":
       activities = Messaggio.get_by_user(user,offset)
+    elif cm != "!" and cm != "":
+      activities = Messaggio.get_by_grp(db.Key(cm),offset)
     else:
       activities = Messaggio.get_all(offset)
     
+    logging.info(len(activities))
     return activities
   
-  def get_activities_by_filter(self, activity_filter):
-    activities = list()    
-    for tagname in activity_filter.tagnames:
-      activities.extend(Messaggio.get_by_tagname(tagname))
-    for msgtype in activity_filter.msgtypes:
-      activities.extend(Messaggio.get_by_msgtype(msgtype))
-    for user in activity_filter.users:
-      activities.extend(Messaggio.get_by_user(user))
-    for group in activity_filter.groups:
-      activities.extend(Messaggio.get_by_group(group))
+  #def get_activities_by_filter(self, activity_filter):
+    #activities = list()    
+    #for tagname in activity_filter.tagnames:
+      #activities.extend(Messaggio.get_by_tagname(tagname))
+    #for msgtype in activity_filter.msgtypes:
+      #activities.extend(Messaggio.get_by_msgtype(msgtype))
+    #for user in activity_filter.users:
+      #activities.extend(Messaggio.get_by_user(user))
+    #for group in activity_filter.groups:
+      #activities.extend(Messaggio.get_by_group(db.Key(group)))
 
-    activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+    #activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
       
-    return activities
+    #return activities
 
   def get_activities_by_group(self, user):
     return list()
@@ -407,9 +431,7 @@ class CMCittaHandler(webapp.RequestHandler):
       citlist.append({'key': str(c.key()), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
       
     self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
-    
-    
-    
+  
 def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     commissario = basePage.getCommissario(users.get_current_user())

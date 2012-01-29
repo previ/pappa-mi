@@ -181,7 +181,7 @@ class IspezioneHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      template_values = CMCommentHandler().initActivity(isp.key(), 101, db.Key(self.request.get("last")))
+      template_values = CMCommentHandler().initActivity(isp.key(), isp.commissione.key(), 101, db.Key(self.request.get("last")))
 
       self.getBase(template_values) 
       
@@ -193,9 +193,15 @@ class IspezioneHandler(BasePage):
         isp = Ispezione()
     
       form = IspezioneForm(self.request.POST, isp)
-      
-      logging.info(preview)
-      
+            
+      if form.primoEffettivo.data == form.secondoEffettivo.data:
+        form.secondoQuantita.data = form.primoQuantita.data
+        form.secondoDist.data = form.primoDist.data
+        form.secondoTemperatura.data = form.primoTemperatura.data
+        form.secondoAssaggio.data = form.primoAssaggio.data
+        form.secondoCottura.data = form.primoCottura.data
+        form.secondoGradimento.data = form.primoGradimento.data
+        
       if form.validate():
         logging.info("valid")
 
@@ -308,7 +314,7 @@ class NonconfHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nc.key(), 102, db.Key(self.request.get("last")), nc.tags)
+      template_values = CMCommentHandler().initActivity(nc.key(), nc.commissione.key(), 102, db.Key(self.request.get("last")), nc.tags)
 
       self.getBase(template_values) 
       
@@ -436,7 +442,7 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(dieta.key(), 103, db.Key(self.request.get("last")))
+      template_values = CMCommentHandler().initActivity(dieta.key(), dieta.commissione.key(), 103, db.Key(self.request.get("last")))
 
       self.getBase(template_values) 
       
@@ -570,7 +576,7 @@ class NotaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nota.key(), 104, db.Key(self.request.get("last")), nota.tags)
+      template_values = CMCommentHandler().initActivity(nota.key(), nota.commissione.key(), 104, db.Key(self.request.get("last")), nota.tags)
       
     else:
       key = self.request.get("key")
