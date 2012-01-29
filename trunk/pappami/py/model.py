@@ -9,6 +9,8 @@ import google.appengine.api.images
 
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+from google.appengine.api import memcache
+from ndb import model, context
 
 from common import Const
 
@@ -34,13 +36,13 @@ class Citta(db.Model):
     return cls.all().get()
   
   
-class Configurazione(db.Model):
-  nome = db.StringProperty()
-  valore = db.StringProperty()
+class Configurazione(model.Model):
+  nome = model.StringProperty()
+  valore = model.StringProperty()
   
   @classmethod
   def get_value_by_name(cls, name):
-    return Configurazione.all().filter("nome", name).get().valore
+    return Configurazione.query(Configurazione,nome == name).get().valore
   
 class CentroCucina(db.Model):
   nome = db.StringProperty()
@@ -175,13 +177,12 @@ class Commissario(db.Model):
   
   cmdefault = None  
 
-  _commissario_cache = dict()
   @classmethod
   def get_by_user(cls, user):
-    commissario = cls._commissario_cache.get(user.email())
+    commissario = memcache.get("commissario-"+user.email())
     if not commissario:
       commissario = cls.all().filter("user", user).get()
-      cls._commissario_cache[user.email()] = commissario
+      memcache.add("commissario-"+user.email(), commissario)
     return commissario
   
   @classmethod
@@ -386,6 +387,12 @@ class MenuHelper():
   def today(self):
     return datetime.now().date() == self.data
   
+  def to_dict(self):
+    return {"primo": self.primo.nome, "primo_key": str(self.primo.key()),
+            "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key()),
+            "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key()),
+            "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key())}
+  
   
 class StatistichePiatto(db.Model):
   piatto = db.ReferenceProperty(Piatto)
@@ -466,6 +473,7 @@ class Ispezione(db.Model):
   primoDist = db.IntegerProperty(indexed=False)
   primoPrevisto = db.StringProperty(default="",indexed=False)
   primoEffettivo = db.StringProperty(default="",indexed=False)
+  primoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_primo_set")
   primoCondito = db.IntegerProperty(indexed=False)
   primoCottura = db.IntegerProperty(indexed=False)
   primoTemperatura = db.IntegerProperty(indexed=False)
@@ -476,6 +484,7 @@ class Ispezione(db.Model):
   secondoDist = db.IntegerProperty(indexed=False)
   secondoPrevisto = db.StringProperty(default="",indexed=False)
   secondoEffettivo = db.StringProperty(default="",indexed=False)
+  secondoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_secondo_set")
   secondoCottura = db.IntegerProperty(indexed=False)
   secondoTemperatura = db.IntegerProperty(indexed=False)
   secondoQuantita = db.IntegerProperty(indexed=False)
@@ -484,6 +493,7 @@ class Ispezione(db.Model):
 
   contornoPrevisto = db.StringProperty(default="",indexed=False)
   contornoEffettivo = db.StringProperty(default="",indexed=False)
+  contornoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_contorno_set")
   contornoCondito = db.IntegerProperty(indexed=False)
   contornoCottura = db.IntegerProperty(indexed=False)
   contornoTemperatura = db.IntegerProperty(indexed=False)
@@ -827,7 +837,10 @@ class StatisticheIspezioni(db.Model):
 
   @classmethod
   def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
-    return StatisticheIspezioni.all().filter("commissione",cm).filter("centroCucina",cc).filter("timeId", timeId)
+    q = StatisticheIspezioni.all().filter("commissione",cm).filter("centroCucina",cc)
+    if timeId:
+      q = q.filter("timeId", timeId)
+    return q
   
   @classmethod
   def get_from_date(cls, data):

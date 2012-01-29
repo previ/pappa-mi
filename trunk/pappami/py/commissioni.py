@@ -17,7 +17,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
-from py.model import *
+from model import *
 
 class CommissioniHandler(BasePage):
 
@@ -25,11 +25,15 @@ class CommissioniHandler(BasePage):
     template_values = dict()
     return self.getBase(template_values)
   def getBase(self,template_values):
+    geo = db.GeoPt(45.463681,9.188171)
+    commissario = self.getCommissario(users.get_current_user())
+    if commissario:
+      geo = commissario.citta.geo
     template_values["content"] = "map.html"
     template_values["limit"] = 100
     template_values["centriCucina"] = CentroCucina.get_by_citta(Citta.get_first())
     template_values['action'] = self.request.path
-    template_values['geo'] = self.getCommissario(users.get_current_user()).citta.geo
+    template_values['geo'] = geo
     super(CommissioniHandler,self).getBase(template_values)
 
 class ContattiHandler(BasePage):

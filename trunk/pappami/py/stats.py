@@ -21,6 +21,7 @@ import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
+import fixpath
 
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -39,13 +40,6 @@ from py.base import BasePage
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 DAYS_OF_WEEK = 7
-
-class CMStatsHandlerOld(BasePage):
-    
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "statistiche.html"
-    self.getBase(template_values)
 
 class CMStatsHandler(BasePage):
 
@@ -101,6 +95,9 @@ class CMStatsHandler(BasePage):
       
     #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
     #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
+    cm_key = self.get_context().get("cm_key")
+    if cm_key:
+      cm = Commissione.get(cm_key)
     if self.request.get("cm"):
       cm = Commissione.get(self.request.get("cm"))
     if cm:
@@ -277,9 +274,16 @@ class CMStatsHandler(BasePage):
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
     template_values['action'] = self.request.path
-    template_values["content"] = "stats/statindex.html"
+    template_values["content"] = "stats/stats.html"
     template_values["cmsro"] = self.getCommissario(users.get_current_user())
     template_values["citta"] = Citta.all().order("nome")
+    self.get_context()["anno"] = anno    
+    
+    if cm:
+      self.get_context()["citta_key"] = cm.citta.key()
+      self.get_context()["cm_key"] = cm.key()
+      self.get_context()["cm_name"] = cm.desc()    
+
     super(CMStatsHandler, self).getBase(template_values)
 
     

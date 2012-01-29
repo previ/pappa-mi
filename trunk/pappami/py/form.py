@@ -11,10 +11,13 @@ class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da'
 
   def validate_dataIspezione(form, field):
     dataIspezione = field.data
+    
     if Ispezione.all().filter("dataIspezione",dataIspezione).filter("commissione",form.commissione.data).filter("turno",form.turno.data).count() > 0 :
+      logging.info("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
       raise ValidationError("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
   
     if dataIspezione.isoweekday() > 5 :
+      logging.info("L'ispezione deve essere fatta in un giorno feriale")
       raise ValidationError("L'ispezione deve essere fatta in un giorno feriale")
   
     age = (date.today() - dataIspezione).days
@@ -22,6 +25,7 @@ class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da'
     #  raise ValidationError("Non e' ammesso inserire schede di Ispezione effettuate in date antecedenti di 60 giorni o oltre")
   
     if age < 0 :
+      logging.info("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
       raise ValidationError("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
     
   def validate_pastiTotale(form, field):

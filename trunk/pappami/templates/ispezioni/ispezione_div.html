@@ -1,8 +1,5 @@
 <script type="text/javascript">
 var piattounico = false;
-var oldDisp_1 = "";
-var oldDisp_2 = "";
-var oldDisp_3 = "";
 </script>
 <style>
 .highlight {
@@ -72,14 +69,17 @@ var oldDisp_3 = "";
   </div>
   <div class="span4 box1">
    <label class="label_isp_1" for="e_primoEffettivo">Primo</label>
+   <input type="hidden" name="primoPiattoEffettivo" required="true" value="{{form.data.primoPiattoEffettivo}}" size="40" id="e_primoPiattoEffettivo"/>
    <input type="text" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo" onchange="onMenuChanged()"/>
   </div>
   <div class="span4 box1">
    <label class="label_isp_1" for="e_secondoEffettivo">Secondo</label>
+   <input type="hidden" name="secondoPiattoEffettivo" required="true" value="{{form.data.secondoPiattoEffettivo}}" size="40" id="e_secondoPiattoEffettivo"/>
    <input type="text" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
   </div>
   <div class="span4 box1">
    <label class="label_isp_1" for="e_contornoEffettivo">Contorno</label>
+   <input type="hidden" name="contornoPiattoEffettivo" required="true" value="{{form.data.contornoPiattoEffettivo}}" size="40" id="e_contornoPiattoEffettivo"/>
    <input type="text" name="contornoEffettivo" required="true" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo" onchange="onMenuChanged()"/>
   </div>
   <div class="span12">
@@ -657,9 +657,19 @@ Specificare:<ul>
     </div>
    </div>
    <div class="clearfix">
-    <label class="" for="e_numeroAddetti">Note</label>
+    <label class="" for="e_note">Note</label>
     <div class="input">
      <textarea name="note" rows="4" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
+    </div>
+   </div>
+   <div class="clearfix">
+    <div class="span12 box1">
+     <label class="label_isp_1">Categorie</label>
+     <div class="comment_tags">  
+      <div style="width:40em; display:inline;">
+       <ul id="wiz_tags_handler"></ul>
+      </div>
+     </div>
     </div>
    </div>
   </div>
@@ -675,73 +685,8 @@ Specificare:<ul>
 $(function() {
  $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
  //$( "[type='radio']" ).button(); 
- $("[title]").mbTooltip({
-  opacity : .90, //opacity
-  wait:500, //before show
-  ancor:"mouse", //"parent"
-  cssClass:"default", // default = default
-  timePerWord:70, //time to show in milliseconds per word
-  hasArrow:false,
-  color:"white",
-  imgPath:"img/",
-  shadowColor:"black",
-  fade:500
- });
+ $("[title]").twipsy({"html":true, "delayIn": 300});
  onMenuChanged();
  $("#e_fruttaTipo").autocomplete({source:["Albicocche","Arance","Mele","Pere","Mendarini","Pesche","Banane","Uva","Fragole","Ciliegie"]}); 
- 
- $('.radio-group > label').radioGroup();
- $('.btn.toggle').toggleBtn();
 });
-// bind a callback to the step_shown event
-/*
-if(data.currenStep == "step2" && piattounico) {
-	$("#e_sd_1").checked = $("#e_pd_1").checked;
-	$("#e_sd_2").checked = $("#e_pd_2").checked;
-	$("#e_sd_3").checked = $("#e_pd_3").checked;
-	$("#e_secondoCottura_1").checked = $("#e_primoCottura_1").checked;
-	$("#e_secondoCottura_2").checked = $("#e_primoCottura_2").checked;
-	$("#e_secondoCottura_3").checked = $("#e_primoCottura_3").checked;
-	$("#e_secondoTemperatura_1").checked = $("#e_primoTemperatura_1").checked;
-	$("#e_secondoTemperatura_2").checked = $("#e_primoTemperatura_2").checked;
-	$("#e_secondoTemperatura_3").checked = $("#e_primoTemperatura_3").checked;
-	$("#e_secondoQuantita_1").checked = $("#e_primoQuantita_1").checked;
-	$("#e_secondoQuantita_2").checked = $("#e_primoQuantita_2").checked;
-	$("#e_secondoQuantita_3").checked = $("#e_primoQuantita_3").checked;
-	$("#e_secondoAssaggio_1").checked = $("#e_primoAssaggio_1").checked;
-	$("#e_secondoAssaggio_2").checked = $("#e_primoAssaggio_2").checked;
-	$("#e_secondoAssaggio_3").checked = $("#e_primoAssaggio_3").checked;
-	$("#e_secondoGradimento_1").checked = $("#e_primoGradimento_1").checked;
-	$("#e_secondoGradimento_2").checked = $("#e_primoGradimento_2").checked;
-	$("#e_secondoGradimento_3").checked = $("#e_primoGradimento_3").checked;
-	$("#e_secondoGradimento_4").checked = $("#e_primoGradimento_4").checked;
-}
-*/
-/*
-$("#form0").bind("step_shown", function(event, data){
-alert(data.currentStep);
-alert(piattounico);
-if(data.currentStep == "step3" && piattounico) {
-	$("#e_sd_1").attr('checked', $("#e_pd_1").attr('checked'));
-	$("#e_sd_2").attr('checked', $("#e_pd_2").attr('checked'));
-	$("#e_sd_3").attr('checked', $("#e_pd_3").attr('checked'));
-	$("#e_secondoCottura_1").attr('checked', $("#e_primoCottura_1").attr('checked'));
-	$("#e_secondoCottura_2").attr('checked', $("#e_primoCottura_2").attr('checked'));
-	$("#e_secondoCottura_3").attr('checked', $("#e_primoCottura_3").attr('checked'));
-	$("#e_secondoTemperatura_1").attr('checked', $("#e_primoTemperatura_1").attr('checked'));
-	$("#e_secondoTemperatura_2").attr('checked', $("#e_primoTemperatura_2").attr('checked'));
-	$("#e_secondoTemperatura_3").attr('checked', $("#e_primoTemperatura_3").attr('checked'));
-	$("#e_secondoQuantita_1").attr('checked', $("#e_primoQuantita_1").attr('checked'));
-	$("#e_secondoQuantita_2").attr('checked', $("#e_primoQuantita_2").attr('checked'));
-	$("#e_secondoQuantita_3").attr('checked', $("#e_primoQuantita_3").attr('checked'));
-	$("#e_secondoAssaggio_1").attr('checked', $("#e_primoAssaggio_1").attr('checked'));
-	$("#e_secondoAssaggio_2").attr('checked', $("#e_primoAssaggio_2").attr('checked'));
-	$("#e_secondoAssaggio_3").attr('checked', $("#e_primoAssaggio_3").attr('checked'));
-	$("#e_secondoGradimento_1").attr('checked', $("#e_primoGradimento_1").attr('checked'));
-	$("#e_secondoGradimento_2").attr('checked', $("#e_primoGradimento_2").attr('checked'));
-	$("#e_secondoGradimento_3").attr('checked', $("#e_primoGradimento_3").attr('checked'));
-	$("#e_secondoGradimento_4").attr('checked', $("#e_primoGradimento_4").attr('checked'));
-}
-});
-*/
 </script>

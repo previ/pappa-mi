@@ -17,11 +17,7 @@
 import os
 import sys
 ON_DEV = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
-if 'lib' not in sys.path:
-    sys.path[0:0] = ['lib']
-
-if 'py' not in sys.path:
-    sys.path[0:0] = ['py']
+import fixpath
 
 #########################################
 # Remote_API Authentication configuration.

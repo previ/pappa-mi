@@ -71,7 +71,7 @@
    <label class="label_isp_1">Categorie</label>
    <div class="comment_tags">  
     <div style="width:40em; display:inline;">
-     <ul id="nota_tags_handler"></ul>
+     <ul id="item_tags_handler"></ul>
     </div>
    </div>
   </div>
@@ -85,48 +85,6 @@
 </div>
 <script type="text/javascript">
 $().ready(function() {
- $( "#e_dataNonconfViz" ).datepicker({ altField: '#e_dataNonconf', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '+0d' });
- $( "[type='radio']" ).button();
- $("#form0").validate({
-	errorClass: "error",
-	errorPlacement: function(error, element) {	
-	  //error.appendTo( element.parent().parent() );
-	  //alert(error.text());
-	  $($($(element).parent()).parent()).attr("title", error.text());
-	  $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
-	  $($($(element).parent()).parent()).twipsy('show');
-        },
-	highlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('show');
-	    //alert("pippo");
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
-	 },
-	unhighlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('hide');
-	    //alert("pappo");	
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
-	 }
-       });
- $("[title]").mbTooltip({
-    opacity : .90, //opacity
-    wait:500, //before show
-    ancor:"mouse", //"parent"
-    cssClass:"default", // default = default
-    timePerWord:70, //time to show in milliseconds per word
-    hasArrow:false,
-    color:"white",
-    imgPath:"img/",
-    shadowColor:"black",
-    fade:500
- });
- $("#nota_tags_handler").tagHandler({
-     getData: { 'msg': "" },
-     getURL: '/comments/gettags',            
-     autocomplete: true
- });         
-
- $('.radio-group > label').radioGroup();
- $('.btn.toggle').toggleBtn();
- 
+ $( "#e_dataNonconfViz" ).datepicker({ altField: '#e_dataNonconf', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '+0d' }); 
 });
 </script>

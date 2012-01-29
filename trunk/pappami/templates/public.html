@@ -3,29 +3,7 @@
 <script src="js/slides.min.jquery.js"></script> 
 <style>
 #slider { width: 940px; height: 270px; }
-.slide_container {
-	position:relative;
-	width: 100%; 
-	height: 100%;
-}
-.caption {
-	z-index:500;
-	position:absolute;
-	bottom:-35px;
-	left:0;
-	height:30px;
-	padding:5px 20px 0 20px;
-	background:#000;
-	background:rgba(0,0,0,.5);
-	width:940px;
-	font-size:1.3em;
-	line-height:1.33;
-	color:#fff;
-	border-top:1px solid #000;
-	text-shadow:none;
-}
 </style>
-
 <script> 
 $(function(){
  loadSmallMap({{geo.lat}},{{geo.lon}});  
@@ -85,7 +63,7 @@ $(function(){
   <div class="span5" style="margin-left:22px;">
     <h2>Commissioni iscritte</h2>
     <div id="map" style="height: 200px; border: 1px solid black; overflow:hidden;"></div>
-    <p><a class="btn" href="#">View details &raquo;</a></p>
+    <p><a class="btn" href="/commissioni">Dettagli &raquo;</a></p>
   </div>
   <div class="span6" style="margin-left:18px;">
     <div id="stats">
@@ -104,7 +82,7 @@ $(function(){
       </tr>
       </table>
     </div>
-    <p><a class="btn" href="#">View details &raquo;</a></p>
+    <p><a class="btn" href="/stats">Dettagli &raquo;</a></p>
   </div>
   <div class="span5">
     <h2>Social</h2>

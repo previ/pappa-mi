@@ -37,30 +37,30 @@
 </thead>
 <tbody>
 <tr>
-<td><i class="primo"></i> {{isp.primoEffettivo}}</td><td>{{label("assaggio", isp.primoAssaggio)}}</td><td>{{label("gradimento", isp.primoGradimento)}}</td><td align="center">{{label("cottura", isp.primoCottura)}}</td><td>{{label("temperatura", isp.primoTemperatura)}}</td><td>{{label("quantita", isp.primoQuantita)}}</td><td>{{label("condito", isp.primoCondito)}}</td>
+<td><i class="primo" title="Primo piatto"></i> {{isp.primoEffettivo}}</td><td>{{label("assaggio", isp.primoAssaggio)}}</td><td>{{label("gradimento", isp.primoGradimento)}}</td><td align="center">{{label("cottura", isp.primoCottura)}}</td><td>{{label("temperatura", isp.primoTemperatura)}}</td><td>{{label("quantita", isp.primoQuantita)}}</td><td>{{label("condito", isp.primoCondito)}}</td>
 </tr>
 <tr>
-<td><i class="secondo"></i> {{isp.secondoEffettivo}}</td><td>{{label("assaggio", isp.secondoAssaggio)}}</td><td>{{label("gradimento", isp.secondoGradimento)}}</td><td>{{label("cottura", isp.secondoCottura)}}</td><td>{{label("temperatura", isp.secondoTemperatura)}}</td><td>{{label("quantita", isp.secondoQuantita)}}</td><td></td>
+<td><i class="secondo" title="Secondo piatto"></i> {{isp.secondoEffettivo}}</td><td>{{label("assaggio", isp.secondoAssaggio)}}</td><td>{{label("gradimento", isp.secondoGradimento)}}</td><td>{{label("cottura", isp.secondoCottura)}}</td><td>{{label("temperatura", isp.secondoTemperatura)}}</td><td>{{label("quantita", isp.secondoQuantita)}}</td><td></td>
 </tr>
 <tr>
-<td><i class="contorno"></i> {{isp.contornoEffettivo}}</td><td>{{label("assaggio", isp.contornoAssaggio)}}</td><td>{{label("gradimento", isp.contornoGradimento)}}</td><td></td><td>{{label("temperatura", isp.contornoTemperatura)}}</td><td>{{label("quantita", isp.contornoQuantita)}}</td><td>{{label("condito", isp.contornoCondito)}}</td>
+<td><i class="contorno" title="Contorno"></i> {{isp.contornoEffettivo}}</td><td>{{label("assaggio", isp.contornoAssaggio)}}</td><td>{{label("gradimento", isp.contornoGradimento)}}</td><td></td><td>{{label("temperatura", isp.contornoTemperatura)}}</td><td>{{label("quantita", isp.contornoQuantita)}}</td><td>{{label("condito", isp.contornoCondito)}}</td>
 </tr>
 <tr>
-<td><i class="pane"></i> {{isp.paneTipo}}</td><td>{{label("assaggio", isp.paneAssaggio)}}</td><td>{{label("gradimento", isp.paneGradimento)}}</td><td></td><td></td><td>{{label("quantita", isp.paneQuantita)}}</td><td></td>
+<td><i class="pane" title="Pane"></i> {{isp.paneTipo}}</td><td>{{label("assaggio", isp.paneAssaggio)}}</td><td>{{label("gradimento", isp.paneGradimento)}}</td><td></td><td></td><td>{{label("quantita", isp.paneQuantita)}}</td><td></td>
 </tr>
 <tr>
-<td><i class="dessert"></i> {{isp.fruttaTipo}}</td><td>{{label("assaggio", isp.fruttaAssaggio)}}</td><td>{{label("gradimento", isp.fruttaGradimento)}}</td><td>{{label("maturazione", isp.fruttaMaturazione)}}</td><td></td><td>{{label("quantita", isp.fruttaQuantita)}}</td><td></td>
+<td><i class="dessert" title="Dessert"></i> {{isp.fruttaTipo}}</td><td>{{label("assaggio", isp.fruttaAssaggio)}}</td><td>{{label("gradimento", isp.fruttaGradimento)}}</td><td>{{label("maturazione", isp.fruttaMaturazione)}}</td><td></td><td>{{label("quantita", isp.fruttaQuantita)}}</td><td></td>
 </tr>
 </tbody>
 </table>
 <tr>
-<td>Servizio</td><td colspan="2">Durata distribuzione: {{label("distribuzione", isp.arrivoDist)}}</td><td colspan="2">Durata pasto: {{label("distribuzione", isp.durataPasto)}}</td><td colspan="2"></td>
+<td rowspan="3"><i class="servizio" title="Servizio"></td><td colspan="2">Durata distribuzione: {{label("distribuzione", isp.arrivoDist)}}</td><td colspan="2">Durata pasto: {{label("distribuzione", isp.durataPasto)}}</td><td colspan="2"></td>
 </tr>
 <tr>
-<td></td><td>Pasti serviti totali: <span class="data">{{isp.numeroPastiTotale}}</span></td><td>ai Bambini: <span class="data">{{isp.numeroPastiBambini}}</span></td><td>Diete: <span class="data">{{isp.numeroPastiSpeciali}}</span></td><td colspan="3">Addetti: <span class="data">{{isp.numeroAddetti}}</span></td>
+<td>Pasti serviti totali: <span class="data">{{isp.numeroPastiTotale}}</span></td><td>ai Bambini: <span class="data">{{isp.numeroPastiBambini}}</span></td><td>Diete: <span class="data">{{isp.numeroPastiSpeciali}}</span></td><td colspan="3">Addetti: <span class="data">{{isp.numeroAddetti}}</span></td>
 </tr>
 <tr>
-<td></td><td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
+<td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
 </tr>
 <tr>
 <td>Note</td><td colspan="6">{{isp.note|replace("\n","<br/>")}}</td>

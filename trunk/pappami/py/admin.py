@@ -31,12 +31,12 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
-from py.model import *
-from py.modelMsg import *
-from py.form import CommissioneForm
-from py.gviz_api import *
-from py.base import BasePage
-from py.calendar import *
+from model import *
+from modelMsg import *
+from form import CommissioneForm
+from gviz_api import *
+from base import BasePage
+from gcalendar import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -325,9 +325,7 @@ class CMAdminHandler(BasePage):
     if self.request.get("cmd") == "initConfig":
       dummy = Configurazione(nome="dummyname", valore="dummyvalue")
       dummy.put()
-      return
-      
-
+      return      
      
     if self.request.get("cmd") == "initMenu":
       citta = self.getCommissario(users.get_current_user()).citta
@@ -453,18 +451,29 @@ class CMAdminHandler(BasePage):
       return
         
     if self.request.get("cmd") == "initStream":
-      for isp in Ispezione().all().order("-creato_il").fetch(50):
-        messaggio = Messaggio(par = isp, root = isp, tipo = 101, livello = 0, creato_da = isp.creato_da, creato_il = isp.creato_il, modificato_da = isp.modificato_da, modificato_il = isp.modificato_il)
-        messaggio.put()
-      for nc in Nonconformita().all().order("-creato_il").fetch(50):
-        messaggio = Messaggio(par = nc, root = nc, tipo = 102, livello = 0, creato_da = nc.creato_da, creato_il = nc.creato_il, modificato_da = nc.modificato_da, modificato_il = nc.modificato_il)
-        messaggio.put()
-      for nota in Nota().all().order("-creato_il").fetch(50):
-        messaggio = Messaggio(par = nota, root = nota, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
-        messaggio.put()
+      for isp in Ispezione().all():
+        messaggio = Messaggio(par = isp, root = isp, grp = isp.commissione, tipo = 101, livello = 0, creato_da = isp.creato_da, creato_il = isp.creato_il, modificato_da = isp.modificato_da, modificato_il = isp.modificato_il)
+        db.put_async(messaggio)
+      for nc in Nonconformita().all():
+        messaggio = Messaggio(par = nc, root = nc, grp = nc.commissione, tipo = 102, livello = 0, creato_da = nc.creato_da, creato_il = nc.creato_il, modificato_da = nc.modificato_da, modificato_il = nc.modificato_il)
+        db.put_async(messaggio)
+      for nota in Nota():
+        messaggio = Messaggio(par = nota, root = nota, grp = nota.commissione, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
+        db.put_async(messaggio)
+      for dieta in Dieta():
+        messaggio = Messaggio(par = dieta, root = dieta, grp = dieta.commissione, tipo = 104, livello = 0, creato_da = dieta.creato_da, creato_il = dieta.creato_il, modificato_da = dieta.creato_da, modificato_il = dieta.creato_il)
+        db.put_async(messaggio)
       self.response.out.write("initStream Ok")
       return
-      
+
+    if self.request.get("cmd") == "initStream2":
+      for msg in Messaggio().all():
+        if msg.tipo in range(101, 104):
+          msg.grp = msg.root.commissione
+          db.put_async(msg)
+      self.response.out.write("initStream 2 Ok")
+      return
+    
       
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)

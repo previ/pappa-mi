@@ -5,7 +5,7 @@
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
-from py.model import Commissario
+from py.model import Commissario, Commissione
 from common import Const
 
 from google.appengine.api import users
@@ -15,6 +15,7 @@ from google.appengine.api import memcache
 class Messaggio(db.Model):
   root = db.ReferenceProperty(db.Model, collection_name="children_all_set")
   par = db.ReferenceProperty(db.Model, collection_name="children_set")
+  grp = db.ReferenceProperty(db.Model, collection_name="msg_set")
   tipo = db.IntegerProperty()
   livello = db.IntegerProperty()
   commenti = db.IntegerProperty()
@@ -30,7 +31,7 @@ class Messaggio(db.Model):
   @classmethod
   def get_by_tagname(cls, tagname, offset=0):
     #logging.info("get_activities_by_tagname")
-    activities = memcache.get("activities_tag_" + tagname + "_" + str(offset))
+    activities = memcache.get("msg-tag-" + tagname + "-" + str(offset))
     if activities == None:
       activities = list()
       tag = Tag.get_by_name(tagname)
@@ -42,45 +43,57 @@ class Messaggio(db.Model):
             break
           activities.append(tagobj.obj)
       activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("activities_tag_" + tagname + "_" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, 60)
+      memcache.add("msg-tag-" + tagname + "-" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
 
   @classmethod
   def get_by_msgtype(cls, msgtype, offset=0):
     #logging.info("get_activities_by_msgtype")
-    activities = memcache.get("activities_type_" + str(msgtype) + "_" + str(offset))
+    activities = memcache.get("msg-type-" + str(msgtype) + "-" + str(offset))
     if activities == None:
       activities = list()
       #logging.info("get_activities_by_msgtype: " + str(msgtype))
       for msg in cls.all().filter("tipo", msgtype).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
         #logging.info("get_activities_by_msgtype: " + str(msg.tipo))
         activities.append(msg)
-      memcache.add("activities_type_" + str(msgtype) + "_" + str(offset), activities, 60)
+      memcache.add("msg-type-" + str(msgtype) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
 
   @classmethod
   def get_by_user(cls, user_email, offset=0):
-    activities = memcache.get("activities_user_" + user_email + "_" + str(offset))
+    activities = memcache.get("msg-user-" + user_email + "-" + str(offset))
     if activities == None:
       activities = list()
       for msg in cls.all().filter("creato_da", users.User(user_email)).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
-      memcache.add("activities_user_" + user_email + "_" + str(offset), activities, 60)
+      memcache.add("msg-user-" + user_email + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
 
   @classmethod
   def get_all(cls, offset=0):
     #logging.info('get_activities_all')
-    activities = memcache.get("activities_all_" + str(offset))
+    activities = memcache.get("msg-all-" + str(offset))
     if not activities:
       activities = list()
       for msg in cls.all().filter("livello", 0).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
         
       activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("activities_all_" + str(offset), activities, 60)
+      memcache.add("msg-all-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
 
+  @classmethod
+  def get_by_grp(cls, grp_key, offset=0):
+    activities = memcache.get("msg-grp-" + str(grp_key) + "-" + str(offset))
+    if not activities:
+      activities = list()
+      for msg in cls.all().filter("grp", grp_key).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+        activities.append(msg)
+        
+      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+      memcache.add("msg-grp-" + str(grp_key) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+    return activities
+  
   @classmethod
   def get_by_parent(cls, parent):
     activities = list()
@@ -116,7 +129,27 @@ class Messaggio(db.Model):
   @classmethod
   def get_root(cls, parent):
     return cls.all().filter("par", parent).get()
-  
+
+  def invalidate_cache(self):
+    for i in range(0,1000):
+      if memcache.get("msg-user-"+self.creato_da.email()+"-"+str(i)) == None:
+        break
+      memcache.delete("msg-user-"+self.creato_da.email()+"-"+str(i))
+    for i in range(0,1000):
+      if memcache.get("msg-grp-"+str(self.grp.key())+"-"+str(i)) == None:
+        break
+      memcache.delete("msg-grp-"+str(self.grp.key())+"-"+str(i))
+    for i in range(0,1000):
+      if memcache.get("msg-type-"+str(self.tipo)+"-"+str(i)) == None:
+        break
+      memcache.delete("msg-type-"+str(self.tipo)+"-"+str(i))
+    for i in range(0,1000):
+      if memcache.get("msg-all-"+str(i)) == None:
+        break
+      memcache.delete("msg-all-"+str(i))
+    
+    
+    
   _cache = dict()
   commissario = None
   def get_commissario(self):
@@ -301,3 +334,7 @@ class Group(db.Model):
 class UserGroup(db.Model):
   user = db.UserProperty(auto_current_user_add=True)
   group = db.ReferenceProperty(Group)
+
+class CmMsg(db.Model):
+  cm = db.ReferenceProperty(Commissione)
+  msg = db.ReferenceProperty(Messaggio)
