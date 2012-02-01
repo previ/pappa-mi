@@ -21,7 +21,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from jinja2.filters import do_pprint
@@ -58,7 +58,7 @@ class MainPage(BasePage):
     template_values["content_right"] = "rightbar.html"
     template_values["stat"] = stats = self.getStats()
     
-    geo = db.GeoPt(45.463681,9.188171)
+    geo = model.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(users.get_current_user())
     
     template_values["news_pappami"] = self.getNews("news_pappami")
@@ -70,10 +70,10 @@ class MainPage(BasePage):
   def getPrivate(self, template_values):
 
     c = None
-    geo = db.GeoPt(45.463681,9.188171)
+    geo = model.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(users.get_current_user())
     c = commissario.commissione()
-    geo = commissario.citta.geo
+    geo = commissario.citta.get().geo
 
     offset = 0
     if self.request.get("offset") != "":
@@ -92,7 +92,6 @@ class MainPage(BasePage):
     template_values["billboard"] = "navigation.html"
     template_values["content"] = "activities.html"
     template_values["host"] = self.getHost()
-    template_values["commissari"] = Commissario.all().order('user')
     
     #tags = list()
     #types = list()
@@ -106,12 +105,6 @@ class MainPage(BasePage):
     
     #act_filter = ActivityFilter(tags,types,userlist)
     #template_values["activities"] = self.get_activities_by_filter(act_filter)
-
-    userlist = list()
-    for cr in Commissario.all():
-      userlist.append(cr.user)
-    
-    template_values["users"] = userlist
 
     template_values["tags"] = self.getTopTags()
    
@@ -129,13 +122,13 @@ class MainPage(BasePage):
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.get_active()
       try:
-        stats.numeroSchede = StatisticheIspezioni.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroSchede
-        stats.ncTotali = StatisticheNonconf.all().filter("commissione",None).filter("centroCucina",None).filter("timeId",anno).get().numeroNonconf
+        stats.numeroSchede = StatisticheIspezioni.get_cc_cm_time(timeId=anno).get().numeroSchede
+        stats.ncTotali = StatisticheNonconf.get_cc_cm_time(timeId=anno).get().numeroNonconf
       except :
         stats.numeroSchede = 0
         stats.ncTotali = 0      
-      stats.diete = Dieta.all().count()
-      stats.note = Nota.all().count()
+      stats.diete = Dieta.query().count()
+      stats.note = Nota.query().count()
       stats.anno1 = anno
       stats.anno2 = anno + 1
       memcache.add("stats", stats)
@@ -163,7 +156,7 @@ class CMMenuDataHandler(CMMenuHandler):
     if( self.request.get("cmd") == "getbydate" ):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
-      c = Commissione.get(self.request.get("commissione"))
+      c = model.Key("Commissione", int(self.request.get("commissione"))).get()
       menu = self.getMenu(data, c)[0]
       
       json.dump(menu.to_dict(), self.response.out)
@@ -205,11 +198,11 @@ class CMMapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo:
-              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n')
-        except db.Timeout:
+              markers_list.append( '<marker key="' + str(c.key) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
+        except ValueError:
           logging.error("Timeout")
         if i >= limit:
-          markers = "<markers cur='" + commissioni.cursor() + "'>\n"
+          markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
         else:
           markers = "<markers>\n"
           
@@ -235,13 +228,13 @@ class CMMapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo :
-              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key().name() + '" />\n')
-        except db.Timeout:
+              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
+        except model.Timeout:
           logging.error("Timeout")
           
         logging.info(markers_list)
         if i >= limit:
-          markers = "<markers cur='" + commissioni.cursor() + "'>\n"
+          markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
         else:
           markers = "<markers>\n"
           
@@ -260,7 +253,7 @@ class CalendarioHandler(BasePage):
   def get(self):    
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cmd") == "create":
-      cm = Commissione.get(self.request.get("cm"))
+      cm = Commissione.get(model.Key(Commissione,self.request.get("cm")))
       if((cm.calendario == None or cm.calendario == "") and commissario.is_registered(cm)):
         calendario = Calendario()
         calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
@@ -278,7 +271,7 @@ class CalendarioHandler(BasePage):
       elif commissario and commissario.commissione() :
         cm = commissario.commissione()
       else:
-        cm = Commissione.all().get()
+        cm = Commissione.query().get()
         
     template_values = dict()
     template_values["content"] = "calendario/calendario.html"

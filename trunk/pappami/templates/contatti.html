@@ -4,7 +4,7 @@
 <div class="row">
 <div class="span16">
 <ul class="media-grid">
-{%for c in commissari%}<li><div class="span8">
+{%for ck in commissari%}<li><div class="span8">{%set c = ck.get() %}
   <img class="avatar" src="{{c.avatar()}}" title="{{c.nomecompleto()}}">
   <div class="activity_author">{{c.nomecompleto()}}</div>  
   <div class="activity_author_title">{{c.titolo()}}</div>

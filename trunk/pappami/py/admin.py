@@ -23,7 +23,7 @@ from google.appengine.api import urlfetch
 from datetime import datetime, date, time
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -52,7 +52,7 @@ class CMAdminMenuHandler(BasePage):
 
     if( self.request.get("data") ):
       data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-      menu = Menu.all().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
+      menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
       template_values['data'] = data
       template_values['menu'] = menu
 
@@ -467,10 +467,10 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "initStream2":
-      for msg in Messaggio().all():
+      for msg in Messaggio().query():
         if msg.tipo in range(101, 104):
-          msg.grp = msg.root.commissione
-          db.put_async(msg)
+          msg.grp = msg.root.get().commissione
+          msg.put_async()
       self.response.out.write("initStream 2 Ok")
       return
     

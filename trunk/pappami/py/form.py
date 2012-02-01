@@ -3,16 +3,16 @@
 
 import logging
 
-from wtforms.ext.appengine.db import model_form
+from wtforms.ext.appengine.ndb import model_form
 from wtforms.validators import ValidationError
 from py.model import *
 
-class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','lavaggioFinale','contornoCottura','anno','stato'])):
+class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','lavaggioFinale','contornoCottura','anno','stato',"commissione"])):
 
   def validate_dataIspezione(form, field):
     dataIspezione = field.data
     
-    if Ispezione.all().filter("dataIspezione",dataIspezione).filter("commissione",form.commissione.data).filter("turno",form.turno.data).count() > 0 :
+    if Ispezione.get_by_cm_data_turno(form.commissione, dataIspezione, form.turno.data).get() :
       logging.info("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
       raise ValidationError("Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.")
   
@@ -41,14 +41,17 @@ class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da'
 
 
     
-class NonconformitaForm(model_form(model=Nonconformita, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato'])):
+class NonconformitaForm(model_form(model=Nonconformita, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato',"commissione"])):
   def validate_dataNonconf(form, field):
     dataNonconf = field.data
-
-    if Nonconformita.all().filter("dataNonconf",dataNonconf).filter("commissione",form.commissione.data).filter("turno",form.turno.data).filter("tipo",form.tipo.data).count() > 0 :
+    logging.info(dataNonconf)
+    if Nonconformita.get_by_cm_data_turno(cm=form.commissione, data=dataNonconf, turno=form.turno.data).get() :
+      logging.info("Esiste gia' una scheda di Non Conformita' per questa commissione con la stessa data e turno.")
       raise ValidationError("Esiste gia' una scheda di Non Conformita' per questa commissione con la stessa data e turno.")
 
+    logging.info("1")
     if dataNonconf.isoweekday() > 5 :
+      logging.info("La scheda di Non Conformita' deve essere fatta in un giorno feriale")
       raise ValidationError(u"La scheda di Non Conformita' deve essere fatta in un giorno feriale")
 
     age = (date.today() - dataNonconf).days
@@ -56,14 +59,15 @@ class NonconformitaForm(model_form(model=Nonconformita, exclude=['creato_il','cr
     #  raise ValidationError(u"Non e' ammesso inserire schede di Non Conformita' effettuate in date antecedenti di 60 giorni o oltre")
 
     if age < 0 :
+      logging.info("Non è ammesso inserire schede di Non Conformità effettuate in date successive alla data odierna")
       raise ValidationError(u"Non è ammesso inserire schede di Non Conformità effettuate in date successive alla data odierna")
 
 
-class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato'])):
+class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato',"commissione"])):
 
   def validate_dataIspezione(form, field):
     dataIspezione = field.data
-    if Ispezione.all().filter("dataIspezione",dataIspezione).filter("commissione",form.commissione.data).filter("turno",form.turno.data).filter("tipoDieta",form.tipoDieta.data).count() > 0 :
+    if Dieta.get_by_cm_data_turno(form.commissione, dataIspezione, form.turno.data).get() :
       raise ValidationError("Esiste gia una scheda di ispezione Diete per questa commissione con la stessa data e turno.")
   
     if dataIspezione.isoweekday() > 5 :
@@ -77,7 +81,7 @@ class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modifi
       raise ValidationError("Non è ammesso inserire schede di Ispezione effettuate in date successive alla data odierna")
   
 
-class NotaForm(model_form(model=Nota, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato'])):
+class NotaForm(model_form(model=Nota, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato',"commissione"])):
   def validate_dataNota(form, field):
     dataNota = field.data
 

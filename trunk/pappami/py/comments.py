@@ -8,7 +8,7 @@ import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -88,7 +88,7 @@ class CMCommentHandler(BasePage):
     par = None
     rif = self.request.get("par")    
     if rif:
-      par = db.Key(rif)
+      par = model.Key(rif)
 
     messaggio = Messaggio()
     messaggio.par = par
@@ -117,7 +117,7 @@ class CMCommentHandler(BasePage):
     }
     messaggio.invalidate_cache();
     
-    activities = Messaggio.get_all_from_item_parent(self.request.get("last"), messaggio)
+    activities = Messaggio.get_all_from_item_parent(model.Key("Messaggio", int(self.request.get("last"))), messaggio)
 
     template_values['main'] = 'comments/comment.html'
           
@@ -125,7 +125,7 @@ class CMCommentHandler(BasePage):
       template_values['main'] = 'activity.html'
       comment_root = messaggio
     else:
-      comment_root = Messaggio.get(db.Key(self.request.get("root")))
+      comment_root = Messaggio.get(model.Key(self.request.get("root")))
   
     template_values['activities'] = activities
     template_values['comments'] = activities
@@ -138,7 +138,7 @@ class CMCommentHandler(BasePage):
   """
   def get(self):
     root = self.request.get("par")
-    commento_root = Messaggio.get(db.Key(root))
+    commento_root = Messaggio.get(model.Key(root))
     commenti = Messaggio.get_by_parent(commento_root)
 
     comments = list()
@@ -147,7 +147,7 @@ class CMCommentHandler(BasePage):
       
     comment_last = None
     if len(comments):
-      comment_last = comments[len(comments)-1].key()
+      comment_last = comments[len(comments)-1].key
       
     logging.info("comment_last: " + str(comment_last))
     template_values = {
@@ -192,7 +192,7 @@ class CMVoteHandler(BasePage):
     voto.messaggio = messaggio
     voto.voto = int(self.request.get('voto'))
     if voto.voto == 0 and voto.key:
-      voto.delete()
+      voto.key.delete()
     else:
       voto.put()
     self.response.out.write(messaggio.voto_reference_set.count())
@@ -212,11 +212,11 @@ class CMTagHandler(BasePage):
     assignedtags = list()
     msg = None
     if self.request.get('msg'):
-      msg = db.Key(self.request.get('msg'))
-    tagobjs = TagObj.all().filter("obj", msg)
+      msg = model.Key(self.request.get('msg'))
+    tagobjs = TagObj.get_by_obj_key(msg)
     for tagobj in tagobjs:
-      assignedtags.append(tagobj.tag.nome)
-    for tag in Tag.all():
+      assignedtags.append(tagobj.tag.get().nome)
+    for tag in Tag.get_all():
       alltags.append(tag.nome)
 
     buff = json.JSONEncoder().encode({'assignedTags': assignedtags, 'availableTags':alltags})      
@@ -232,7 +232,7 @@ class CMTagHandler(BasePage):
     
   def saveTags(self,obj,tagnames):
     logging.info("tags")
-    tagobjs = TagObj.get_by_obj(obj)
+    tagobjs = TagObj.get_by_obj_key(obj.key)
     tagold = dict()
     for tagobj in tagobjs:
       tagold[tagobj.tag.nome] = tagobj
@@ -244,19 +244,21 @@ class CMTagHandler(BasePage):
         if not tag:
           tag = Tag(nome=tagname, numRef=0)
           tag.put()
-        tagobj = TagObj(tag=tag,obj=obj)
+        tagobj = TagObj(tag=tag.key,obj=obj.key)
         tagobj.put()
-        tagobj.tag.numRef += 1
-        tagobj.tag.put()
+        tag = tagobj.tag.get()
+        tag.numRef += 1
+        tag.put()
     for name in tagold:
       logging.info(name)
       
       if (name in tagnames) is False:
         logging.info("removing:" + name)
         tagobj = tagold[name]
-        tagobj.tag.numRef-=1
-        tagobj.tag.put()
-        tagobj.delete()
+        tag = tagobj.tag.get()
+        tag.numRef -= 1
+        tag.put()
+        tagobj.key.delete()
         
   def getTags(self):
     tags = Tag.get_all()

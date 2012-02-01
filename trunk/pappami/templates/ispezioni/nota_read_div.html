@@ -1,16 +1,16 @@
 <div>
  <div class="row">
   <div class="span12">
-   <h3>{{nota.commissione.nome}} - {{nota.commissione.tipoScuola}} - Nota del {{nota.dataNota}}</h3>
+   <h3>{{nota.commissione.get().desc()}} - Nota del {{nota.dataNota}}</h3>
    <div>Titolo</div>
    <h4>{{nota.titolo}}</h4>
    <div>Testo</div>
-   <div class="input" style="height:248px; overflow:auto;">
+   <div class="input" style="max-height:248px; overflow:auto;">
     <div>{{nota.note|replace("\n","<br/>")}}</div>
    </div>
-{% if allegati %}
+{% if nota.get_allegati() %}
    <div for="e_attach">Allegati</div>
-   <div>{%for allegato in allegati%}
+   <div>{%for allegato in nota.get_allegati()%}
     <a href="{{allegato.path()}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}   
    </div>
 {% endif %}  
