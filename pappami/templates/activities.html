@@ -395,7 +395,7 @@ function moreactivities() {
   </div>
   <div class="span4">
     <h4>Scuole</h4>
-      {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<div><a href="#" onclick="filteractivities('cm={{cm.key()}}')">{{cm.desc()}}</a></div>
+      {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<div><a href="#" onclick="filteractivities('cm={{cm.key.id()}}')">{{cm.desc()}}</a></div>
       {%endfor%}{%endif%}
     <h4>Tipo dati</h4>
       <div><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></div>

@@ -11,7 +11,7 @@ import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -55,7 +55,7 @@ class CMProfiloHandler(BasePage):
       new = list()
       for c_key in self.request.get_all("commissione"):
         new.append(c_key)
-        logging.info("new " + Commissione.get(db.Key(c_key)).nome)
+        logging.info("new " + Commissione.get(model.Key(c_key)).nome)
       new = set(new)
 
       todel = old - new

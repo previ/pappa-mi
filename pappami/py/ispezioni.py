@@ -12,7 +12,7 @@ import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -37,8 +37,8 @@ class CMGetIspDataHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     logging.info("isp1")
     if( commissario is not None):    
-      cm = self.request.get("cm")
-      isp = Ispezione.get_last_by_cm(cm)
+      cm_id = self.request.get("cm")
+      isp = Ispezione.get_last_by_cm(model.Key("Commissione", int(cm_id)))
       logging.info("isp: " + str(isp))
         
       buff = ""
@@ -51,12 +51,12 @@ class CMGetIspDataHandler(BasePage):
 class IspezioneValidationHandler(BasePage):    
   def post(self):
     turno = int(self.request.get("turno"))
-    commissione = self.request.get("commissione")
+    cm_id = self.request.get("commissione")
     dataIspezione = datetime.strptime(self.request.get("dataIspezione"),Const.DATE_FORMAT).date()
 
     
     message = "Ok"
-    if Ispezione.get_by_cm_data_turno(commissione, dataIspezione, turno) :
+    if Ispezione.get_by_cm_data_turno(model.Key("Commissione", int(cm_id)), dataIspezione, turno).get() :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
     self.response.out.write(message)
@@ -64,20 +64,40 @@ class IspezioneValidationHandler(BasePage):
 class DietaValidationHandler(BasePage):    
   def post(self):
     turno = int(self.request.get("turno"))
-    commissione = self.request.get("commissione")
+    cm_id = self.request.get("commissione")
     dataIspezione = datetime.strptime(self.request.get("dataIspezione"),Const.DATE_FORMAT).date()
     tipo = int(self.request.get("tipoDieta"))
 
     logging.info(dataIspezione);
     
     message = "Ok"
-    if Dieta.get_by_cm_data_turno(commissione, dataIspezione, turno) :
+    if Dieta.get_by_cm_data_turno(model.Key("Commissione", int(cm_id)), dataIspezione, turno).get() :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
     logging.info(message);
     self.response.out.write(message)
     
   
+def populate_tags_attach(request, obj):
+  obj.tags = list()
+  for tag in request.get_all("tags"):
+    logging.info(tag)
+    obj.tags.append(tag)
+  
+  obj.allegati = list()
+  for i in range(1,10):
+    if request.get('allegato_file_' + str(i)):
+      if len(request.get('allegato_file' + str(i))) < 10000000 :
+        allegato = Allegato()
+        allegato.descrizione = request.get('allegato_desc_' + str(i))
+        allegato.nome = request.POST['allegato_file_' + str(i)].filename
+        blob = Blob()
+        blob.create(allegato.nome)
+        allegato.blob_key = blob.write(request.get('allegato_file_' + str(i)))
+        obj.allegati.append(allegato)
+      else:
+        logging.info("attachment is too big.")
+
 class IspezioneHandler(BasePage):
 
   @commissario_required
@@ -91,45 +111,25 @@ class IspezioneHandler(BasePage):
       isp = Ispezione.get(self.request.get("key"))
   
       cancopy = None;
-      if( isp.commissario.key() == commissario.key()):
+      if( isp.commissario.key == commissario.key):
         cancopy = True
       
-      comment_root = CMCommentHandler().getRoot(isp.key())
+      comment_root = CMCommentHandler().getRoot(isp.key)
         
       template_values = {
         'content': 'commissario/ispezione_read.html',
         'content_left': 'commissario/leftbar.html',
         'isp': isp,
         'cancopy': cancopy,
-        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key()),
+        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key.id()),
         "comments": True,
         "comment_root": comment_root
         }
-      
-    elif( self.request.get("cmd") == "edit" ):
-   
-      isp = memcache.get(self.request.get("preview"))
-      memcache.delete(self.request.get("preview"))
-     
-      form = IspezioneForm(self.request.POST,obj=isp)
-            
-      form.commissione.data = isp.commissione
-
-      template_values = {
-        'content': 'commissario/ispezione.html',
-        'content_left': 'commissario/leftbar.html',
-        'form': form,
-        'commissioni': commissario.commissioni()
-      }
-          
+                
     else:       
-      isp = Ispezione(commissario = commissario) 
+      isp = Ispezione(commissario = commissario.key) 
       form = IspezioneForm(self.request.POST,isp)
 
-      #for field in form:
-        #logging.info(field.name)
-        #form.data[field.name] = str(form.initial[field.name])
-        
       template_values = {
         'main': 'ispezioni/ispezione_div.html',
         'form': form,
@@ -144,22 +144,16 @@ class IspezioneHandler(BasePage):
    
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
-    if commissario is None or not commissario.isCommissario() :
-      return
 
     preview = self.request.get("preview")
-   
+
     if( self.request.get("cmd") == "copy" ):
    
       key = self.request.get("key")
       isp = Ispezione.get(key)
-      form = IspezioneForm(self.request.POST,isp)
-      
-      #for field in form:
-        #logging.info(field.name)
-        #form.data[field.name] = unicode(form.initial[field.name])
-      
-      form.commissione.data = isp.commissione
+
+      form = IspezioneForm(self.request.POST,isp)            
+      form.commissione = isp.commissione
   
       template_values = {
         'main': 'ispezioni/ispezione_div.html',
@@ -168,9 +162,12 @@ class IspezioneHandler(BasePage):
         }
         
       self.getBase(template_values) 
+
     elif( preview ):
-      isp = memcache.get(preview)
-      memcache.delete(preview)
+      isp = self.session.get("pw_obj")
+      isp.allegati = self.session.get("pw_att")
+      isp.tags = self.session.get("pw_tags")
+
       if isp.dataIspezione.month >= 9:
         isp.anno = isp.dataIspezione.year
       else:
@@ -178,10 +175,14 @@ class IspezioneHandler(BasePage):
         
       isp.put()
 
+      for allegato in isp.allegati:
+        allegato.obj = isp
+        allegato.put()
+      
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      template_values = CMCommentHandler().initActivity(isp.key(), isp.commissione.key(), 101, db.Key(self.request.get("last")))
+      template_values = CMCommentHandler().initActivity(isp.key, isp.commissione, 101, model.Key("Messaggio",int(self.request.get("last"))))
 
       self.getBase(template_values) 
       
@@ -193,6 +194,7 @@ class IspezioneHandler(BasePage):
         isp = Ispezione()
     
       form = IspezioneForm(self.request.POST, isp)
+      form.commissione = model.Key("Commissione", int(self.request.get("commissione")))
             
       if form.primoEffettivo.data == form.secondoEffettivo.data:
         form.secondoQuantita.data = form.primoQuantita.data
@@ -203,20 +205,18 @@ class IspezioneHandler(BasePage):
         form.secondoGradimento.data = form.primoGradimento.data
         
       if form.validate():
-        logging.info("valid")
-
-        form.populate_obj(isp)
-        
-        isp.commissario = commissario
+        form.populate_obj(isp)        
+        isp.commissario = commissario.key
+        isp.commissione = form.commissione
    
-        preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
-        logging.info(preview)
-        memcache.add(preview, isp, 3600)
+        self.session["pw_obj"] = isp
+        self.session["pw_att"] = isp.allegati
+        self.session["pw_tags"] = isp.tags
     
         template_values = {
           'main': 'ispezioni/ispezione_read_div.html',
           'isp': isp,
-          'preview': preview
+          'preview': True
         }
         
         self.getBase(template_values) 
@@ -241,18 +241,16 @@ class NonconfHandler(BasePage):
   def get(self): 
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
-    if commissario is None or not commissario.isCommissario() :
-      return
 
     if( self.request.get("cmd") == "open" ):
       nc = Nonconformita.get(self.request.get("key"))
 
-      comment_root = CMCommentHandler().getRoot(nc.key())
+      comment_root = CMCommentHandler().getRoot(nc.key)
       
       template_values = {
         'main': 'ispezioni/nonconf_read.html',
         'nc': nc,
-        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key()),
+        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key.id()),
         "comments": True,
         "comment_root": comment_root
         }
@@ -264,9 +262,8 @@ class NonconfHandler(BasePage):
       nc = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("preview"))
      
-      form = NonconformitaForm(self.request.POST,nc)
-      
-      form.commissione.data = isp.commissione
+      form = NonconformitaForm(self.request.POST,nc)      
+      form.commissione = nc.commissione
 
       template_values = {
         'content': 'commissario/nonconf_div.html',
@@ -278,8 +275,9 @@ class NonconfHandler(BasePage):
           
     else:     
   
-      nc = Nonconformita(commissario = commissario) 
+      nc = Nonconformita(commissario = commissario.key) 
       form = NonconformitaForm(self.request.POST,nc)
+      form.commissione = nc.commissione
 
         
       template_values = {
@@ -296,13 +294,12 @@ class NonconfHandler(BasePage):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
 
-    if commissario is None or not commissario.isCommissario() :
-      return
     preview = self.request.get("preview")
    
     if( preview ):
-      nc = memcache.get(preview)
-      memcache.delete(preview)
+      nc = self.session.get("pw_obj")
+      nc.allegati = self.session.get("pw_att")
+      nc.tags = self.session.get("pw_tags")
       
       if nc.dataNonconf.month >= 9:
         nc.anno = nc.dataNonconf.year
@@ -311,10 +308,14 @@ class NonconfHandler(BasePage):
 
       nc.put()
 
+      for allegato in nc.allegati:
+        allegato.obj = nc
+        allegato.put()
+
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nc.key(), nc.commissione.key(), 102, db.Key(self.request.get("last")), nc.tags)
+      template_values = CMCommentHandler().initActivity(nc.key, nc.commissione, 102, model.Key("Messaggio",int(self.request.get("last"))), nc.tags)
 
       self.getBase(template_values) 
       
@@ -326,31 +327,31 @@ class NonconfHandler(BasePage):
         nc = Nonconformita()
     
       form = NonconformitaForm(self.request.POST,nc)
-
-      #logging.info(nc)
+      form.commissione = model.Key("Commissione", int(self.request.get("commissione")))
       
       if form.validate():
         form.populate_obj(nc)
-        nc.commissario = commissario
-   
-        nc.tags = list()
-        for tag in self.request.get_all("tags"):
-          logging.info(tag)
-          nc.tags.append(tag)
+        nc.commissario = commissario.key
+        nc.commissione = form.commissione
         
-        preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
-        memcache.add(preview, nc, 3600)
+        populate_tags_attach(self.request, nc)
+        logging.info(nc.allegati)
+        
+        self.session["pw_obj"] = nc
+        self.session["pw_att"] = nc.allegati
+        self.session["pw_tags"] = nc.tags
    
         template_values = {
           'main': 'ispezioni/nonconf_read_div.html',
           'nc': nc,
-          'preview': preview
+          'preview': True
         }
         
       else:
         logging.info("data: %s", form.data)
-        for e in form.errors :
-          logging.info("errors: %s", e)
+        for f in form.errors :
+          for e in form[f].errors:
+            logging.info("errors: %s %s", f, e)
 
         template_values = {
           'main': 'ispezioni/err_div.html',
@@ -374,13 +375,13 @@ class DietaHandler(BasePage):
     if( self.request.get("cmd") == "open" ):
       dieta = Dieta.get(self.request.get("key"))
   
-      comment_root = CMCommentHandler().getRoot(dieta.key())
+      comment_root = CMCommentHandler().getRoot(dieta.key)
 
       template_values = {
         'content': 'commissario/dieta_read.html',
         'content_left': 'commissario/leftbar.html',
         'dieta': dieta,
-        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key()),
+        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key.id()),
         "comments": True,
         "comment_root": comment_root
         }
@@ -394,7 +395,7 @@ class DietaHandler(BasePage):
     
       form = DietaForm(self.request.POST,dieta)
       
-      form.commissione.data = dieta.commissione
+      form.commissione = dieta.commissione
 
       template_values = {
         'content': 'commissario/dieta.html',
@@ -406,8 +407,9 @@ class DietaHandler(BasePage):
           
     else:     
   
-      dieta = Dieta(commissario = commissario) 
+      dieta = Dieta(commissario = commissario.key) 
       form = NonconformitaForm(self.request.POST,dieta)
+      form.commissione = dieta.commissione
 
         
       template_values = {
@@ -424,13 +426,12 @@ class DietaHandler(BasePage):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
 
-    if commissario is None or not commissario.isCommissario() :
-      return
     preview = self.request.get("preview")
    
     if( preview ):
-      dieta = memcache.get(preview)
-      memcache.delete(preview)
+      dieta = self.session.get("pw_obj")
+      dieta.allegati = self.session.get("pw_att")
+      dieta.tags = self.session.get("pw_tags")
 
       if dieta.dataIspezione.month >= 9:
         dieta.anno = dieta.dataIspezione.year
@@ -438,11 +439,15 @@ class DietaHandler(BasePage):
         dieta.anno = dieta.dataIspezione.year - 1
 
       dieta.put()
-    
+
+      for allegato in dieta.allegati:
+        allegato.obj = dieta
+        allegato.put()
+      
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(dieta.key(), dieta.commissione.key(), 103, db.Key(self.request.get("last")))
+      template_values = CMCommentHandler().initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))))
 
       self.getBase(template_values) 
       
@@ -454,18 +459,23 @@ class DietaHandler(BasePage):
         dieta = Dieta()
     
       form = DietaForm(self.request.POST,dieta)
+      form.commissione = model.Key("Commissione", int(self.request.get("commissione")))
 
       if form.validate():
         form.populate_obj(dieta)
-        dieta.commissario = commissario
-   
-        preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
-        memcache.add(preview, dieta, 3600)
+        dieta.commissario = commissario.key
+        dieta.commissione = form.commissione
+
+        populate_tags_attach(self.request, dieta)
+        
+        self.session["pw_obj"] = dieta
+        self.session["pw_att"] = dieta.allegati
+        self.session["pw_tags"] = dieta.tags
     
         template_values = {
           'main': 'ispezioni/dieta_read_div.html',
           'dieta': dieta,
-          'preview': preview
+          'preview': True
         }
         
       else:
@@ -497,14 +507,13 @@ class NotaHandler(BasePage):
       if nota.allegato_set.count():
         allegati = nota.allegato_set
   
-      comment_root = CMCommentHandler().getRoot(nota.key())
+      comment_root = CMCommentHandler().getRoot(nota.key)
       
       template_values = {
         'content': 'commissario/nota_read.html',
         'content_left': 'commissario/leftbar.html',
         'nota': nota,
-        "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key()),
-        "allegati": allegati,
+        "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key.id()),
         "comments": True,
         "comment_root": comment_root
         }
@@ -518,7 +527,7 @@ class NotaHandler(BasePage):
 
       form = NotaForm(self.request.POST,nota)
       
-      form.commissione.data = nota.commissione
+      form.commissione = nota.commissione
 
       template_values = {
         'content': 'commissario/nota.html',
@@ -530,8 +539,9 @@ class NotaHandler(BasePage):
           
     else:     
   
-      nota = Nota(commissario = commissario) 
+      nota = Nota() 
       form = NotaForm(obj=nota)
+      form.commissione = nota.commissione
        
       template_values = {
         'main': 'ispezioni/nota_div.html',
@@ -547,13 +557,12 @@ class NotaHandler(BasePage):
     user = users.get_current_user()
     commissario = self.getCommissario(users.get_current_user())
 
-    if commissario is None or not commissario.isCommissario() :
-      return
     preview = self.request.get("preview")
    
     if( preview ):
-      nota = memcache.get(preview)
-      memcache.delete(preview)
+      nota = self.session.get("pw_obj")
+      nota.allegati = self.session.get("pw_att")
+      nota.tags = self.session.get("pw_tags")
 
       if nota.dataNota.month >= 9:
         nota.anno = nota.dataNota.year
@@ -561,22 +570,17 @@ class NotaHandler(BasePage):
         nota.anno = nota.dataNota.year - 1
      
       nota.put()
+      
+      logging.info(nota.allegati)
             
-      #username = Configurazione.all().filter("nome", "attach_user").get().valore
-      #password = Configurazione.all().filter("nome", "attach_password").get().valore
-      #site = Configurazione.all().filter("nome", "attach_site").get().valore
-      #path = Configurazione.all().filter("nome", "attach_path").get().valore
-      #site = Site(username, password, site)
-
       for allegato in nota.allegati:
-        allegato.obj = nota
-        #allegato.path = site.uploadDoc(allegato.dati, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), path)
+        allegato.obj = nota.key
         allegato.put()
 
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nota.key(), nota.commissione.key(), 104, db.Key(self.request.get("last")), nota.tags)
+      template_values = CMCommentHandler().initActivity(nota.key, nota.commissione, 104, model.Key("Messaggio",int(self.request.get("last"))), nota.tags)
       
     else:
       key = self.request.get("key")
@@ -586,41 +590,25 @@ class NotaHandler(BasePage):
         nota = Nota()
     
       form = NotaForm(self.request.POST,nota)
-      #for field in form:
-        #logging.info("%s, %s",field.name, field)
+      form.commissione = model.Key("Commissione", int(self.request.get("commissione")))
       
       if form.validate():
         form.populate_obj(nota)
-        nota.commissario = commissario
+        nota.commissario = commissario.key
+        nota.commissione = form.commissione
 
-        nota.tags = list()
-        for tag in self.request.get_all("tags"):
-          logging.info(tag)
-          nota.tags.append(tag)
-        
-        nota.allegati = list()
-        for i in range(1,10):
-          if self.request.get('allegato_file_' + str(i)):
-            if len(self.request.get('allegato_file' + str(i))) < 10000000 :
-              allegato = Allegato()
-              allegato.descrizione = self.request.get('allegato_desc_' + str(i))
-              allegato.nome = self.request.POST['allegato_file_' + str(i)].filename
-              blob = Blob()
-              blob.create(allegato.nome)
-              allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
-              allegato.put()
-              nota.allegati.append(allegato)
-            else:
-              logging.info("attachment is too big.")
+        populate_tags_attach(self.request, nota)
             
-        preview = user.email() + datetime.strftime(datetime.now(), Const.TIME_FORMAT)
-        memcache.add(preview, nota, 3600)
-    
+        self.session["pw_obj"] = nota
+        self.session["pw_att"] = nota.allegati
+        self.session["pw_tags"] = nota.tags
+
+        logging.info(nota.allegati)
+        
         template_values = {
           'main': 'ispezioni/nota_read_div.html',
           'nota': nota,
-          'allegati': nota.allegati,
-          'preview': preview
+          'preview': True
         }
         
       else:

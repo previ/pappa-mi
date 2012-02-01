@@ -9,24 +9,24 @@ from py.model import Commissario, Commissione
 from common import Const
 
 from google.appengine.api import users
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import memcache
 
-class Messaggio(db.Model):
-  root = db.ReferenceProperty(db.Model, collection_name="children_all_set")
-  par = db.ReferenceProperty(db.Model, collection_name="children_set")
-  grp = db.ReferenceProperty(db.Model, collection_name="msg_set")
-  tipo = db.IntegerProperty()
-  livello = db.IntegerProperty()
-  commenti = db.IntegerProperty()
-  pop = db.IntegerProperty()
-  titolo = db.StringProperty(indexed=False)
-  testo = db.TextProperty(indexed=False)
+class Messaggio(model.Model):
+  root = model.KeyProperty()
+  par = model.KeyProperty()
+  grp = model.KeyProperty()
+  tipo = model.IntegerProperty()
+  livello = model.IntegerProperty()
+  commenti = model.IntegerProperty()
+  pop = model.IntegerProperty()
+  titolo = model.StringProperty(indexed=False)
+  testo = model.TextProperty(indexed=False)
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
 
   @classmethod
   def get_by_tagname(cls, tagname, offset=0):
@@ -37,7 +37,7 @@ class Messaggio(db.Model):
       tag = Tag.get_by_name(tagname)
       if tag:
         count = 0
-        for tagobj in tag.tagobj_reference_set[offset*Const.ACTIVITY_FETCH_LIMIT:(offset+1)*Const.ACTIVITY_FETCH_LIMIT]:
+        for tagobj in TagObj.get_by_tag(tag):
           count += 1
           if count > Const.ACTIVITY_FETCH_LIMIT:
             break
@@ -53,7 +53,7 @@ class Messaggio(db.Model):
     if activities == None:
       activities = list()
       #logging.info("get_activities_by_msgtype: " + str(msgtype))
-      for msg in cls.all().filter("tipo", msgtype).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+      for msg in Messaggio.query().filter(Messaggio.tipo == msgtype).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         #logging.info("get_activities_by_msgtype: " + str(msg.tipo))
         activities.append(msg)
       memcache.add("msg-type-" + str(msgtype) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
@@ -64,7 +64,7 @@ class Messaggio(db.Model):
     activities = memcache.get("msg-user-" + user_email + "-" + str(offset))
     if activities == None:
       activities = list()
-      for msg in cls.all().filter("creato_da", users.User(user_email)).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+      for msg in Messaggio.query().filter(Messaggio.creato_da == users.User(user_email)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
       memcache.add("msg-user-" + user_email + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
@@ -75,7 +75,7 @@ class Messaggio(db.Model):
     activities = memcache.get("msg-all-" + str(offset))
     if not activities:
       activities = list()
-      for msg in cls.all().filter("livello", 0).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+      for msg in Messaggio.query().filter(Messaggio.livello == 0).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
         
       activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
@@ -87,7 +87,7 @@ class Messaggio(db.Model):
     activities = memcache.get("msg-grp-" + str(grp_key) + "-" + str(offset))
     if not activities:
       activities = list()
-      for msg in cls.all().filter("grp", grp_key).order("-creato_il").fetch(Const.ACTIVITY_FETCH_LIMIT, offset*Const.ACTIVITY_FETCH_LIMIT):
+      for msg in Messaggio.query().filter(Messaggio.grp == grp_key).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
         
       activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
@@ -97,14 +97,14 @@ class Messaggio(db.Model):
   @classmethod
   def get_by_parent(cls, parent):
     activities = list()
-    for a in cls.all().filter("par", parent).order("creato_il"):
+    for a in Messaggio.query().filter(Messaggio.par == parent).order(Messaggio.creato_il):
       activities.append(a)
     return activities
   
   @classmethod
   def get_all_from_item(cls, item_key, descending = True):
     activities = list()
-    for msg in cls.all().filter("livello", 0).filter("creato_il >", Messaggio.get(item_key).creato_il).fetch(Const.ACTIVITY_FETCH_LIMIT):
+    for msg in Messaggio.query().filter(Messaggio.livello == 0).filter(Messaggio.creato_il > item_key.get().creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT):
       activities.append(msg)
     activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=descending)
     return activities
@@ -112,14 +112,14 @@ class Messaggio(db.Model):
   @classmethod
   def get_all_from_item_parent(cls, item_key, activity):
     activities = list()
-    msgs = Messaggio.all()
+    msgs = Messaggio.query()
     if activity.par:
-      msgs = msgs.filter("par", activity.par)
+      msgs = msgs.filter(Messaggio.par == activity.par)
     
     if item_key:
-      msgs = msgs.filter("creato_il >", Messaggio.get(item_key).creato_il)
+      msgs = msgs.filter(Messaggio.creato_il > item_key.get().creato_il)
       
-    for msg in msgs.filter("livello", activity.livello):
+    for msg in msgs.filter(Messaggio.livello == activity.livello):
       activities.append(msg)    
       
     activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
@@ -128,7 +128,7 @@ class Messaggio(db.Model):
       
   @classmethod
   def get_root(cls, parent):
-    return cls.all().filter("par", parent).get()
+    return cls.query().filter(Messaggio.par == parent).get()
 
   def invalidate_cache(self):
     for i in range(0,1000):
@@ -136,9 +136,9 @@ class Messaggio(db.Model):
         break
       memcache.delete("msg-user-"+self.creato_da.email()+"-"+str(i))
     for i in range(0,1000):
-      if memcache.get("msg-grp-"+str(self.grp.key())+"-"+str(i)) == None:
+      if memcache.get("msg-grp-"+str(self.grp)+"-"+str(i)) == None:
         break
-      memcache.delete("msg-grp-"+str(self.grp.key())+"-"+str(i))
+      memcache.delete("msg-grp-"+str(self.grp)+"-"+str(i))
     for i in range(0,1000):
       if memcache.get("msg-type-"+str(self.tipo)+"-"+str(i)) == None:
         break
@@ -148,9 +148,7 @@ class Messaggio(db.Model):
         break
       memcache.delete("msg-all-"+str(i))
     
-    
-    
-  _cache = dict()
+  _cache = dict()  
   commissario = None
   def get_commissario(self):
     if not self.commissario:
@@ -160,25 +158,23 @@ class Messaggio(db.Model):
         Messaggio._cache[self.modificato_da] = self.commissario
     return self.commissario
     
-  __tags__ = None
-
   _likes = None
   def likes(self):
     if self._likes == None:
-      self._likes = self.voto_reference_set.count()
+      self._likes = Voto.get_by_msg(self.key).count()
     return self._likes
 
   _canvote = None
   def canvote(self):
     if self._canvote is None:
       canvote = True
-      for p_voto in self.voto_reference_set:
+      for p_voto in Voto.get_by_msg(self.key):
         if p_voto.creato_da == users.get_current_user():
           canvote = False
           break;
-      self._canvote = canvote
-      
+      self._canvote = canvote     
     return self._canvote
+  
   def data(self):
     delta = datetime.now() - self.creato_il
     if delta.days == 0 and delta.seconds < 3600:
@@ -187,26 +183,30 @@ class Messaggio(db.Model):
       return str(delta.seconds / 3600) + " ore fa"
     else:
       return "il " + datetime.strftime(self.creato_il, Const.DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+
   def author(self):
     return self.get_commissario().nomecompleto()
+
   def author_title(self):
     return self.get_commissario().titolo()
+
   def author_avatar(self):
     return self.get_commissario().avatar()
 
+  _tags = None
   def tags(self):
-    if not self.__tags__:
-      self.__tags__ = list()
-      for to in self.tagobj_reference_set:
-        self.__tags__.append(to.tag)
-    return self.__tags__
+    if not self._tags:
+      self._tags = list()
+      for to in TagObj.get_by_obj_key(self.key):
+        self._tags.append(to.tag.get())
+    return self._tags
   
   def title(self):
-    #logging.info("tipo: " +self.tipodesc() )
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      #logging.info("tipo: " +self.tipodesc() + " " + self.root.commissione.nome)
-      #logging.info(self.root.commissione.desc() + " - " + self.tipodesc() + " del " + datetime.strftime(self.root.creato_il, DATE_FORMAT))
-      return self.root.commissione.desc() + " - " + self.tipodesc() + " del " + datetime.strftime(self.root.data(), Const.DATE_FORMAT)
+      logging.info(self.root.get().commissione.get().desc())
+      logging.info(self.tipodesc())
+      logging.info(datetime.strftime(self.root.get().data(), Const.DATE_FORMAT))
+      return self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + datetime.strftime(self.root.get().data(), Const.DATE_FORMAT)
     if self.tipo == 201:
       return self.titolo
     if self.tipo == 202:
@@ -215,13 +215,13 @@ class Messaggio(db.Model):
 
   def body(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      return self.root
+      return self.root.get()
     if self.tipo == 201 or self.tipo == 202:
       return self.testo
 
   def summary(self):
     if self.tipo == 101 :
-      return self.root.note
+      return self.root.get().note
     if self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
       return ""
     if self.tipo == 201 or self.tipo == 202:
@@ -240,7 +240,7 @@ class Messaggio(db.Model):
       return self.commenti
   
   def tipodesc(self):
-    return self._tipi[int(self.tipo)]
+    return Messaggio._tipi[int(self.tipo)]
 
   _tipi = {101:"Ispezione",
            102:"Non Conformita",
@@ -250,25 +250,25 @@ class Messaggio(db.Model):
            202:"Commento"}
 
   
-class Tag(db.Model):
-  nome = db.StringProperty()
-  numRef = db.IntegerProperty()
-  last = db.DateTimeProperty(auto_now_add=True)
+class Tag(model.Model):
+  nome = model.StringProperty()
+  numRef = model.IntegerProperty()
+  last = model.DateTimeProperty(auto_now_add=True)
   maxRef = int()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
 
   @classmethod
-  def get_all(cls, num):
-    return Tag.all().order("nome")
+  def get_all(cls):
+    return Tag.query().order(Tag.nome)
   
   @classmethod
   def get_top_referenced(cls, num):
     tags = memcache.get("toptags")
     if not tags:
       tags = list()
-      for tag in cls.all().order("-numRef").fetch(num):
+      for tag in Tag.query().order(-Tag.numRef).fetch(num):
         tags.append(tag)
       memcache.add("toptags", tags, 60)      
     return tags
@@ -279,7 +279,7 @@ class Tag(db.Model):
   def get_by_name(cls, name):
     tag = cls._tag_cache.get(name)
     if not tag:
-      tag = cls.all().filter("nome", name).get()
+      tag = Tag.query().filter(Tag.nome == name).get()
       cls._tag_cache[name] = tag
     return tag
         
@@ -287,54 +287,55 @@ class Tag(db.Model):
     return self.numRef
     
 
-class TagObj(db.Model):
-  tag = db.ReferenceProperty(Tag,collection_name="tagobj_reference_set")
-  obj = db.ReferenceProperty(db.Model,collection_name="tagobj_reference_set" )
+class TagObj(model.Model):
+  tag = model.KeyProperty(kind=Tag)
+  obj = model.KeyProperty()
   
   @classmethod
-  def get_by_obj(cls, obj):
-    return TagObj.all().filter("obj", obj)
+  def get_by_obj_key(cls, obj):
+    return TagObj.query().filter(TagObj.obj == obj)
   
-class Voto(db.Model):
-  messaggio = db.ReferenceProperty(Messaggio,collection_name="voto_reference_set")
-  voto = db.IntegerProperty()
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
+class Voto(model.Model):
+  messaggio = model.KeyProperty(kind=Messaggio)
+  voto = model.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
 
   commissario = None
   
   def author(self):
     if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.creato_da).get()
+      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
     return self.commissario.nomecompleto()
   def author_title(self):
     if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.creato_da).get()
+      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
     return self.commissario.titolo()
   def author_avatar(self):
     if not self.commissario:
-      self.commissario = Commissario.all().filter("user", self.creato_da).get()
+      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
     return self.commissario.avatar()
   
+  @classmethod
+  def get_by_msg(cls, msg):
+    return Voto.query().filter(Voto.messaggio==msg)
+    
   
-class UserSubscription(db.Model):
-  user = db.UserProperty(auto_current_user_add=True)
-  obj = db.ReferenceProperty(db.Model)
-  tipo = db.StringProperty()
+  
+class UserSubscription(model.Model):
+  user = model.UserProperty(auto_current_user_add=True)
+  obj = model.KeyProperty()
+  tipo = model.StringProperty()
 
-class Group(db.Model):
-  nome = db.StringProperty()
-  tipo = db.IntegerProperty()
-  desc = db.TextProperty()
+class Group(model.Model):
+  nome = model.StringProperty()
+  tipo = model.IntegerProperty()
+  desc = model.TextProperty()
   
-  stato = db.IntegerProperty()
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
+  stato = model.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
   
-class UserGroup(db.Model):
-  user = db.UserProperty(auto_current_user_add=True)
-  group = db.ReferenceProperty(Group)
-
-class CmMsg(db.Model):
-  cm = db.ReferenceProperty(Commissione)
-  msg = db.ReferenceProperty(Messaggio)
+class UserGroup(model.Model):
+  user = model.UserProperty(auto_current_user_add=True)
+  group = model.KeyProperty(kind=Group)

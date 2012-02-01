@@ -24,7 +24,7 @@ import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.api import memcache

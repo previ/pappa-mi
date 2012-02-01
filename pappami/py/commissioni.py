@@ -9,7 +9,7 @@ import cgi
 import logging
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from jinja2.filters import do_pprint
@@ -25,13 +25,13 @@ class CommissioniHandler(BasePage):
     template_values = dict()
     return self.getBase(template_values)
   def getBase(self,template_values):
-    geo = db.GeoPt(45.463681,9.188171)
+    geo = model.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(users.get_current_user())
     if commissario:
-      geo = commissario.citta.geo
+      geo = commissario.citta.get().geo
     template_values["content"] = "map.html"
     template_values["limit"] = 100
-    template_values["centriCucina"] = CentroCucina.get_by_citta(Citta.get_first())
+    template_values["centriCucina"] = CentroCucina.get_by_citta(Citta.get_first().key)
     template_values['action'] = self.request.path
     template_values['geo'] = geo
     super(CommissioniHandler,self).getBase(template_values)
@@ -47,7 +47,7 @@ class ContattiHandler(BasePage):
     elif commissario and commissario.commissione() :
       cm = commissario.commissione()
     else:
-      cm = Commissione.all().get()
+      cm = Commissione.get_all_cursor(None).get()
 
     template_values["content"] = "contatti.html"
     template_values['commissari'] = cm.commissari()

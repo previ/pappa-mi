@@ -27,9 +27,9 @@ var piattounico = false;
  <div class="row">
   <div class="span4 box1">
    <label class="label_isp_1" for="e_commissione">Commissione</label>
-   <select required="true" name="commissione" value="{%if form is defined%}{{form.commissione.data}}{%endif%}" id="e_commissione" onchange="getPrevIspData()">
+   <select required="true" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
    <option value=""></option>{% for cm in commissioni %}
-   <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+   <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
   <div class="span4 box1">

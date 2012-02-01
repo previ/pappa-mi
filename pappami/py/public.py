@@ -27,7 +27,7 @@ import wsgiref.handlers
 import webapp2 as webapp
 
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -48,83 +48,83 @@ DATE_FORMAT = "%Y-%m-%d"
 class CMIspezionePublicHandler(BasePage):
   
   def get(self): 
-    isp = Ispezione.get(self.request.get("key"))
+    isp = model.Key("Ispezione", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["isp"] = isp
-    template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key())
+    template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key.id())
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/ispezione_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(isp.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(isp.key.id())
     
     self.getBase(template_values)
  
 class CMNonconfPublicHandler(BasePage):
   
   def get(self): 
-    nc = Nonconformita.get(self.request.get("key"))
+    nc = model.Key("Nonconformita", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["nc"] = nc
-    template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key())
+    template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key.id())
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/nonconf_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(nc.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nc.key.id())
     self.getBase(template_values)
 
 class CMDietePublicHandler(BasePage):
   
   def get(self): 
-    dieta = Dieta.get(self.request.get("key"))
+    dieta = model.Key("Dieta", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["dieta"] = dieta
-    template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key())
+    template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key.id())
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/dieta_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key.id())
     self.getBase(template_values)
 
 class CMNotePublicHandler(BasePage):
   
   def get(self): 
-    nota = Nota.get(self.request.get("key"))
+    nota = model.Key("Nota", int(self.request.get("key"))).get()
     allegati = None
-    if nota.allegato_set.count():
-      allegati = nota.allegato_set
+    if nota.allegati().count() > 0:
+      allegati = nota.allegati()
     
     template_values = dict()
     template_values["nota"] = nota
-    template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key())
+    template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key.id())
     template_values["main"] = "public/main.html"
     template_values["content"] = "../public/nota_read.html"
     template_values["allegati"] = allegati
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(nota.key())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nota.key.id())
     
     self.getBase(template_values)
 
 class ActivityPublicHandler(BasePage):
   
   def get(self): 
-    message = Messaggio.get(self.request.get("key"))
+    message = model.Key("Messaggio", int(self.request.get("key"))).get()
 
     template_values = dict()
     template_values["activity"] = message
     if message.root is None:
       template_values["msg"] = message
       template_values["detail"] = "public/detail_msg.html"      
-    elif isinstance(message.root, Ispezione):
-      template_values["isp"] = message.root
+    elif message.tipo == 101:
+      template_values["isp"] = message.root.get()
       template_values["detail"] = "ispezioni/ispezione_read_div.html"      
-    elif isinstance(message.root, Nonconformita):
-      template_values["nc"] = message.root
+    elif message.tipo == 102:
+      template_values["nc"] = message.root.get()
       template_values["detail"] = "ispezioni/nonconf_read_div.html"
-    elif isinstance(message.root, Dieta):
-      template_values["dieta"] = message.root
+    elif message.tipo == 103:
+      template_values["dieta"] = message.root.get()
       template_values["detail"] = "ispezioni/dieta_read_div.html"
-    elif isinstance(message.root, Nota):
-      template_values["nota"] = message.root
+    elif message.tipo == 104:
+      template_values["nota"] = message.root.get()
       template_values["detail"] = "ispezioni/nota_read_div.html"
     
     template_values["content"] = "public/activity.html"
@@ -135,7 +135,7 @@ class ActivityPublicHandler(BasePage):
 class CMAllegatoPublicHandler(BasePage):
   
   def get(self): 
-    allegato = Allegato.get(self.request.get("key"))   
+    allegato = model.Key("Allegato", int(self.request.get("key"))).get()
     if allegato.isImage():
       self.response.headers['Content-Type'] = "image/png"
     else:
@@ -159,10 +159,10 @@ class CMDetailHandler(BasePage):
   
   def get(self): 
     logging.info("CMDetailHandler")
-    msg = Messaggio.get(self.request.get("key"))
+    message = model.Key("Messaggio", int(self.request.get("key"))).get()
     
     temp = "public/detail_"
-    tipo = int(msg.tipo)
+    tipo = int(message.tipo)
     if tipo == 101:
       temp += "isp"
     if tipo == 102:
@@ -176,9 +176,9 @@ class CMDetailHandler(BasePage):
       
     template_values = dict()
     template_values["main"] = temp + ".html"
-    template_values["msg"] = msg
+    template_values["msg"] = message
     
-    comment_root = msg
+    comment_root = message
     template_values["comments"] = True,
     template_values["comment_root"] = comment_root
        

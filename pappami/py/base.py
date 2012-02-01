@@ -21,7 +21,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 #from webapp2_extras import jinja2
@@ -72,7 +72,7 @@ class BasePage(webapp.RequestHandler):
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
-      return self.session_store.get_session()   
+      return self.session_store.get_session(backend="memcache")   
     
   def get_context(self):
     ctx = self.session.get("ctx")
@@ -80,8 +80,8 @@ class BasePage(webapp.RequestHandler):
       ctx = dict()
       commissario = self.getCommissario(users.get_current_user())
       if commissario:
-        ctx["citta_key"] = str(commissario.citta.key())
-        ctx["cm_key"] = str(commissario.commissione().key())
+        ctx["citta_key"] = str(commissario.citta)
+        ctx["cm_key"] = str(commissario.commissione().key)
         ctx["cm_name"] = str(commissario.commissione().desc())
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
@@ -112,7 +112,7 @@ class BasePage(webapp.RequestHandler):
     if( commissario is not None ) :
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
-        db.put_async(commissario)
+        commissario.put()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
       template_values["cmsro"] = commissario
@@ -215,7 +215,7 @@ class BasePage(webapp.RequestHandler):
     elif user != "!" and user != "":
       activities = Messaggio.get_by_user(user,offset)
     elif cm != "!" and cm != "":
-      activities = Messaggio.get_by_grp(db.Key(cm),offset)
+      activities = Messaggio.get_by_grp(model.Key("Commissione", int(cm)),offset)
     else:
       activities = Messaggio.get_all(offset)
     
@@ -231,7 +231,7 @@ class BasePage(webapp.RequestHandler):
     #for user in activity_filter.users:
       #activities.extend(Messaggio.get_by_user(user))
     #for group in activity_filter.groups:
-      #activities.extend(Messaggio.get_by_group(db.Key(group)))
+      #activities.extend(Messaggio.get_by_group(model.Key(group)))
 
     #activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
       
@@ -274,19 +274,19 @@ class CMCommissioniDataHandler(BasePage):
     user = users.get_current_user()
     city = self.request.get("city")
     if city == "" and self.getCommissario(user):
-      city = self.getCommissario(user).citta.key()
+      city = self.getCommissario(user).citta
     else:
-      city = db.Key(city)      
+      city = model.Key(city)
 
     buff = ""
     if city:
       buff = memcache.get("cm_city_json_"+str(city))
       if(buff is None):
         cmlist = list()  
-        cms = Commissione.all().filter("citta", city).order("nome")
+        cms = Commissione.get_by_citta(city)
         for cm in cms:
-          cmlist.append({'value': str(cm.key()), 'label':cm.nome + ' - ' + cm.tipoScuola})
-          #cmlist.append({'key': str(cm.key()), 'nome':cm.nome + ' - ' + cm.tipoScuola})
+          cmlist.append({'value': str(cm.key), 'label':cm.nome + ' - ' + cm.tipoScuola})
+          #cmlist.append({'key': str(cm.key), 'nome':cm.nome + ' - ' + cm.tipoScuola})
         
         #buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
         buff = json.JSONEncoder().encode(cmlist)      
@@ -333,7 +333,7 @@ class CMMenuHandler(BasePage):
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):
-    mn = MenuNew.all().filter("citta",citta).filter("validitaDa <=", data).order("-validitaDa").get()
+    mn = MenuNew.get_by(citta, data)
     
     piatti = dict()
     if offset > 0:
@@ -398,7 +398,7 @@ class CMMenuHandler(BasePage):
     cm = None
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cm") != "":
-      cm = Commissione.get(self.request.get("cm"))
+      cm = Commissione.get(model.Key("Commissione",int(self.request.get("cm"))))
     elif commissario and commissario.commissione() :
       cm = commissario.commissione()
     else:
@@ -428,7 +428,7 @@ class CMCittaHandler(webapp.RequestHandler):
     citta = Citta.get_all()
     citlist = list()
     for c in citta:
-      citlist.append({'key': str(c.key()), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
+      citlist.append({'key': str(c.key), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
       
     self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
   

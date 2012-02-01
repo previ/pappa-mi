@@ -20,8 +20,8 @@
  <div class="row">
   <div class="span4 box1">
    <label class="label_isp_1" for="e_commissione">Commissione</label>
-   <select class="required" name="commissione" id="e_commissione" value="{{form.data.commissione.key}}">{% for cm in commissioni %}
-    <option value="{{cm.key()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+   <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
+    <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
   <div class="span4 box1">

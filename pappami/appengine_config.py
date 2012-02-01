@@ -37,10 +37,12 @@ remoteapi_CUSTOM_ENVIRONMENT_AUTHENTICATION = (
 
 engineauth = {
     # Login uri. The user will be returned here if an error occures.
-    'login_uri': '/', # default 'login/'
-    # The user is sent here after successfull authentication.
+    'login_uri': '/login', # default 'login/'
+    #'base_uri': '/', # this the base url for strategies. For example the login for facebook would now be '/routing/auth/facebook' and the callback would now be '/routing/auth/facebook/callback'. This isn't very well tested, so you might run into some problems. 
+    # The user is sent here after successfull authentication.    
     'success_uri': '/',
-    'secret_key': 'CHANGE_TO_A_SECRET_KEY',
+    #'success_uri': '/routing/successful_login', # where the user is redirected to on successful login 
+    'secret_key': 'SECRET1234567890SECRET',
     # Change to provide a subclassed model
     'user_model': 'engineauth.models.User',
 }
@@ -85,4 +87,7 @@ engineauth['provider.facebook'] = {
     
 def webapp_add_wsgi_middleware(app):
     from engineauth import middleware
+    #from google.appengine.ext.appstats import recording
+    #app = recording.appstats_wsgi_middleware(app)
     return middleware.AuthMiddleware(app)
+

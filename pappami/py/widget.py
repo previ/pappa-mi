@@ -10,7 +10,7 @@ import logging
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from google.appengine.ext import db
+from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache

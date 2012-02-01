@@ -6,34 +6,35 @@ from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
 import google.appengine.api.images
+import threading
 
-from google.appengine.ext import db
+from ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from ndb import model, context
 
 from common import Const
 
-class Citta(db.Model):
-  nome = db.StringProperty()
-  codice =  db.StringProperty()
-  provincia = db.StringProperty()
-  geo = db.GeoPtProperty()
+class Citta(model.Model):
+  nome = model.StringProperty()
+  codice =  model.StringProperty()
+  provincia = model.StringProperty()
+  geo = model.GeoPtProperty()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
 
-  stato = db.IntegerProperty()
+  stato = model.IntegerProperty()
   
   @classmethod
   def get_all(cls):
-    return cls.all()
+    return cls.query().order(Citta.nome)
 
   @classmethod
   def get_first(cls):
-    return cls.all().get()
+    return cls.query().get()
   
   
 class Configurazione(model.Model):
@@ -44,136 +45,147 @@ class Configurazione(model.Model):
   def get_value_by_name(cls, name):
     return Configurazione.query(Configurazione,nome == name).get().valore
   
-class CentroCucina(db.Model):
-  nome = db.StringProperty()
-  codice = db.StringProperty()
-  strada = db.StringProperty()
-  civico = db.StringProperty()
-  #citta = db.StringProperty()
-  citta = db.ReferenceProperty(Citta)
-  cap = db.StringProperty()
-  nomeContatto = db.StringProperty()
-  cognomeContatto = db.StringProperty()
-  telefono = db.StringProperty()
-  fax = db.StringProperty()
-  email = db.EmailProperty()
-  menuOffset = db.IntegerProperty()
+class CentroCucina(model.Model):  
+  nome = model.StringProperty()
+  codice = model.StringProperty()
+  strada = model.StringProperty()
+  civico = model.StringProperty()
+  #citta = model.StringProperty()
+  citta = model.KeyProperty(kind=Citta)
+  cap = model.StringProperty()
+  nomeContatto = model.StringProperty()
+  cognomeContatto = model.StringProperty()
+  telefono = model.StringProperty()
+  fax = model.StringProperty()
+  email = model.StringProperty()
+  menuOffset = model.IntegerProperty()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
+
+  _lock = threading.RLock()
+  _ce_cu_zo_cache = None
+  _zo_of_cache = None  
+
   
   @classmethod
-  def get_by_citta(cls, citta):
-    CentroCucina.all().filter("citta",citta).order("nome")
+  def get_by_citta(cls, citta_key):
+    CentroCucina.query().filter(CentroCucina.citta == citta_key).order(CentroCucina.nome)
 
-  _ce_cu_zo_cache = None
   def getZona(self, data=datetime.now().date()):
-    if not(CentroCucina._ce_cu_zo_cache and CentroCucina._ce_cu_zo_cache.validitaDa <= data and CentroCucina._ce_cu_zo_cache.validitaA >= data):
-      CentroCucina._ce_cu_zo_cache = CentroCucinaZona.all().filter("centroCucina",self).filter("validitaDa <=",data).order("-validitaDa").get().zona
+    with CentroCucina._lock:
+      if not(CentroCucina._ce_cu_zo_cache and CentroCucina._ce_cu_zo_cache.validitaDa <= data and CentroCucina._ce_cu_zo_cache.validitaA >= data):
+        CentroCucina._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get().zona
     return CentroCucina._ce_cu_zo_cache
   
-  _zo_of_cache = None
   def getMenuOffset(self, data=datetime.now().date()):
-    if not(CentroCucina._zo_of_cache and CentroCucina._zo_of_cache.validitaDa <= data and CentroCucina._zo_of_cache.validitaA >= data):
-      CentroCucina._zo_of_cache = ZonaOffset.all().filter("zona",self.getZona(data)).filter("validitaDa <=",data).order("-validitaDa").get()
+    with CentroCucina._lock:
+      if not(CentroCucina._zo_of_cache and CentroCucina._zo_of_cache.validitaDa <= data and CentroCucina._zo_of_cache.validitaA >= data):
+        CentroCucina._zo_of_cache = ZonaOffset.query().filter(ZonaOffset.zona == self.getZona(data)).filter(ZonaOffset.validitaDa <=data).order(-ZonaOffset.validitaDa).get()
     return CentroCucina._zo_of_cache.offset
   
-class Commissione(db.Model):
-  nome = db.StringProperty(default="")
-  nomeScuola = db.StringProperty(default="")
-  tipoScuola = db.StringProperty(default="")
-  codiceScuola = db.StringProperty(default="")
-  distretto = db.StringProperty(default="")
-  zona = db.StringProperty(default="")
-  strada = db.StringProperty(default="")
-  civico = db.StringProperty(default="")
-  #citta = db.StringProperty(default="")
-  citta = db.ReferenceProperty(Citta)
-  cap = db.StringProperty(default="")
-  telefono = db.StringProperty(default="")
-  fax = db.StringProperty(default="")
-  email = db.EmailProperty()
-  centroCucina = db.ReferenceProperty(CentroCucina)
+class Commissione(model.Model):
+  nome = model.StringProperty(default="")
+  nomeScuola = model.StringProperty(default="")
+  tipoScuola = model.StringProperty(default="")
+  codiceScuola = model.StringProperty(default="")
+  distretto = model.StringProperty(default="")
+  zona = model.StringProperty(default="")
+  strada = model.StringProperty(default="")
+  civico = model.StringProperty(default="")
+  #citta = model.StringProperty(default="")
+  citta = model.KeyProperty(kind=Citta)
+  cap = model.StringProperty(default="")
+  telefono = model.StringProperty(default="")
+  fax = model.StringProperty(default="")
+  email = model.StringProperty()
+  centroCucina = model.KeyProperty(kind=CentroCucina)
   
-  geo = db.GeoPtProperty()
+  geo = model.GeoPtProperty()
 
-  numCommissari = db.IntegerProperty(default=0)
+  numCommissari = model.IntegerProperty(default=0)
 
-  calendario = db.StringProperty(default="")
+  calendario = model.StringProperty(default="")
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
 
+  _lock = threading.RLock()
+  _com_cen_cuc_last = None
+  _cc_last = None
+  
   @classmethod
-  def get_by_citta(cls, citta):
-    commissioni = memcache.get("cm-citta-"+citta.key().id())
+  def get_by_citta(cls, citta_key):
+    commissioni = memcache.get("cm-citta-"+citta.key.id())
     if commissioni == None:
-      commissioni = Commissione.all().filter("citta", citta).order("nome");
-      memcache.add("cm-citta-"+citta.key().id(), commissioni)
+      commissioni = list()
+      for cm in Commissione.query().filter(Commissione.citta == citta_key).order(Commissione.nome):
+        commissioni.append(cm)
+      memcache.add("cm-citta-"+citta.key.id(), commissioni)
     return commissioni
 
   @classmethod
   def get_active(cls):
-    return Commissione.all().filter("stato",1).count()
+    return Commissione.query().filter(Commissione.stato == 1).count()
   
   @classmethod
   def get_all_cursor(cls, cursor):
     if cursor and cursor != "":
-      return Commissione.all().with_cursor(cursor);
+      return Commissione.query().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
     else:
-      return Commissione.all()
+      return Commissione.query().iter(produce_cursors=True)
 
   @classmethod
   def get_active_cursor(cls, cursor):
     if cursor and cursor != "":
-      return Commissione.all().filter("numCommissari >",0).with_cursor(cursor);
+      return Commissione.query().filter( Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
-      return Commissione.all().filter("numCommissari >",0)
+      return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
     
   def commissari(self):
     commissari = []
-    for cc in CommissioneCommissario.all().filter("commissione", self):
+    for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissione == self.key):
       commissari.append(cc.commissario)
     return commissari
-
-  _com_cen_cuc_last = None
   
   def getCentroCucina(self, data=datetime.now().date()):
-    if not (Commissione._com_cen_cuc_last and Commissione._com_cen_cuc_last.validitaDa <= data and Commissione._com_cen_cuc_last.validitaA >= data):
-      Commissione._com_cen_cuc_last = CommissioneCentroCucina.all().filter("commissione",self).filter("validitaDa <=",data).order("-validitaDa").get()
-    return Commissione._com_cen_cuc_last.centroCucina
+    with Commissione._lock:
+      if not (Commissione._com_cen_cuc_last and Commissione._com_cen_cuc_last.validitaDa <= data and Commissione._com_cen_cuc_last.validitaA >= data):
+        Commissione._com_cen_cuc_last = CommissioneCentroCucina.query().filter(CommissioneCentroCucina.commissione == self.key).filter(CommissioneCentroCucina.validitaDa <= data).order(-CommissioneCentroCucina.validitaDa).get()
+        Commissione._cc_last = Commissione._com_cen_cuc_last.centroCucina.get()
+    return Commissione._cc_last
 
   def desc(self):
     return self.nome + " " + self.tipoScuola
   
-class Commissario(db.Model):
-  user = db.UserProperty()
-  nome = db.StringProperty()
-  cognome = db.StringProperty()
+class Commissario(model.Model):
+  user = model.UserProperty()
+  nome = model.StringProperty()
+  cognome = model.StringProperty()
   
-  avatar_url = db.StringProperty()
-  avatar_data = db.BlobProperty()
+  avatar_url = model.StringProperty()
+  avatar_data = model.BlobProperty()
 
-  emailComunicazioni = db.StringProperty()
+  emailComunicazioni = model.StringProperty()
 
-  user_email_lower = db.StringProperty()
+  user_email_lower = model.StringProperty()
   
-  citta = db.ReferenceProperty(Citta)
+  citta = model.KeyProperty(kind=Citta)
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
 
-  ultimo_accesso_il = db.DateTimeProperty()
+  ultimo_accesso_il = model.DateTimeProperty()
 
-  stato = db.IntegerProperty()
+  stato = model.IntegerProperty()
   
   cmdefault = None  
 
@@ -181,16 +193,16 @@ class Commissario(db.Model):
   def get_by_user(cls, user):
     commissario = memcache.get("commissario-"+user.email())
     if not commissario:
-      commissario = cls.all().filter("user", user).get()
+      commissario = cls.query().filter(Commissario.user == user).get()
       memcache.add("commissario-"+user.email(), commissario)
     return commissario
   
   @classmethod
   def get_by_email_lower(cls, email):
-    return Commissario.all().filter("user_email_lower",email).get()
+    return Commissario.query().filter(Commissario.user_email_lower == email).get()
       
   def is_registered(cm):
-    return CommissioneCommissario.all().filter("commissario",self).filter("commissione", cm).get() is not None
+    return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissario.commissione == cm).get() is not None
 
   def register(commissione):
     cc = CommissioneCommissario(commissione = commissione, commissario = self)
@@ -199,7 +211,7 @@ class Commissario(db.Model):
     commissione.put()
   
   def unregister(commissione):
-    CommissioneCommissario.all().filter("commissario",self).filter("commissione",commissione).remove()
+    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissariocommissione == commissione).remove()
     commissione.numCommissari -= 1
     commissione.put()
     
@@ -220,8 +232,8 @@ class Commissario(db.Model):
   def commissioni(self):
     if self._commissioni is None:
       self._commissioni = []
-      for cc in CommissioneCommissario.all().filter("commissario", self):
-        self._commissioni.append(cc.commissione)      
+      for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key):
+        self._commissioni.append(cc.commissione.get())      
     return self._commissioni
 
   def setCMDefault(self):
@@ -259,20 +271,20 @@ class Commissario(db.Model):
       return self.avatar_url
     
   
-class CommissioneCommissario(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  commissario = db.ReferenceProperty(Commissario)
+class CommissioneCommissario(model.Model):
+  commissione = model.KeyProperty(kind=Commissione)
+  commissario = model.KeyProperty(kind=Commissario)
   
-class Menu(db.Model):
-  tipoScuola = db.StringProperty()
-  validitaDa = db.DateProperty()
-  validitaA = db.DateProperty()
-  settimana = db.IntegerProperty()
-  giorno = db.IntegerProperty()
-  primo = db.StringProperty()
-  secondo = db.StringProperty()
-  contorno = db.StringProperty()
-  dessert = db.StringProperty()
+class Menu(model.Model):
+  tipoScuola = model.StringProperty()
+  validitaDa = model.DateProperty()
+  validitaA = model.DateProperty()
+  settimana = model.IntegerProperty()
+  giorno = model.IntegerProperty()
+  primo = model.StringProperty()
+  secondo = model.StringProperty()
+  contorno = model.StringProperty()
+  dessert = model.StringProperty()
   data = None
 
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
@@ -281,38 +293,40 @@ class Menu(db.Model):
   def today(self):
     return datetime.now().date() == self.data
 
-class MenuNew(db.Model):
-  nome = db.StringProperty()
-  citta = db.ReferenceProperty(Citta)
+class MenuNew(model.Model):
+  nome = model.StringProperty()
+  citta = model.KeyProperty(kind=Citta)
 
-  validitaDa = db.DateProperty()
-  validitaA = db.DateProperty()
+  validitaDa = model.DateProperty()
+  validitaA = model.DateProperty()
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  stato = model.IntegerProperty()
 
+  _lock = threading.RLock()
   _menu_cache = dict()
   
-  @staticmethod
-  def get_by(citta, data):
+  @classmethod
+  def get_by(cls, citta_key, data):
     menu = None
-    if citta in MenuNew._menu_cache:
-      menu = MenuNew._menu_cache[citta]
-      if not(menu and menu.validitaDa <= data and menu.validitaDa >= data):
-        MenuNew._menu_cache[citta] = menu
-    else:
-      menu = MenuNew.all().filter("citta", citta).filter("validitaDa <=", data).order("-validitaDa").get()
-      MenuNew._menu_cache[citta] = menu
+    with MenuNew._lock:
+      if citta_key in MenuNew._menu_cache:
+        menu = MenuNew._menu_cache[citta_key]
+        if not(menu and menu.validitaDa <= data and menu.validitaDa >= data):
+          MenuNew._menu_cache[citta_key] = menu
+      else:
+        menu = MenuNew.query().filter(MenuNew.citta == citta_key).filter(MenuNew.validitaDa <= data).order(-MenuNew.validitaDa).get()
+        MenuNew._menu_cache[citta_key] = menu
     return menu
-  
-class Piatto(db.Model):
-  nome = db.StringProperty()
-  calorie = db.IntegerProperty()
-  proteine = db.IntegerProperty()
-  grassi = db.IntegerProperty()
-  carboidrati = db.IntegerProperty()
-  gi = db.IntegerProperty()
+
+class Piatto(model.Model):
+  nome = model.StringProperty()
+  calorie = model.IntegerProperty()
+  proteine = model.IntegerProperty()
+  grassi = model.IntegerProperty()
+  carboidrati = model.IntegerProperty()
+  gi = model.IntegerProperty()
     
   _pi_gi_cache = dict()
   @classmethod
@@ -320,7 +334,7 @@ class Piatto(db.Model):
     pi_gi = None
     if settimana not in cls._pi_gi_cache:
       pi_gi = dict()
-      for pg in PiattoGiorno.all().filter("settimana", settimana ):
+      for pg in PiattoGiorno.query().filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto
@@ -332,45 +346,45 @@ class Piatto(db.Model):
   @classmethod
   def get_by_menu_date_offset(cls, menu, date, offset):
     piatti = dict()
-    for pg in PiattoGiorno.all().filter("giorno", date.isoweekday()).filter("settimana", (((((date-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
-      piatti[pg.tipo] = pg.piatto
+    for pg in PiattoGiorno.query().filter(PiattoGiorno.giorno == date.isoweekday()).filter(PiattoGiorno.settimana == (((((date-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+      piatti[pg.tipo] = pg.piatto.get()
     return piatti
 
   @classmethod
   def get_by_data(cls, data):
     settimane = dict()  
-    for pg in PiattoGiorno.all().filter("giorno", data.isoweekday()):
+    for pg in PiattoGiorno.query().filter(PiattoGiorno.giorno == data.isoweekday()):
       if not pg.settimana in settimane:
         settimane[pg.settimana] = dict()
       settimane[pg.settimana][pg.tipo] = pg.piatto
     return settimane
   
   
-  #creato_da = db.UserProperty(auto_current_user_add=True)
-  #creato_il = db.DateTimeProperty(auto_now_add=True)
-  #stato = db.IntegerProperty()
+  #creato_da = model.UserProperty(auto_current_user_add=True)
+  #creato_il = model.DateTimeProperty(auto_now_add=True)
+  #stato = model.IntegerProperty()
   
-class Ingrediente(db.Model):
-  nome = db.StringProperty()
+class Ingrediente(model.Model):
+  nome = model.StringProperty()
 
-  #creato_da = db.UserProperty(auto_current_user_add=True)
-  #creato_il = db.DateTimeProperty(auto_now_add=True)
-  #stato = db.IntegerProperty()
+  #creato_da = model.UserProperty(auto_current_user_add=True)
+  #creato_il = model.DateTimeProperty(auto_now_add=True)
+  #stato = model.IntegerProperty()
 
-class PiattoIngrediente(db.Model):
-  piatto = db.ReferenceProperty(Piatto)
-  ingrediente = db.ReferenceProperty(Ingrediente)
+class PiattoIngrediente(model.Model):
+  piatto = model.KeyProperty(kind=Piatto)
+  ingrediente = model.KeyProperty(kind=Ingrediente)
   
-class PiattoGiorno(db.Model):
-  menu = db.ReferenceProperty(MenuNew)
-  settimana = db.IntegerProperty()
-  giorno = db.IntegerProperty()
-  piatto = db.ReferenceProperty(Piatto, collection_name='piatto_giorni')
-  tipo = db.StringProperty()
+class PiattoGiorno(model.Model):
+  menu = model.KeyProperty(kind=MenuNew)
+  settimana = model.IntegerProperty()
+  giorno = model.IntegerProperty()
+  piatto = model.KeyProperty(kind=Piatto)
+  tipo = model.StringProperty()
 
-  #creato_da = db.UserProperty(auto_current_user_add=True)
-  #creato_il = db.DateTimeProperty(auto_now_add=True)
-  #stato = db.IntegerProperty()
+  #creato_da = model.UserProperty(auto_current_user_add=True)
+  #creato_il = model.DateTimeProperty(auto_now_add=True)
+  #stato = model.IntegerProperty()
   
 class MenuHelper():
   primo = None
@@ -388,189 +402,202 @@ class MenuHelper():
     return datetime.now().date() == self.data
   
   def to_dict(self):
-    return {"primo": self.primo.nome, "primo_key": str(self.primo.key()),
-            "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key()),
-            "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key()),
-            "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key())}
+    return {"primo": self.primo.nome, "primo_key": str(self.primo.key),
+            "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key),
+            "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key),
+            "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key)}
   
   
-class StatistichePiatto(db.Model):
-  piatto = db.ReferenceProperty(Piatto)
-  commissione = db.ReferenceProperty(Commissione)
-  centroCucina = db.ReferenceProperty(CentroCucina)
+class StatistichePiatto(model.Model):
+  piatto = model.KeyProperty(kind=Piatto)
+  commissione = model.KeyProperty(kind=Commissione)
+  centroCucina = model.KeyProperty(kind=CentroCucina)
 
-  timePeriod = db.StringProperty() # W, M, Y
-  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
+  timePeriod = model.StringProperty() # W, M, Y
+  timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
   
-  dataInizio = db.DateProperty()
-  dataFine = db.DateProperty()
+  dataInizio = model.DateProperty()
+  dataFine = model.DateProperty()
 
-  dataCalcolo = db.DateTimeProperty()
+  dataCalcolo = model.DateTimeProperty()
 
-  numeroSchede = db.IntegerProperty(default=0) 
-  numeroSchedeSettimana = db.ListProperty(int, default=[0])
+  numeroSchede = model.IntegerProperty(default=0) 
+  numeroSchedeSettimana = model.IntegerProperty(repeated=True)
 
-  cottura = db.ListProperty(int,default=[0,0,0], indexed=False)
-  temperatura = db.ListProperty(int,default=[0,0,0], indexed=False)
-  quantita = db.ListProperty(int,default=[0,0,0], indexed=False)
-  assaggio = db.ListProperty(int,default=[0,0,0], indexed=False)
-  gradimento = db.ListProperty(int,default=[0,0,0,0], indexed=False)
+  cottura = model.IntegerProperty(repeated=True, indexed=False)
+  temperatura = model.IntegerProperty(repeated=True, indexed=False)
+  quantita = model.IntegerProperty(repeated=True, indexed=False)
+  assaggio = model.IntegerProperty(repeated=True, indexed=False)
+  gradimento = model.IntegerProperty(repeated=True, indexed=False)
 
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
   
-class CommissioneCentroCucina(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  centroCucina = db.ReferenceProperty(CentroCucina)
-  validitaDa = db.DateProperty()
-  validitaA = db.DateProperty()
+class CommissioneCentroCucina(model.Model):
+  commissione = model.KeyProperty(kind=Commissione)
+  centroCucina = model.KeyProperty(kind=CentroCucina)
+  validitaDa = model.DateProperty()
+  validitaA = model.DateProperty()
 
-class CentroCucinaZona(db.Model):
-  centroCucina = db.ReferenceProperty(CentroCucina)
-  zona = db.IntegerProperty()
-  validitaDa = db.DateProperty()
-  validitaA = db.DateProperty()
+class CentroCucinaZona(model.Model):
+  centroCucina = model.KeyProperty(kind=CentroCucina)
+  zona = model.IntegerProperty()
+  validitaDa = model.DateProperty()
+  validitaA = model.DateProperty()
 
-class ZonaOffset(db.Model):
-  zona = db.IntegerProperty()
-  offset = db.IntegerProperty()
-  validitaDa = db.DateProperty()
-  validitaA = db.DateProperty()
+class ZonaOffset(model.Model):
+  zona = model.IntegerProperty()
+  offset = model.IntegerProperty()
+  validitaDa = model.DateProperty()
+  validitaA = model.DateProperty()
   
-class Ispezione(db.Model):
+class Ispezione(model.Model):
+  def __init__(self, language='en', *args, **kwargs):
+    self.allegati = list()
+    self.tags = list()
+    super(Ispezione, self).__init__(*args, **kwargs)  
       
-  commissione = db.ReferenceProperty(Commissione)
-  commissario = db.ReferenceProperty(Commissario)
+  commissione = model.KeyProperty(kind=Commissione)
+  commissario = model.KeyProperty(kind=Commissario)
  
-  dataIspezione = db.DateProperty()
-  turno = db.IntegerProperty()
+  dataIspezione = model.DateProperty()
+  turno = model.IntegerProperty()
 
-  aaRispettoCapitolato = db.IntegerProperty(indexed=False)
-  aaTavoliApparecchiati = db.IntegerProperty(indexed=False)
-  aaTermichePulite = db.IntegerProperty(indexed=False)
-  aaAcqua = db.IntegerProperty(indexed=False)
-  aaScaldaVivande = db.IntegerProperty(indexed=False)  
-  aaSelfService = db.IntegerProperty(indexed=False)
-  aaTabellaEsposta = db.IntegerProperty(indexed=False)
+  aaRispettoCapitolato = model.IntegerProperty(indexed=False)
+  aaTavoliApparecchiati = model.IntegerProperty(indexed=False)
+  aaTermichePulite = model.IntegerProperty(indexed=False)
+  aaAcqua = model.IntegerProperty(indexed=False)
+  aaScaldaVivande = model.IntegerProperty(indexed=False)  
+  aaSelfService = model.IntegerProperty(indexed=False)
+  aaTabellaEsposta = model.IntegerProperty(indexed=False)
   
-  ricicloStoviglie = db.IntegerProperty(indexed=False)
-  ricicloPosate = db.IntegerProperty(indexed=False)
-  ricicloBicchieri = db.IntegerProperty(indexed=False)
+  ricicloStoviglie = model.IntegerProperty(indexed=False)
+  ricicloPosate = model.IntegerProperty(indexed=False)
+  ricicloBicchieri = model.IntegerProperty(indexed=False)
 
-  numeroPastiTotale = db.IntegerProperty(indexed=False)
-  numeroPastiBambini = db.IntegerProperty(indexed=False)
-  numeroPastiSpeciali = db.IntegerProperty(indexed=False)
-  numeroAddetti = db.IntegerProperty(indexed=False)
+  numeroPastiTotale = model.IntegerProperty(indexed=False)
+  numeroPastiBambini = model.IntegerProperty(indexed=False)
+  numeroPastiSpeciali = model.IntegerProperty(indexed=False)
+  numeroAddetti = model.IntegerProperty(indexed=False)
 
-  puliziaCentroCottura = db.IntegerProperty(indexed=False)
-  puliziaRefettorio = db.IntegerProperty(indexed=False)
+  puliziaCentroCottura = model.IntegerProperty(indexed=False)
+  puliziaRefettorio = model.IntegerProperty(indexed=False)
 
-  arrivoDist = db.IntegerProperty(indexed=False)
+  arrivoDist = model.IntegerProperty(indexed=False)
 
-  primoDist = db.IntegerProperty(indexed=False)
-  primoPrevisto = db.StringProperty(default="",indexed=False)
-  primoEffettivo = db.StringProperty(default="",indexed=False)
-  primoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_primo_set")
-  primoCondito = db.IntegerProperty(indexed=False)
-  primoCottura = db.IntegerProperty(indexed=False)
-  primoTemperatura = db.IntegerProperty(indexed=False)
-  primoQuantita = db.IntegerProperty(indexed=False)
-  primoAssaggio = db.IntegerProperty(indexed=False)
-  primoGradimento = db.IntegerProperty(indexed=False)
+  primoDist = model.IntegerProperty(indexed=False)
+  primoPrevisto = model.StringProperty(default="",indexed=False)
+  primoEffettivo = model.StringProperty(default="",indexed=False)
+  primoPiatto = model.KeyProperty(kind=Piatto,indexed=False)
+  primoCondito = model.IntegerProperty(indexed=False)
+  primoCottura = model.IntegerProperty(indexed=False)
+  primoTemperatura = model.IntegerProperty(indexed=False)
+  primoQuantita = model.IntegerProperty(indexed=False)
+  primoAssaggio = model.IntegerProperty(indexed=False)
+  primoGradimento = model.IntegerProperty(indexed=False)
 
-  secondoDist = db.IntegerProperty(indexed=False)
-  secondoPrevisto = db.StringProperty(default="",indexed=False)
-  secondoEffettivo = db.StringProperty(default="",indexed=False)
-  secondoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_secondo_set")
-  secondoCottura = db.IntegerProperty(indexed=False)
-  secondoTemperatura = db.IntegerProperty(indexed=False)
-  secondoQuantita = db.IntegerProperty(indexed=False)
-  secondoAssaggio = db.IntegerProperty(indexed=False)
-  secondoGradimento = db.IntegerProperty(indexed=False)
+  secondoDist = model.IntegerProperty(indexed=False)
+  secondoPrevisto = model.StringProperty(default="",indexed=False)
+  secondoEffettivo = model.StringProperty(default="",indexed=False)
+  secondoPiatto = model.KeyProperty(kind=Piatto,indexed=False)
+  secondoCottura = model.IntegerProperty(indexed=False)
+  secondoTemperatura = model.IntegerProperty(indexed=False)
+  secondoQuantita = model.IntegerProperty(indexed=False)
+  secondoAssaggio = model.IntegerProperty(indexed=False)
+  secondoGradimento = model.IntegerProperty(indexed=False)
 
-  contornoPrevisto = db.StringProperty(default="",indexed=False)
-  contornoEffettivo = db.StringProperty(default="",indexed=False)
-  contornoPiatto = db.ReferenceProperty(Piatto,indexed=False,collection_name="ispezioni_contorno_set")
-  contornoCondito = db.IntegerProperty(indexed=False)
-  contornoCottura = db.IntegerProperty(indexed=False)
-  contornoTemperatura = db.IntegerProperty(indexed=False)
-  contornoQuantita = db.IntegerProperty(indexed=False)
-  contornoAssaggio = db.IntegerProperty(indexed=False)
-  contornoGradimento = db.IntegerProperty(indexed=False)
+  contornoPrevisto = model.StringProperty(default="",indexed=False)
+  contornoEffettivo = model.StringProperty(default="",indexed=False)
+  contornoPiatto = model.KeyProperty(kind=Piatto,indexed=False)
+  contornoCondito = model.IntegerProperty(indexed=False)
+  contornoCottura = model.IntegerProperty(indexed=False)
+  contornoTemperatura = model.IntegerProperty(indexed=False)
+  contornoQuantita = model.IntegerProperty(indexed=False)
+  contornoAssaggio = model.IntegerProperty(indexed=False)
+  contornoGradimento = model.IntegerProperty(indexed=False)
 
-  paneTipo = db.StringProperty(indexed=False)
-  paneServito = db.IntegerProperty(indexed=False)
-  paneQuantita = db.IntegerProperty(indexed=False)
-  paneAssaggio = db.IntegerProperty(indexed=False)
-  paneGradimento = db.IntegerProperty(indexed=False)
+  paneTipo = model.StringProperty(indexed=False)
+  paneServito = model.IntegerProperty(indexed=False)
+  paneQuantita = model.IntegerProperty(indexed=False)
+  paneAssaggio = model.IntegerProperty(indexed=False)
+  paneGradimento = model.IntegerProperty(indexed=False)
 
-  fruttaTipo = db.StringProperty(default="",indexed=False)
-  fruttaServita = db.StringProperty(indexed=False)
-  fruttaQuantita = db.IntegerProperty(indexed=False)
-  fruttaAssaggio = db.IntegerProperty(indexed=False)
-  fruttaGradimento = db.IntegerProperty(indexed=False)
-  fruttaMaturazione = db.IntegerProperty(indexed=False)
+  fruttaTipo = model.StringProperty(default="",indexed=False)
+  fruttaServita = model.StringProperty(indexed=False)
+  fruttaQuantita = model.IntegerProperty(indexed=False)
+  fruttaAssaggio = model.IntegerProperty(indexed=False)
+  fruttaGradimento = model.IntegerProperty(indexed=False)
+  fruttaMaturazione = model.IntegerProperty(indexed=False)
 
-  durataPasto = db.IntegerProperty(indexed=False)
+  durataPasto = model.IntegerProperty(indexed=False)
 
-  lavaggioFinale = db.IntegerProperty(indexed=False)
-  smaltimentoRifiuti = db.IntegerProperty(indexed=False)
-  giudizioGlobale = db.IntegerProperty(indexed=False)
-  note = db.TextProperty(default="",indexed=False)
+  lavaggioFinale = model.IntegerProperty(indexed=False)
+  smaltimentoRifiuti = model.IntegerProperty(indexed=False)
+  giudizioGlobale = model.IntegerProperty(indexed=False)
+  note = model.TextProperty(default="",indexed=False)
 
-  anno = db.IntegerProperty()
+  anno = model.IntegerProperty()
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
   
   def data(self): 
     return self.dataIspezione  
   
   @classmethod
   def get_last_by_cm(cls, cm_key):
-    return Ispezione.all().filter("commissione",db.Key(cm_key)).order("-dataIspezione").get()
+    return Ispezione.query().filter(Ispezione.commissione == cm_key).order(-Ispezione.dataIspezione).get()
   
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
-    return Ispezione.all().filter("dataIspezione",data).filter("commissione",db.Key(cm)).filter("turno",turno).get()
+    return Ispezione.query().filter(Ispezione.dataIspezione == data).filter(Ispezione.commissione == cm).filter(Ispezione.turno == turno)
 
   @classmethod
   def get_by_cm(cls, cm):
-    return Ispezione.all().filter("commissione", cm).order("-dataIspezione")
-
-class Nonconformita(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  commissario = db.ReferenceProperty(Commissario)
+    return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione)
+   
+class Nonconformita(model.Model):
+  def __init__(self, language='en', *args, **kwargs):
+    self.allegati = list()
+    self.tags = list()
+    super(Nonconformita, self).__init__(*args, **kwargs)  
+  
+  commissione = model.KeyProperty(kind=Commissione)
+  commissario = model.KeyProperty(kind=Commissario)
  
-  dataNonconf = db.DateProperty()
-  turno = db.IntegerProperty()
+  dataNonconf = model.DateProperty()
+  turno = model.IntegerProperty()
   
-  tipo = db.IntegerProperty()
-  richiestaCampionatura = db.IntegerProperty()
+  tipo = model.IntegerProperty()
+  richiestaCampionatura = model.IntegerProperty()
 
-  note = db.TextProperty(default="")
+  note = model.TextProperty(default="")
 
-  anno = db.IntegerProperty()
+  anno = model.IntegerProperty()
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
-
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
+  
   @classmethod
   def get_by_cm(cls, cm):
-    return Nonconformita.all().filter("commissione", cm).order("-dataNonconf")
+    return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
+
+  @classmethod
+  def get_by_cm_data_turno(cls, cm, data, turno):
+    return Nonconformita.query().filter(Nonconformita.dataNonconf == data).filter(Nonconformita.commissione == cm).filter(Nonconformita.turno == turno)
   
   def data(self): return self.dataNonconf  
 
-  _tipi = {1:0,
+  _tipi_n = {1:0,
            2:1,
            3:2,
            4:3,
@@ -603,49 +630,49 @@ class Nonconformita(db.Model):
   def tipoNome(self):
     return self._tipi[self.tipo]
 
-class Dieta(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  commissario = db.ReferenceProperty(Commissario)
+class Dieta(model.Model):
+  commissione = model.KeyProperty(kind=Commissione)
+  commissario = model.KeyProperty(kind=Commissario)
  
-  dataIspezione = db.DateProperty()
-  turno = db.IntegerProperty()
+  dataIspezione = model.DateProperty()
+  turno = model.IntegerProperty()
   
-  tipoDieta = db.IntegerProperty()
-  etichettaLeggibile = db.IntegerProperty(indexed=False)
-  temperaturaVaschetta = db.IntegerProperty(indexed=False)
-  vicinoEducatore = db.IntegerProperty(indexed=False)
-  vaschettaOriginale = db.IntegerProperty(indexed=False)
-  condimentiVicini = db.IntegerProperty(indexed=False)
-  primoAccettato = db.IntegerProperty(indexed=False)
-  secondoAccettato = db.IntegerProperty(indexed=False)
-  contornoAccettato = db.IntegerProperty(indexed=False)
-  fruttaAccettata = db.IntegerProperty(indexed=False)
-  gradimentoPrimo = db.IntegerProperty(indexed=False)
-  gradimentoSecondo = db.IntegerProperty(indexed=False)
-  gradimentoContorno = db.IntegerProperty(indexed=False)
-  comunicazioneGenitori = db.IntegerProperty(indexed=False)
+  tipoDieta = model.IntegerProperty()
+  etichettaLeggibile = model.IntegerProperty(indexed=False)
+  temperaturaVaschetta = model.IntegerProperty(indexed=False)
+  vicinoEducatore = model.IntegerProperty(indexed=False)
+  vaschettaOriginale = model.IntegerProperty(indexed=False)
+  condimentiVicini = model.IntegerProperty(indexed=False)
+  primoAccettato = model.IntegerProperty(indexed=False)
+  secondoAccettato = model.IntegerProperty(indexed=False)
+  contornoAccettato = model.IntegerProperty(indexed=False)
+  fruttaAccettata = model.IntegerProperty(indexed=False)
+  gradimentoPrimo = model.IntegerProperty(indexed=False)
+  gradimentoSecondo = model.IntegerProperty(indexed=False)
+  gradimentoContorno = model.IntegerProperty(indexed=False)
+  comunicazioneGenitori = model.IntegerProperty(indexed=False)
 
-  note = db.TextProperty(default="")
+  note = model.TextProperty(default="")
 
-  anno = db.IntegerProperty()
+  anno = model.IntegerProperty()
   
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  modificato_da = db.UserProperty(auto_current_user=True)
-  modificato_il = db.DateTimeProperty(auto_now=True)
-  stato = db.IntegerProperty()
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  stato = model.IntegerProperty()
 
   def data(self): return self.dataIspezione
   
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
-    return Dieta.all().filter("dataIspezione",data).filter("commissione",db.Key(cm)).filter("turno",turno).get()
+    return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno)
 
   @classmethod
   def get_by_cm(cls, cm):
-    return Dieta.all().filter("commissione", cm).order("-dataIspezione")
+    return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione)
   
-  _tipi = {1:0,
+  _tipi_n = {1:0,
            2:1,
            3:2,
            4:3,
@@ -695,48 +722,50 @@ class Dieta(db.Model):
            23:"menu privo di carni di origine animale",
            24:"menu privo di carne e pesce"}
   
-  def tipi(self):
-    return self._tipi
+  @classmethod
+  def tipi(cls):
+    return cls._tipi
   
   def tipoNome(self):
-    return self._tipi[self.tipoDieta]
+    return cls._tipi[self.tipoDieta]
 
-class Nota(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  commissario = db.ReferenceProperty(Commissario)
+class Nota(model.Model):
+  def __init__(self, *args, **kwargs):
+    logging.info("__init__")
+    self.allegati = list()
+    self.tags = list()
+    super(Nota, self).__init__(*args, **kwargs)  
+      
+  commissione = model.KeyProperty(kind=Commissione)
+  commissario = model.KeyProperty(kind=Commissario)
  
-  dataNota = db.DateProperty()
-  titolo = db.StringProperty(default="")
-  note = db.TextProperty(default="")
-  anno = db.IntegerProperty()
+  dataNota = model.DateProperty()
+  titolo = model.StringProperty(default="")
+  note = model.TextProperty(default="")
+  anno = model.IntegerProperty()
+    
+  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  stato = model.IntegerProperty()
   
-  allegati = list() #helper, not stored
-  
-  creato_da = db.UserProperty(auto_current_user_add=True)
-  creato_il = db.DateTimeProperty(auto_now_add=True)
-  stato = db.IntegerProperty()
-  
-  tags = None
-
   def data(self): return self.dataNota  
 
-  def allegati(self): 
-    return Allegato.all().filter("obj", self)
+  def get_allegati(self): 
+    if self.key:
+      return Allegato.query().filter(Allegato.obj == self.key)
+    else:
+      return self.allegati
 
   @classmethod
   def get_by_cm(cls, cm):
-    return Nota.all().filter("commissione", cm).order("-dataNota")
+    return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota)
   
-class Tag(db.Model):
-  obj = db.ReferenceProperty(db.Model)
-  tag = db.StringProperty(default="")
-
-class Allegato(db.Model):
-  obj = db.ReferenceProperty(db.Model)
-  path = db.StringProperty()
-  blob_key = blobstore.BlobReferenceProperty()
-  nome = db.StringProperty(default="")
-  descrizione = db.StringProperty(default="",indexed=False)
+class Allegato(model.Model):
+  obj = model.KeyProperty()
+  path = model.StringProperty()
+  blob_key = model.BlobKeyProperty()
+  nome = model.StringProperty(default="")
+  descrizione = model.StringProperty(default="",indexed=False)
   
   dati=None
   
@@ -750,7 +779,7 @@ class Allegato(db.Model):
       return google.appengine.api.images.get_serving_url(blob_key=self.blob_key,size=128)
 
   def path(self):
-    return "/blob/get?key=" + str(self.blob_key.key())
+    return "/blob/get?key=" + str(self.blob_key)
     
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
@@ -771,80 +800,80 @@ class Statistiche:
   diete = int(0)  
   note = int(0)  
 
-class StatisticheIspezioni(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  centroCucina = db.ReferenceProperty(CentroCucina)
+class StatisticheIspezioni(model.Model):
+  commissione = model.KeyProperty(kind=Commissione)
+  centroCucina = model.KeyProperty(kind=CentroCucina)
 
-  timePeriod = db.StringProperty() # W, M, Y
-  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
+  timePeriod = model.StringProperty() # W, M, Y
+  timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
   
-  dataInizio = db.DateProperty()
-  dataFine = db.DateProperty()
+  dataInizio = model.DateProperty()
+  dataFine = model.DateProperty()
 
-  dataCalcolo = db.DateTimeProperty()
+  dataCalcolo = model.DateTimeProperty()
 
-  numeroSchede = db.IntegerProperty(default=0,indexed=False) 
-  numeroSchedeSettimana = db.ListProperty(int, default=[0],indexed=False)
+  numeroSchede = model.IntegerProperty(default=0,indexed=False) 
+  numeroSchedeSettimana = model.IntegerProperty(repeated=True,indexed=False)
 
   ambiente_names = {"aaRispettoCapitolato":0,"aaTavoliApparecchiati":1,"aaTermichePulite":2,"aaAcqua":3, "aaScaldaVivande":4, "aaSelfService":5, "aaTabellaEsposta":6, "ricicloStoviglie":7, "ricicloPosate":8, "ricicloBicchieri":9}
   ambiente_desc = ["Rispetto Capitolato","Tavoli Apparecchiati","Termiche Pulite","Acqua da cucina", "Scalda Vivande", "Self Service", "Tabella Dietetica Esposta", "Riciclo Stoviglie", "Riciclo Posate", "Riciclo Bicchieri"]
-  ambiente = db.ListProperty(int,default=[0,0,0,0,0,0,0,0,0,0],indexed=False)
-  arrivoDist = db.ListProperty(int,default=[0,0,0,0],indexed=False)
-  durataPasto = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  ambiente = model.IntegerProperty(repeated=True,indexed=False)
+  arrivoDist = model.IntegerProperty(repeated=True,indexed=False)
+  durataPasto = model.IntegerProperty(repeated=True,indexed=False)
 
-  numeroPastiTotale = db.IntegerProperty(indexed=False)
-  numeroPastiBambini = db.IntegerProperty(indexed=False)
-  numeroPastiSpeciali = db.IntegerProperty(indexed=False)
-  numeroAddetti = db.IntegerProperty(indexed=False)
+  numeroPastiTotale = model.IntegerProperty(indexed=False)
+  numeroPastiBambini = model.IntegerProperty(indexed=False)
+  numeroPastiSpeciali = model.IntegerProperty(indexed=False)
+  numeroAddetti = model.IntegerProperty(indexed=False)
   
-  puliziaRefettorio = db.ListProperty(int,default=[0,0,0,0],indexed=False)
-  puliziaCentroCottura = db.ListProperty(int,default=[0,0,0,0],indexed=False)
-  smaltimentoRifiuti = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  puliziaRefettorio = model.IntegerProperty(repeated=True,indexed=False)
+  puliziaCentroCottura = model.IntegerProperty(repeated=True,indexed=False)
+  smaltimentoRifiuti = model.IntegerProperty(repeated=True,indexed=False)
 
-  giudizioGlobale = db.ListProperty(int,default=[0,0,0],indexed=False)
+  giudizioGlobale = model.IntegerProperty(repeated=True,indexed=False)
   
-  primoCondito = db.ListProperty(int,default=[0,0],indexed=False)
-  primoDist = db.ListProperty(int,default=[0,0,0],indexed=False)
-  primoCottura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  primoTemperatura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  primoQuantita = db.ListProperty(int,default=[0,0,0],indexed=False)
-  primoAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
-  primoGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  primoCondito = model.IntegerProperty(repeated=True,indexed=False)
+  primoDist = model.IntegerProperty(repeated=True,indexed=False)
+  primoCottura = model.IntegerProperty(repeated=True,indexed=False)
+  primoTemperatura = model.IntegerProperty(repeated=True,indexed=False)
+  primoQuantita = model.IntegerProperty(repeated=True,indexed=False)
+  primoAssaggio = model.IntegerProperty(repeated=True,indexed=False)
+  primoGradimento = model.IntegerProperty(repeated=True,indexed=False)
 
-  secondoDist = db.ListProperty(int,default=[0,0,0],indexed=False)
-  secondoCottura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  secondoTemperatura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  secondoQuantita = db.ListProperty(int,default=[0,0,0],indexed=False)
-  secondoAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
-  secondoGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  secondoDist = model.IntegerProperty(repeated=True,indexed=False)
+  secondoCottura = model.IntegerProperty(repeated=True,indexed=False)
+  secondoTemperatura = model.IntegerProperty(repeated=True,indexed=False)
+  secondoQuantita = model.IntegerProperty(repeated=True,indexed=False)
+  secondoAssaggio = model.IntegerProperty(repeated=True,indexed=False)
+  secondoGradimento = model.IntegerProperty(repeated=True,indexed=False)
   
-  contornoCondito = db.ListProperty(int,default=[0,0],indexed=False)
-  contornoCottura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  contornoTemperatura = db.ListProperty(int,default=[0,0,0],indexed=False)
-  contornoQuantita = db.ListProperty(int,default=[0,0,0],indexed=False)
-  contornoAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
-  contornoGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  contornoCondito = model.IntegerProperty(repeated=True,indexed=False)
+  contornoCottura = model.IntegerProperty(repeated=True,indexed=False)
+  contornoTemperatura = model.IntegerProperty(repeated=True,indexed=False)
+  contornoQuantita = model.IntegerProperty(repeated=True,indexed=False)
+  contornoAssaggio = model.IntegerProperty(repeated=True,indexed=False)
+  contornoGradimento = model.IntegerProperty(repeated=True,indexed=False)
 
-  paneQuantita = db.ListProperty(int,default=[0,0,0],indexed=False)
-  paneAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
-  paneGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
-  paneServito = db.ListProperty(int,default=[0,0,0],indexed=False)
+  paneQuantita = model.IntegerProperty(repeated=True,indexed=False)
+  paneAssaggio = model.IntegerProperty(repeated=True,indexed=False)
+  paneGradimento = model.IntegerProperty(repeated=True,indexed=False)
+  paneServito = model.IntegerProperty(repeated=True,indexed=False)
   
-  fruttaMaturazione = db.ListProperty(int,default=[0,0,0],indexed=False)
-  fruttaQuantita = db.ListProperty(int,default=[0,0,0],indexed=False)
-  fruttaAssaggio = db.ListProperty(int,default=[0,0,0],indexed=False)
-  fruttaGradimento = db.ListProperty(int,default=[0,0,0,0],indexed=False)
+  fruttaMaturazione = model.IntegerProperty(repeated=True,indexed=False)
+  fruttaQuantita = model.IntegerProperty(repeated=True,indexed=False)
+  fruttaAssaggio = model.IntegerProperty(repeated=True,indexed=False)
+  fruttaGradimento = model.IntegerProperty(repeated=True,indexed=False)
 
   @classmethod
   def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
-    q = StatisticheIspezioni.all().filter("commissione",cm).filter("centroCucina",cc)
+    q = StatisticheIspezioni.query().filter(StatisticheIspezioni.commissione==cm).filter(StatisticheIspezioni.centroCucina==cc)
     if timeId:
-      q = q.filter("timeId", timeId)
+      q = q.filter(StatisticheIspezioni.timeId == timeId)
     return q
   
   @classmethod
   def get_from_date(cls, data):
-    return StatisticheIspezioni.all().filter("dataInizio >=", data)
+    return StatisticheIspezioni.query().filter(StatisticheIspezioni.dataInizio >= data)
   
   def primoAssaggioNorm(self):
     return fpformat.fix(float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede,2)
@@ -1031,22 +1060,22 @@ class StatisticheIspezioni(db.Model):
         self.incValSub(attr, attr_sub, isp)
   
 
-class StatisticheNonconf(db.Model):
-  commissione = db.ReferenceProperty(Commissione)
-  centroCucina = db.ReferenceProperty(CentroCucina)
+class StatisticheNonconf(model.Model):
+  commissione = model.KeyProperty(kind=Commissione)
+  centroCucina = model.KeyProperty(kind=CentroCucina)
 
-  timePeriod = db.StringProperty() # W, M, Y
-  timeId = db.IntegerProperty()    # 1, 2, 3 - 2009, 2010
+  timePeriod = model.StringProperty() # W, M, Y
+  timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
   
-  dataInizio = db.DateProperty()
-  dataFine = db.DateProperty()
-  dataCalcolo = db.DateTimeProperty()
+  dataInizio = model.DateProperty()
+  dataFine = model.DateProperty()
+  dataCalcolo = model.DateTimeProperty()
   
-  numeroNonconf = db.IntegerProperty(default=0,indexed=False)
-  numeroNonconfSettimana = db.ListProperty(int, default=[0],indexed=False)
+  numeroNonconf = model.IntegerProperty(default=0,indexed=False)
+  numeroNonconfSettimana = model.IntegerProperty(repeated=True,indexed=False)
 
-  data = db.ListProperty(int,default=[0,0,0,0,0,0,0,0,0,0,0,0,0])
-  
+  data = model.IntegerProperty(repeated=True)
+    
   _tipiPos = {1:0,
            2:1,
            3:2,
@@ -1061,6 +1090,13 @@ class StatisticheNonconf(db.Model):
            12:11,
            99:12}  
 
+  @classmethod
+  def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
+    q = StatisticheNonconf.query().filter(StatisticheNonconf.commissione==cm).filter(StatisticheNonconf.centroCucina==cc)
+    if timeId:
+      q = q.filter(StatisticheNonconf.timeId == timeId)
+    return q
+  
   def getData(self, tipo):
     return self.data[self._tipiPos[tipo]]
   

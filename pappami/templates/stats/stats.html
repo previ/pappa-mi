@@ -120,7 +120,7 @@ function init1() {
       <div class="input">
 	<select class="large required" id="citta" name="citta" value="">
 	<option value=""></option>
-	{%for cit in citta%}<option value="{{cit.key()}}"{%if ctx.citta_key and cit.key() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+	{%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
 	</select>
       </div>
     </div>

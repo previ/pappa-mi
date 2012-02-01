@@ -1,7 +1,7 @@
 <div>
  <div class="row rowspaced">
   <div class="span12">
-   <h3>{{nc.commissione.nome}} - {{nc.commissione.tipoScuola}} - Non Conformit&agrave; del {{nc.dataNonconf}} - Turno {{nc.turno}}</h3>
+   <h3>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.dataNonconf}} - Turno {{nc.turno}}</h3>
   </div>
  </div>
  <div class="row rowspaced">
