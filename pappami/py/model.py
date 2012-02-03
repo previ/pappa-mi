@@ -165,6 +165,10 @@ class Commissione(model.Model):
     return self.nome + " " + self.tipoScuola
   
 class Commissario(model.Model):
+  def __init__(self, language='en', *args, **kwargs):
+    self._commissioni = list()
+    super(Commissario, self).__init__(*args, **kwargs)  
+
   user = model.UserProperty()
   nome = model.StringProperty()
   cognome = model.StringProperty()
@@ -204,16 +208,18 @@ class Commissario(model.Model):
   def is_registered(cm):
     return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissario.commissione == cm).get() is not None
 
-  def register(commissione):
-    cc = CommissioneCommissario(commissione = commissione, commissario = self)
+  def register(cm_key):
+    cc = CommissioneCommissario(commissione = cm_key, commissario = self)
     cc.put()
     commissione.numCommissari += 1
     commissione.put()
+    self._commissioni = list()
   
-  def unregister(commissione):
-    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissariocommissione == commissione).remove()
+  def unregister(cm_key):
+    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissariocommissione == cm_key).remove()
     commissione.numCommissari -= 1
     commissione.put()
+    self._commissioni = list()
     
   def isCommissario(self):
     return self.stato == 1
@@ -228,10 +234,8 @@ class Commissario(model.Model):
   def isRegGenitore(self):
     return self.stato == 10
   
-  _commissioni = None
   def commissioni(self):
-    if self._commissioni is None:
-      self._commissioni = []
+    if len(self._commissioni) == 0:
       for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key):
         self._commissioni.append(cc.commissione.get())      
     return self._commissioni
@@ -289,7 +293,7 @@ class Menu(model.Model):
 
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):
-    return self._giorni[self.giorno-1]
+    return Menu._giorni[self.giorno-1]
   def today(self):
     return datetime.now().date() == self.data
 
@@ -337,7 +341,7 @@ class Piatto(model.Model):
       for pg in PiattoGiorno.query().filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
-        pi_gi[pg.giorno][pg.tipo] = pg.piatto
+        pi_gi[pg.giorno][pg.tipo] = pg.piatto.get()
       cls._pi_gi_cache[settimana] = pi_gi
     else:
       pi_gi = cls._pi_gi_cache[settimana]
@@ -351,12 +355,12 @@ class Piatto(model.Model):
     return piatti
 
   @classmethod
-  def get_by_data(cls, data):
+  def get_by_date(cls, data):
     settimane = dict()  
     for pg in PiattoGiorno.query().filter(PiattoGiorno.giorno == data.isoweekday()):
       if not pg.settimana in settimane:
         settimane[pg.settimana] = dict()
-      settimane[pg.settimana][pg.tipo] = pg.piatto
+      settimane[pg.settimana][pg.tipo] = pg.piatto.get()
     return settimane
   
   

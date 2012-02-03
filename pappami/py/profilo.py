@@ -33,7 +33,7 @@ class CMProfiloHandler(BasePage):
     template_values = {
       'content': 'profilo.html',
       'cmsro': commissario,
-      'citta': Citta.all().order("nome")      
+      'citta': Citta.get_all()      
     }
     self.getBase(template_values)
     
@@ -44,36 +44,36 @@ class CMProfiloHandler(BasePage):
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
+      form.citta = model.Key("Citta", int(self.request.get("citta")))
       commissario.put()
 
       old = list()
-      for cc in CommissioneCommissario.all().filter("commissario",commissario):
-        old.append(str(cc.commissione.key()))
+      for cm in commissario.commissioni():
+        old.append(cm.key)
         #logging.info("old " + cc.commissione.nome)
       old = set(old)
 
       new = list()
       for c_key in self.request.get_all("commissione"):
-        new.append(c_key)
-        logging.info("new " + Commissione.get(model.Key(c_key)).nome)
+        new.append(model.Key("Commissione", int(c_key)))
       new = set(new)
 
       todel = old - new
       toadd = new - old
 
-      for cm in todel:
-        commissione = Commissione.get(cm)
+      for cm_key in todel:
         commissario.unregister(cm)
+        commissione = cm_key.get()
         if commissione.calendario :
           calendario = Calendario();        
           calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
           calendario.load(commissione.calendario)
           calendario.unShare(commissario.user.email())
         
-      for cm in toadd:
-        commissione = Commissione.get(cm)
-        commissario.register(cm)
-        if cc.commissione.calendario :
+      for cm_key in toadd:
+        commissario.register(cm_key)
+        commissione = cm_key.get()
+        if commissione.calendario :
           calendario = Calendario();        
           calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
           calendario.load(cc.commissione.calendario)
@@ -97,7 +97,7 @@ class CMAvatarHandler(BasePage):
           logging.info("2")
           avatar = images.resize(self.request.get("avatar_file"), 128,128)
           commissario.avatar_data = avatar
-          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key())
+          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key)
           commissario.put()
           self.response.out.write(commissario.avatar()+"&size=big");
         else:

@@ -2,9 +2,9 @@
 {%set tab_community="active"%}
 {%include "navigation.html"%}
 <div class="row">
-<div class="span16">
-<ul class="media-grid">
-{%for ck in commissari%}<li><div class="span8">{%set c = ck.get() %}
+<div class="span12">
+<ul class="thumbnails">
+{%for ck in commissari%}<li class="span6"><div class="thumbnail">{%set c = ck.get() %}
   <img class="avatar" src="{{c.avatar()}}" title="{{c.nomecompleto()}}">
   <div class="activity_author">{{c.nomecompleto()}}</div>  
   <div class="activity_author_title">{{c.titolo()}}</div>
