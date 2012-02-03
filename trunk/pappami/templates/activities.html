@@ -75,7 +75,7 @@ function cleardirty() {
 
 function initForm() {
   ulmsg=true;
-  $('#new-data').find("[title]").twipsy({"html":true, "delayIn":1000});  
+  $('#new-data').find("[title]").tooltip({"delay":1000});  
   $("#item_tags_handler").tagHandler({
       getData: { 'msg': "" },
       getURL: '/comments/gettags',            
@@ -354,7 +354,7 @@ function moreactivities() {
 <div id="new-nc" style="display:none;"></div> 
 {%endif%}
 <div class="row">
-  <div class="span12">
+  <div class="span9">
 {%if commissario or genitore%}  
     <div id="new-msg" style="display:none;">
      <form id="new-msg-form" action="/comments/message" method="post" class="form-stacked" novalidate="true"> 
@@ -393,7 +393,7 @@ function moreactivities() {
 {%endif%}
     <ul class="activity_list" id="activity_list"></ul>
   </div>
-  <div class="span4">
+  <div class="span3">
     <h4>Scuole</h4>
       {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<div><a href="#" onclick="filteractivities('cm={{cm.key.id()}}')">{{cm.desc()}}</a></div>
       {%endfor%}{%endif%}
@@ -414,5 +414,5 @@ function moreactivities() {
     </ul>    
   </div>  
 </div>
-  <div class="span12" style="text-align:center"><button data-loading-text="caricamento in corso..." class="btn span6" id="e_act_more">Carica altri...</button></div>    
+  <div class="span9" style="text-align:center"><button data-loading-text="caricamento in corso..." class="btn span6" id="e_act_more">Carica altri...</button></div>    
 </div>

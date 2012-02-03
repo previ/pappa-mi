@@ -88,12 +88,10 @@ $(document).ready(function() {
     }); 
 
     $('#cond_open').click(function(){
-      $("#dialog").dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false, buttons: [
+      $("#dialog").dialog({ title: "Cambia l'immagine del tuo profilo", modal: true, width: "40em", zIndex: 3, autoOpen: false, buttons: [
 	      { text: "Ok", click: function() { $(this).dialog("close"); } } ] });
       $("#dialog").load("/condizioni", function(){$("#dialog").dialog("open");});
     });
-    
-    $('.tabs').tabs();
     
     FB.init({ 
        appId:'103254759720309', cookie:true, 

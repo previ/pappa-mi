@@ -20,9 +20,10 @@
 
     <!-- Le styles -->
     <link type="text/css" href="/css/custom-theme/jquery-ui-1.8.16.custom.css" rel="stylesheet"/>
-    <link href="/css/bootstrap.min.1.4.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
     <!--link href="/css/docs.css" rel="stylesheet"-->
-    <link href="/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <!--link href="/js/google-code-prettify/prettify.css" rel="stylesheet"-->
     <!--link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" type="text/css" media="all" /-->
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
 
@@ -64,15 +65,15 @@
     <script type="text/javascript" src="/js/jquery.validate.js"></script> 
     <script type="text/javascript" src="/js/bbq.js"></script> 
     <script type="text/javascript" src="/js/jquery.form.wizard.js"></script> 
-    <script src="/js/bootstrap-modal.js"></script>
+    {#<script src="/js/bootstrap-modal.js"></script>
     <script src="/js/bootstrap-alerts.js"></script>
     <script src="/js/bootstrap-twipsy.js"></script>
     <script src="/js/bootstrap-popover.js"></script>
     <script src="/js/bootstrap-dropdown.js"></script>
     <script src="/js/bootstrap-scrollspy.js"></script>
     <script src="/js/bootstrap-tabs.js"></script>
-    <script src="/js/bootstrap-buttons.js"></script>    
-    {#<script src="/js/bs/bootstrap-transition.js"></script>
+    <script src="/js/bootstrap-buttons.js"></script>#}
+    <script src="/js/bs/bootstrap-transition.js"></script>
     <script src="/js/bs/bootstrap-alert.js"></script>
     <script src="/js/bs/bootstrap-modal.js"></script>
     <script src="/js/bs/bootstrap-dropdown.js"></script>
@@ -83,7 +84,7 @@
     <script src="/js/bs/bootstrap-button.js"></script>
     <script src="/js/bs/bootstrap-collapse.js"></script>
     <script src="/js/bs/bootstrap-carousel.js"></script>
-    <script src="/js/bs/bootstrap-typeahead.js"></script>#}
+    <script src="/js/bs/bootstrap-typeahead.js"></script>
     
     
     <link href="/css/activity.css" rel="stylesheet" type="text/css" media="screen"/>		
@@ -94,36 +95,43 @@
 
   <body>
   <div> 
-    <div class="topbar">
-      <div class="fill">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
         <div class="container">
-          <h3><a href="/">Pappa-Mi</a></h3>
-          <ul class="nav">
-            <li class="active"><a href="#/">Home</a></li>
-            <li><a href="/chi">Chi siamo</a></li>
-            <li><a href="#contact">Contatti</a></li>
-            <li><a href="http://blog.pappa-mi.it">Blog</a></li>
-            <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>{% if admin %}
-	    <li><a href="/admin">Gestione Sistema</a></li>{% endif %}	    
-          </ul>
-          <ul class="nav secondary-nav">{% if not commissario and not genitore %}
-	    <li><a class="btn success" href="/signup">Registrati &raquo;</a></li>
-	    <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
-            <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" class="dropdown-toggle"><img src="{{user.avatar}}" class="avatar-mini"> <span>{{user.fullname}}</span></a>
-              <ul class="dropdown-menu">
-                <li><a href="/profilo">Profilo</a></li>
-                <li class="divider"></li>
-                <li><a href="{{url}}">{{url_linktext}}</a></li>
-              </ul>
-            </li>{% endif %}
-          </ul>
+	  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	  </a>
+      
+	  <a class="brand" href="/">Pappa-Mi</a>
+	  <div class="nav-collapse">
+	    <ul class="nav">
+	      <li class="active"><a href="#/">Home</a></li>
+	      <li><a href="/chi">Chi siamo</a></li>
+	      <li><a href="#contact">Contatti</a></li>
+	      <li><a href="http://blog.pappa-mi.it">Blog</a></li>
+	      <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>{% if admin %}
+	      <li><a href="/admin">Gestione Sistema</a></li>{% endif %}	    
+	    </ul>
+	    <ul class="nav pull-right">{% if not commissario and not genitore %}
+	      <li><a class="btn success" href="/signup">Registrati &raquo;</a></li>
+	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
+	      <li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{user.avatar}}" class="avatar-mini"> <span>{{user.fullname}}</span><b class="caret"></b></a>
+		<ul class="dropdown-menu">
+		  <li><a href="/profilo">Profilo</a></li>
+		  <li class="divider"></li>
+		  <li><a href="{{url}}">{{url_linktext}}</a></li>
+		</ul>
+	      </li>{% endif %}
+	    </ul>
+	  </div>      
         </div>
       </div>
     </div>
   </div>
-  <div class="container" style="height:60px;"></div>
-  <div class="container main">
+  <div class="container main" style="padding-top: 60px;">
 {% include content %}  
   </div>
   <footer>
