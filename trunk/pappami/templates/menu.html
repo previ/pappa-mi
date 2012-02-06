@@ -67,7 +67,27 @@ function chgscope() {
 </script>
 {%set tab_menu="active"%}
 {%include "navigation.html"%}
-<h3 style="display:inline;">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</h3>&nbsp;<button id="e_chgscope" class="btn">Cambia...</button>
+<ul class="nav nav-tabs">
+<li class="dropdown">
+ <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+  <div class="span5">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</div>
+  <b class="caret"></b>
+ </a>
+ <ul class="dropdown-menu dropdown-form">
+  <form class="form-vertical" id="f_chgscope" onsubmit="$('#d_chgscope').popover('hide');return false;">
+   <div class="control-group">
+    <label>Scuola: </label>
+    <div class="controls">
+     <input type="text">
+    </div>
+    <div class="controls">
+     <button type="submit" class="btn primary">Ok</button>&nbsp;<button type="reset" class="btn" onclick="$('#d_chgscope').popover('hide');">Annulla</button>
+    </div>  
+   </div>
+  </form>
+ </ul>
+</li>
+</ul>
 <div class="row">
  <div class="span16">
   <ul id="slider"> 
@@ -75,19 +95,4 @@ function chgscope() {
  </div> 
 </div> 
 <div id="d_chgscope" style="display:none;">
- <div class="row">
-  <div class="span6">
-   <form class="form-stacked" id="f_chgscope" onsubmit="$('#d_chgscope').popover('hide');return false;">
-    <div class="clearfix">
-     <label>Scuola: </label>
-     <div class="input">
-      <input type="text">
-     </div>
-     <div class="actions">
-      <button type="submit" class="btn primary">Ok</button>&nbsp;<button type="reset" class="btn" onclick="$('#d_chgscope').popover('hide');">Annulla</button>
-     </div>  
-    </div>
-   </form>
-  </div>
- </div>
 </div>

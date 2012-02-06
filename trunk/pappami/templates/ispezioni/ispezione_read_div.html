@@ -26,10 +26,10 @@
 <span class="label labelbox {{cls[t][a]}}" title="{{testi[t][a]}}">&nbsp;&nbsp;&nbsp;</span>
 {%- endmacro %}
 <div>
-<table class="compact">
+<table class="table">
 <tbody>
 <tr><td colspan="7" style="padding:0 0 0 0;">
-<table class="compact">
+<table class="table table-condensed">
 <thead>
 <tr>
 <th>Piatto</th><th><i class="assaggio" title="Assaggio"></i></th><th><i class="gradimento" title="Gradimento"></i></th><th><i class="cottura" title="Cottura o Maturazione"></i></th><th><i class="temperatura" title="Temperatura"></i></th><th><i class="quantita" title="Quantit&agrave;"></i></th><th><i class="condito" title="Condito al momento"></i></th>
@@ -71,7 +71,7 @@
 <div id="formnav" class="actions modal-actions">
  <form id="form1" action="/isp/isp" method="POST">
   <input type="hidden" name="preview" value="{{preview}}">
-  <button class="btn primary" type="submit" onclick="ulmsg=false;" style="float:right;">Conferma e Salva</button>
+  <button class="btn btn-primary" type="submit" onclick="ulmsg=false;" style="float:right;">Conferma e Salva</button>
   <button class="btn" type="reset" onclick="previewback();" style="float:right;">Indietro</button>
  </form>
 </div>

@@ -1,38 +1,46 @@
-<div>
- <div class="row rowspaced">
-  <div class="span12">
+<div class="form-vertical">
+{% if preview %}
+ <div class="row">
+  <div class="span8">
    <h3>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.dataNonconf}} - Turno {{nc.turno}}</h3>
   </div>
  </div>
- <div class="row rowspaced">
+{% endif %} 
+ <div class="row">
   <div class="span8">
-   Tipo Non Conformit&agrave; <span class="label">{{nc.tipoNome()}}</span>
-  </div>
-  <div class="span4">
-  Richiesta campionatura <span class="label">{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</span>
+   Tipo Non Conformit&agrave; <span class="label label-warning">{{nc.tipoNome()}}</span>
   </div>
  </div>
- <div class="row rowspaced">
+ <div class="row">
+  <div class="span8">
+  Richiesta campionatura <span class="label label-warning">{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</label>
+  </div>
+ </div>
+ <div class="row">
   <div class="span2">
     Note
   </div>
-  <div class="span10">
-  {{nc.note}}
-  </div>
  </div>
- <div class="row rowspaced">
-  <div class="span2">
-  Categorie
-  </div>
-  <div class="span10">
- {%for tag in nc.tags%}{{tag}}&nbsp;{%endfor%}
+ <div class="row">
+  <div class="span8">
+  {{nc.note|replace("\n","<br/>")}}
   </div>
  </div>
 {% if preview %}
+ <div class="row">
+  <div class="span2">
+  Categorie
+  </div>
+ </div>
+ <div class="row">
+  <div class="span8">
+ {%for tag in nc.tags%}{{tag}}&nbsp;{%endfor%}
+  </div>
+ </div>
  <div class="actions modal-actions">
   <form action="/isp/nc" method="POST" id="form1">
   <input type="hidden" name="preview" value="{{preview}}" >
-  <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+  <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
   <button class="btn" onclick="previewback(); return false;" style="float:right;">Torna a modifiche</button>
   </form>
  </div>

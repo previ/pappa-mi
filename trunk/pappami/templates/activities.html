@@ -124,19 +124,20 @@ function opennewwiz(url) {
       validationOptions: {
 	errorClass: "error",
 	errorPlacement: function(error, element) {	
-	  //error.appendTo( element.parent().parent() );
 	  //alert(error.text());
-	  $($($(element).parent()).parent()).attr("title", error.text());
-	  $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
-	  $($($(element).parent()).parent()).twipsy('show');
+	  $($($(element).parent()).parent()).attr("err-title", error.text());
+	  $($($(element).parent()).parent()).tooltip({title:'err-title', trigger:'manual'});
+	  $($($(element).parent()).parent()).tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('show');
+	    //$($($(element).parent()).parent()).addClass("error"); 
+	    $($($(element).parent()).parent()).tooltip('show');
 	    //alert("pippo");
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
 	 },
 	unhighlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('hide');
+	    //$($($(element).parent()).parent()).removeClass("error"); 
+	    $($($(element).parent()).parent()).tooltip('hide');
 	    //alert("pappo");	
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
 	 }
@@ -215,7 +216,7 @@ function opennewwiz(url) {
     $('#new-data').show();
     $('#new-data-form').show();
     $("#formwiz-progress-step1").toggleClass("active");
-    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 600, width: 820, zIndex: 2, autoOpen: false, beforeClose: closeAlert, });
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 600, width: 810, zIndex: 2, autoOpen: false, beforeClose: closeAlert, });
     $('#new-data').dialog('open');
   });
 }
@@ -229,14 +230,14 @@ function onopennewitem() {
      //error.appendTo( element.parent().parent() );
      //alert(error.text());
      $($($(element).parent()).parent()).attr("title", error.text());
-     $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
-     $($($(element).parent()).parent()).twipsy('show');
+     $($($(element).parent()).parent()).tooltip({title:'data-original-title', trigger:'manual'});
+     $($($(element).parent()).parent()).tooltip('show');
    },
    highlight: function(element, errorClass, validClass) {
-       $($($(element).parent()).parent()).twipsy('show');
+       $($($(element).parent()).parent()).tooltip('show');
     },
    unhighlight: function(element, errorClass, validClass) {
-       $($($(element).parent()).parent()).twipsy('hide');
+       $($($(element).parent()).parent()).tooltip('hide');
     }
   });
   
@@ -274,13 +275,13 @@ function onopennewitem() {
       arr.push({name: "tags", value: tags[tag]});
     }
   }});
-  $('textarea').autogrow();
+  //$('textarea').autogrow();
   $.validator.messages = {
       required: "Inserire o selezionare un valore",
       range: "Inserire un valore compreso tra {0} e {1}" };
   $('#new-data').show();
   $('#new-data-form').show();
-  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 820, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
+  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 810, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
   $('#new-data').dialog('open');
 }
 

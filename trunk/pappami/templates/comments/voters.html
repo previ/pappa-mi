@@ -1,13 +1,13 @@
 <ul class="voter_list">
-{%for voter in voters %}
+{%for vote in votes %}
 <li class="voter_item">
 <div class="voter_box">
  <div class="voter_avatar">
- <img src="{{voter.author_avatar()}}" title="{{voter.author()}}">
+ <img src="{{vote.author_avatar()}}" title="{{vote.author()}}">
  </div>
  <div class="voter_body">
-  <div class="voter_author">{{voter.author()}}</div>
-  <div class="voter_author_title">{{voter.author_title()}}</div>
+  <div class="voter_author">{{vote.author()}}</div>
+  <div class="voter_author_title">{{vote.author_title()}}</div>
  </div>
 </div>
 </li>
