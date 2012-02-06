@@ -7,7 +7,7 @@ var piattounico = false;
 }
 </style>
 <div id="formwiz-progress" style="font-size:smaller;">
-<ul class="tabs">
+<ul class="nav nav-tabs">
 <li id="formwiz-progress-step1"><a>Intestazione</a></li>
 <li id="formwiz-progress-step2"><a>Ambiente</a></li>
 <li id="formwiz-progress-step3"><a id="tab_primo">Primo</a></li>
@@ -19,27 +19,27 @@ var piattounico = false;
 </ul>
 </div>
 <div id="formwiz-error"></div>
-<div class="ui-widget ui-widget-content" style="border:none;">
+<div class="" style="border:none;">
 <h1 id="title" class="table_separator" style="display:none;">Nuova Ispezione</h1>
 <form action="/isp/isp" method="post" id="form0" novalidate>
 <input type="hidden" name="key" value="{{key}}"/>
-<div class="step form-stacked" id="step1">
+<div class="step form-vertical" id="step1">
  <div class="row">
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_commissione">Commissione</label>
-   <select required="true" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
+  <div class="span3">
+   <label class="" for="e_commissione">Commissione</label>
+   <select class="span3 required" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
    <option value=""></option>{% for cm in commissioni %}
    <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_dataIspezioneViz">Data Ispezione</label>
-   <input type="text" data-original-title="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" required="true" name="dataIspezioneViz" value="" class="ss-q-short" id="e_dataIspezioneViz"/>
+  <div class="span2">
+   <label class="" for="e_dataIspezioneViz">Data Ispezione</label>
+   <input type="text" data-original-title="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" name="dataIspezioneViz" value="" class="span2 required" id="e_dataIspezioneViz"/>
    <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_turno">Turno</label>
-   <select name="turno" id="e_turno" required="true">
+  <div class="span2">
+   <label class="" for="e_turno">Turno</label>
+   <select name="turno" id="e_turno" class="span2 required">
    <option value=""></option>
    <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
    <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
@@ -47,43 +47,43 @@ var piattounico = false;
   </div>
  </div>
  <div class="row">
-  <div class="span12 box1">
-   <legend class="label_sep_1">Men&ugrave; previsto per il giorno</legend>
+  <div class="span4">
+   <h4>Men&ugrave; previsto per il giorno</h4>
+   <div class="control-group">
+    <label class="" for="e_primoPrevisto">Primo</label>
+    <input class="span4" type="text" name="primoPrevisto" readonly="readonly" value="{{form.data.primoPrevisto}}" id="e_primoPrevisto"/>
+   </div>
+   <div class="control-group">
+    <label class="" for="e_secondoPrevisto">Secondo</label>
+    <input class="span4" type="text" name="secondoPrevisto" readonly="readonly" value="{{form.data.secondoPrevisto}}" id="e_secondoPrevisto"/>
+   </div>
+   <div class="control-group">
+    <label class="" for="e_contornoPrevisto">Contorno</label>
+    <input class="span4" type="text" name="contornoPrevisto" readonly="readonly" value="{{form.data.contornoPrevisto}}" id="e_contornoPrevisto"/>
+   </div>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_primoPrevisto">Primo</label>
-   <input type="text" name="primoPrevisto" readonly="readonly" value="{{form.data.primoPrevisto}}" size="40" id="e_primoPrevisto"/>
-  </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_secondoPrevisto">Secondo</label>
-   <input type="text" name="secondoPrevisto" readonly="readonly" value="{{form.data.secondoPrevisto}}" size="40" id="e_secondoPrevisto"/>
-  </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_contornoPrevisto">Contorno</label>
-   <input type="text" name="contornoPrevisto" readonly="readonly" value="{{form.data.contornoPrevisto}}" size="40" id="e_contornoPrevisto"/>
+  <div class="span4">
+   <h4>Men&ugrave; effettivo</h4>
+   <div class="control-group">
+    <label class="" for="e_primoEffettivo">Primo</label>
+    <input type="hidden" name="primoPiattoEffettivo" required="true" value="{{form.data.primoPiattoEffettivo}}" size="40" id="e_primoPiattoEffettivo"/>
+    <input class="span4 required" type="text" name="primoEffettivo" value="{{form.data.primoEffettivo}}" id="e_primoEffettivo" onchange="onMenuChanged()"/>
+   </div>
+   <div class="control-group">
+    <label class="" for="e_secondoEffettivo">Secondo</label>
+    <input type="hidden" name="secondoPiattoEffettivo" required="true" value="{{form.data.secondoPiattoEffettivo}}" id="e_secondoPiattoEffettivo"/>
+    <input class="span4 required" type="text" name="secondoEffettivo" value="{{form.data.secondoEffettivo}}" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
+   </div>
+   <div class="control-group">
+    <label class="" for="e_contornoEffettivo">Contorno</label>
+    <input type="hidden" name="contornoPiattoEffettivo" required="true" value="{{form.data.contornoPiattoEffettivo}}" id="e_contornoPiattoEffettivo"/>
+    <input class="span4 required" type="text" name="contornoEffettivo" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo" onchange="onMenuChanged()"/>
+   </div>
   </div>
  </div>
  <div class="row">
-  <div class="span12 box1">
-   <legend class="label_sep_1">Men&ugrave; effettivo</legend>
-  </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_primoEffettivo">Primo</label>
-   <input type="hidden" name="primoPiattoEffettivo" required="true" value="{{form.data.primoPiattoEffettivo}}" size="40" id="e_primoPiattoEffettivo"/>
-   <input type="text" name="primoEffettivo" required="true" value="{{form.data.primoEffettivo}}" size="40" id="e_primoEffettivo" onchange="onMenuChanged()"/>
-  </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_secondoEffettivo">Secondo</label>
-   <input type="hidden" name="secondoPiattoEffettivo" required="true" value="{{form.data.secondoPiattoEffettivo}}" size="40" id="e_secondoPiattoEffettivo"/>
-   <input type="text" name="secondoEffettivo" required="true" value="{{form.data.secondoEffettivo}}" size="40" id="e_secondoEffettivo" onchange="onMenuChanged()"/>
-  </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_contornoEffettivo">Contorno</label>
-   <input type="hidden" name="contornoPiattoEffettivo" required="true" value="{{form.data.contornoPiattoEffettivo}}" size="40" id="e_contornoPiattoEffettivo"/>
-   <input type="text" name="contornoEffettivo" required="true" value="{{form.data.contornoEffettivo}}" size="40" id="e_contornoEffettivo" onchange="onMenuChanged()"/>
-  </div>
-  <div class="span12">
-   <label class="label_isp_1" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
+  <div class="span4">
+   <label class="" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
     <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
@@ -92,19 +92,19 @@ var piattounico = false;
   </div>
  </div>
 </div>
-<div class="step form-stacked" id="step2">
+<div class="step form-vertical" id="step2">
  <div class="row">
-  <div class="span6 box1">
-   <label class="label_isp_1" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
-   <div class="radio-group btngroup" data-original-title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+  <div class="span4">
+   <label class="" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
+   <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {%if form.data.puliziaCentroCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {%if form.data.puliziaCentroCottura == "2" %}CHECKED{%endif%}/>Mediocre</label>
     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "3" %}CHECKED{%endif%}/>Sufficiente</label>
     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "4" %}CHECKED{%endif%}/>Buona</label>
    </div>
   </div>
-  <div class="span6 box1">
-   <label class="label_isp_1" for="entry_15">Pulizia Refettorio</label>
+  <div class="span4">
+   <label class="" for="entry_15">Pulizia Refettorio</label>
    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
     <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {%if form.data.puliziaRefettorio == "1" %}CHECKED{%endif%}/>Scarsa</label>
     <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {%if form.data.puliziaRefettorio == "2" %}CHECKED{%endif%}/>Mediocre</label>
@@ -114,16 +114,16 @@ var piattounico = false;
   </div>
  </div>
  <div class="row">
-  <div class="span6 box1" title="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
+  <div class="span4">
+   <label class="" for="entry_42">Derrate alimentari come da capitolato?</label>
+   <div class="radio-group btngroup" title="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
 Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.">
-   <label class="label_isp_1" for="entry_42">Derrate alimentari come da capitolato?</label>
-   <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {%if form.data.aaRispettoCapitolato == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {%if form.data.aaRispettoCapitolato == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Tavoli coperti da tovaglie o tovagliette?</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Tavoli coperti da tovaglie o tovagliette?</label>
    <div class="radio-group btngroup">  
     <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="1" class="required" id="e_aata_1" {%if form.data.aaTavoliApparecchiati == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="0" class="required" id="e_aata_2" {%if form.data.aaTavoliApparecchiati == "0" %}CHECKED{%endif%}/>No</label>   
@@ -131,15 +131,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   </div>
  </div>
  <div class="row">
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Contenitori termici puliti e in buone condizioni?</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Contenitori termici puliti e in buone condizioni?</label>
    <div class="radio-group btngroup">     
     <label class="btn"><input type="radio" name="aaTermichePulite" value="1" class="required" id="e_aatp_1" {%if form.data.aaTermichePulite == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaTermichePulite" value="0" class="required" id="e_aatp_2" {%if form.data.aaTermichePulite == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">L'acqua servita proviene dalla cucina o dispensa</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">L'acqua servita proviene dalla cucina o dispensa</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="aaAcqua" value="1" class="required" id="e_aaac_1" {%if form.data.aaAcqua == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaAcqua" value="0" class="required" id="e_aaac_2" {%if form.data.aaAcqua == "0" %}CHECKED{%endif%}/>No</label>   
@@ -147,15 +147,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   </div>
  </div>
  <div class="row">
-  <div class="span6 box1" title="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
-   <label class="label_isp_1" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
-   <div class="radio-group btngroup">
+  <div class="span4">
+   <label class="" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
+   <div class="radio-group btngroup" title="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
     <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {%if form.data.aaScaldaVivande == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {%if form.data.aaScaldaVivande == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Servizio in modalit&agrave; self service</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Servizio in modalit&agrave; self service</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="aaSelfService" value="1" class="required" id="e_nclp_1" {%if form.data.aaSelfService == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaSelfService" value="0" class="required" id="e_nclp_2" {%if form.data.aaSelfService == "0" %}CHECKED{%endif%}/>No</label>   
@@ -163,15 +163,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   </div>
  </div>
  <div class="row">
-  <div class="span6 box1" title="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
-   <label class="label_isp_1" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
-   <div class="radio-group btngroup">
+  <div class="span4">
+   <label class="" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
+   <div class="radio-group btngroup" title="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
     <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {%if form.data.aaTabellaEsposta == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {%if form.data.aaTabellaEsposta == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Stoviglie riutilizzabili</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Stoviglie riutilizzabili</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="ricicloStoviglie" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloStoviglie == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="ricicloStoviglie" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloStoviglie == "0" %}CHECKED{%endif%}/>No</label>   
@@ -179,15 +179,15 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   </div>
  </div>
  <div class="row">
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Bicchieri riutilizzabili</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Bicchieri riutilizzabili</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="ricicloBicchieri" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloBicchieri == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="ricicloBicchieri" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloBicchieri == "0" %}CHECKED{%endif%}/>No</label>   
    </div>
   </div>
-  <div class="span6 box1" title="">
-   <label class="label_isp_1" for="entry_42">Posate riutilizzabili</label>
+  <div class="span4" title="">
+   <label class="" for="entry_42">Posate riutilizzabili</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="ricicloPosate" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloPosate == "1" %}CHECKED{%endif%}/>Si</label>
     <label class="btn"><input type="radio" name="ricicloPosate" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloPosate == "0" %}CHECKED{%endif%}/>No</label>   
@@ -195,18 +195,18 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
   </div>
  </div>
 </div>
-<div class="step" id="step3">
+<div class="step form-horizontal" id="step3">
 <input type="hidden" class="link" value="step4" id="step3next"/>
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class=""></label>
-    <div class="input" id="s_primo">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label"></label>
+    <div class="controls" id="s_primo">
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Durata distribuzione</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Durata distribuzione</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoDist" value="1" class="required" id="e_pd_1" {%if form.data.primoDist == "1" %}CHECKED{%endif%}/>&lt; 10 min</label>
       <label class="btn"><input type="radio" name="primoDist" value="2" class="required" id="e_pd_2" {%if form.data.primoDist == "2" %}CHECKED{%endif%}/>10 &lt; 20 min</label>   
@@ -214,38 +214,38 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Condito al momoento</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Condito al momoento</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoCondito" value="1" class="required" id="e_pd_1" {%if form.data.primoCondito == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="primoCondito" value="0" class="required" id="e_pd_2" {%if form.data.primoCondito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix" title="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
-    <label class="" for="e_pc_1">Cottura</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+   <div class="control-group">
+    <label class="control-label" for="e_pc_1">Cottura</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
       <label class="btn"><input type="radio" name="primoCottura" value="1" class="required" id="e_pc_1" {%if form.data.primoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="primoCottura" value="2" class="required" id="e_pc_2" {%if form.data.primoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
       <label class="btn"><input type="radio" name="primoCottura" value="3" class="required" id="e_pc_3" {%if form.data.primoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
-    <label class="" for="entry_42">Temperatura</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Temperatura</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
       <label class="btn"><input type="radio" name="primoTemperatura" value="1" class="required" id="e_primoTemperatura_1" {%if form.data.primoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="primoTemperatura" value="2" class="required" id="e_primoTemperatura_2" {%if form.data.primoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
       <label class="btn"><input type="radio" name="primoTemperatura" value="3" class="required" id="e_primoTemperatura_3" {%if form.data.primoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoQuantita" value="1" class="required" id="e_primoQuantita_1" {%if form.data.primoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="primoQuantita" value="2" class="required" id="e_primoQuantita_2" {%if form.data.primoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -253,9 +253,9 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Assaggio</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Assaggio</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoAssaggio" value="1" class="required" id="e_primoAssaggio_1" {%if form.data.primoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
       <label class="btn"><input type="radio" name="primoAssaggio" value="2" class="required" id="e_primoAssaggio_2" {%if form.data.primoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
@@ -263,7 +263,10 @@ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contr
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Considerare circa 20 bambini campione<br/>
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Gradimento (%)</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare circa 20 bambini campione<br/>
 Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
 Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
 Selezionare:<br/>
@@ -273,9 +276,6 @@ Selezionare:<br/>
 <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
 <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
 </ul>">
-    <label class="" for="entry_42">Gradimento (%)</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoGradimento" value="1" class="required" id="e_primoGradimento_1" {%if form.data.primoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
       <label class="btn"><input type="radio" name="primoGradimento" value="2" class="required" id="e_primoGradimento_2" {%if form.data.primoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
       <label class="btn"><input type="radio" name="primoGradimento" value="3" class="required" id="e_primoGradimento_3" {%if form.data.primoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -286,17 +286,17 @@ Selezionare:<br/>
   </div>
  </div>
 </div>
-<div class="step" id="step4">
+<div class="step form-horizontal" id="step4">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class=""></label>
-    <div class="input" id="s_secondo">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label"></label>
+    <div class="controls" id="s_secondo">
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Durata distribuzione</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Durata distribuzione</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="secondoDist" value="1" class="required" id="e_sd_1" {%if form.data.secondoDist == "1" %}CHECKED{%endif%}/>&lt; 10 min</label>
       <label class="btn"><input type="radio" name="secondoDist" value="2" class="required" id="e_sd_2" {%if form.data.secondoDist == "2" %}CHECKED{%endif%}/>10 &lt; 20 min</label>   
@@ -304,29 +304,29 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
-    <label class="" for="e_pc_1">Cottura</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+   <div class="control-group">
+    <label class="control-label" for="e_pc_1">Cottura</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
       <label class="btn"><input type="radio" name="secondoCottura" value="1" class="required" id="e_sc_1" {%if form.data.secondoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="secondoCottura" value="2" class="required" id="e_sc_2" {%if form.data.secondoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
       <label class="btn"><input type="radio" name="secondoCottura" value="3" class="required" id="e_sc_3" {%if form.data.secondoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
-    <label class="" for="entry_42">Temperatura</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Temperatura</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
       <label class="btn"><input type="radio" name="secondoTemperatura" value="1" class="required" id="e_st_1" {%if form.data.secondoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="secondoTemperatura" value="2" class="required" id="e_st_2" {%if form.data.secondoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
       <label class="btn"><input type="radio" name="secondoTemperatura" value="3" class="required" id="e_st_3" {%if form.data.secondoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="secondoQuantita" value="1" class="required" id="e_sq_1" {%if form.data.secondoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="secondoQuantita" value="2" class="required" id="e_sq_2" {%if form.data.secondoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -334,9 +334,9 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Assaggio</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Assaggio</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="secondoAssaggio" value="1" class="required" id="e_sa_1" {%if form.data.secondoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
       <label class="btn"><input type="radio" name="secondoAssaggio" value="2" class="required" id="e_sa_2" {%if form.data.secondoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
@@ -344,7 +344,10 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Considerare circa 20 bambini campione<br/>
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Gradimento (%)</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare circa 20 bambini campione<br/>
 Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
 Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
 Selezionare:<br/>
@@ -354,9 +357,6 @@ Selezionare:<br/>
 <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
 <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
 </ul>">
-    <label class="" for="entry_42">Gradimento (%)</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="secondoGradimento" value="1" class="required" id="e_sg_1" {%if form.data.secondoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
       <label class="btn"><input type="radio" name="secondoGradimento" value="2" class="required" id="e_sg_2" {%if form.data.secondoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
       <label class="btn"><input type="radio" name="secondoGradimento" value="3" class="required" id="e_sg_3" {%if form.data.secondoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -367,36 +367,36 @@ Selezionare:<br/>
   </div>
  </div>
 </div>
-<div class="step" id="step5">
+<div class="step form-horizontal" id="step5">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Piatto</label>
-    <div class="input" id="s_contorno">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Piatto</label>
+    <div class="controls" id="s_contorno">
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Condito al momoento</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Condito al momoento</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="contornoCondito" value="1" class="required" id="e_pd_1" {%if form.data.contornoCondito == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="contornoCondito" value="0" class="required" id="e_pd_2" {%if form.data.contornoCondito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
-    <label class="" for="entry_42">Temperatura</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Temperatura</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
       <label class="btn"><input type="radio" name="contornoTemperatura" value="1" class="required" id="e_ct_1" {%if form.data.contornoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="contornoTemperatura" value="2" class="required" id="e_ct_2" {%if form.data.contornoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>
       <label class="btn"><input type="radio" name="contornoTemperatura" value="3" class="required" id="e_ct_3" {%if form.data.contornoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="contornoQuantita" value="1" class="required" id="e_cq_1" {%if form.data.contornoQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="contornoQuantita" value="2" class="required" id="e_cq_2" {%if form.data.contornoQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -404,9 +404,9 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Assaggio</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Assaggio</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="contornoAssaggio" value="1" class="required" id="e_ca_1" {%if form.data.contornoAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
       <label class="btn"><input type="radio" name="contornoAssaggio" value="2" class="required" id="e_ca_2" {%if form.data.contornoAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
@@ -414,7 +414,10 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Considerare circa 20 bambini campione<br/>
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Gradimento (%)</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare circa 20 bambini campione<br/>
 Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
 Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
 Selezionare:<br/>
@@ -424,9 +427,6 @@ Selezionare:<br/>
 <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
 <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
 </ul>">
-    <label class="" for="entry_42">Gradimento (%)</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="contornoGradimento" value="1" class="required" id="e_cg_1" {%if form.data.contornoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
       <label class="btn"><input type="radio" name="contornoGradimento" value="2" class="required" id="e_cg_2" {%if form.data.contornoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
       <label class="btn"><input type="radio" name="contornoGradimento" value="3" class="required" id="e_cg_3" {%if form.data.contornoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -437,12 +437,12 @@ Selezionare:<br/>
   </div>
  </div>
 </div>
-<div class="step" id="step6">
+<div class="step form-horizontal" id="step6">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Tipo Pane:</label>
-    <div class="input">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Tipo Pane:</label>
+    <div class="controls">
      <select class="required" name="paneTipo" value="{{form.data.paneTipo}}" id="e_paneTipo">
      <option value=""></option>
      <option value="Integrale">Integrale</option>
@@ -452,18 +452,18 @@ Selezionare:<br/>
      </select>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Presente in tavola a inizio pasto:</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Presente in tavola a inizio pasto:</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="paneServito" value="1" class="required" id="e_bp_1" {%if form.data.paneServito == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="paneServito" value="0" class="required" id="e_bp_2" {%if form.data.paneServito == "0" %}CHECKED{%endif%}/>No</label>   
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="paneQuantita" value="1" class="required" id="e_bq_1" {%if form.data.paneQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="paneQuantita" value="2" class="required" id="e_bq_2" {%if form.data.paneQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -471,9 +471,9 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Assaggio</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Assaggio</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="paneAssaggio" value="1" class="required" id="e_ba_1" {%if form.data.paneAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
       <label class="btn"><input type="radio" name="paneAssaggio" value="2" class="required" id="e_ba_2" {%if form.data.paneAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
@@ -481,7 +481,10 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Considerare circa 20 bambini campione<br/>
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Gradimento (%)</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare circa 20 bambini campione<br/>
 Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
 Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
 Selezionare:<br/>
@@ -491,9 +494,6 @@ Selezionare:<br/>
 <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
 <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
 </ul>">
-    <label class="" for="entry_42">Gradimento (%)</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="paneGradimento" value="1" class="required" id="e_bg_1" {%if form.data.paneGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
       <label class="btn"><input type="radio" name="paneGradimento" value="2" class="required" id="e_bg_2" {%if form.data.paneGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
       <label class="btn"><input type="radio" name="paneGradimento" value="3" class="required" id="e_bg_3" {%if form.data.paneGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -504,18 +504,18 @@ Selezionare:<br/>
   </div>
  </div>
 </div>
-<div class="step" id="step7">
+<div class="step form-horizontal" id="step7">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Tipo Dessert:</label>
-    <div class="input">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Tipo Dessert:</label>
+    <div class="controls">
      <input type="text" required="true" name="fruttaTipo" id="e_fruttaTipo"/>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_pd_1">Servita:</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="e_pd_1">Servita:</label>
+    <div class="controls">
      <select name="fruttaServita" class="required" value="{{form.data.fruttaServita}}" id="e_fruttaServita">
      <option value=""></option>
      <option value="A met&agrave mattina">A met&agrave mattina</option>
@@ -523,9 +523,9 @@ Selezionare:<br/>
      </select>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="fruttaMaturazione" value="1" class="required" id="e_fq_1" {%if form.data.fruttaMaturazione == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="fruttaMaturazione" value="2" class="required" id="e_fq_2" {%if form.data.fruttaMaturazione == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -533,9 +533,9 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Quantit&agrave;</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Quantit&agrave;</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="fruttaQuantita" value="1" class="required" id="e_fq_1" {%if form.data.fruttaQuantita == "1" %}CHECKED{%endif%}/>Scarsa</label>
       <label class="btn"><input type="radio" name="fruttaQuantita" value="2" class="required" id="e_fq_2" {%if form.data.fruttaQuantita == "2" %}CHECKED{%endif%}/>Giusta</label>   
@@ -543,9 +543,9 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="entry_42">Assaggio</label>
-    <div class="input">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Assaggio</label>
+    <div class="controls">
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="fruttaAssaggio" value="1" class="required" id="e_fa_1" {%if form.data.fruttaAssaggio == "1" %}CHECKED{%endif%}/>Non Accettabile</label>
       <label class="btn"><input type="radio" name="fruttaAssaggio" value="2" class="required" id="e_fa_2" {%if form.data.fruttaAssaggio == "2" %}CHECKED{%endif%}/>Accettabile</label>   
@@ -553,7 +553,10 @@ Selezionare:<br/>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Considerare circa 20 bambini campione<br/>
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Gradimento (%)</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare circa 20 bambini campione<br/>
 Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
 Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
 Selezionare:<br/>
@@ -563,9 +566,6 @@ Selezionare:<br/>
 <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
 <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
 </ul>">
-    <label class="" for="entry_42">Gradimento (%)</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="fruttaGradimento" value="1" class="required" id="e_fg_1" {%if form.data.fruttaGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
       <label class="btn"><input type="radio" name="fruttaGradimento" value="2" class="required" id="e_fg_2" {%if form.data.fruttaGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
       <label class="btn"><input type="radio" name="fruttaGradimento" value="3" class="required" id="e_fg_3" {%if form.data.fruttaGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -576,13 +576,13 @@ Selezionare:<br/>
   </div>
  </div>
 </div>
-<div class="step" id="step8">
+<div class="step form-vertical" id="step8">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix" title="Considerare il tempo intercorso dall'inizio della distribuzione alla fine del pasto dell'ultimo bambino.">
-    <label class="" for="entry_42">Durata complessiva pasto</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+  <div class="span4">
+   <div class="control-group">
+    <label class="control-label" for="entry_42">Durata complessiva pasto</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Considerare il tempo intercorso dall'inizio della distribuzione alla fine del pasto dell'ultimo bambino.">
       <label class="btn"><input type="radio" name="durataPasto" value="1" class="required" id="e_pd_1" {%if form.data.durataPasto == "1" %}CHECKED{%endif%}/>&lt; 30 min.</label>
       <label class="btn"><input type="radio" name="durataPasto" value="2" class="required" id="e_pd_2" {%if form.data.durataPasto == "2" %}CHECKED{%endif%}/>30 min. &lt; 60</label>   
       <label class="btn"><input type="radio" name="durataPasto" value="3" class="required" id="e_pd_3" {%if form.data.durataPasto == "3" %}CHECKED{%endif%}/>&gt; 60 min.</label>   
@@ -592,53 +592,51 @@ Selezionare:<br/>
   </div>
  </div>
  <div class="row">
-  <div class="span6">
-   <div class="clearfix" title="Indicare il numero di pasti serviti complessivamente, ai bambini e agli adulti, comprese eventuali diete speciali.">
-    <label class="" for="e_numeroPastiTotale">Numero Pasti serviti</label>
-    <div class="input">
-     <input type="text" name="numeroPastiTotale" value="" class="ss-q-short number" id="e_numeroPastiTotale" style="width: 100px;" required= "true"/>    
+  <div class="span2">
+   <div class="control-group" >
+    <label class="control-label" for="e_numeroPastiTotale">Pasti serviti</label>
+    <div class="controls">
+     <input type="text" name="numeroPastiTotale" value="" class="span1 required" id="e_numeroPastiTotale"  title="Indicare il numero di pasti serviti complessivamente, ai bambini e agli adulti, comprese eventuali diete speciali."/>    
     </div>
    </div>
   </div>
-  <div class="span6">
-   <div class="clearfix">
-    <label class="" for="e_numeroPastiBambini">Numero Pasti serviti ai bambini</label>
-    <div class="input">
-     <input type="text" name="numeroPastiBambini" value="" class="ss-q-short number" id="e_numeroPastiBambini" style="width: 100px;" required= "true"/>    
+  <div class="span2">
+   <div class="control-group">
+    <label class="control-label" for="e_numeroPastiBambini">Pasti serviti ai bambini</label>
+    <div class="controls">
+     <input type="text" name="numeroPastiBambini" value="" class="span1 required" id="e_numeroPastiBambini"/>    
+    </div>
+   </div>
+  </div>
+  <div class="span2">
+   <div class="control-group" >
+    <label class="control-label" for="e_numeroPastiSpeciali">Pasti speciali serviti</label>
+    <div class="controls">
+     <input type="text" name="numeroPastiSpeciali" value="" class="span1 required" id="e_numeroPastiSpeciali" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."/>    
+    </div>
+   </div>
+  </div>
+  <div class="span2">
+   <div class="control-group">
+    <label class="control-label" for="e_numeroAddetti">Addetti alla distribuzione</label>
+    <div class="controls">
+     <input type="text" name="numeroAddetti" value="" class="span1 required" id="e_numeroAddetti" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."/>    
     </div>
    </div>
   </div>
  </div>
  <div class="row">
-  <div class="span6">
-   <div class="clearfix" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.">
-    <label class="" for="e_numeroPastiSpeciali">Numero Pasti speciali serviti</label>
-    <div class="input">
-     <input type="text" name="numeroPastiSpeciali" value="" class="ss-q-short number" id="e_numeroPastiSpeciali" style="width: 100px;" required= "true"/>    
-    </div>
-   </div>
-  </div>
-  <div class="span6">
-   <div class="clearfix" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.">
-    <label class="" for="e_numeroAddetti">Numero addetti alla distribuzione</label>
-    <div class="input">
-     <input type="text" name="numeroAddetti" value="" class="ss-q-short number" id="e_numeroAddetti" style="width: 100px;" required= "true"/>    
-    </div>
-   </div>
-  </div>
- </div>
- <div class="row">
-  <div class="span12">
-   <div class="clearfix" title="Lo smaltimento rifiuti &egrave; a carico di MilanoRistorazione e ha ingenti criticit&agrave; igienico-sanitarie.<br>
+  <div class="span4">
+   <div class="control-group" >
+    <label class="control-label" for="e_numeroAddetti">Smaltimento rifiuti</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Lo smaltimento rifiuti &egrave; a carico di MilanoRistorazione e ha ingenti criticit&agrave; igienico-sanitarie.<br>
 Specificare:<ul>
 <li><b>Scarso</b> - Evidenti problemi igienici (es. cassonetti della spazzatura facilmente raggiungibili dai bambini)</li>
 <li><b>Mediocre</b> - Potenziali problemi igienici (es. pulizia del locale che contiene i cassonetti giudicata inadeguata)</li>
 <li><b>Sufficiente</b> - Nessun problema igienico ma scarsa attenzione alla raccolta differenziata</li>
 <li><b>Ottimo</b> - Nessun problema igienico e raccolta differenziata ottimizzata</li>
 </ul>">
-    <label class="" for="e_numeroAddetti">Smaltimento rifiuti</label>
-    <div class="input">
-     <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="1" class="required" id="e_sr_1" {%if form.data.smaltimentoRifiuti == "1" %}CHECKED{%endif%}/>Scarso</label>
       <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="2" class="required" id="e_sr_2" {%if form.data.smaltimentoRifiuti == "2" %}CHECKED{%endif%}/>Mediocre</label>   
       <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_3" {%if form.data.smaltimentoRifiuti == "3" %}CHECKED{%endif%}/>Sufficiente</label>
@@ -646,25 +644,35 @@ Specificare:<ul>
      </div>
     </div>
    </div>
-   <div class="clearfix" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.">
-    <label class="" for="e_numeroAddetti">Giudizio globale sul servizio</label>
-    <div class="input">
-     <div class="radio-group btngroup">
+  </div>
+  <div class="span4">
+   <div class="control-group">
+    <label class="control-label" for="e_numeroAddetti">Giudizio globale sul servizio</label>
+    <div class="controls">
+     <div class="radio-group btngroup" title="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.">
       <label class="btn"><input type="radio" name="giudizioGlobale" value="1" class="required" id="e_gg_1" {%if form.data.giudizioGlobale == "1" %}CHECKED{%endif%}/>Insufficiente</label>
       <label class="btn"><input type="radio" name="giudizioGlobale" value="2" class="required" id="e_gg_2" {%if form.data.giudizioGlobale == "2" %}CHECKED{%endif%}/>Sufficiente</label>   
       <label class="btn"><input type="radio" name="giudizioGlobale" value="3" class="required" id="e_gg_3" {%if form.data.giudizioGlobale == "3" %}CHECKED{%endif%}/>Buono</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="" for="e_note">Note</label>
-    <div class="input">
-     <textarea name="note" rows="4" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span8">
+   <div class="control-group">
+    <label class="control-label" for="e_note">Note</label>
+    <div class="controls">
+     <textarea name="note" rows="4" cols="120" id="entry_13" class="span6">{{form.data.note}}</textarea>
     </div>
    </div>
-   <div class="clearfix">
-    <div class="span12 box1">
-     <label class="label_isp_1">Categorie</label>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span8">
+   <div class="control-group">
+    <label class="">Categorie</label>
+    <div class="controls">
      <div class="comment_tags">  
       <div style="width:40em; display:inline;">
        <ul id="wiz_tags_handler"></ul>
@@ -675,7 +683,7 @@ Specificare:<ul>
   </div>
  </div>
 </div>
-<div id="formnav" class="actions modal-actions">
+<div id="formnav" class="form-actions modal-actions">
  <input id="e_submit" class="btn primary" type="submit" onclick="" value="Avanti" style="float:right;"/> 
  <input type="reset" class="btn" onclick="" id="e_annulla" value="Indietro" style="float:right;"/>
 </div>

@@ -13,6 +13,11 @@ from ndb import model
 from google.appengine.api import memcache
 
 class Messaggio(model.Model):
+  def __init__(self, *args, **kwargs):
+    self._commissario = None
+    self._tags = None
+    super(Messaggio, self).__init__(*args, **kwargs)  
+
   root = model.KeyProperty()
   par = model.KeyProperty()
   grp = model.KeyProperty()
@@ -148,32 +153,44 @@ class Messaggio(model.Model):
         break
       memcache.delete("msg-all-"+str(i))
     
-  _cache = dict()  
-  commissario = None
   def get_commissario(self):
-    if not self.commissario:
-      self.commissario = Messaggio._cache.get(self.modificato_da)
-      if self.commissario is None:
-        self.commissario = Commissario.get_by_user(self.modificato_da)
-        Messaggio._cache[self.modificato_da] = self.commissario
-    return self.commissario
+    if not self._commissario:
+      self._commissario = Commissario.get_by_user(self.modificato_da)
+    return self._commissario
     
-  _likes = None
   def likes(self):
-    if self._likes == None:
-      self._likes = Voto.get_by_msg(self.key).count()
-    return self._likes
+    return len(self.get_votes())
 
-  _canvote = None
   def canvote(self):
-    if self._canvote is None:
-      canvote = True
-      for p_voto in Voto.get_by_msg(self.key):
-        if p_voto.creato_da == users.get_current_user():
-          canvote = False
-          break;
-      self._canvote = canvote     
-    return self._canvote
+    canvote = True
+    for p_voto in self.get_votes():
+      if p_voto.creato_da == users.get_current_user():
+        canvote = False
+        break;
+    return canvote
+
+  def get_votes(self):
+    voti = memcache.get("msg-voti-"+str(self.key.id()))
+    if voti is None:
+      voti = list()
+      for voto in Voto.get_by_msg(self.key):
+        voti.append(voto)
+      memcache.add("msg-voti-"+str(self.key.id()), voti)
+    return voti
+  
+  def vote(self, vote, user):
+    voto = Voto()
+    for p_voto in self.get_votes():
+      if p_voto.creato_da == user:
+        voto = p_voto
+        break;
+    voto.messaggio = self.key
+    voto.voto = vote
+    if voto.voto == 0 and voto.key:
+      voto.key.delete()
+    else:
+      voto.put()
+    memcache.delete("msg-voti-"+str(self.key.id()))
   
   def data(self):
     delta = datetime.now() - self.creato_il
@@ -193,7 +210,6 @@ class Messaggio(model.Model):
   def author_avatar(self):
     return self.get_commissario().avatar()
 
-  _tags = None
   def tags(self):
     if not self._tags:
       self._tags = list()
@@ -203,9 +219,6 @@ class Messaggio(model.Model):
   
   def title(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      logging.info(self.root.get().commissione.get().desc())
-      logging.info(self.tipodesc())
-      logging.info(datetime.strftime(self.root.get().data(), Const.DATE_FORMAT))
       return self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + datetime.strftime(self.root.get().data(), Const.DATE_FORMAT)
     if self.tipo == 201:
       return self.titolo
@@ -296,25 +309,27 @@ class TagObj(model.Model):
     return TagObj.query().filter(TagObj.obj == obj)
   
 class Voto(model.Model):
+  def __init__(self, *args, **kwargs):
+    self._commissario = None
+    super(Voto, self).__init__(*args, **kwargs)  
+  
   messaggio = model.KeyProperty(kind=Messaggio)
   voto = model.IntegerProperty()
   creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-
-  commissario = None
   
   def author(self):
-    if not self.commissario:
-      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
-    return self.commissario.nomecompleto()
+    if not self._commissario:
+      self._commissario = Commissario.get_by_user(self.creato_da)
+    return self._commissario.nomecompleto()
   def author_title(self):
-    if not self.commissario:
-      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
-    return self.commissario.titolo()
+    if not self._commissario:
+      self._commissario = Commissario.get_by_user(self.creato_da)
+    return self._commissario.titolo()
   def author_avatar(self):
-    if not self.commissario:
-      self.commissario = Commissario.query().filter(Messaggio.user == self.creato_da).get()
-    return self.commissario.avatar()
+    if not self._commissario:
+      self._commissario = Commissario.get_by_user(self.creato_da)
+    return self._commissario.avatar()
   
   @classmethod
   def get_by_msg(cls, msg):

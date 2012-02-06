@@ -165,7 +165,7 @@ class Commissione(model.Model):
     return self.nome + " " + self.tipoScuola
   
 class Commissario(model.Model):
-  def __init__(self, language='en', *args, **kwargs):
+  def __init__(self, *args, **kwargs):
     self._commissioni = list()
     super(Commissario, self).__init__(*args, **kwargs)  
 

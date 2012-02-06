@@ -5,31 +5,31 @@
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="form-stacked">
  <div class="row">
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_commissione">Commissione</label>
-   <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
+  <div class="span4">
+   <label for="e_commissione">Commissione</label>
+   <select class="span4 required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
     <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_dataNonconfViz">Data Ispezione</label>
-   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="required" name="dataNonconfViz" value="" id="e_dataNonconfViz"/>
+  <div class="span2">
+   <label for="e_dataNonconfViz">Data Ispezione</label>
+   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="span2 required" name="dataNonconfViz" value="" id="e_dataNonconfViz"/>
    <input type="hidden" name="dataNonconf" value="" id="e_dataNonconf"/>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_turno">Turno</label>
-   <select name="turno" id="e_turno" class="required">
+  <div class="span2">
+   <label for="e_turno">Turno</label>
+   <select name="turno" id="e_turno" class="span2 required">
     <option value="1"{% if form.turno.data == "1" %} selected{% endif %}>Primo</option>
     <option value="2"{% if form.turno.data == "2" %} selected{% endif %}>Secondo</option>
    </select>
   </div>
  </div>   
  <div class="row">
-  <div class="span8 box1">
-   <div class="clearfix"> 
-    <label class="label_isp_1" for="e_tipo">Tipo Non Conformit&agrave</label>
-    <div class="input">    
-     <select name="tipo" id="e_tipo" class="required span8" value="{{form.tipo.data}}">
+  <div class="span6">
+   <div class="control-group"> 
+    <label for="e_tipo">Tipo Non Conformit&agrave</label>
+    <div class="controls">    
+     <select name="tipo" id="e_tipo" class="required span6" value="{{form.tipo.data}}">
       <option value=""></option>
       <option value="1">Cambiamenti di men&ugrave</option>
       <option value="2">Cibo avanzato oltre 30%</option>
@@ -48,7 +48,7 @@
     </div>
    </div>
   </div>
-  <div class="span4 box1">
+  <div class="span2">
    <label class="label_isp_1">Richiesta campionatura</label>
    <div class="radio-group btngroup">
     <label class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" id="e_rc_1" {%if form.richiestaCampionatura.data == "1" %}CHECKED{%endif%}/>Si</label>
@@ -57,17 +57,17 @@
   </div>
  </div>   
  <div class="row">
-  <div class="span12 box1">
-   <div class="clearfix"> 
-    <label class="label_isp_1" for="e_ncNote">Note</label>
-    <div class="input">    
-     <textarea name="note" rows="8" cols="120" id="e_note" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.note.data}}</textarea>
+  <div class="span6">
+   <div class="control-group"> 
+    <label for="e_ncNote">Note</label>
+    <div class="controls">    
+     <textarea name="note" rows="8" cols="120" id="e_note" class="span8">{{form.note.data}}</textarea>
     </div>
    </div>
   </div>
  </div>   
  <div class="row">
-  <div class="span12 box1">
+  <div class="span8">
    <label class="label_isp_1">Categorie</label>
    <div class="comment_tags">  
     <div style="width:40em; display:inline;">
@@ -78,7 +78,7 @@
  </div>
 </div>
 <div class="actions modal-actions">
- <button id="e_submit" type="submit" class="btn primary" style="float:right;">Salva dati</button>
+ <button id="e_submit" type="submit" class="btn btn-primary" style="float:right;">Salva dati</button>
  <button onclick="closedialog();" id="e_annulla" class="btn" style="float:right;">Annulla</button>
 </div>
 </form>

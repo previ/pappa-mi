@@ -1,11 +1,11 @@
 <div>
  <div class="row">
-  <div class="span12">
+  <div class="span8">
    <h3>{{nota.commissione.get().desc()}} - Nota del {{nota.dataNota}}</h3>
    <div>Titolo</div>
    <h4>{{nota.titolo}}</h4>
    <div>Testo</div>
-   <div class="input" style="max-height:248px; overflow:auto;">
+   <div class="controls">
     <div>{{nota.note|replace("\n","<br/>")}}</div>
    </div>
 {% if nota.get_allegati() %}
@@ -22,8 +22,8 @@
    <div class="actions modal-actions">
     <form action="/isp/nota" method="POST" id="form1">
      <input type="hidden" name="preview" value="{{preview}}">
-     <button type="submit" id="e_submit" class="btn primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
-     <button class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
+     <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+     <button type="reset" class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
     </form>
    </div>
  {% endif %}

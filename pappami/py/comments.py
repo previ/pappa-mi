@@ -86,12 +86,12 @@ class CMCommentHandler(BasePage):
   """
   def post(self):
     par = None
-    rif = self.request.get("par")    
+    rif = self.request.get("par")
     if rif:
-      par = model.Key(rif)
+      par = model.Key("Messaggio", int(rif)).get()
 
     messaggio = Messaggio()
-    messaggio.par = par
+    messaggio.par = par.key
     messaggio.tipo = int(self.request.get("tipo"))
     messaggio.livello = int(self.request.get("livello"))
     messaggio.titolo = self.request.get("titolo")
@@ -103,11 +103,11 @@ class CMCommentHandler(BasePage):
     logging.info("last: " + self.request.get("last"))
     
     if messaggio.livello > 0:
-      commenti = messaggio.par.commenti
+      commenti = par.commenti
       if commenti is None:
         commenti = 0
-      messaggio.par.commenti = commenti + 1
-      messaggio.par.put()
+      par.commenti = commenti + 1
+      par.put()
    
     CMTagHandler().saveTags(messaggio, self.request.get_all("tags"))
   
@@ -116,8 +116,10 @@ class CMCommentHandler(BasePage):
       'ease': True
     }
     messaggio.invalidate_cache();
-    
-    activities = Messaggio.get_all_from_item_parent(model.Key("Messaggio", int(self.request.get("last"))), messaggio)
+    last_key = None
+    if self.request.get("last") != "":
+      last_key = model.Key("Messaggio", int(self.request.get("last")))
+    activities = Messaggio.get_all_from_item_parent(last_key, messaggio)
 
     template_values['main'] = 'comments/comment.html'
           
@@ -125,7 +127,7 @@ class CMCommentHandler(BasePage):
       template_values['main'] = 'activity.html'
       comment_root = messaggio
     else:
-      comment_root = Messaggio.get(model.Key(self.request.get("root")))
+      comment_root = model.Key("Messaggio",int(self.request.get("root"))).get()
   
     template_values['activities'] = activities
     template_values['comments'] = activities
@@ -138,8 +140,8 @@ class CMCommentHandler(BasePage):
   """
   def get(self):
     root = self.request.get("par")
-    commento_root = Messaggio.get(model.Key(root))
-    commenti = Messaggio.get_by_parent(commento_root)
+    commento_root = model.Key("Messaggio", int(root)).get()
+    commenti = Messaggio.get_by_parent(commento_root.key)
 
     comments = list()
     for msg in commenti:
@@ -147,14 +149,14 @@ class CMCommentHandler(BasePage):
       
     comment_last = None
     if len(comments):
-      comment_last = comments[len(comments)-1].key
+      comment_last = comments[len(comments)-1]
       
     logging.info("comment_last: " + str(comment_last))
     template_values = {
       'main': 'comments/comment.html',
       'comment_root': commento_root,
       'comments': comments,
-      'comment_last': str(comment_last),
+      'comment_last': comment_last,
       'last': comment_last,
       'ease': False
     }
@@ -182,27 +184,17 @@ class ActivityLoadHandler(BasePage):
   
 class CMVoteHandler(BasePage):
   def get(self):
-    messaggio = Messaggio.get(self.request.get('msg'))
-      
-    voto = Voto()
-    for p_voto in messaggio.voto_reference_set:
-      if p_voto.creato_da == users.get_current_user():
-        voto = p_voto
-        break;
-    voto.messaggio = messaggio
-    voto.voto = int(self.request.get('voto'))
-    if voto.voto == 0 and voto.key:
-      voto.key.delete()
-    else:
-      voto.put()
-    self.response.out.write(messaggio.voto_reference_set.count())
+    messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()
+
+    messaggio.vote(int(self.request.get('voto')), users.get_current_user())
+    self.response.out.write(len(messaggio.get_votes()))
 
 class CMVotersHandler(BasePage):
   def get(self):
-    messaggio = Messaggio.get(self.request.get('msg'))
+    messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()    
     template_values = {
       'main': 'comments/voters.html',
-      'voters': messaggio.voto_reference_set
+      'votes': messaggio.get_votes()
     }
     self.getBase(template_values)    
 
@@ -212,7 +204,7 @@ class CMTagHandler(BasePage):
     assignedtags = list()
     msg = None
     if self.request.get('msg'):
-      msg = model.Key(self.request.get('msg'))
+      msg = model.Key("Messaggio", int(self.request.get('msg')))
     tagobjs = TagObj.get_by_obj_key(msg)
     for tagobj in tagobjs:
       assignedtags.append(tagobj.tag.get().nome)

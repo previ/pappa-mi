@@ -322,7 +322,7 @@ text-decoration: none;
 
 .col {
 background-image: url(//ssl.gstatic.com/s2/oz/images/stream/collapse.png);
-background-position: 0 10px;
+background-position: 0px; 0px;
 }
 
 .expcmt {
@@ -535,4 +535,9 @@ font-weight: bold;
 	color:#fff;
 	border-top:1px solid #000;
 	text-shadow:none;
+}
+.dropdown-form {
+	#margin-left:10px;
+	max-width:380px;
+	min-width:300px;
 }

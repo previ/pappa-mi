@@ -12,7 +12,7 @@ $(function(){
 
   $('#titolo').dropdown();
   
-  $("#e_chgscope").popover({html: true, trigger: "manual", placement: "below", content:function(){return $("#d_chgscope").html();}}); 
+  $("#e_chgscope").popover({trigger: "manual", placement: "below", content:function(){return $("#d_chgscope").html();}}); 
   $('#e_chgscope').click(chgscope);  
 });
 

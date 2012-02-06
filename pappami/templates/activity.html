@@ -8,6 +8,7 @@
            last = $('#comment_list_{{activity.key.id()}}').children().last().children().first().attr('id').substring("comment_".length);
            $('#comment_last_{{activity.key.id()}}').val(last);
            $('#comments_num_{{activity.key.id()}}').text($('#comment_list_{{activity.key.id()}}').children().length);
+           $('#comments_header_{{activity.key.id()}}').show();
            //$('#comments_{{activity.key.id()}}').load('/comments/comment?par={{activity.key.id()}}')
         }}); 
         {%if detail is defined%}onexpcomments('{{activity.key.id()}}');{%endif%}
@@ -37,8 +38,7 @@
    <div class="activity_vote" id="vote_2_{{activity.key.id()}}" style="display:{%if activity.canvote() %}none{%else%}inline{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onunvote('{{activity.key.id()}}')">Ho cambiato idea</div>
    </div>
-   {%if activity.comments() > 0 %}<div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:inline;" onclick="onexpcomments('{{activity.key.id()}}')"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>
-   {%endif%}
+   <div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:{%if activity.comments() > 0 %}inline{%else%}none{%endif%};" onclick="onexpcomments('{{activity.key.id()}}')"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>
    <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</span></div>
    
    <div id="comments_container_{{activity.key.id()}}" style="display:none;">
