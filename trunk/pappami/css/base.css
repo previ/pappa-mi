@@ -536,8 +536,8 @@ font-weight: bold;
 	border-top:1px solid #000;
 	text-shadow:none;
 }
-.dropdown-form {
-	#margin-left:10px;
-	max-width:380px;
-	min-width:300px;
+.dropdown-large {
+	max-width:240px;
+	min-width:240px;
+	padding:10px;
 }
