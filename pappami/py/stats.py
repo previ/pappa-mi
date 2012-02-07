@@ -99,11 +99,11 @@ class CMStatsHandler(BasePage):
     if cm_key:
       cm = model.Key("Commissione", cm_key).get()
     if self.request.get("cm"):
-      cm = model.Key("Commissione", self.request.get("cm")).get()
+      cm = model.Key("Commissione", int(self.request.get("cm"))).get()
     if cm:
       cc = cm.getCentroCucina(now)
-      statCC = StatisticheIspezioni.get_cc_cm_time(cc=cc, timeId=anno).get()
-      statCM = StatisticheIspezioni.get_cc_cm_time(cm=cm, timeId=anno).get()
+      statCC = StatisticheIspezioni.get_cc_cm_time(cc=cc.key, timeId=anno).get()
+      statCM = StatisticheIspezioni.get_cc_cm_time(cm=cm.key, timeId=anno).get()
     stats = [stat,statCC,statCM]
     
     z_desc = {"group": ("string", "Gruppo"), 
@@ -201,7 +201,7 @@ class CMStatsHandler(BasePage):
                "count": ("number", "Occorrenze")}
     
     if cm:
-      ncstat = StatisticheNonconf.get_cc_cm_time(cm=cm, timeId=anno).get()
+      ncstat = StatisticheNonconf.get_cc_cm_time(cm=cm.key, timeId=anno).get()
     else:
       ncstat = StatisticheNonconf.get_cc_cm_time(timeId=anno).get()
 
@@ -277,11 +277,12 @@ class CMStatsHandler(BasePage):
     template_values["content"] = "stats/stats.html"
     template_values["cmsro"] = self.getCommissario(users.get_current_user())
     template_values["citta"] = Citta.get_all()
+    template_values["anno"] = anno
     self.get_context()["anno"] = anno    
     
     if cm:
-      self.get_context()["citta_key"] = cm.citta.key()
-      self.get_context()["cm_key"] = cm.key()
+      self.get_context()["citta_key"] = cm.citta.id()
+      self.get_context()["cm_key"] = cm.key.id()
       self.get_context()["cm_name"] = cm.desc()    
 
     super(CMStatsHandler, self).getBase(template_values)

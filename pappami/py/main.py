@@ -35,9 +35,6 @@ from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 from py.model import *
 from py.modelMsg import *
 from py.comments import *
-
-if 'lib' not in sys.path:
-  sys.path[0:0] = ['lib']
     
 class MainPage(BasePage):
   
@@ -316,9 +313,7 @@ app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/tags', TagsPage),
   ('/chi', ChiSiamoPage),
-  ('/map', CMMapDataHandler),
-  ('/menu', CMMenuDataHandler),
-  ('/menuslide', CMMenuSlideHandler),
+  ('/map', CMMapDataHandler),  
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler)

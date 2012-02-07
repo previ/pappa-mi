@@ -122,12 +122,12 @@ class Commissione(model.Model):
   
   @classmethod
   def get_by_citta(cls, citta_key):
-    commissioni = memcache.get("cm-citta-"+citta.key.id())
+    commissioni = memcache.get("cm-citta-"+str(citta_key.id()))
     if commissioni == None:
       commissioni = list()
       for cm in Commissione.query().filter(Commissione.citta == citta_key).order(Commissione.nome):
         commissioni.append(cm)
-      memcache.add("cm-citta-"+citta.key.id(), commissioni)
+      memcache.add("cm-citta-"+str(citta_key.id()), commissioni)
     return commissioni
 
   @classmethod
@@ -985,9 +985,9 @@ class StatisticheIspezioni(model.Model):
   
   def getNome(self):
     if self.centroCucina:
-      return self.centroCucina.nome
+      return self.centroCucina.get().nome
     elif self.commissione:
-      return self.commissione.nome
+      return self.commissione.get().nome
     else:
       return "Tutte"
     

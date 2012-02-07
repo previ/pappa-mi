@@ -171,6 +171,18 @@ handlers:
   
 - url: /protected
   script: py.eauth.main.application
+
+- url: /menu/.*
+  script: py.menu.app
+
+- url: /menu/*
+  script: py.menu.app
+  
+- url: /menuslide/.*
+  script: py.menu.app
+
+- url: /menuslide/*
+  script: py.menu.app
   
 - url: .*
   script: py.main.app

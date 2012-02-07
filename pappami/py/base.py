@@ -80,8 +80,8 @@ class BasePage(webapp.RequestHandler):
       ctx = dict()
       commissario = self.getCommissario(users.get_current_user())
       if commissario:
-        ctx["citta_key"] = str(commissario.citta)
-        ctx["cm_key"] = str(commissario.commissione().key)
+        ctx["citta_key"] = commissario.citta.id()
+        ctx["cm_key"] = commissario.commissione().key.id()
         ctx["cm_name"] = str(commissario.commissione().desc())
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
@@ -276,22 +276,19 @@ class CMCommissioniDataHandler(BasePage):
     if city == "" and self.getCommissario(user):
       city = self.getCommissario(user).citta
     else:
-      city = model.Key(city)
+      city = model.Key("Citta", int(city))
 
     buff = ""
-    if city:
-      buff = memcache.get("cm_city_json_"+str(city))
-      if(buff is None):
-        cmlist = list()  
-        cms = Commissione.get_by_citta(city)
-        for cm in cms:
-          cmlist.append({'value': str(cm.key), 'label':cm.nome + ' - ' + cm.tipoScuola})
-          #cmlist.append({'key': str(cm.key), 'nome':cm.nome + ' - ' + cm.tipoScuola})
+    buff = memcache.get("cm_city_json_"+str(city.id()))
+    if(buff is None):
+      cmlist = list()  
+      cms = Commissione.get_by_citta(city)
+      for cm in cms:
+        cmlist.append({'value': str(cm.key.id()), 'label':cm.nome + ' - ' + cm.tipoScuola})
+      
+      buff = json.JSONEncoder().encode(cmlist)      
         
-        #buff = json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': cmlist})      
-        buff = json.JSONEncoder().encode(cmlist)      
-          
-        memcache.add("cm_city_json_"+str(city), buff)
+      memcache.add("cm_city_json_"+str(city.id()), buff)
           
     expires_date = datetime.utcnow() + timedelta(20)
     expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
@@ -398,11 +395,15 @@ class CMMenuHandler(BasePage):
     cm = None
     commissario = self.getCommissario(users.get_current_user())
     if self.request.get("cm") != "":
-      cm = Commissione.get(model.Key("Commissione",int(self.request.get("cm"))))
+      cm = model.Key("Commissione",int(self.request.get("cm"))).get()
     elif commissario and commissario.commissione() :
       cm = commissario.commissione()
     else:
-      cm = Commissione.all().get()
+      if commissario and commissario.citta:
+        cm = Commissione.get_by_citta(commissario.citta).get()
+      else:
+        cm = Commissione.get_by_citta(Citta.get_first().key).get()
+      
     date = self.request.get("data")
     if date:
       date = datetime.strptime(date,Const.DATE_FORMAT).date()
@@ -413,7 +414,7 @@ class CMMenuHandler(BasePage):
     datep = date1 - timedelta(7)
     daten = date1 + timedelta(7)
 
-    template_values['menu'] = self.getMenuWeek(date1, cm )
+    template_values['menu'] = self.getMenuWeek(date1, cm)
     template_values['data'] = date
     template_values['data1'] = date1
     template_values['datap'] = datep

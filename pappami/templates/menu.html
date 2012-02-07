@@ -3,15 +3,6 @@
 <script src="/js/jquery.anythingslider.min.js"></script>
 <style>
 #slider { width: 870px; height: 450px; }
-
-.mt {padding:0px;}
-.md {padding:0px;}
-.cg {cursor: hand;}
-a {text-decoration:none;}
-.dayheader {}
-.day1 {}
-.day2 {}
-.today {}
 </style>
 <script> 
 $(function(){
@@ -51,39 +42,35 @@ $(function(){
   }
  }; 
 
+ chgscope();
+
  $('#slider').load("/menuslide", function() {$('#slider').anythingSlider(); });
 
- $("#e_chgscope").popover({html: true, trigger: "manual", placement: "below", content:function(){return $("#d_chgscope").html();}}); 
- $('#e_chgscope').click(chgscope);
 });
 
-function chgscope() {
- if($('#f_chgscope').is(':visible')) {
-  $("#e_chgscope").popover('hide');
- } else {
-  $("#e_chgscope").popover('show');
- }
-}
 </script>
 {%set tab_menu="active"%}
 {%include "navigation.html"%}
 <ul class="nav nav-tabs">
 <li class="dropdown">
- <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-  <div class="span5">Il Menu in vigore per la Scuola {{cm.nome}} - {{cm.tipoScuola}}</div>
-  <b class="caret"></b>
+ <a class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
+  Menu per la Scuola <b>{{ctx.cm_name}}</b><b class="caret"></b>
  </a>
- <ul class="dropdown-menu dropdown-form">
-  <form class="form-vertical" id="f_chgscope" onsubmit="$('#d_chgscope').popover('hide');return false;">
-   <div class="control-group">
-    <label>Scuola: </label>
-    <div class="controls">
-     <input type="text">
+ <ul class="dropdown-menu dropdown-large">
+  <form class="form-vertical" id="f_chgscope" action="/menu" method="post">
+    <label for="citta">Citt&agrave;</label>
+    <select class="large required" id="citta" name="citta" value="{{ctx.citta_key}}">
+    <option value=""></option>
+    {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+    </select>
+    <label for="commissione_sel">Scuola (Commissione Mensa)</label>
+    <div class="input"><input class="large" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+    <input type="hidden" id="commissione" name="cm" value="{{ctx.cm_key}}"/>
     </div>
     <div class="controls">
-     <button type="submit" class="btn primary">Ok</button>&nbsp;<button type="reset" class="btn" onclick="$('#d_chgscope').popover('hide');">Annulla</button>
-    </div>  
-   </div>
+      <button type="submit" class="btn primary" onclick="$('#e_chgscope').popover('hide');">Ok</button>
+      <button type="reset" class="btn" onclick="$('#e_chgscope').popover('hide');">Annulla</button>
+    </div>
   </form>
  </ul>
 </li>
