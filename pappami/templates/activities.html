@@ -1,17 +1,4 @@
-﻿<style> 
-label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
-.ui-button { margin-left: -1px; }
-.ui-button-icon-only .ui-button-text { padding: 0.35em; } 
-.ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }
-</style> 
-<link href="/css/comments.css" rel="stylesheet" type="text/css" media="screen"/>
-<link href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
-<script type="text/javascript" src="/js/jquery.form.js"></script> 
-<script type="text/javascript" src="/js/jquery.taghandler.js"></script> 
-<script type="text/javascript" src="/js/comments.js"></script> 
-<script src="/js/jform.js" type="text/javascript"></script>
-<script type="text/javascript" src="/js/tiny_mce/jquery.tinymce.js"></script>
-<script type="text/javascript"> 
+﻿<script type="text/javascript"> 
 
 var query = "";
 var offset = 1;
@@ -21,7 +8,12 @@ $(document).ready(function() {
     // bind 'myForm' and provide a simple callback function 
     $('textarea').autogrow();
     //$("#new-msg-form").validate();
-    $('#activity_list').load('/comments/load', function(){$('#e_act_more').bind( "click", function(){moreactivities();} );});
+    $('#activity_list').load('/comments/load', function(){
+      $('#e_act_more').bind( "click", function(){moreactivities();} );
+      $('#act_loading').hide();      
+      $("#nav-sec").children().removeClass("active");
+      $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
+    });
     
     $('#form_filter').ajaxForm({ beforeSubmit: function(data) { 
       query = $.param(data);
@@ -319,9 +311,11 @@ function filteractivities(q) {
   }
   offset=0;
   $.ajax({url:'/comments/load?'+query+'&offset='+offset, success: function(data){
-    $('#activity_list').text('');
+    $('#activity_list').html('');
     $('#activity_list').append(data);    
     offset += 1;
+    $("#nav-sec").children().removeClass("active");
+    $("#"+query.replace(/&/gi, "").replace(/=/gi, "")).addClass("active");
   }}); 
 }
 
@@ -392,25 +386,31 @@ function moreactivities() {
     </div>
    </div>     
 {%endif%}
+    <div id="act_loading" style="text-align:center;">Loading...</div>
     <ul class="activity_list" id="activity_list"></ul>
   </div>
+  
   <div class="span3">
-    <h4>Scuole</h4>
-      {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<div><a href="#" onclick="filteractivities('cm={{cm.key.id()}}')">{{cm.desc()}}</a></div>
+    <ul class="nav nav-list" id="nav-sec">
+      <li class="nav-header"><i class="icon-home"></i>
+	Scuole
+      </li>
+      {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<li id="cm{{cm.key.id()}}typeusertag"><a href="#" onclick="filteractivities('cm={{cm.key.id()}}&type=&user=&tag=')">{{cm.desc()}}</a></li>
       {%endfor%}{%endif%}
-    <h4>Tipo dati</h4>
-      <div><a href="#"  onclick="filteractivities('user=!&type=!&tag=!')">Tutto</a></div>
-      <div class="divider"></div>{%if commissario or genitore%}
-      <div><a href="#" onclick="filteractivities('user={{user.email()}}')">Inseriti da me</a></div>
-      <div class="divider"></div>{%endif%}
-      <div><a href="#" onclick="filteractivities('type=201')">Messaggi</a></div>
-      <div><a href="#" onclick="filteractivities('type=101')">Ispezioni</a></div>
-      <div><a href="#" onclick="filteractivities('type=102')">Ispezioni Diete</a></div>
-      <div><a href="#" onclick="filteractivities('type=103')">Non conformit&agrave;</a></div>
-      <div><a href="#" onclick="filteractivities('type=104')">Note</a></div>    
-    <h4>Categorie</h4>
-    <ul class="">
-      {%for tag in tags%}<li><a href="#" onclick="filteractivities('tag={{tag.nome}}')">{{tag.nome}}</a></li>
+      <li class="nav-header"><i class="icon-file"></i>
+	Tipo dati
+      </li>
+      <li id="cmusertypetag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
+      <li class="divider"></li>{%if commissario or genitore%}
+      <li id="user{{user.email()}}typetagcm"><a href="#" {%if ctx.user == user.email()%}class="active"{%endif%} onclick="filteractivities('user={{user.email()}}&type=&tag=&cm=')">Inseriti da me</a></li>
+      <li class="divider"></li>{%endif%}
+      <li id="cmtype201usertag"><a href="#" onclick="filteractivities('cm=&type=201&user=&tag=')">Messaggi</a></li>
+      <li id="cmtype101usertag"><a href="#" onclick="filteractivities('cm=&type=101&user=&tag=')">Ispezioni</a></li>
+      <li id="cmtype102usertag"><a href="#" onclick="filteractivities('cm=&type=102&user=&tag=')">Ispezioni Diete</a></li>
+      <li id="cmtype103usertag"><a href="#"  onclick="filteractivities('cm=&type=103&user=&tag=')">Non conformit&agrave;</a></li>
+      <li id="cmtype104usertag"><a href="#" onclick="filteractivities('cm=&type=104&user=&tag=')">Note</a></li>    
+      <li class="nav-header"><i class="icon-tags"></i>Categorie</li>
+      {%for tag in tags%}<li id="cmtypeusertag{{tag.nome}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>
       {%endfor%}
     </ul>    
   </div>  

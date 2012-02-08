@@ -16,6 +16,7 @@ class Messaggio(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissario = None
     self._tags = None
+    self._votes = None
     super(Messaggio, self).__init__(*args, **kwargs)  
 
   root = model.KeyProperty()
@@ -46,7 +47,7 @@ class Messaggio(model.Model):
           count += 1
           if count > Const.ACTIVITY_FETCH_LIMIT:
             break
-          activities.append(tagobj.obj)
+          activities.append(tagobj.obj.get())
       activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
       memcache.add("msg-tag-" + tagname + "-" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
@@ -170,12 +171,14 @@ class Messaggio(model.Model):
     return canvote
 
   def get_votes(self):
-    voti = memcache.get("msg-voti-"+str(self.key.id()))
+    voti = self._votes
+    #voti = memcache.get("msg-voti-"+str(self.key.id()))
     if voti is None:
       voti = list()
       for voto in Voto.get_by_msg(self.key):
         voti.append(voto)
-      memcache.add("msg-voti-"+str(self.key.id()), voti)
+      #memcache.add("msg-voti-"+str(self.key.id()), voti)
+      self._votes = voti
     return voti
   
   def vote(self, vote, user):
@@ -190,7 +193,8 @@ class Messaggio(model.Model):
       voto.key.delete()
     else:
       voto.put()
-    memcache.delete("msg-voti-"+str(self.key.id()))
+    #memcache.delete("msg-voti-"+str(self.key.id()))
+    self.votes = None
   
   def data(self):
     delta = datetime.now() - self.creato_il
@@ -307,6 +311,10 @@ class TagObj(model.Model):
   @classmethod
   def get_by_obj_key(cls, obj):
     return TagObj.query().filter(TagObj.obj == obj)
+  
+  @classmethod
+  def get_by_tag(cls, tag):
+    return TagObj.query().filter(TagObj.tag == tag.key)
   
 class Voto(model.Model):
   def __init__(self, *args, **kwargs):

@@ -1,10 +1,5 @@
-<style>
-.highlight {
-  background: #ccffcc;  
-}
-</style>
-<div id="formwiz-progress" style="font-size:smaller;">
-<ul class="tabs">
+<div id="formwiz-progress">
+<ul class="nav nav-tabs">
 <li id="formwiz-progress-step1"><a>Intestazione</a></li>
 <li id="formwiz-progress-step2"><a>Ambiente e Attrezzature</a></li>
 <li id="formwiz-progress-step3"><a>Gradimento</a></li>
@@ -18,28 +13,28 @@
 <input type="hidden" name="key" value="{{key}}"/>
 <div class="step form-stacked" id="step1">
  <div class="row">
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_commissione">Commissione</label>
+  <div class="span4">
+   <label for="e_commissione">Commissione</label>
    <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
     <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
    </select>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_dataNonconfViz">Data Ispezione</label>
-   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="required" name="dataIspezioneViz" value="" id="e_dataIspezioneViz"/>
+  <div class="span2">
+   <label for="e_dataNonconfViz">Data Ispezione</label>
+   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="span2 required" name="dataIspezioneViz" value="" id="e_dataIspezioneViz"/>
    <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
   </div>
-  <div class="span4 box1">
-   <label class="label_isp_1" for="e_turno">Turno</label>
-   <select name="turno" id="e_turno" class="required">
+  <div class="span2">
+   <label for="e_turno">Turno</label>
+   <select name="turno" id="e_turno" class="span2 required">
     <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
     <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
    </select>
   </div>
  </div>
  <div class="row">
-  <div class="span8 box1">
-   <label class="label_isp_1" for="e_commissione">Tipo Dieta</label>
+  <div class="span8">
+   <label for="e_commissione">Tipo Dieta</label>
    <select name="tipoDieta" id="e_tipoDieto" class="required span8" value="{{form.data.tipoDieta}}" required="true">
    <option value=""></option>
    <option value="1">menu privo di fave e piselli</option>
@@ -70,48 +65,48 @@
   </div>
  </div>
 </div>
-<div class="step" id="step2">
+<div class="step form-horizontal" id="step2">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="label_isp_1">Etichetta &egrave; leggibile?</label>
-    <div class="input">   
+  <div class="span8">
+   <div class="control-group">
+    <label >Etichetta &egrave; leggibile?</label>
+    <div class="controls">   
      <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
       <label class="btn"><input type="radio" name="etichettaLeggibile" value="1" class="required" id="e_aarc_1" {%if form.data.etichettaLeggibile == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="etichettaLeggibile" value="0" class="required" id="e_aarc_2" {%if form.data.etichettaLeggibile == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">La vaschetta &egrave; pi&ugrave; fredda, al tatto, rispetto al piatto del vicino ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >La vaschetta &egrave; pi&ugrave; fredda, al tatto, rispetto al piatto del vicino ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
       <label class="btn"><input type="radio" name="temperaturaVaschetta" value="1" class="required" id="e_aata_1" {%if form.data.temperaturaVaschetta == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="temperaturaVaschetta" value="0" class="required" id="e_aatp_2" {%if form.data.temperaturaVaschetta == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Bambino seduto vicino educatore ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Bambino seduto vicino educatore ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
       <label class="btn"><input type="radio" name="vicinoEducatore" value="1" class="required" id="e_aatp_1" {%if form.data.vicinoEducatore == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="vicinoEducatore" value="0" class="required" id="e_aatp_1" {%if form.data.vicinoEducatore == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Vaschetta travasata in altro piatto e conservata ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Vaschetta travasata in altro piatto e conservata ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="vaschettaOriginale" value="1" class="required" id="e_aaac_1" {%if form.data.vaschettaOriginale == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="vaschettaOriginale" value="0" class="required" id="e_aaac_1" {%if form.data.vaschettaOriginale == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Se il cibo non &egrave; condito trova facilmente in refettorio olio, aceto, sale e formaggio ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Se il cibo non &egrave; condito trova facilmente in refettorio olio, aceto, sale e formaggio ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup" title="Se il cibo non &egrave; condito trova facilmente in refettorio olio, aceto, sale e formaggio ?">
       <label class="btn"><input type="radio" name="condimentiVicini" value="1" class="required" id="e_aata_1" {%if form.data.condimentiVicini == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="condimentiVicini" value="0" class="required" id="e_aata_1" {%if form.data.condimentiVicini == "0" %}CHECKED{%endif%}/>No</label>
@@ -121,30 +116,30 @@
   </div>
  </div>
 </div>
-<div class="step" id="step3">
+<div class="step form-horizontal" id="step3">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="label_isp_1">Il bambino ha mangiato almeno met&agrave; del primo ?</label>
-    <div class="input">   
+  <div class="span8">
+   <div class="control-group">
+    <label >Il bambino ha mangiato almeno met&agrave; del primo ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="primoAccettato" value="1" class="required" id="e_ncsv_1" {%if form.data.primoAccettato == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="primoAccettato" value="0" class="required" id="e_ncsv_1" {%if form.data.primoAccettato == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Il bambino ha mangiato almeno met&agrave; del secondo ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Il bambino ha mangiato almeno met&agrave; del secondo ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="secondoAccettato" value="1" class="required" id="e_nclp_1" {%if form.data.secondoAccettato == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="secondoAccettato" value="0" class="required" id="e_nclp_1" {%if form.data.secondoAccettato == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Il bambino ha mangiato almeno met&agrave; del contorno ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Il bambino ha mangiato almeno met&agrave; del contorno ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="contornoAccettato" value="1" class="required" id="e_ncte_1" {%if form.data.contornoAccettato == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="contornoAccettato" value="0" class="required" id="e_ncte_1" {%if form.data.contornoAccettato == "0" %}CHECKED{%endif%}/>No</label>
@@ -154,65 +149,65 @@
   </div>
  </div>
 </div>
-<div class="step" id="step4">
+<div class="step form-horizontal" id="step4">
  <div class="row">
-  <div class="span12">
-   <div class="clearfix">
-    <label class="label_isp_1">Il bambino ha mangiato almeno met&agrave; della frutta ?</label>
-    <div class="input">   
+  <div class="span8">
+   <div class="control-group">
+    <label >Il bambino ha mangiato almeno met&agrave; della frutta ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="fruttaAccettata" value="1" class="required" id="e_ncti_1" {%if form.data.fruttaAccettata == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="fruttaAccettata" value="0" class="required" id="e_ncti_1" {%if form.data.fruttaAccettata == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Domani vorrebbe mangiare lo stesso primo ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Domani vorrebbe mangiare lo stesso primo ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="gradimentoPrimo" value="1" class="required" id="e_nctf_1" {%if form.data.gradimentoPrimo == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="gradimentoPrimo" value="0" class="required" id="e_nctf_1" {%if form.data.gradimentoPrimo == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Domani vorrebbe mangiare lo stesso secondo ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Domani vorrebbe mangiare lo stesso secondo ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="gradimentoSecondo" value="1" class="required" id="e_nctg_1" {%if form.data.gradimentoSecondo == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="gradimentoSecondo" value="0" class="required" id="e_nctg_1" {%if form.data.gradimentoSecondo == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Domani vorrebbe mangiare lo stesso contorno ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Domani vorrebbe mangiare lo stesso contorno ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="gradimentoContorno" value="1" class="required" id="e_ncth_1" {%if form.data.gradimentoContorno == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="gradimentoContorno" value="0" class="required" id="e_ncth_1" {%if form.data.gradimentoContorno == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Consegnerai questa valutazione ai genitori del bambino, tramite l'educatore ?</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Consegnerai questa valutazione ai genitori del bambino, tramite l'educatore ?</label>
+    <div class="controls">   
      <div class="radio-group btngroup">
       <label class="btn"><input type="radio" name="comunicazioneGenitori" value="1" class="required" id="e_ncti_1" {%if form.data.comunicazioneGenitori == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="comunicazioneGenitori" value="0" class="required" id="e_ncti_1" {%if form.data.comunicazioneGenitori == "0" %}CHECKED{%endif%}/>No</label>
      </div>
     </div>
    </div>
-   <div class="clearfix">
-    <label class="label_isp_1">Note</label>
-    <div class="input">   
+   <div class="control-group">
+    <label >Note</label>
+    <div class="controls">   
      <textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
     </div>
    </div>
-   <div class="clearfix">
-    <div class="span12 box1">
-     <label class="label_isp_1">Categorie</label>
+   <div class="control-group">
+    <div class="span8">
+     <label >Categorie</label>
      <div class="comment_tags">  
-      <div style="width:40em; display:inline;">
+      <div>
        <ul id="wiz_tags_handler"></ul>
       </div>
      </div>
@@ -237,34 +232,19 @@ $(function() {
 	  //error.appendTo( element.parent().parent() );
 	  //alert(error.text());
 	  $($($(element).parent()).parent()).attr("title", error.text());
-	  $($($(element).parent()).parent()).twipsy({title:'data-original-title', trigger:'manual'});
-	  $($($(element).parent()).parent()).twipsy('show');
+	  $($($(element).parent()).parent()).tooltip({title:'data-original-title', trigger:'manual'});
+	  $($($(element).parent()).parent()).tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('show');
+	    $($($(element).parent()).parent()).tooltip('show');
 	    //alert("pippo");
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
 	 },
 	unhighlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).twipsy('hide');
+	    $($($(element).parent()).parent()).tooltip('hide');
 	    //alert("pappo");	
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
 	 }
-       });
- $("[title]").mbTooltip({
-  opacity : .90, //opacity
-  wait:500, //before show
-  ancor:"mouse", //"parent"
-  cssClass:"default", // default = default
-  timePerWord:70, //time to show in milliseconds per word
-  hasArrow:false,
-  color:"white",
-  imgPath:"img/",
-  shadowColor:"black",
-  fade:500
- });
- $('.radio-group > label').radioGroup();
- $('.btn.toggle').toggleBtn();
- 
+}); 
 });
 </script>

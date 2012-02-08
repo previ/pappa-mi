@@ -90,22 +90,8 @@ class MainPage(BasePage):
     template_values["content"] = "activities.html"
     template_values["host"] = self.getHost()
     
-    #tags = list()
-    #types = list()
-    #userlist = list()
-    #if self.request.get("tag") != "":
-      #tags.append(self.request.get("tag"))
-    #if self.request.get("type") != "":
-      #types.append(int(self.request.get("type")))
-    #if self.request.get("user") != "":
-      #userlist.append(self.request.get("user"))
-    
-    #act_filter = ActivityFilter(tags,types,userlist)
-    #template_values["activities"] = self.get_activities_by_filter(act_filter)
-
     template_values["tags"] = self.getTopTags()
    
-
     self.getBase(template_values)
     
   def getStats(self):
@@ -146,31 +132,7 @@ class CMCondizioniHandler(BasePage):
     template_values = dict()
     template_values["main"] = "../templates/condizioni.html"
     self.getBase(template_values)    
-    
-class CMMenuDataHandler(CMMenuHandler):
-  
-  def get(self): 
-    if( self.request.get("cmd") == "getbydate" ):
-      menu = Menu();
-      data = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
-      c = model.Key("Commissione", int(self.request.get("commissione"))).get()
-      menu = self.getMenu(data, c)[0]
-      
-      json.dump(menu.to_dict(), self.response.out)
-      logging.info(json.dumps(menu.to_dict()))
-
-    else:
-      template_values = dict()
-      template_values['content'] = 'menu.html'      
-      self.getBase(template_values)
-
-class CMMenuSlideHandler(CMMenuHandler):
-  
-  def get(self): 
-    template_values = dict()
-    template_values['main'] = 'menu_slides.html'    
-    self.getBase(template_values)
-      
+         
 class CMMapDataHandler(webapp.RequestHandler):
   
   def get(self): 
@@ -295,9 +257,6 @@ class ChiSiamoPage(BasePage):
     self.getBase(template_values)
 
 config = {
-    'webapp2_extras.sessions': {
-        'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
-    },
     'webapp2_extras.auth': {
         #        'user_model': 'models.User',
         'user_attributes': ['displayName', 'email'],

@@ -85,13 +85,13 @@ class CMCommentHandler(BasePage):
   return the delta activity stream in html
   """
   def post(self):
-    par = None
+    par_key = None
     rif = self.request.get("par")
     if rif:
-      par = model.Key("Messaggio", int(rif)).get()
+      par_key = model.Key("Messaggio", int(rif))
 
     messaggio = Messaggio()
-    messaggio.par = par.key
+    messaggio.par = par_key
     messaggio.tipo = int(self.request.get("tipo"))
     messaggio.livello = int(self.request.get("livello"))
     messaggio.titolo = self.request.get("titolo")
@@ -102,7 +102,8 @@ class CMCommentHandler(BasePage):
     logging.info("testo: " + self.request.get("testo"))
     logging.info("last: " + self.request.get("last"))
     
-    if messaggio.livello > 0:
+    if messaggio.livello > 0 and par_key:
+      par = par_key.get()
       commenti = par.commenti
       if commenti is None:
         commenti = 0
