@@ -28,6 +28,7 @@ import webapp2 as webapp
 import jinja2
 from webapp2_extras import sessions
 from google.appengine.api import memcache
+from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 
@@ -59,7 +60,7 @@ class BasePage(webapp.RequestHandler):
 
   def dispatch(self):
     # Get a session store for this request.
-    sessions.default_config['secret_key'] = "secretsecretsecret" 
+    sessions.default_config['secret_key'] = "wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY" 
     self.session_store = sessions.get_store(request=self.request)
 
     try:
@@ -67,12 +68,14 @@ class BasePage(webapp.RequestHandler):
         webapp.RequestHandler.dispatch(self)
     finally:
         # Save all sessions.
+        logging.info(self.get_context())
+        self.set_context()
         self.session_store.save_sessions(self.response)
 
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
-      return self.session_store.get_session(backend="memcache")   
+    return self.session_store.get_session(backend="memcache")   
     
   def get_context(self):
     ctx = self.session.get("ctx")
@@ -87,9 +90,23 @@ class BasePage(webapp.RequestHandler):
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
       ctx["anno"] = str(anno)
-      self.session["ctx"] = ctx
+      self.session["ctx"] = ctx      
     return ctx
 
+  def set_context(self):
+    self.session["ctx"] = self.session["ctx"]
+  
+  def get_or_set_ctx(self, key, value):
+    if value != None:
+      self.get_context()[key] = value
+      self.set_context()
+    elif value == "" and key in self.get_context():
+      del self.get_context()[key]
+      value = None
+    else:
+      value = self.get_context().get(key)
+    return value
+    
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
@@ -177,49 +194,24 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    tag = self.request.get("tag")     
-    if tag != "":
-      self.session['tag'] = tag
+    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
-    tag = self.session.get('tag')     
-    if tag is None:
-      tag = "!"
-      self.session['tag'] = tag
-        
-    msgtype = self.request.get("type")     
-    if msgtype != "":
-      self.session['type'] = msgtype
-
-    msgtype = self.session.get('type')     
-    if msgtype is None:
-      msgtype = "!"
-      self.session['type'] = msgtype
-
-    user = self.request.get("user")     
-    if user != "":
-      self.session['user'] = user
-
-    user = self.session.get('user')     
-    if user is None:
-      user = "!"
-      self.session['user'] = user
-
-    cm = self.request.get("cm")     
-    if cm != "":
-      self.session['cm'] = cm
-      
-    if tag != "!" and tag != "":
+    tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
+    msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
+    user = self.get_or_set_ctx("user", self.request.get("user", None))
+    cm = self.get_or_set_ctx("cm", self.request.get("cm", None))
+          
+    if tag:
       activities = Messaggio.get_by_tagname(tag,offset)
-    elif msgtype != "!" and msgtype != "":
+    elif msgtype:
       activities = Messaggio.get_by_msgtype(int(msgtype),offset)
-    elif user != "!" and user != "":
+    elif user:
       activities = Messaggio.get_by_user(user,offset)
-    elif cm != "!" and cm != "":
+    elif cm:
       activities = Messaggio.get_by_grp(model.Key("Commissione", int(cm)),offset)
     else:
       activities = Messaggio.get_all(offset)
     
-    logging.info(len(activities))
     return activities
   
   #def get_activities_by_filter(self, activity_filter):

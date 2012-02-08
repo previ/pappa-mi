@@ -21,7 +21,7 @@ class Citta(model.Model):
   provincia = model.StringProperty()
   geo = model.GeoPtProperty()
 
-  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_da = model.UserProperty(auto_current_user=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
   modificato_da = model.UserProperty(auto_current_user=True)
   modificato_il = model.DateTimeProperty(auto_now=True)

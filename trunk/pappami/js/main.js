@@ -36,6 +36,3 @@ function chgscope() {
     } 
   });    
 }
-
-$(document).ready(function(){
-});
