@@ -1,7 +1,7 @@
 <script type="text/javascript">
 var piattounico = false;
 </script>
-<div id="formwiz-progress">
+<div id="formwiz-progress" class="modal hide fade in">
 <ul class="nav nav-tabs">
 <li id="formwiz-progress-step1"><a>Intestazione</a></li>
 <li id="formwiz-progress-step2"><a>Ambiente</a></li>
@@ -13,7 +13,6 @@ var piattounico = false;
 <li id="formwiz-progress-step8"><a>Giudizio globale</a></li>
 </ul>
 </div>
-<div id="formwiz-error"></div>
 <div class="" style="border:none;">
 <h1 id="title" class="table_separator" style="display:none;">Nuova Ispezione</h1>
 <form action="/isp/isp" method="post" id="form0" novalidate>
@@ -84,6 +83,11 @@ var piattounico = false;
     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
     <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
    </div>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span8" id="formwiz-container">
+   <div id="formwiz-error" class="alert alert-error fade in" style="display:none;"></div> 
   </div>
  </div>
 </div>
@@ -678,8 +682,8 @@ Specificare:<ul>
   </div>
  </div>
 </div>
-<div id="formnav" class="form-actions modal-actions">
- <input id="e_submit" class="btn primary" type="submit" onclick="" value="Avanti" style="float:right;"/> 
+<div id="formnav" class="modal-footer modal-actions">
+ <input id="e_submit" class="btn btn-primary" type="submit" onclick="" value="Avanti" style="float:right;"/> 
  <input type="reset" class="btn" onclick="" id="e_annulla" value="Indietro" style="float:right;"/>
 </div>
 </form>

@@ -51,7 +51,7 @@
 	  </div>
 	</div>
 	<div class="control-group">
-	  <div class="controls" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key.id()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">x</a><p><b>{{cm.desc()}}</b></p></div>{%endfor%}
+	  <div class="controls" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key.id()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">&times;</a><p><b>{{cm.desc()}}</b></p></div>{%endfor%}
 	  </div>
 	</div>
 	</fieldset>
@@ -82,7 +82,7 @@
 </div>
 <div id="message" class="span12" style="display:none;">
 <div class="alert alert-info fade in" data-alert="alert">
-  <a class="close" href="#">x</a>
+  <a class="close" href="#">&times;</a>
   <p id="message_body"></p>
   <div class="alert-actions">
     <a class="btn" href="#" onclick="window.location.href='/'">Procedi</a>

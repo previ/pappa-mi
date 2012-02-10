@@ -6,8 +6,7 @@
 <li id="formwiz-progress-step4"><a>Assaggio</a></li>
 </ul>
 </div>
-<div id="formwiz-error">
-<div class="ui-widget ui-widget-content" style="border:none;">
+<div>
 <h1 class="table_separator" id="title" style="display:none;">Nuova Ispezione Diete Sanitarie ed Etico-Religiose</h1>
 <form action="/isp/dieta" method="post" id="form0" novalidate>
 <input type="hidden" name="key" value="{{key}}"/>
@@ -62,6 +61,11 @@
    <option value="23">menu privo di carni di origine animale</option>
    <option value="24">menu privo di carne e pesce</option>
    </select>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span8" id="formwiz-container">
+   <div id="formwiz-error" class="alert alert-error fade in" style="display:none;"></div> 
   </div>
  </div>
 </div>
@@ -216,8 +220,8 @@
   </div>
  </div>
 </div>
-<div id="formnav" class="actions modal-actions">
- <input id="e_submit" class="btn primary" type="submit" onclick="" value="Avanti" style="float:right;"/>
+<div id="formnav" class="modal-footer modal-actions">
+ <input id="e_submit" class="btn btn-primary" type="submit" onclick="" value="Avanti" style="float:right;"/>
  <input type="reset" onclick="" id="e_annulla" class="btn" value="Indietro" style="float:right;"/>
 </div>
 </form>

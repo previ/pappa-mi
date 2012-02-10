@@ -9,17 +9,16 @@
     <div>{{nota.note|replace("\n","<br/>")}}</div>
    </div>
 {% if nota.get_allegati() %}
-   <div for="e_attach">Allegati</div>
+   <div for="e_attach"><i class="icon-file"> Allegati</div>
    <div>{%for allegato in nota.get_allegati()%}
     <a href="{{allegato.path()}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}   
    </div>
 {% endif %}  
-   <div>Categorie</div>
-   <div>
+   <div><i class="icon-tags"></i>Categorie 
     {%for tag in nota.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
    </div>
 {% if preview %}
-   <div class="actions modal-actions">
+   <div class="modal-footer modal-actions">
     <form action="/isp/nota" method="POST" id="form1">
      <input type="hidden" name="preview" value="{{preview}}">
      <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
