@@ -100,7 +100,7 @@ window.onbeforeunload = closeIt;
   </div>
  </div>
 {% if preview %}
-<div class="actions modal-actions">
+<div class="modal-footer modal-actions">
  <form action="/isp/dieta" method="post" id="form1">
  <input type="hidden" name="preview" value="{{preview}}">
  <button type="reset" onclick="previewback();" style="float:right;">Torna a modifiche</button>

@@ -535,7 +535,7 @@
     function addTag(tagField, value, tags, sort) {
         tags.assignedTags.push(value);
         tags.availableTags = removeTagFromList(value, tags.availableTags);
-        $("<li />").addClass("tagItem").html("<span>"+value+"</span>&nbsp;|&nbsp;<a class='tagItemRemove' href='#'>x</a>").insertBefore($(tagField).parent());
+        $("<li />").addClass("tagItem").html("<span>"+value+"</span>&nbsp;|&nbsp;<a class='tagItemRemove' href='#'>&times;</a>").insertBefore($(tagField).parent());
 
         if (sort) {
             tags = sortTags(tags);

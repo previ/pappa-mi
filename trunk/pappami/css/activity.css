@@ -75,6 +75,7 @@ display: block;
 .activity_tag {
 color: rgb(59, 89, 152);
 text-decoration: none;
+cursor: pointer;
 }
 
 .activity_feedback, .activity_vote, .activity_vote_button, .activity_comments {

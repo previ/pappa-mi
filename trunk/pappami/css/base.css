@@ -414,14 +414,14 @@ box-sizing: border-box;
 .modal-footer-ex {
   position:absolute; 
   bottom:0; 
-  width:820px;
+  #width:820px;
 }
 
 .modal-actions {
-  float:right;
-  position:absolute;
-  bottom:0;
-  width:630px;
+  position: absolute; 
+  bottom:16px; 
+  width:782px; 
+  margin: 0px -16px -16px -16px;
 }
 
 i {
