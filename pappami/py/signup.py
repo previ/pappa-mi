@@ -148,7 +148,7 @@ class CMSignupHandler(BasePage):
     message.send()
     
 app = webapp.WSGIApplication([
-  ('/signup', CMSignupHandler),
+  ('/signup2', CMSignupHandler),
   ('/profilo/getcm', CMCommissioniDataHandler)], 
   debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
