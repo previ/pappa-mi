@@ -20,42 +20,94 @@ import cgi
 import logging
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
+import random
 
-from google.appengine.ext import db
+from ndb import model
+from engineauth import models
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
 
 from google.appengine.ext.webapp import util
-from py.base import BasePage
+from base import BasePage
 
 class LoginPage(BasePage):
   
   def get(self):
+    user = self.request.user if self.request.user else None
+    profiles = None
+    if user:
+      logging.info(user.to_dict())
     if not self.getCommissario(users.get_current_user()):
-      self.redirect("/registrazione")
+      logging.info("called")
+      template_values = dict()
+      template_values["main"] = 'eauth/main.html'
+      template_values["content"] = 'eauth/login.html'
+      self.getBase(template_values)
     else:
       self.redirect("/")
+  def post(self):
+    return self.get()
 
-class LoginReqPage(BasePage):
+class ProtectedPage(BasePage):
   
   def get(self):
-    logging.info("called")
-    template_values = dict()
-    template_values["continue"] = self.request.get("continue")
-    template_values["continue"] = 'login_required.html'
+    session = self.request.session if self.request.session else None
+    user = self.request.user if self.request.user else None
+    profiles = None
+    emails = None
+    if user:
+      profile_keys = [model.Key('UserProfile', p) for p in user.auth_ids]
+      profiles = model.get_multi(profile_keys)
+      emails = models.UserEmail.get_by_user(user.key.id())
+      template_values = {
+          'theuser': user,
+          'session': session,
+          'profiles': profiles,
+          'emails': emails,
+          'logout': users.create_logout_url("/eauth/logout"),
+      }
+      template_values["content"] = 'priv.html'
+      self.getBase(template_values)
+    else:
+      self.redirect("/login?next="+self.request.path)
+      
+  def post(self):
+    return self.get()
 
+class LogoutPage(BasePage):
+  
+  def get(self):
+    self.response.delete_cookie('_eauth')
+    self.redirect("/")            
+      
+class SignupPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["main"] = '/eauth/main.html'
+    template_values["content"] = '/eauth/signup.html'
+
+    self.session["cap_a"] = random.randint(1, 10)
+    self.session["cap_b"] = random.randint(1, 10)
+
+    template_values["cap_a"] = self.session["cap_a"]
+    template_values["cap_b"] = self.session["cap_b"]
+    
     self.getBase(template_values)
     
   def post(self):
-    self.redirect("/_ah/login_redir?claimid=" + self.request.get("openid_identifier") + "&" + "continue=" + self.request.get("continue"))
+    pass
+    
+    
     
 
 app = webapp.WSGIApplication([
   ('/login', LoginPage),
-  ('/_ah/login_required', LoginReqPage),
-  ('/_ah/login_required', LoginReqPage)
+  ('/logout', LogoutPage),
+  ('/priv', ProtectedPage),
+  ('/signin', SignupPage)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
   
 def main():
@@ -63,3 +115,4 @@ def main():
 
 if __name__ == "__main__":
   main()
+  

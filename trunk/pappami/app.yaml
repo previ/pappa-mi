@@ -161,17 +161,17 @@ handlers:
   script: py.commissioni.app
   
 - url: /login
-  script: py.eauth.main.application
+  script: py.login.app
+
+- url: /signin
+  script: py.login.app
+  
+- url: /priv
+  script: py.login.app
 
 - url: /logout
-  script: py.eauth.main.application
-
-- url: /home
-  script: py.eauth.main.application
+  script: py.login.app
   
-- url: /protected
-  script: py.eauth.main.application
-
 - url: /menu/.*
   script: py.menu.app
 
