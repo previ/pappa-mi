@@ -21,12 +21,12 @@ $(document).ready(function() {
 </script> 
 <div class="comment_container">
 <div class="comment_root">
- <div class="comment_feedback" id="votes_{{comment_root.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment_root.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment_root)}}">{{comment_root.likes()}}</span> persone<span id="vnum_{{comment_root.key.id()}}}_me" {%if comment_root.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
- <div class="comment_vote" id="vote_1_{{comment_root.key.id()}}}" style="display:{%if comment_root.canvote() %}inline{%else%}none{%endif%};">
+ <div class="comment_feedback" id="votes_{{comment_root.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment_root.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment_root)}}">{{comment_root.likes()}}</span> persone<span id="vnum_{{comment_root.key.id()}}}_me" {%if comment_root.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+ <div class="comment_vote" id="vote_1_{{comment_root.key.id()}}}" style="display:{%if comment_root.canvote(user) %}inline{%else%}none{%endif%};">
   <div class="comment_vote_button" id="vote_{{comment_root.key.id()}}}" onclick="onvote('{{comment_root.key.id()}}}',1)">Mi piace</div>
   <!--button id="vote_{{comment_root.key.id()}}}" onclick="onvote('{{comment_root.key.id()}}}',-1)">Non mi piace</button-->
  </div>
- <div class="comment_vote" id="vote_2_{{comment_root.key.id()}}}" style="display:{%if comment_root.canvote() %}none{%else%}inline{%endif%};">
+ <div class="comment_vote" id="vote_2_{{comment_root.key.id()}}}" style="display:{%if comment_root.canvote(user) %}none{%else%}inline{%endif%};">
   <div class="comment_vote_button" id="vote_{{comment_root.key.id()}}}" onclick="onunvote('{{comment_root.key.id()}}}')">Ho cambiato idea</div>
  </div>{%endif%}
 </div>

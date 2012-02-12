@@ -8,12 +8,9 @@
 <div class="row">
   <div class="span12">
     <ul class="nav nav-tabs">
-      <li class="active">
-	<a href="#profile" data-toggle="tab">Profilo</a>
-      </li>
-      <li>
-	<a href="#notifications" data-toggle="tab">Notifiche</a>
-      </li>
+      <li class="active"><a href="#profile" data-toggle="tab">Profilo</a></li>
+      <li><a href="#auth" data-toggle="tab">Account e Password</a></li>
+      <li><a href="#notifications" data-toggle="tab">Notifiche</a></li>
     </ul>
     <div class="tab-content">
       <div id="profile" class="tab-pane active">
@@ -52,6 +49,29 @@
 	</div>
 	<div class="control-group">
 	  <div class="controls" id="commissioni">{%for cm in cmsro.commissioni()%}<div class="list-item input-xlarge"><input type="hidden" id="commissione" name="commissione" value="{{cm.key.id()}}"/><a class="close" href="#" onclick="$(this).parent('div').remove();">&times;</a><p><b>{{cm.desc()}}</b></p></div>{%endfor%}
+	  </div>
+	</div>
+	</fieldset>
+      </div>
+      <div id="auth" class="tab-pane">
+	<fieldset>
+	<legend>Questo profilo &egrave; collegato ai seguenti account:</legend>	
+	<div class="control-group">    
+	  <div class="controls">Google:</div>
+	  <div class="controls">Facebook:</div>
+	  <div class="controls">Twitter:</div>
+	  <div class="controls">Yahoo:</div>
+	  <div class="controls">Pappa-Mi:</div>
+	</div>
+	<legend>Password</legend>	
+	<div class="control-group">
+	  <div class="controls">
+	    <label for="email">Email</label>
+	    <input id="email" name="email" value="" type="text" class="span3 email"/>
+	    <label for="password">Password</label>	  
+	    <input id="password" name="password" value="" type="password" class="span3 password"/>
+	    <label for="password2">Ripeti Password</label>
+	    <input id="password2" name="password" value="" type="password" class="span3 password"/>
 	  </div>
 	</div>
 	</fieldset>

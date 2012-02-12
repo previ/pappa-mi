@@ -13,7 +13,6 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
@@ -33,8 +32,7 @@ class CMGetIspDataHandler(BasePage):
 
   @commissario_required
   def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     logging.info("isp1")
     if( commissario is not None):    
       cm_id = self.request.get("cm")
@@ -102,8 +100,7 @@ class IspezioneHandler(BasePage):
 
   @commissario_required
   def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     if commissario is None or not commissario.isCommissario() :
       return
 
@@ -114,7 +111,7 @@ class IspezioneHandler(BasePage):
       if( isp.commissario.key == commissario.key):
         cancopy = True
       
-      comment_root = CMCommentHandler().getRoot(isp.key)
+      comment_root = CMCommentHandler.getRoot(isp.key)
         
       template_values = {
         'content': 'commissario/ispezione_read.html',
@@ -142,8 +139,7 @@ class IspezioneHandler(BasePage):
   @commissario_required
   def post(self):    
    
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
 
     preview = self.request.get("preview")
 
@@ -182,7 +178,7 @@ class IspezioneHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      template_values = CMCommentHandler().initActivity(isp.key, isp.commissione, 101, model.Key("Messaggio",int(self.request.get("last"))))
+      template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, model.Key("Messaggio",int(self.request.get("last"))), tags=isp.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -239,13 +235,12 @@ class NonconfHandler(BasePage):
   
   @commissario_required
   def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
 
     if( self.request.get("cmd") == "open" ):
       nc = Nonconformita.get(self.request.get("key"))
 
-      comment_root = CMCommentHandler().getRoot(nc.key)
+      comment_root = CMCommentHandler.getRoot(nc.key)
       
       template_values = {
         'main': 'ispezioni/nonconf_read.html',
@@ -291,8 +286,7 @@ class NonconfHandler(BasePage):
   @commissario_required
   def post(self):    
    
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
 
     preview = self.request.get("preview")
    
@@ -315,7 +309,7 @@ class NonconfHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nc.key, nc.commissione, 102, model.Key("Messaggio",int(self.request.get("last"))), nc.tags)
+      template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, model.Key("Messaggio",int(self.request.get("last"))), nc.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -367,15 +361,14 @@ class DietaHandler(BasePage):
   
   @commissario_required
   def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     if commissario is None or not commissario.isCommissario() :
       return
 
     if( self.request.get("cmd") == "open" ):
       dieta = Dieta.get(self.request.get("key"))
   
-      comment_root = CMCommentHandler().getRoot(dieta.key)
+      comment_root = CMCommentHandler.getRoot(dieta.key)
 
       template_values = {
         'content': 'commissario/dieta_read.html',
@@ -423,8 +416,7 @@ class DietaHandler(BasePage):
   @commissario_required
   def post(self):    
    
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
 
     preview = self.request.get("preview")
    
@@ -447,7 +439,7 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))))
+      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))), tag=dieta.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -496,8 +488,7 @@ class NotaHandler(BasePage):
   
   @commissario_required
   def get(self): 
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     if commissario is None or not commissario.isCommissario() :
       return
 
@@ -507,7 +498,7 @@ class NotaHandler(BasePage):
       if nota.allegato_set.count():
         allegati = nota.allegato_set
   
-      comment_root = CMCommentHandler().getRoot(nota.key)
+      comment_root = CMCommentHandler.getRoot(nota.key)
       
       template_values = {
         'content': 'commissario/nota_read.html',
@@ -554,8 +545,7 @@ class NotaHandler(BasePage):
   @commissario_required
   def post(self):    
    
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
 
     preview = self.request.get("preview")
    
@@ -580,7 +570,7 @@ class NotaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler().initActivity(nota.key, nota.commissione, 104, model.Key("Messaggio",int(self.request.get("last"))), nota.tags)
+      template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, model.Key("Messaggio",int(self.request.get("last"))), nota.tags, user=self.request.user)
       
     else:
       key = self.request.get("key")

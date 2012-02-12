@@ -12,7 +12,6 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
@@ -28,8 +27,7 @@ class CMProfiloHandler(BasePage):
   
   @user_required
   def get(self):
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     template_values = {
       'content': 'profilo.html',
       'cmsro': commissario,
@@ -39,8 +37,7 @@ class CMProfiloHandler(BasePage):
     
   @user_required
   def post(self):
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)

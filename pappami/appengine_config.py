@@ -37,7 +37,7 @@ remoteapi_CUSTOM_ENVIRONMENT_AUTHENTICATION = (
 
 engineauth = {
     # Login uri. The user will be returned here if an error occures.
-    'login_uri': '/login', # default 'login/'
+    'login_uri': '/eauth/login', # default 'login/'
     #'base_uri': '/', # this the base url for strategies. For example the login for facebook would now be '/routing/auth/facebook' and the callback would now be '/routing/auth/facebook/callback'. This isn't very well tested, so you might run into some problems. 
     # The user is sent here after successfull authentication.    
     'success_uri': '/',

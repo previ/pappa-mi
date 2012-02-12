@@ -30,12 +30,12 @@
   <div class="activity_summary" id="summary_{{activity.key.id()}}">{{activity.summary()}}</div>  
   <div class="activity_detail" id="detail_{{activity.key.id()}}"></div>
   <div class="activity_footer">   
-   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key.id()}}_me" {%if activity.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
-   <div class="activity_vote" id="vote_1_{{activity.key.id()}}" style="display:{%if activity.canvote() %}inline{%else%}none{%endif%};">
+   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key.id()}}_me" {%if activity.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+   <div class="activity_vote" id="vote_1_{{activity.key.id()}}" style="display:{%if activity.canvote(user) %}inline{%else%}none{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',1)">Mi piace</div>
     <!--button id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',-1)">Non mi piace</button-->
    </div>
-   <div class="activity_vote" id="vote_2_{{activity.key.id()}}" style="display:{%if activity.canvote() %}none{%else%}inline{%endif%};">
+   <div class="activity_vote" id="vote_2_{{activity.key.id()}}" style="display:{%if activity.canvote(user) %}none{%else%}inline{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onunvote('{{activity.key.id()}}')">Ho cambiato idea</div>
    </div>
    <div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:{%if activity.comments() > 0 %}inline{%else%}none{%endif%};" onclick="onexpcomments('{{activity.key.id()}}')"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>

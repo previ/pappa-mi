@@ -187,7 +187,7 @@ class CMDetailHandler(BasePage):
 class CMAvatarRenderHandler(BasePage):
   
   def get(self):
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.request.user)
     self.response.headers['Content-Type'] = "image/png"
     img = commissario.avatar_data
     logging.info("size: " + self.request.get("size"))

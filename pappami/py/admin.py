@@ -30,6 +30,7 @@ from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
+from engineauth import models
 
 from model import *
 from modelMsg import *
@@ -453,16 +454,16 @@ class CMAdminHandler(BasePage):
     if self.request.get("cmd") == "initStream":
       for isp in Ispezione().all():
         messaggio = Messaggio(par = isp, root = isp, grp = isp.commissione, tipo = 101, livello = 0, creato_da = isp.creato_da, creato_il = isp.creato_il, modificato_da = isp.modificato_da, modificato_il = isp.modificato_il)
-        db.put_async(messaggio)
+        messaggio.put_async()
       for nc in Nonconformita().all():
         messaggio = Messaggio(par = nc, root = nc, grp = nc.commissione, tipo = 102, livello = 0, creato_da = nc.creato_da, creato_il = nc.creato_il, modificato_da = nc.modificato_da, modificato_il = nc.modificato_il)
-        db.put_async(messaggio)
+        messaggio.put_async()
       for nota in Nota():
         messaggio = Messaggio(par = nota, root = nota, grp = nota.commissione, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
-        db.put_async(messaggio)
+        messaggio.put_async()
       for dieta in Dieta():
         messaggio = Messaggio(par = dieta, root = dieta, grp = dieta.commissione, tipo = 104, livello = 0, creato_da = dieta.creato_da, creato_il = dieta.creato_il, modificato_da = dieta.creato_da, modificato_il = dieta.creato_il)
-        db.put_async(messaggio)
+        messaggio.put_async()
       self.response.out.write("initStream Ok")
       return
 
@@ -473,7 +474,85 @@ class CMAdminHandler(BasePage):
           msg.put_async()
       self.response.out.write("initStream 2 Ok")
       return
+
+    if self.request.get("cmd") == "initStream3":
+      for msg in Messaggio().query():
+        if msg.c_ua is None:
+          a_id = models.User.generate_auth_id('google', msg.creato_da.user_id(), 'legacy')
+          logging.info("auth_id: " + str(a_id))
+          ua = models.User.get_by_auth_id(a_id)          
+          if ua:            
+            logging.info("email: " + str(ua.email))
+            msg.c_ua = ua.key
+          msg.put()
+      self.response.out.write("initStream 3 Ok")
+      return
+
+    if self.request.get("cmd") == "initStream4":
+      for v in Voto().query():
+        if v.c_ua is None:
+          a_id = models.User.generate_auth_id('google', v.creato_da.user_id(), 'legacy')
+          logging.info("auth_id: " + str(a_id))
+          ua = models.User.get_by_auth_id(a_id)          
+          if ua:            
+            logging.info("email: " + str(ua.email))
+            v.c_ua = ua.key
+          v.put()
+      for t in Tag().query():
+        if t.c_ua is None:
+          a_id = models.User.generate_auth_id('google', t.creato_da.user_id(), 'legacy')
+          logging.info("auth_id: " + str(a_id))
+          ua = models.User.get_by_auth_id(a_id)          
+          if ua:            
+            logging.info("email: " + str(ua.email))
+            t.c_ua = ua.key
+          t.put()
+      self.response.out.write("initStream 4 Ok")
+      return
     
+
+    if self.request.get("cmd") == "initAuthR":
+      logging.info("initAuth")
+      for c in Commissario.query().filter().fetch(limit=100):
+        c.usera = None
+        c.put()
+      self.response.out.write("initAuthR Ok")
+      return
+    
+    
+    if self.request.get("cmd") == "initAuth":
+      logging.info("initAuth")
+      for c in Commissario.query().filter().fetch(limit=50):
+        if c.usera is None:
+          logging.info("initAuth: " + str(c.user.email()))
+          auth_id = models.User.generate_auth_id('google', c.user.user_id(), 'legacy')
+          user_info = {
+              'auth_id': auth_id,
+              'uid': c.user.user_id(), # Unique ID to the service provider
+              'info': {
+                  'id': c.user.user_id(),
+                  'displayName': c.nome + " " + c.cognome,
+                  'name': {
+                      'formatted': c.nome + " " + c.cognome,
+                      'familyName': c.cognome,
+                      'givenName': c.nome,
+                      },
+                  'emails': [
+                      {
+                          'value': c.user.email()
+                      },
+                  ],
+              },
+              'extra': {
+                  }
+          }
+          profile = models.UserProfile.get_or_create(auth_id, user_info)
+          usera = models.User.get_or_create_by_profile(profile)
+          c.usera = usera.key
+          c.put()
+      self.response.out.write("initAuth Ok")
+      return
+
       
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)

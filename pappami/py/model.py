@@ -11,6 +11,7 @@ import threading
 from ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
+from google.appengine.api import users
 from ndb import model, context
 
 from common import Const
@@ -170,6 +171,7 @@ class Commissario(model.Model):
     super(Commissario, self).__init__(*args, **kwargs)  
 
   user = model.UserProperty()
+  usera = model.KeyProperty()
   nome = model.StringProperty()
   cognome = model.StringProperty()
   
@@ -195,12 +197,18 @@ class Commissario(model.Model):
 
   @classmethod
   def get_by_user(cls, user):
-    commissario = memcache.get("commissario-"+user.email())
+    commissario = memcache.get("commissario-"+user.get_id())
     if not commissario:
-      commissario = cls.query().filter(Commissario.user == user).get()
-      memcache.add("commissario-"+user.email(), commissario)
+      commissario = cls.query().filter(Commissario.usera == user.key).get()
+      if not commissario:
+        commissario = cls.query().filter(Commissario.user == users.User(user.email)).get()
+        if commissario:
+          commissario.usera = user.key
+          commissario.put()
+      memcache.add("commissario-"+user.get_id(), commissario)
     return commissario
   
+    
   @classmethod
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
