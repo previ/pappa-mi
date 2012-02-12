@@ -29,9 +29,10 @@ class Messaggio(model.Model):
   titolo = model.StringProperty(indexed=False)
   testo = model.TextProperty(indexed=False)
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_da = model.UserProperty()
+  c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  modificato_da = model.UserProperty()
   modificato_il = model.DateTimeProperty(auto_now=True)
 
   @classmethod
@@ -66,11 +67,11 @@ class Messaggio(model.Model):
     return activities
 
   @classmethod
-  def get_by_user(cls, user_email, offset=0):
-    activities = memcache.get("msg-user-" + user_email + "-" + str(offset))
+  def get_by_user(cls, user_id, offset=0):
+    activities = memcache.get("msg-user-" + user_id + "-" + str(offset))
     if activities == None:
       activities = list()
-      for msg in Messaggio.query().filter(Messaggio.creato_da == users.User(user_email)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+      for msg in Messaggio.query().filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
       memcache.add("msg-user-" + user_email + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
@@ -138,13 +139,14 @@ class Messaggio(model.Model):
 
   def invalidate_cache(self):
     for i in range(0,1000):
-      if memcache.get("msg-user-"+self.creato_da.email()+"-"+str(i)) == None:
+      if memcache.get("msg-user-"+str(self.c_ua.id())+"-"+str(i)) == None:
         break
-      memcache.delete("msg-user-"+self.creato_da.email()+"-"+str(i))
-    for i in range(0,1000):
-      if memcache.get("msg-grp-"+str(self.grp)+"-"+str(i)) == None:
-        break
-      memcache.delete("msg-grp-"+str(self.grp)+"-"+str(i))
+      memcache.delete("msg-user-"+str(self.c_ua.id())+"-"+str(i))
+    if self.grp:
+      for i in range(0,1000):
+        if memcache.get("msg-grp-"+str(self.grp.id())+"-"+str(i)) == None:
+          break
+        memcache.delete("msg-grp-"+str(self.grp.id())+"-"+str(i))
     for i in range(0,1000):
       if memcache.get("msg-type-"+str(self.tipo)+"-"+str(i)) == None:
         break
@@ -156,16 +158,16 @@ class Messaggio(model.Model):
     
   def get_commissario(self):
     if not self._commissario:
-      self._commissario = Commissario.get_by_user(self.modificato_da)
+      self._commissario = Commissario.get_by_user(self.c_ua.get())
     return self._commissario
     
   def likes(self):
     return len(self.get_votes())
 
-  def canvote(self):
+  def canvote(self, user):
     canvote = True
     for p_voto in self.get_votes():
-      if p_voto.creato_da == users.get_current_user():
+      if p_voto.c_ua == user.key:
         canvote = False
         break;
     return canvote
@@ -184,7 +186,7 @@ class Messaggio(model.Model):
   def vote(self, vote, user):
     voto = Voto()
     for p_voto in self.get_votes():
-      if p_voto.creato_da == user:
+      if p_voto.c_ua == user.key:
         voto = p_voto
         break;
     voto.messaggio = self.key
@@ -274,6 +276,7 @@ class Tag(model.Model):
   maxRef = int()
 
   creato_da = model.UserProperty(auto_current_user_add=True)
+  c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
 
   @classmethod
@@ -323,20 +326,21 @@ class Voto(model.Model):
   
   messaggio = model.KeyProperty(kind=Messaggio)
   voto = model.IntegerProperty()
-  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_da = model.UserProperty(auto_current_user_add=True)  
+  c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
   
   def author(self):
     if not self._commissario:
-      self._commissario = Commissario.get_by_user(self.creato_da)
+      self._commissario = Commissario.get_by_user(self.c_ua.get())
     return self._commissario.nomecompleto()
   def author_title(self):
     if not self._commissario:
-      self._commissario = Commissario.get_by_user(self.creato_da)
+      self._commissario = Commissario.get_by_user(self.c_ua.get())
     return self._commissario.titolo()
   def author_avatar(self):
     if not self._commissario:
-      self._commissario = Commissario.get_by_user(self.creato_da)
+      self._commissario = Commissario.get_by_user(self.c_ua.get())
     return self._commissario.avatar()
   
   @classmethod
@@ -356,7 +360,7 @@ class Group(model.Model):
   desc = model.TextProperty()
   
   stato = model.IntegerProperty()
-  creato_da = model.UserProperty(auto_current_user_add=True)
+  c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
   
 class UserGroup(model.Model):

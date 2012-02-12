@@ -81,7 +81,7 @@ class BasePage(webapp.RequestHandler):
     ctx = self.session.get("ctx")
     if ctx == None:
       ctx = dict()
-      commissario = self.getCommissario(users.get_current_user())
+      commissario = self.getCommissario(self.get_current_user())
       if commissario:
         ctx["citta_key"] = commissario.citta.id()
         ctx["cm_key"] = commissario.commissione().key.id()
@@ -106,19 +106,22 @@ class BasePage(webapp.RequestHandler):
     else:
       value = self.get_context().get(key)
     return value
-    
+
+  def get_current_user(self):
+    return self.request.user
+  
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
       self.redirect("http://www.pappa-mi.it")
         
-    user = users.get_current_user()
+    user = self.get_current_user()
     url = None
     if user:
-      url = users.create_logout_url("/")
+      url = "/eauth/logout"
       url_linktext = 'Esci'
     else:
-      url = users.create_login_url(self.request.uri)
+      url = "/eauth/login?next=" + self.request.uri
       url_linktext = 'Entra'
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
@@ -136,7 +139,7 @@ class BasePage(webapp.RequestHandler):
       user.fullname = commissario.nomecompleto()
       user.title = commissario.titolo()
       user.avatar = commissario.avatar()
-     
+      logging.info("nome:" + commissario.titolo() + " id: " + commissario.creato_da.user_id())
        
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
@@ -158,10 +161,11 @@ class BasePage(webapp.RequestHandler):
     
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
-
-  @classmethod
-  def getCommissario(cls, user):
-    if(user):
+  
+  def getCommissario(self, user = None):
+    if user is None:
+      user = self.request.user
+    if user :
       return Commissario.get_by_user(user)
     else:
       return None
@@ -263,7 +267,7 @@ class BasePage(webapp.RequestHandler):
 class CMCommissioniDataHandler(BasePage):
 
   def get(self): 
-    user = users.get_current_user()
+    user = self.get_current_user()
     city = self.request.get("city")
     if city == "" and self.getCommissario(user):
       city = self.getCommissario(user).citta
@@ -385,7 +389,7 @@ class CMMenuHandler(BasePage):
       
   def getBase(self,template_values):
     cm = None
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.get_current_user())
     if self.request.get("cm") != "":
       cm = model.Key("Commissione",int(self.request.get("cm"))).get()
     elif commissario and commissario.commissione() :
@@ -427,18 +431,20 @@ class CMCittaHandler(webapp.RequestHandler):
   
 def commissario_required(func):
   def callf(basePage, *args, **kwargs):
-    commissario = basePage.getCommissario(users.get_current_user())
+    user = basePage.request.user if basePage.request.user else None
+    commissario = basePage.getCommissario(basePage.request.user)
     if commissario == None or commissario.isCommissario() == False:
-      basePage.redirect("/")
+      basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)
   return callf    
 
 def user_required(func):
   def callf(basePage, *args, **kwargs):
-    commissario = basePage.getCommissario(users.get_current_user())
+    user = basePage.request.user if basePage.request.user else None
+    commissario = basePage.getCommissario(user)
     if commissario == None:
-      basePage.redirect("/signup")
+      basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)
   return callf    

@@ -39,7 +39,7 @@ class LoginPage(BasePage):
     profiles = None
     if user:
       logging.info(user.to_dict())
-    if not self.getCommissario(users.get_current_user()):
+    if not self.getCommissario(self.request.user):
       logging.info("called")
       template_values = dict()
       template_values["main"] = 'eauth/main.html'
@@ -66,12 +66,12 @@ class ProtectedPage(BasePage):
           'session': session,
           'profiles': profiles,
           'emails': emails,
-          'logout': users.create_logout_url("/eauth/logout"),
+          'logout': "/eauth/logout"
       }
       template_values["content"] = 'priv.html'
       self.getBase(template_values)
     else:
-      self.redirect("/login?next="+self.request.path)
+      self.redirect("/eauth/login?next="+self.request.path)
       
   def post(self):
     return self.get()
@@ -99,15 +99,13 @@ class SignupPage(BasePage):
     
   def post(self):
     pass
-    
-    
-    
+        
 
 app = webapp.WSGIApplication([
-  ('/login', LoginPage),
-  ('/logout', LogoutPage),
-  ('/priv', ProtectedPage),
-  ('/signin', SignupPage)
+  ('/eauth/login', LoginPage),
+  ('/eauth/logout', LogoutPage),
+  ('/eauth/priv', ProtectedPage),
+  ('/eauth/signup', SignupPage)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
   
 def main():

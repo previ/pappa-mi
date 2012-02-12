@@ -35,7 +35,8 @@ class CMCommentHandler(BasePage):
   """ 
   init a comment structure, attaching an empty root message to an existing object
   """
-  def init(self, msg_rif, msg_grp, tipo, tags):
+  @classmethod
+  def init(cls, msg_rif, msg_grp, tipo, tags, user):
     messaggio = Messaggio.get_by_parent(msg_rif)
     if not messaggio:  
       messaggio = Messaggio()
@@ -45,9 +46,10 @@ class CMCommentHandler(BasePage):
       messaggio.livello = 0
       messaggio.tipo = tipo
       messaggio.commenti = 0
+      messaggio.c_ua = user.key
       messaggio.put()
       if tags:
-        CMTagHandler().saveTags(messaggio, tags)
+        CMTagHandler.saveTags(messaggio, tags)
         
       messaggio.invalidate_cache();
     return messaggio
@@ -56,9 +58,10 @@ class CMCommentHandler(BasePage):
   init a comment structure, attaching a root message to an existing object
   and return the delta activity stream html
   """
-  def initActivity(self, msg_rif, msg_grp, tipo, last, tags=None):    
+  @classmethod
+  def initActivity(self, msg_rif, msg_grp, tipo, last, tags, user):
 
-    CMCommentHandler().init(msg_rif, msg_grp, tipo, tags)
+    CMCommentHandler.init(msg_rif, msg_grp, tipo, tags, user)
     
     buff = ""
 
@@ -97,6 +100,7 @@ class CMCommentHandler(BasePage):
     messaggio.titolo = self.request.get("titolo")
     messaggio.testo = self.request.get("testo")
     messaggio.commenti = 0
+    messaggio.c_ua = self.request.user.key    
     messaggio.put()
 
     logging.info("testo: " + self.request.get("testo"))
@@ -236,6 +240,7 @@ class CMTagHandler(BasePage):
         tag = Tag.get_by_name(tagname)
         if not tag:
           tag = Tag(nome=tagname, numRef=0)
+          tag.c_ua = self.request.user.key
           tag.put()
         tagobj = TagObj(tag=tag.key,obj=obj.key)
         tagobj.put()

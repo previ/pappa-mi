@@ -42,7 +42,7 @@ class MainPage(BasePage):
     template_values = dict()
     template_values["host"] = self.getHost()
         
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.get_current_user())
     if commissario and commissario.isCommissario():
       return self.getPrivate(template_values)
     if commissario and commissario.isGenitore():
@@ -56,19 +56,22 @@ class MainPage(BasePage):
     template_values["stat"] = stats = self.getStats()
     
     geo = model.GeoPt(45.463681,9.188171)
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.get_current_user())
     
     template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
     template_values["geo"] = geo
       
     self.getBase(template_values)
+    
+  def post(self):
+    return self.get()
 
   def getPrivate(self, template_values):
 
     c = None
     geo = model.GeoPt(45.463681,9.188171)
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.get_current_user())
     c = commissario.commissione()
     geo = commissario.citta.get().geo
 
@@ -210,7 +213,7 @@ class CalendarioHandler(BasePage):
     return self.get()
   @user_required
   def get(self):    
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario(self.get_current_user())
     if self.request.get("cmd") == "create":
       cm = Commissione.get(model.Key(Commissione,self.request.get("cm")))
       if((cm.calendario == None or cm.calendario == "") and commissario.is_registered(cm)):
