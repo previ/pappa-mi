@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="span11">
+    <legend>Inserisci l'indirizzo email con cui ti sei registrato</legend>
+    <div class="password-form">
+      <form method="POST" action="/eauth/pwdrecch" class="horizontal-form" novalidate>
+      <input type="hidden" name="key" value="{{key}}" />
+        <fieldset class="control-group">
+          <label for="email" class="control-label">Nuova password</label>
+          <div class="controls"><input type="password" name="password1" class="span3 required password" /></div>
+          <label for="email" class="control-label">Ripeti nuova password</label>
+          <div class="controls"><input type="password" name="password2" class="span3 required password" /></div>
+        </fieldset>
+        <fieldset class="form-actions">
+          <button type="submit" class="btn">Invia richiesta</button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
 #
@@ -26,8 +27,8 @@ from ndb import model
 from engineauth import models
 from google.appengine.api import users
 import webapp2 as webapp
+from webapp2_extras import security
 from google.appengine.api import memcache
-from google.appengine.ext.webapp.util import login_required
 
 from google.appengine.ext.webapp import util
 from base import BasePage
@@ -44,6 +45,11 @@ class LoginPage(BasePage):
       template_values = dict()
       template_values["main"] = 'eauth/main.html'
       template_values["content"] = 'eauth/login.html'
+
+      if "_messages" in self.request.session.data:
+        messages = self.request.session.data.pop("_messages")
+        template_values.update({'messages': messages})
+
       self.getBase(template_values)
     else:
       self.redirect("/")
@@ -89,11 +95,12 @@ class SignupPage(BasePage):
     template_values["main"] = '/eauth/main.html'
     template_values["content"] = '/eauth/signup.html'
 
-    self.session["cap_a"] = random.randint(1, 10)
-    self.session["cap_b"] = random.randint(1, 10)
-
-    template_values["cap_a"] = self.session["cap_a"]
-    template_values["cap_b"] = self.session["cap_b"]
+    a = random.randint(1, 10)
+    b = random.randint(1, 10)
+    
+    self.session["ab"] = a + b
+    template_values["cap_a"] = a
+    template_values["cap_b"] = b
     
     self.getBase(template_values)
     
@@ -101,9 +108,100 @@ class SignupPage(BasePage):
     pass
         
 
+class PwdRecoverRequestPage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["main"] = '/eauth/main.html'
+    template_values["content"] = '/eauth/pwdrec1.html'
+
+    a = random.randint(1, 10)
+    b = random.randint(1, 10)
+    
+    self.session["c"] = str(a + b)
+    template_values["cap_a"] = a
+    template_values["cap_b"] = b
+    
+    self.getBase(template_values)
+    
+  def post(self):
+
+    error = None
+    password = None
+    c1 = self.session.get("c")
+    c2 = self.request.get("c")
+    logging.info("c1: " + c1 + " c2 " + c2)
+    if c1 != c2:
+      error = "La risposta alla domanda di controllo è sbagliata, riprova"
+    else:
+      email = self.request.get("email")
+      logging.info(email)
+      user = models.UserEmail.get_by_emails([email])
+      if user is None:
+        error = "Email non presente in archivio"
+      else:
+        self.sendPwdRecEmail(email)
+        error = "Ok"
+    
+    self.response.out.write(error)
+
+  def sendPwdRecEmail(self, email):
+    auth_id = models.User.generate_auth_id("password", email)
+    profile = models.UserProfile.get_by_id(auth_id)
+    url = self.getHost() + "/eauth/pwdrecch?key="+profile.key.urlsafe()
+    logging.info("url: " + url)
+    
+class PwdRecoverChangePage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["main"] = '/eauth/main.html'
+    template_values["content"] = '/eauth/pwdrec2.html'
+
+    keycripted = self.request.get("key")    
+    ##TODO DECRYPT
+    key = keycripted
+    if key is None:
+      error = "Errore, richiesta non valida"
+    else:
+      userprofile = model.Key(urlsafe=key).get()
+      if userprofile is None:
+        error = "Errore, richiesta non valida"
+      else:
+        template_values["key"] = keycripted
+        
+    self.getBase(template_values)
+        
+  def post(self):
+
+    error = None
+    password = None
+    password1 = self.request.get("password1")
+    password2 = self.request.get("password2")
+
+    keycripted = self.request.get("key")
+    ##TODO DECRYPT
+    key = keycripted
+
+    userprofile = model.Key(urlsafe=key).get()
+    
+    if userprofile is None:
+      error = "Email non presente in archivio"
+    elif password1 != password2:
+      error = "Controllo password non corretto"
+    else:
+      userprofile.password = security.generate_password_hash(password1, length=12)     
+      userprofile.put()
+      error = "Ok"
+    
+    self.response.out.write(error)
+          
+  
 app = webapp.WSGIApplication([
   ('/eauth/login', LoginPage),
   ('/eauth/logout', LogoutPage),
+  ('/eauth/pwdrecrq', PwdRecoverRequestPage),
+  ('/eauth/pwdrecch', PwdRecoverChangePage),
   ('/eauth/priv', ProtectedPage),
   ('/eauth/signup', SignupPage)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
