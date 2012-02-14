@@ -51,7 +51,6 @@ engineauth['provider.google'] = {
     'client_id': '610506648671.apps.googleusercontent.com',
     'client_secret': '_oIxbi9__8RR8mG8bl40dByM',
     'api_key': 'AIzaSyDK9TuhnLfxxE1h16ar_B6Gztb0bkmBSuQ',
-    'scope': 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
     }
 
 engineauth['provider.linkedin'] = {
@@ -69,7 +68,12 @@ engineauth['provider.facebook'] = {
     'client_secret': 'e57edc34abb15fece9abcc7b00d39735',
     'scope': 'email',
     }
-    
+
+engineauth['provider.windowslive'] = {
+    'client_id': '0000000044089B00',
+    'client_secret': 'Dpv8pn1-BbZGx8o1ZLrG7v1kJ4ZQTy21',
+    }
+
 def webapp_add_wsgi_middleware(app):
     from engineauth import middleware
     from google.appengine.ext.appstats import recording
