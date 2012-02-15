@@ -139,7 +139,7 @@ class BasePage(webapp.RequestHandler):
       user.fullname = commissario.nomecompleto()
       user.title = commissario.titolo()
       user.avatar = commissario.avatar()
-      logging.info("nome:" + commissario.titolo() + " id: " + commissario.creato_da.user_id())
+      logging.info("nome:" + commissario.titolo() + " id: " + str(commissario.usera.id()))
        
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
@@ -166,6 +166,7 @@ class BasePage(webapp.RequestHandler):
     if user is None:
       user = self.request.user
     if user :
+      logging.info("userid: " + str(user.key.id()))
       return Commissario.get_by_user(user)
     else:
       return None
@@ -428,7 +429,16 @@ class CMCittaHandler(webapp.RequestHandler):
       citlist.append({'key': str(c.key), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
       
     self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
-  
+
+def user_required(func):
+  def callf(basePage, *args, **kwargs):
+    user = basePage.request.user if basePage.request.user else None
+    if user == None:
+      basePage.redirect("/eauth/signup?next="+basePage.request.url)
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf    
+
 def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
@@ -439,7 +449,7 @@ def commissario_required(func):
       return func(basePage, *args, **kwargs)
   return callf    
 
-def user_required(func):
+def reguser_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(user)

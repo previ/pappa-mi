@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
     engineauth.strategies.password
     ============================
@@ -34,7 +36,7 @@ class PasswordStrategy(BaseStrategy):
                 }
         }
 
-    def get_or_create_profile(self, auth_id, user_info, **kwargs):
+    def get_or_create_profile(self, auth_id, user_info, user, **kwargs):
         """
         Overrides to provide logic for checking and encrypting  passwords.
         :param auth_id:
@@ -46,20 +48,21 @@ class PasswordStrategy(BaseStrategy):
         password = kwargs.pop('password')
         profile = models.UserProfile.get_by_id(auth_id)
         if profile is None:
-            # Create profile
-            profile = models.UserProfile.get_or_create(auth_id, user_info,
-                password=security.generate_password_hash(password, length=12))
+            if user:
+                # Create profile
+                profile = models.UserProfile.get_or_create(auth_id, user_info,
+                    password=security.generate_password_hash(password, length=12))
+            else:
+                return self.raise_error("Non è stato trovato un profilo associato all'email indicata.")
         # Check password
         if not security.check_password_hash(password, profile.password):
-            return self.raise_error('The password that you\'ve provided '
-                                    'doesn\'t match our records. '
-                                    'Please try again.')
+            return self.raise_error('La password non è corretta.')
         return profile
 
     def handle_request(self, req):
         # confirm that required fields are provided.
-        password = req.POST['password']
         email = req.POST['email']
+        password = req.POST['password']
         if not password or not email:
             return self.raise_error('Please provide a valid email '
                                     'and a password.')
@@ -67,6 +70,7 @@ class PasswordStrategy(BaseStrategy):
         profile = self.get_or_create_profile(
             auth_id=user_info['auth_id'],
             user_info=user_info,
-            password=password)
+            password=password,
+            user=req.user)
         req.load_user_by_profile(profile)
         return req.get_redirect_uri()

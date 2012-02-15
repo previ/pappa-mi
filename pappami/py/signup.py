@@ -15,80 +15,64 @@ from ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
-from py.gviz_api import *
-from py.model import *
-from py.base import BasePage, roleCommissario, CMCommissioniDataHandler, commissario_required, user_required
-from py.calendar import *
-from py.form import CommissarioForm
+from gviz_api import *
+from model import *
+from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required
+from gcalendar import *
+from form import CommissarioForm
 
-class CMSignupHandler(BasePage):
+class SignupPreHandler(BasePage):
   
-  @login_required
-  def get(self):
-    user = users.get_current_user()
-    commissario = self.getCommissario(users.get_current_user())
-    if commissario:
-      self.redirect("/")
-    else:
-      commissario = CommissarioForm()
-      
+  @user_required
+  def get(self):      
     template_values = {
       'content': 'signup.html',
-      'citta': Citta.all().order("nome"),
+      'citta': Citta.get_all(),
       'default_avatar': '/img/avatar/default_avatar.gif'
     }
     self.getBase(template_values)
     
-  @login_required
+  @user_required
   def post(self):
-    user = users.get_current_user()
-    form = CommissarioForm(self.request)
+    return self.get()
+
+class SignupHandler(BasePage):
+  
+    
+  @user_required
+  def post(self):
+    user = self.request.user
+    form = CommissarioForm(self.request.POST)
 
     commissario = Commissario()
 
     form.populate_obj(commissario)
-    commissario.user = user
-    commissario.put()
-    commissario.user_email_lower = commissario.user.email().lower()
+    commissario.usera = user.key
+    commissario.citta = model.Key("Citta", int(self.request.get("citta")))
+    commissario.user_email_lower = user.email.lower()
+    commissario.stato = 1
     commissario.put()
 
-    old = list()
-    for cc in CommissioneCommissario.all().filter("commissario",commissario):
-      old.append(str(cc.commissione.key()))
-    old = set(old)
 
     new = list()
     for c_key in self.request.get_all("commissione"):
-      new.append(c_key)
-      logging.info("new " + Commissione.get(model.Key(c_key)).nome)
+      new.append(int(c_key))
+      logging.info("new " + c_key)
     new = set(new)
-
-    todel = old - new
-    toadd = new - old
-
-    for cm in todel:
-      commissione = Commissione.get(cm)
-      commissario.unregister(cm)
+      
+    for cm in new:
+      commissione = model.Key("Commissione", cm).get()
+      commissario.register(commissione)
       if commissione.calendario :
         calendario = Calendario();        
-        calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-        calendario.load(commissione.calendario)
-        calendario.unShare(commissario.user.email())
-      
-    for cm in toadd:
-      commissione = Commissione.get(cm)
-      commissario.register(cm)
-      if cc.commissione.calendario :
-        calendario = Calendario();        
-        calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-        calendario.load(cc.commissione.calendario)
-        calendario.share(commissario.user.email())
+        #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
+        #calendario.load(commissione.calendario)
+        #calendario.share(commissario.usera.get().email)
 
     commissario.setCMDefault()
-    memcache.set("commissario" + str(user.user_id()), commissario, 600)
+    memcache.set("commissario" + str(user.get_id()), commissario, 600)
       
     message = "Registrazione completata."
     if commissario.isRegCommissario():
@@ -111,7 +95,7 @@ class CMSignupHandler(BasePage):
     
     message = mail.EmailMessage()
     message.sender = sender
-    message.to = commissario.user.email()
+    message.to = commissario.usera.get().email
     message.bcc = sender
     message.subject = "Benvenuto in Pappa-Mi"
     message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
@@ -148,7 +132,8 @@ class CMSignupHandler(BasePage):
     message.send()
     
 app = webapp.WSGIApplication([
-  ('/signup2', CMSignupHandler),
+  ('/signup', SignupPreHandler),
+  ('/signup2', SignupHandler),
   ('/profilo/getcm', CMCommissioniDataHandler)], 
   debug=os.environ['HTTP_HOST'].startswith('localhost'))
 

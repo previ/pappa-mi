@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import Const, BasePage, commissario_required, user_required
+from py.base import Const, BasePage, commissario_required, reguser_required
 
 import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
@@ -87,6 +87,7 @@ class CMCommentHandler(BasePage):
   handle both new message and new comment (livello is the discriminant)
   return the delta activity stream in html
   """
+  @reguser_required
   def post(self):
     par_key = None
     rif = self.request.get("par")
@@ -188,13 +189,14 @@ class ActivityLoadHandler(BasePage):
     
   
 class CMVoteHandler(BasePage):
+  @reguser_required
   def get(self):
     messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()
 
-    messaggio.vote(int(self.request.get('voto')), users.get_current_user())
+    messaggio.vote(int(self.request.get('voto')), self.request.user)
     self.response.out.write(len(messaggio.get_votes()))
 
-class CMVotersHandler(BasePage):
+class CMVotersHandler(BasePage):  
   def get(self):
     messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()    
     template_values = {
@@ -219,6 +221,7 @@ class CMTagHandler(BasePage):
     buff = json.JSONEncoder().encode({'assignedTags': assignedtags, 'availableTags':alltags})      
     self.response.out.write(buff)
     
+  @reguser_required
   def post(self):
     tagnames = self.request.get_all("tags")
       

@@ -99,7 +99,7 @@ class CommissioneForm(model_form(Commissione)):
   class Meta:
     model = Commissione
 
-class CommissarioForm(model_form(model=Commissario, exclude=['creato_il','creato_da','modificato_il','modificato_da','avatar_data','avatar_url','commissario', 'citta'])):  
+class CommissarioForm(model_form(model=Commissario, exclude=['creato_il','creato_da','modificato_il','modificato_da','avatar_data','avatar_url', 'citta'])):  
   stored = False
     
     

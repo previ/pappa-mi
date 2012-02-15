@@ -59,22 +59,22 @@ class CMProfiloHandler(BasePage):
       toadd = new - old
 
       for cm_key in todel:
-        commissario.unregister(cm)
         commissione = cm_key.get()
+        commissario.unregister(commissione)
         if commissione.calendario :
           calendario = Calendario();        
-          calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-          calendario.load(commissione.calendario)
-          calendario.unShare(commissario.user.email())
+          #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
+          #calendario.load(commissione.calendario)
+          #calendario.unShare(commissario.user.email())
         
       for cm_key in toadd:
-        commissario.register(cm_key)
         commissione = cm_key.get()
+        commissario.register(commissione)
         if commissione.calendario :
           calendario = Calendario();        
-          calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-          calendario.load(cc.commissione.calendario)
-          calendario.share(commissario.user.email())
+          #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
+          #calendario.load(cc.commissione.calendario)
+          #calendario.share(commissario.user.email())
 
       commissario.setCMDefault()
         
