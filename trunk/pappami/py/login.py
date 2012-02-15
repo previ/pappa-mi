@@ -227,13 +227,46 @@ class PwdRecoverChangePage(BasePage):
       error = "Ok"
     
     self.response.out.write(error)
-          
+
+class PwdChangePage(BasePage):
+  
+  def get(self):
+    template_values = dict()
+    template_values["main"] = '/eauth/main.html'
+    template_values["content"] = '/eauth/pwdchg.html'
+        
+    self.getBase(template_values)
+        
+  def post(self):
+
+    error = None
+    password = self.request.get("password")
+    password1 = self.request.get("password1")
+    password2 = self.request.get("password2")
+
+    auth_id = models.User.generate_auth_id("password", self.request.user.email)
+    userprofile = models.UserProfile.get_by_id(auth_id)
+    
+    if userprofile is None:
+      error = "Email non presente in archivio"
+    elif not security.check_password_hash(password, userprofile.password):
+      error = 'La password non è corretta.'
+    elif password1 != password2:
+      error = "Controllo password non corretto"
+    else:
+      userprofile.password = security.generate_password_hash(password1, length=12)     
+      userprofile.put()
+      error = "Ok"
+    
+    self.response.out.write(error)
+    
   
 app = webapp.WSGIApplication([
   ('/eauth/login', LoginPage),
   ('/eauth/logout', LogoutPage),
   ('/eauth/pwdrecrq', PwdRecoverRequestPage),
   ('/eauth/pwdrecch', PwdRecoverChangePage),
+  ('/eauth/pwdchg', PwdChangePage),
   ('/eauth/priv', ProtectedPage),
   ('/eauth/signup', SignupPage)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))

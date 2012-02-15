@@ -1,3 +1,13 @@
+{% set providers = [
+  ('google', '/auth/google'),
+  ('facebook', '/auth/facebook'),
+  ('twitter', '/auth/twitter'),
+  ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
+  ('linkedin', '/auth/linkedin'),
+  ('windowslive', '/auth/windowslive'),
+  ('password', '/auth/password'),
+] -%}
+
 <script src="/js/profilo.js" type="text/javascript"></script>
 <div class="row">
   <div class="span12">
@@ -17,8 +27,12 @@
 	<fieldset>
 	<legend>I tuoi dati</legend>
 	<div class="control-group">
+	  <label for="avatar">Email</label>
+	  <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{cmsro.usera.get().email}}" size="30" type="text" readonly></div>
+	</div>
+	<div class="control-group">
 	  <label for="avatar">Immagine</label>
-	  <div class="controls"><img id="avatar" src="{{cmsro.avatar()}}&size=big" class="avatar-big"/></div>
+	  <div class="controls"><img id="avatar" src="{{cmsro.avatar()}}" class="avatar-big"/></div>
 	</div>
 	<div class="control-group">
 	  <label for="nome">Nome</label>
@@ -55,14 +69,23 @@
       </div>
       <div id="auth" class="tab-pane">
 	<fieldset>
-	<legend>Questo profilo &egrave; collegato ai seguenti account:</legend>	
+	<legend>Account collegati</legend>	
 	<div class="control-group">    
-	  <div class="controls">Google:</div>
-	  <div class="controls">Facebook:</div>
-	  <div class="controls">Twitter:</div>
-	  <div class="controls">Yahoo:</div>
-	  <div class="controls">Pappa-Mi:</div>
-	</div>
+	<ul class="unstyled">
+      {% for p, u in providers %}
+      <li>
+        <label for="{{ p }}"><img src="/img/eauth/{{ p }}.png"/></label>
+	<div class="controls">   
+	 <div class="radio-group btngroup">
+	  <label class="btn"><input type="radio" name="{{ p }}" value="1" onclick="location.href='{{ u }}'" class="required" id="e_{{ p }}_1" {%if True %}CHECKED{%endif%}/>Attivato</label>
+	  <label class="btn"><input type="radio" name="{{ p }}" value="0" class="required" id="e_{{ p }}_1" {%if False %}CHECKED{%endif%}/>Disattivato</label>	  
+	  {%if p == 'password'%}<button class="btn" onclick="location.href='/eauth/pwdchg'">Cambio password</button>
+	  {%endif%}
+	 </div>
+	</div>	
+	</li>
+      {% endfor %}
+      </ul>
 	<legend>Password</legend>	
 	<div class="control-group">
 	  <div class="controls">

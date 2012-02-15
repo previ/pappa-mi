@@ -52,7 +52,6 @@ class SignupHandler(BasePage):
     commissario.usera = user.key
     commissario.citta = model.Key("Citta", int(self.request.get("citta")))
     commissario.user_email_lower = user.email.lower()
-    commissario.stato = 1
     commissario.put()
 
 
