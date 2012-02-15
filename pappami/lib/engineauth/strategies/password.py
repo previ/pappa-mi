@@ -53,10 +53,10 @@ class PasswordStrategy(BaseStrategy):
                 profile = models.UserProfile.get_or_create(auth_id, user_info,
                     password=security.generate_password_hash(password, length=12))
             else:
-                return self.raise_error("Non è stato trovato un profilo associato all'email indicata.")
+                return self.raise_error("Non e' stato trovato un profilo associato all'email indicata.")
         # Check password
         if not security.check_password_hash(password, profile.password):
-            return self.raise_error('La password non è corretta.')
+            return self.raise_error("La password non e' corretta.")
         return profile
 
     def handle_request(self, req):

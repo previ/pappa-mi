@@ -2,7 +2,7 @@ fblogged = false;
 var cache = {},	lastXhr, city = null;
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
-    $("#avatar_dialog").dialog({ modal: true, width: "30em", zIndex: 3, autoOpen: false });
+    $("#avatar_dialog").dialog({ title:"Immagine", modal: true, width: "30em", zIndex: 3, autoOpen: false });
     $("#avatar").click(function() {
         $("#avatar_dialog").dialog("open");
         $("#fbgetimage").click(function() {

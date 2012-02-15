@@ -13,6 +13,10 @@
     <fieldset>
     <legend>I tuoi dati</legend>
     <div class="control-group">
+      <label for="avatar">Email</label>
+      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{user.email}}" size="30" type="text" {%if user.email != ""%}readonly{%endif%}></div>
+    </div>
+    <div class="control-group">
       <label for="avatar">Immagine</label>
       <div class="controls"><img id="avatar" src="{{default_avatar}}&size=big" class="avatar-big"/></div>
     </div>
@@ -35,8 +39,8 @@
     </div>
     <div class="control-group">
       <label for="commissione_sel"></label>
-      <div class="controls"><input id="tipo_cm" name="tipo" value="0" class="required" type="radio"> Faccio parte di una Commissione mensa</controls></div>
-      <div class="controls"><input id="tipo_g" name="tipo" value="11" class="required" type="radio"> Sono una mamma o un pap&agrave;</controls></div>
+      <div class="controls"><input id="tipo_cm" name="stato" value="1" class="required" type="radio"> Faccio parte di una Commissione mensa</controls></div>
+      <div class="controls"><input id="tipo_g" name="stato" value="11" class="required" type="radio"> Sono una mamma o un pap&agrave;</controls></div>
     </div>
     <div class="control-group">
       <label for="commissione_sel">Seleziona una o pi&ugrave; scuole</label>
