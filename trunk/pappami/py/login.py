@@ -98,14 +98,46 @@ class SignupPage(BasePage):
     a = random.randint(1, 10)
     b = random.randint(1, 10)
     
-    self.session["ab"] = a + b
+    self.session["c"] = str(a + b)
     template_values["cap_a"] = a
     template_values["cap_b"] = b
     
     self.getBase(template_values)
     
   def post(self):
-    pass
+    error = None
+    email = self.request.get('email')
+    password1 = self.request.get("password")
+    password2 = self.request.get("password2")
+    c1 = self.session.get("c")
+    c2 = self.request.get("c")
+    logging.info("c1: " + c1 + " c2 " + c2)
+
+    if c1 != c2:
+      error = "La risposta alla domanda di controllo è sbagliata, riprova"
+    elif password1 != password2:
+      error = "Controllo password non corretto"
+    elif email is None or email == "":
+      error = "Email non valida"
+    else:
+      user_info = {}
+      user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True}]
+      auth_id = models.User.generate_auth_id('password', email)
+      u_i = {
+          'auth_id': auth_id,
+          'info': user_info,
+          'extra': {
+              'raw_info': user_info,
+              }
+      }
+      
+      models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
+
+    if error:
+      self.response.out.write(error)
+    else:
+      self.redirect("/auth/password", code=307)
+    
         
 
 class PwdRecoverRequestPage(BasePage):

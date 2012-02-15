@@ -5,6 +5,7 @@ from engineauth.models import User
 from engineauth.strategies.oauth2 import OAuth2Strategy
 from google.appengine.api import memcache
 import httplib2
+import json
 import logging
 
 class GoogleStrategy(OAuth2Strategy):
@@ -17,14 +18,14 @@ class GoogleStrategy(OAuth2Strategy):
             'token_uri': 'https://accounts.google.com/o/oauth2/token',
         }
 
-    def service(self, **kwargs):
-        name = kwargs.get('name', 'oauth2')
-        version = kwargs.get('version', 'v2')
-        return build(name, version, http=httplib2.Http(memcache))
-
     def user_info(self, req):
-        user = self.service().userinfo().get().execute(self.http(req))
-        logging.info("GoogleStrategy.2: " + user.get('id'))
+        url = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +\
+              req.credentials.access_token
+        res, results = self.http(req).request(url)
+        if res.status is not 200:
+            return self.raise_error('There was an error contacting Google. '
+                                    'Please try again.')
+        user = json.loads(results)
         auth_id = User.generate_auth_id('google', user['id'], 'userinfo')
         
         uinfo = {

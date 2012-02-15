@@ -59,6 +59,7 @@ default_config = {
         'class_path': 'engineauth.strategies.windowslive.WindowsliveStrategy',
         'client_id': None,
         'client_secret': None,
+        'scope': "wl.signin wl.basic wl.emails"
         },
     }
 

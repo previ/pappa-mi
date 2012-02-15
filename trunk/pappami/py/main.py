@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required
+from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -208,10 +208,10 @@ class CMMapDataHandler(webapp.RequestHandler):
       self.response.out.write(markers)
 
 class CalendarioHandler(BasePage):
-  @user_required
+  @reguser_required
   def post(self):
     return self.get()
-  @user_required
+  @reguser_required
   def get(self):    
     commissario = self.getCommissario(self.get_current_user())
     if self.request.get("cmd") == "create":
@@ -244,7 +244,7 @@ class CalendarioHandler(BasePage):
       
 class TagsPage(BasePage):
   
-  @user_required
+  @reguser_required
   def get(self):
     template_values = dict()
     template_values["content"] = "tags.html"

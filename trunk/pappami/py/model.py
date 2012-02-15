@@ -44,7 +44,7 @@ class Configurazione(model.Model):
   
   @classmethod
   def get_value_by_name(cls, name):
-    return Configurazione.query(Configurazione,nome == name).get().valore
+    return Configurazione.query(Configurazione.nome == name).get().valore
   
 class CentroCucina(model.Model):  
   nome = model.StringProperty()
@@ -213,20 +213,20 @@ class Commissario(model.Model):
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
       
-  def is_registered(cm):
-    return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissario.commissione == cm).get() is not None
+  def is_registered(self, cm):
+    return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissario.commissione == cm).get() is not None
 
-  def register(cm_key):
-    cc = CommissioneCommissario(commissione = cm_key, commissario = self)
+  def register(self, cm):
+    cc = CommissioneCommissario(commissione = cm.key, commissario = self.key)
     cc.put()
-    commissione.numCommissari += 1
-    commissione.put()
+    cm.numCommissari += 1
+    cm.put()
     self._commissioni = list()
   
-  def unregister(cm_key):
-    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self).filter(CommissioneCommissariocommissione == cm_key).remove()
-    commissione.numCommissari -= 1
-    commissione.put()
+  def unregister(self, cm):
+    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissariocommissione == cm.key).remove()
+    cm.numCommissari -= 1
+    cm.put()
     self._commissioni = list()
     
   def isCommissario(self):

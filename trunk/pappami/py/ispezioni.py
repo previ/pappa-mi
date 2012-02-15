@@ -24,7 +24,7 @@ from py.model import *
 from py.site import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, user_required, Const
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const
 from py.modelMsg import *
 from py.comments import CMCommentHandler
          
@@ -46,7 +46,7 @@ class CMGetIspDataHandler(BasePage):
     self.response.out.write(buff) 
 
 
-class IspezioneValidationHandler(BasePage):    
+class IspezioneValidationHandler(BasePage):
   def post(self):
     turno = int(self.request.get("turno"))
     cm_id = self.request.get("commissione")

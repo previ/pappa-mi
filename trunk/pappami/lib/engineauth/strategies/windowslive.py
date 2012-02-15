@@ -3,8 +3,11 @@ from __future__ import absolute_import
 from apiclient.discovery import build
 from engineauth.models import User
 from engineauth.strategies.oauth2 import OAuth2Strategy
+from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 import httplib2
+from urllib import urlencode
+import json
 import logging
 
 class WindowsliveStrategy(OAuth2Strategy):
@@ -13,19 +16,24 @@ class WindowsliveStrategy(OAuth2Strategy):
     def options(self):
         return {
             'provider': 'windowslive',
-            'auth_uri': 'https://oauth.live.com/authorize?{0}',
+            'site_uri': 'https://apis.live.net/v5.0/me',
+            'auth_uri': 'https://oauth.live.com/authorize',
             'token_uri': 'https://oauth.live.com/token',
         }
 
-    def service(self, **kwargs):
-        name = kwargs.get('name', 'oauth2')
-        version = kwargs.get('version', 'v2')
-        return build(name, version, http=httplib2.Http(memcache))
-
     def user_info(self, req):
-        user = self.service().userinfo().get().execute(self.http(req))
-        logging.info("Win.2: " + user.get('id'))
-        auth_id = User.generate_auth_id('google', user['id'], 'userinfo')
+        url = "https://apis.live.net/v5.0/me?access_token=" +\
+              req.credentials.access_token
+        logging.info("live.1: " + url)
+        res, results = self.http(req).request(url)
+        logging.info("live.2")
+        logging.info("live.3: " + res)
+        if res.status is not 200:
+            return self.raise_error('There was an error contacting Windows Live. '
+                                    'Please try again.')
+        logging.info("live.4: " + results)
+        user = json.loads(results)
+        auth_id = User.generate_auth_id(req.provider, user['id'])
         
         uinfo = {
             'auth_id': auth_id,
