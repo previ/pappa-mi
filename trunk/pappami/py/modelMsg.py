@@ -184,19 +184,17 @@ class Messaggio(model.Model):
     return voti
   
   def vote(self, vote, user):
-    voto = Voto()
-    for p_voto in self.get_votes():
-      if p_voto.c_ua == user.key:
-        voto = p_voto
-        break;
-    voto.messaggio = self.key
-    voto.voto = vote
-    if voto.voto == 0 and voto.key:
-      voto.key.delete()
-    else:
+    if vote == 0:
+      for p_voto in self.get_votes():
+        if p_voto.c_ua == user.key:
+          if p_voto.voto == 1:
+            p_voto.key.delete()
+          break;
+    else :
+      voto = Voto(messaggio = self.key, voto = vote, c_ua = user.key)
       voto.put()
     #memcache.delete("msg-voti-"+str(self.key.id()))
-    self.votes = None
+    self._votes = None
   
   def data(self):
     delta = datetime.now() - self.creato_il

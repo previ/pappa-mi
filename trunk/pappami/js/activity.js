@@ -23,7 +23,7 @@ function cleardirty() {
 
 function initForm() {
   ulmsg=true;
-  $('#new-data').find("[title]").tooltip({"delay":1000});  
+  $('#new-data').find("[title]").tooltip({"delay":3000});
   $("#item_tags_handler").tagHandler({
       getData: { 'msg': "" },
       getURL: '/comments/gettags',            
@@ -36,10 +36,9 @@ function initForm() {
 
 function opennewmsg() {  
   if($('#new-msg').is(':visible') ) {
-    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     $('#new-msg').slideUp();
-  } else {     
-    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+  } else {
+    $('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
       $('#activity_list').prepend(data);
       //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
@@ -63,27 +62,34 @@ function opennewmsg() {
 function opennewwiz(url) {
   $('#new-data-form').load(url, function(){
     initForm();
-    $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length)); 
     $("#form0").formwizard({ 
       formPluginEnabled: true,
       validationEnabled: true,
       validationOptions: {
 	errorClass: "error",
 	errorPlacement: function(error, element) {	
-	  //alert(error.text());
-	  $($($(element).parent()).parent()).attr("err-title", error.text());
-	  $($($(element).parent()).parent()).tooltip({title:'err-title', trigger:'manual'});
-	  $($($(element).parent()).parent()).tooltip('show');
+	  //alert(element);
+	  //$('<span class="help-inline">' + error.text() + "</span>").appendTo( $(element).parents(".control-group") );	  
+	  item = $(element).parents(".control-group");
+	  //item.attr("err-title", error.text());
+	  item.tooltip({title:error.text(), trigger:'manual'});
+	  item.tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	    //$($($(element).parent()).parent()).addClass("error"); 
-	    $($($(element).parent()).parent()).tooltip('show');
+	    item = $(element).parents(".control-group");
+	    item.addClass(errorClass); 
+    	    //item.tooltip('show');
+	    //$($($(element).parent()).parent()).tooltip('show');
 	    //alert("pippo");
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
 	 },
 	unhighlight: function(element, errorClass, validClass) {
-	    //$($($(element).parent()).parent()).removeClass("error"); 
-	    $($($(element).parent()).parent()).tooltip('hide');
+	    item = $(element).parents(".control-group");
+	    item.removeClass(errorClass); 
+    	    item.tooltip('hide');
+	    //$(element).parents(".control-group").removeClass(errorClass); 
+	    //$(element).parents(".control-group").find(".help-inline").remove()
+	    //$($($(element).parent()).parent()).tooltip('hide');
 	    //alert("pappo");	
 	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
 	 }
@@ -124,26 +130,24 @@ function opennewwiz(url) {
 	    $('#form-error').dialog('open');
 	    $('#new-data-preview').text('');
 	  } else {
-	    $('#act_last').clone().appendTo('#form1');
 	    $('#new-data-form').hide();  
 	    $('#new-data-preview').show();
+	    // on preview form submit
+	    $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+	    $('#form1').ajaxForm(function(data) {
+	      $('#new-data').dialog('close');
+	      $('#new-data-form').text('');
+	      $('#new-data-preview').text('');
+	      $('#activity_list').prepend(data);
+	      $('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
+	      $('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+		{ text: "Si",
+		  click: function() { $(this).dialog("close"); opennewnc(); } }, 
+		{ text: "No",
+		  click: function() { $(this).dialog("close"); } } ] });
+	      $('#new-nc').dialog('open');
+	    });
 	  }
-	  // on preview form submit
-	  $('#form1').ajaxForm(function(data) {
-	    $('#new-data').dialog('close');
-	    $('#new-data-form').text('');
-	    $('#new-data-preview').text('');
-	    $('#activity_list').prepend(data);
-	    $('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
-	    $('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	      { text: "Si",
-		click: function() { $(this).dialog("close"); opennewnc(); } }, 
-	      { text: "No",
-	        click: function() { $(this).dialog("close"); } } ] });
-	    $('#new-nc').dialog('open');
-	    //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
-	    //$('#act_last').clone().appendTo('#form1');
-	  });
 	},
 	resetForm: false,
 	beforeSubmit: function() {
@@ -201,23 +205,22 @@ function onopennewitem() {
     } else {
       $('#new-data-form').hide();  
       $('#new-data-preview').show();
-      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
-      $('#act_last').clone().appendTo('#form1');
+      $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+      $('#form1').ajaxForm(function(data) {      
+	$('#new-data').dialog('close');
+	$('#new-data-form').text('');
+	$('#new-data-preview').text('');
+	$('#activity_list').prepend(data);
+	$('#new-nc').html("Inserire altra Non conformit&agrave; ?")
+	$('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	  { text: "Si",
+	    click: function() { $(this).dialog("close"); opennewnc(); } }, 
+	  { text: "No",
+	    click: function() { $(this).dialog("close"); } } ] });
+	$('#new-nc').dialog('open');
+      });
     }
-    $('#form1').ajaxForm(function(data) {      
-      $('#new-data').dialog('close');
-      $('#new-data-form').text('');
-      $('#new-data-preview').text('');
-      $('#activity_list').prepend(data);
-      $('#new-nc').html("Inserire altra Non conformit&agrave; ?")
-      $('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	{ text: "Si",
-	  click: function() { $(this).dialog("close"); opennewnc(); } }, 
-	{ text: "No",
-	  click: function() { $(this).dialog("close"); } } ] });
-      $('#new-nc').dialog('open');
       
-    });
   }, beforeSubmit: function(arr,$form) {
     $("[name='tags']").attr('value','');
     tags = $("#item_tags_handler").tagHandler("getTags")
@@ -243,18 +246,26 @@ function onclosenewitem() {
 }
 
 function opennewisp() {
+ $('#new-data-form').text("");
+ $('#new-data-preview').text("");
  opennewwiz("/isp/isp");
 }
 
 function opennewnc() {
+ $('#new-data-form').text("");
+ $('#new-data-preview').text("");
  $('#new-data-form').load("/isp/nc", onopennewitem);
 }
 
 function opennewdieta() {
+ $('#new-data-form').text("");
+ $('#new-data-preview').text("");
   opennewwiz("/isp/dieta");
 }
 
 function opennewnota() {
+ $('#new-data-form').text("");
+ $('#new-data-preview').text("");
  $('#new-data-form').load("/isp/nota", onopennewitem);
 }
 
