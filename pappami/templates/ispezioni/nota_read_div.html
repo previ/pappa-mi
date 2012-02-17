@@ -21,6 +21,7 @@
    <div class="modal-footer modal-actions">
     <form action="/isp/nota" method="POST" id="form1">
      <input type="hidden" name="preview" value="{{preview}}">
+     <input type="hidden" id="act_last" name="last" value="">
      <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
      <button type="reset" class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
     </form>

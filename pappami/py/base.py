@@ -21,7 +21,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
 
-from ndb import model
+from ndb import model, toplevel
 from google.appengine.api import users
 import webapp2 as webapp
 #from webapp2_extras import jinja2
@@ -58,6 +58,7 @@ class BasePage(webapp.RequestHandler):
   #def jinja2(self):
         #return jinja2.get_jinja2(app=self.app)  
 
+  @toplevel
   def dispatch(self):
     # Get a session store for this request.
     sessions.default_config['secret_key'] = "wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY" 

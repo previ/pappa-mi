@@ -12,6 +12,7 @@ function onunvote(key) {
   $('#vnum_'+key).text(data); 
   $('#vote_2_'+key).hide(); 
   $('#vote_1_'+key).show(); 
+  $('#vnum_'+key+'_me').hide();
   if (data > 0 ) $('#votes_'+key).show();
   else $('#votes_'+key).hide();}})
 }    

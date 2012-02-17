@@ -20,24 +20,30 @@ var piattounico = false;
 <div class="step form-vertical" id="step1">
  <div class="row">
   <div class="span3">
-   <label class="" for="e_commissione">Commissione</label>
-   <select class="span3 required" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
-   <option value=""></option>{% for cm in commissioni %}
-   <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
-   </select>
+   <div class="control-group">
+    <label class="" for="e_commissione">Commissione</label>
+    <select class="span3 required" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
+    <option value=""></option>{% for cm in commissioni %}
+    <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+    </select>
+   </div>
   </div>
   <div class="span2">
-   <label class="" for="e_dataIspezioneViz">Data Ispezione</label>
-   <input type="text" data-original-title="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" name="dataIspezioneViz" value="" class="span2 required" id="e_dataIspezioneViz"/>
-   <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
+   <div class="control-group">
+    <label class="" for="e_dataIspezioneViz">Data Ispezione</label>
+    <input type="text" data-original-title="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" name="dataIspezioneViz" value="" class="span2 required" id="e_dataIspezioneViz"/>
+    <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
+   </div>
   </div>
   <div class="span2">
-   <label class="" for="e_turno">Turno</label>
-   <select name="turno" id="e_turno" class="span2 required">
-   <option value=""></option>
-   <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
-   <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
-   </select>
+   <div class="control-group">
+    <label class="" for="e_turno">Turno</label>
+    <select name="turno" id="e_turno" class="span2 required">
+    <option value=""></option>
+    <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+    <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
+    </select>
+   </div>
   </div>
  </div>
  <div class="row">
@@ -77,12 +83,14 @@ var piattounico = false;
  </div>
  <div class="row">
   <div class="span4">
-   <label class="" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
-   <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-    <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
-    <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
-    <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
-   </div>
+   <div class="control-group">
+    <label class="" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
+    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+     <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
+     <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
+     <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
+    </div>
+   </div>    
   </div>
  </div>
  <div class="row">
@@ -94,102 +102,126 @@ var piattounico = false;
 <div class="step form-vertical" id="step2">
  <div class="row">
   <div class="span4">
-   <label class="" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
-   <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {%if form.data.puliziaCentroCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {%if form.data.puliziaCentroCottura == "2" %}CHECKED{%endif%}/>Mediocre</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "3" %}CHECKED{%endif%}/>Sufficiente</label>
-    <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "4" %}CHECKED{%endif%}/>Buona</label>
+   <div class="control-group">
+    <label class="" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
+    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {%if form.data.puliziaCentroCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {%if form.data.puliziaCentroCottura == "2" %}CHECKED{%endif%}/>Mediocre</label>
+     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "3" %}CHECKED{%endif%}/>Sufficiente</label>
+     <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "4" %}CHECKED{%endif%}/>Buona</label>
+    </div>
    </div>
   </div>
   <div class="span4">
-   <label class="" for="entry_15">Pulizia Refettorio</label>
-   <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {%if form.data.puliziaRefettorio == "1" %}CHECKED{%endif%}/>Scarsa</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {%if form.data.puliziaRefettorio == "2" %}CHECKED{%endif%}/>Mediocre</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_3" {%if form.data.puliziaRefettorio == "3" %}CHECKED{%endif%}/>Sufficiente</label>
-    <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_4" {%if form.data.puliziaRefettorio == "4" %}CHECKED{%endif%}/>Buona</label>
-   </div>
-  </div>
- </div>
- <div class="row">
-  <div class="span4">
-   <label class="" for="entry_42">Derrate alimentari come da capitolato?</label>
-   <div class="radio-group btngroup" title="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
-Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.">
-    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {%if form.data.aaRispettoCapitolato == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {%if form.data.aaRispettoCapitolato == "0" %}CHECKED{%endif%}/>No</label>   
-   </div>
-  </div>
-  <div class="span4" title="">
-   <label class="" for="entry_42">Tavoli coperti da tovaglie o tovagliette?</label>
-   <div class="radio-group btngroup">  
-    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="1" class="required" id="e_aata_1" {%if form.data.aaTavoliApparecchiati == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="0" class="required" id="e_aata_2" {%if form.data.aaTavoliApparecchiati == "0" %}CHECKED{%endif%}/>No</label>   
-   </div>
-  </div>
- </div>
- <div class="row">
-  <div class="span4" title="">
-   <label class="" for="entry_42">Contenitori termici puliti e in buone condizioni?</label>
-   <div class="radio-group btngroup">     
-    <label class="btn"><input type="radio" name="aaTermichePulite" value="1" class="required" id="e_aatp_1" {%if form.data.aaTermichePulite == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTermichePulite" value="0" class="required" id="e_aatp_2" {%if form.data.aaTermichePulite == "0" %}CHECKED{%endif%}/>No</label>   
-   </div>
-  </div>
-  <div class="span4" title="">
-   <label class="" for="entry_42">L'acqua servita proviene dalla cucina o dispensa</label>
-   <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaAcqua" value="1" class="required" id="e_aaac_1" {%if form.data.aaAcqua == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaAcqua" value="0" class="required" id="e_aaac_2" {%if form.data.aaAcqua == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_15">Pulizia Refettorio</label>
+    <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+     <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {%if form.data.puliziaRefettorio == "1" %}CHECKED{%endif%}/>Scarsa</label>
+     <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {%if form.data.puliziaRefettorio == "2" %}CHECKED{%endif%}/>Mediocre</label>
+     <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_3" {%if form.data.puliziaRefettorio == "3" %}CHECKED{%endif%}/>Sufficiente</label>
+     <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_4" {%if form.data.puliziaRefettorio == "4" %}CHECKED{%endif%}/>Buona</label>
+    </div>
    </div>
   </div>
  </div>
  <div class="row">
   <div class="span4">
-   <label class="" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
-   <div class="radio-group btngroup" title="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
-    <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {%if form.data.aaScaldaVivande == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {%if form.data.aaScaldaVivande == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Derrate alimentari come da capitolato?</label>
+    <div class="radio-group btngroup" title="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
+ Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.">
+     <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {%if form.data.aaRispettoCapitolato == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {%if form.data.aaRispettoCapitolato == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
   <div class="span4" title="">
-   <label class="" for="entry_42">Servizio in modalit&agrave; self service</label>
-   <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="aaSelfService" value="1" class="required" id="e_nclp_1" {%if form.data.aaSelfService == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaSelfService" value="0" class="required" id="e_nclp_2" {%if form.data.aaSelfService == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Tavoli coperti da tovaglie o tovagliette?</label>
+    <div class="radio-group btngroup">  
+     <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="1" class="required" id="e_aata_1" {%if form.data.aaTavoliApparecchiati == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaTavoliApparecchiati" value="0" class="required" id="e_aata_2" {%if form.data.aaTavoliApparecchiati == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
+   </div>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span4" title="">
+   <div class="control-group">
+    <label class="" for="entry_42">Contenitori termici puliti e in buone condizioni?</label>
+    <div class="radio-group btngroup">     
+     <label class="btn"><input type="radio" name="aaTermichePulite" value="1" class="required" id="e_aatp_1" {%if form.data.aaTermichePulite == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaTermichePulite" value="0" class="required" id="e_aatp_2" {%if form.data.aaTermichePulite == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
+   </div>
+  </div>
+  <div class="span4" title="">
+   <div class="control-group">
+    <label class="" for="entry_42">L'acqua servita proviene dalla cucina o dispensa</label>
+    <div class="radio-group btngroup">
+     <label class="btn"><input type="radio" name="aaAcqua" value="1" class="required" id="e_aaac_1" {%if form.data.aaAcqua == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaAcqua" value="0" class="required" id="e_aaac_2" {%if form.data.aaAcqua == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
  </div>
  <div class="row">
   <div class="span4">
-   <label class="" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
-   <div class="radio-group btngroup" title="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
-    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {%if form.data.aaTabellaEsposta == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {%if form.data.aaTabellaEsposta == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
+    <div class="radio-group btngroup" title="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
+     <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {%if form.data.aaScaldaVivande == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {%if form.data.aaScaldaVivande == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
   <div class="span4" title="">
-   <label class="" for="entry_42">Stoviglie riutilizzabili</label>
-   <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloStoviglie" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloStoviglie == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloStoviglie" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloStoviglie == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Servizio in modalit&agrave; self service</label>
+    <div class="radio-group btngroup">
+     <label class="btn"><input type="radio" name="aaSelfService" value="1" class="required" id="e_nclp_1" {%if form.data.aaSelfService == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaSelfService" value="0" class="required" id="e_nclp_2" {%if form.data.aaSelfService == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
+   </div>
+  </div>
+ </div>
+ <div class="row">
+  <div class="span4">
+   <div class="control-group">
+    <label class="" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
+    <div class="radio-group btngroup" title="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
+     <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {%if form.data.aaTabellaEsposta == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {%if form.data.aaTabellaEsposta == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
+   </div>
+  </div>
+  <div class="span4" title="">
+   <div class="control-group">
+    <label class="" for="entry_42">Stoviglie riutilizzabili</label>
+    <div class="radio-group btngroup">
+     <label class="btn"><input type="radio" name="ricicloStoviglie" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloStoviglie == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="ricicloStoviglie" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloStoviglie == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
  </div>
  <div class="row">
   <div class="span4" title="">
-   <label class="" for="entry_42">Bicchieri riutilizzabili</label>
-   <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloBicchieri" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloBicchieri == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloBicchieri" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloBicchieri == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Bicchieri riutilizzabili</label>
+    <div class="radio-group btngroup">
+     <label class="btn"><input type="radio" name="ricicloBicchieri" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloBicchieri == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="ricicloBicchieri" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloBicchieri == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
   <div class="span4" title="">
-   <label class="" for="entry_42">Posate riutilizzabili</label>
-   <div class="radio-group btngroup">
-    <label class="btn"><input type="radio" name="ricicloPosate" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloPosate == "1" %}CHECKED{%endif%}/>Si</label>
-    <label class="btn"><input type="radio" name="ricicloPosate" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloPosate == "0" %}CHECKED{%endif%}/>No</label>   
+   <div class="control-group">
+    <label class="" for="entry_42">Posate riutilizzabili</label>
+    <div class="radio-group btngroup">
+     <label class="btn"><input type="radio" name="ricicloPosate" value="1" class="required" id="e_ncte_1" {%if form.data.ricicloPosate == "1" %}CHECKED{%endif%}/>Si</label>
+     <label class="btn"><input type="radio" name="ricicloPosate" value="0" class="required" id="e_ncte_2" {%if form.data.ricicloPosate == "0" %}CHECKED{%endif%}/>No</label>   
+    </div>
    </div>
   </div>
  </div>
@@ -673,8 +705,8 @@ Specificare:<ul>
     <label class="">Categorie</label>
     <div class="controls">
      <div class="comment_tags">  
-      <div style="width:40em; display:inline;">
-       <ul id="wiz_tags_handler"></ul>
+      <div>
+       <ul id="item_tags_handler"></ul>
       </div>
      </div>
     </div>
