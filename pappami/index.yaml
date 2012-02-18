@@ -325,6 +325,12 @@ indexes:
 
 - kind: Messaggio
   properties:
+  - name: c_ua
+  - name: creato_il
+    direction: desc
+
+- kind: Messaggio
+  properties:
   - name: creato_da
   - name: creato_il
     direction: desc

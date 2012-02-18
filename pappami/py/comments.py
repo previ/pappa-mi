@@ -115,7 +115,7 @@ class CMCommentHandler(BasePage):
       par.commenti = commenti + 1
       par.put()
    
-    CMTagHandler().saveTags(messaggio, self.request.get_all("tags"))
+    CMTagHandler.saveTags(messaggio, self.request.get_all("tags"))
   
     template_values = {
       'activity': messaggio,
@@ -225,12 +225,13 @@ class CMTagHandler(BasePage):
   def post(self):
     tagnames = self.request.get_all("tags")
       
-    self.saveTags(self.request.get('msg'),tagnames)
+    CMTagHandler.saveTags(messaggio.Key("Messaggio", int(self.request.get('msg'))),tagnames)
 
     buff = json.JSONEncoder().encode({'status': 'ok'})      
     self.response.out.write(buff)
     
-  def saveTags(self,obj,tagnames):
+  @classmethod
+  def saveTags(cls,obj,tagnames):
     logging.info("tags")
     tagobjs = TagObj.get_by_obj_key(obj.key)
     tagold = dict()
@@ -243,7 +244,7 @@ class CMTagHandler(BasePage):
         tag = Tag.get_by_name(tagname)
         if not tag:
           tag = Tag(nome=tagname, numRef=0)
-          tag.c_ua = self.request.user.key
+          tag.c_ua = obj.c_ua
           tag.put()
         tagobj = TagObj(tag=tag.key,obj=obj.key)
         tagobj.put()

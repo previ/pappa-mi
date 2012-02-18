@@ -8,12 +8,12 @@
 {% endif %} 
  <div class="row">
   <div class="span8">
-   Tipo Non Conformit&agrave; <span class="label label-warning">{{nc.tipoNome()}}</span>
+   <h4><small>Tipo Non Conformit&agrave;</small><br/> {{nc.tipoNome()}}</h4>
   </div>
  </div>
  <div class="row">
   <div class="span8">
-  Richiesta campionatura <span class="label label-warning">{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</label>
+  <h4><small>Richiesta campionatura</small><br/>{%if nc.richiestaCampionatura%}Si{%else%}No{%endif%}</h4>
   </div>
  </div>
  <div class="row">
@@ -23,13 +23,13 @@
  </div>
  <div class="row">
   <div class="span8">
-  {{nc.note|replace("\n","<br/>")}}
+  <div{% if preview %} style="height:250px; overflow:auto;"{% endif %}>{{nc.note|replace("\n","<br/>")}}</div>
   </div>
  </div>
 {% if preview %}
  <div class="row">
   <div class="span2">
-  Categorie
+  <div><i class="icon-tags"></i> Categorie</div>
   </div>
  </div>
  <div class="row">
@@ -41,7 +41,7 @@
   <form action="/isp/nc" method="POST" id="form1">
   <input type="hidden" name="preview" value="{{preview}}" >
   <input type="hidden" id="act_last" name="last" value="">  
-  <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+  <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
   <button class="btn" onclick="previewback(); return false;" style="float:right;">Torna a modifiche</button>
   </form>
  </div>

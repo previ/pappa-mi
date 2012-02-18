@@ -6,15 +6,16 @@
    <h4>{{nota.titolo}}</h4>
    <div>Testo</div>
    <div class="controls">
-    <div>{{nota.note|replace("\n","<br/>")}}</div>
+    <div style="height:270px">{{nota.note}}</div>
    </div>
 {% if nota.get_allegati() %}
-   <div for="e_attach"><i class="icon-file"> Allegati</div>
+   <div for="e_attach"><i class="icon-file"></i> Allegati</div>
    <div>{%for allegato in nota.get_allegati()%}
     <a href="{{allegato.path()}}" target="_new">{{allegato.nome}}</a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}   
    </div>
 {% endif %}  
-   <div><i class="icon-tags"></i>Categorie 
+   <div><i class="icon-tags"></i> Categorie</div>
+   <div>
     {%for tag in nota.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
    </div>
 {% if preview %}
@@ -22,7 +23,7 @@
     <form action="/isp/nota" method="POST" id="form1">
      <input type="hidden" name="preview" value="{{preview}}">
      <input type="hidden" id="act_last" name="last" value="">
-     <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+     <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
      <button type="reset" class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
     </form>
    </div>
