@@ -136,7 +136,7 @@ class CMCondizioniHandler(BasePage):
     template_values["main"] = "../templates/condizioni.html"
     self.getBase(template_values)    
          
-class CMMapDataHandler(webapp.RequestHandler):
+class MapDataHandler(webapp.RequestHandler):
   
   def get(self): 
     cursor = self.request.get("cur")
@@ -160,8 +160,8 @@ class CMMapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo:
-              markers_list.append( '<marker key="' + str(c.key) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
-        except ValueError:
+              markers_list.append( '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
+        except:
           logging.error("Timeout")
         if i >= limit:
           markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
@@ -180,7 +180,7 @@ class CMMapDataHandler(webapp.RequestHandler):
       if(markers == None):
           
         commissioni = Commissione.get_active_cursor(cursor)
-          
+
         limit = Const.ENTITY_FETCH_LIMIT
         i = 0
         markers_list = list()
@@ -190,8 +190,9 @@ class CMMapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo :
-              markers_list.append( '<marker key="' + str(c.key()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
-        except model.Timeout:
+              markers_list.append( '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + c.getCentroCucina(datetime.now().date()).key.string_id() + '" />\n')
+        except:
+          raise
           logging.error("Timeout")
           
         logging.info(markers_list)
@@ -275,7 +276,7 @@ app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/tags', TagsPage),
   ('/chi', ChiSiamoPage),
-  ('/map', CMMapDataHandler),  
+  ('/map', MapDataHandler),  
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler)
@@ -297,7 +298,7 @@ def main():
   ('/docs', DocPage),
   #('/blog', BlogPage),
   ('/chi', ChiSiamoPage),
-  ('/map', CMMapDataHandler),
+  ('/map', MapDataHandler),
   ('/menu', CMMenuDataHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),

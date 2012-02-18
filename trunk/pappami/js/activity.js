@@ -14,6 +14,7 @@ function closeAlert() {
 
 function closedialog() {
   cleardirty();
+  $('#new-data').find(".error").tooltip("hide");
   $('#new-data').dialog('close');
 }
 
@@ -68,30 +69,18 @@ function opennewwiz(url) {
       validationOptions: {
 	errorClass: "error",
 	errorPlacement: function(error, element) {	
-	  //alert(element);
-	  //$('<span class="help-inline">' + error.text() + "</span>").appendTo( $(element).parents(".control-group") );	  
 	  item = $(element).parents(".control-group");
-	  //item.attr("err-title", error.text());
 	  item.tooltip({title:error.text(), trigger:'manual'});
 	  item.tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	    item = $(element).parents(".control-group");
-	    item.addClass(errorClass); 
-    	    //item.tooltip('show');
-	    //$($($(element).parent()).parent()).tooltip('show');
-	    //alert("pippo");
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
+	  item = $(element).parents(".control-group");
+	  item.addClass(errorClass); 
 	 },
-	unhighlight: function(element, errorClass, validClass) {
-	    item = $(element).parents(".control-group");
-	    item.removeClass(errorClass); 
-    	    item.tooltip('hide');
-	    //$(element).parents(".control-group").removeClass(errorClass); 
-	    //$(element).parents(".control-group").find(".help-inline").remove()
-	    //$($($(element).parent()).parent()).tooltip('hide');
-	    //alert("pappo");	
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
+  	unhighlight: function(element, errorClass, validClass) {
+	  item = $(element).parents(".control-group");
+	  item.removeClass(errorClass); 
+	  item.tooltip('hide');
 	 }
       },
       focusFirstInput : true,
@@ -134,6 +123,7 @@ function opennewwiz(url) {
 	    $('#new-data-preview').show();
 	    // on preview form submit
 	    $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+	    $('#form1').find('#e_submit').click(function() {$(this).button("loading")});
 	    $('#form1').ajaxForm(function(data) {
 	      $('#new-data').dialog('close');
 	      $('#new-data-form').text('');
@@ -150,7 +140,7 @@ function opennewwiz(url) {
 	  }
 	},
 	resetForm: false,
-	beforeSubmit: function() {
+	beforeSubmit: function() {	  
 	  $("[name='tags']").attr('value','');
           tags = $("#wiz_tags_handler").tagHandler("getTags")
           for(tag in tags) {
@@ -181,20 +171,22 @@ function onopennewitem() {
  $("#form0").validate({
    errorClass: "error",
    errorPlacement: function(error, element) {	
-     //error.appendTo( element.parent().parent() );
-     //alert(error.text());
-     $($($(element).parent()).parent()).attr("title", error.text());
-     $($($(element).parent()).parent()).tooltip({title:'data-original-title', trigger:'manual'});
-     $($($(element).parent()).parent()).tooltip('show');
+    item = $(element).parents(".control-group");
+    item.tooltip({title:error.text(), trigger:'manual'});
+    item.tooltip('show');
    },
    highlight: function(element, errorClass, validClass) {
-       $($($(element).parent()).parent()).tooltip('show');
+    item = $(element).parents(".control-group");
+    item.addClass(errorClass); 
     },
    unhighlight: function(element, errorClass, validClass) {
-       $($($(element).parent()).parent()).tooltip('hide');
+    item = $(element).parents(".control-group");
+    item.removeClass(errorClass); 
+    item.tooltip('hide');
     }
   });
   
+  $('#form0').find('#e_submit').click(function() {$(this).button("loading")});
   $('#form0').ajaxForm({clearForm: false, success: function(data) { 
     $('#new-data-preview').html(data);
     if(data.indexOf('form-error')>0) {
@@ -206,6 +198,7 @@ function onopennewitem() {
       $('#new-data-form').hide();  
       $('#new-data-preview').show();
       $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+      $('#form1').find('#e_submit').click(function() {$(this).button("loading")});      
       $('#form1').ajaxForm(function(data) {      
 	$('#new-data').dialog('close');
 	$('#new-data-form').text('');

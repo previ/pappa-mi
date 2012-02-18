@@ -103,8 +103,9 @@ window.onbeforeunload = closeIt;
 <div class="modal-footer modal-actions">
  <form action="/isp/dieta" method="post" id="form1">
  <input type="hidden" name="preview" value="{{preview}}">
- <button type="reset" onclick="previewback();" style="float:right;">Torna a modifiche</button>
- <button type="submit" onclick="ulmsg=false;" style="float:right;">Conferma salvataggio dati</button>
+ <input type="hidden" id="act_last" name="last" value="">
+ <button type="submit" onclick="ulmsg=false;" class="btn btn-primary" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
+ <button type="reset" onclick="previewback();" class="btn" style="float:right;">Torna a modifiche</button>
  </form>
 </div>
 {% endif %}

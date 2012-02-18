@@ -439,7 +439,7 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))), tag=dieta.tags, user=self.request.user)
+      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))), tags=dieta.tags, user=self.request.user)
 
       self.getBase(template_values) 
       

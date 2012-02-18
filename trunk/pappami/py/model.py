@@ -133,7 +133,7 @@ class Commissione(model.Model):
 
   @classmethod
   def get_active(cls):
-    return Commissione.query().filter(Commissione.stato == 1).count()
+    return Commissione.query().filter(Commissione.numCommissari > 0).count()
   
   @classmethod
   def get_all_cursor(cls, cursor):
@@ -145,7 +145,7 @@ class Commissione(model.Model):
   @classmethod
   def get_active_cursor(cls, cursor):
     if cursor and cursor != "":
-      return Commissione.query().filter( Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
+      return Commissione.query().filter(Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
     

@@ -116,7 +116,7 @@ $(document).ready(function() {
       <li class="nav-header"><i class="icon-file"></i>
 	Tipo dati
       </li>
-      <li id="cmusertypetag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
+      <li id="cmtypeusertag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
       <li class="divider"></li>{%if commissario or genitore%}
       <li id="user{{user.get_id()}}typetagcm"><a href="#" {%if ctx.user == user.get_id()%}class="active"{%endif%} onclick="filteractivities('user={{user.get_id()}}&type=&tag=&cm=')">Inseriti da me</a></li>
       <li class="divider"></li>{%endif%}

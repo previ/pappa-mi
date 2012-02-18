@@ -63,7 +63,7 @@
 <td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
 </tr>
 <tr>
-<td>Note</td><td colspan="6">{{isp.note|replace("\n","<br/>")}}</td>
+<td>Note</td><td colspan="6"><div style="height:100px; overflow:auto;">{{isp.note|replace("\n","<br/>")}}</div></td>
 </tr>
 </tbody>
 </table>
@@ -72,7 +72,7 @@
  <form id="form1" action="/isp/isp" method="POST">
   <input type="hidden" name="preview" value="{{preview}}">
   <input type="hidden" id="act_last" name="last" value="">
-  <button class="btn btn-primary" type="submit" onclick="ulmsg=false;" style="float:right;">Conferma e Salva</button>
+  <button class="btn btn-primary" type="submit" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
   <button class="btn" type="reset" onclick="previewback();" style="float:right;">Indietro</button>
  </form>
 </div>

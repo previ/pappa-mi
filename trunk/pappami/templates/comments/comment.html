@@ -11,12 +11,12 @@
    <!--div>Titolo: {{comment.titolo}}</div-->
    <div class="comment_text">{{comment.testo}}</div>
    <div class="comment_footer">   
-    <div class="comment_feedback" id="votes_{{comment.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment.key.id()}}">{{comment.likes()}}</span> persone<span id="vnum_{{comment.key.id()}}_me" {%if comment.canvote() %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
-     <div class="comment_vote" id="vote_1_{{comment.key.id()}}" style="display:{%if comment.canvote() %}inline{%else%}none{%endif%};">
+    <div class="comment_feedback" id="votes_{{comment.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment.key.id()}}">{{comment.likes()}}</span> persone<span id="vnum_{{comment.key.id()}}_me" {%if comment.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+     <div class="comment_vote" id="vote_1_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}inline{%else%}none{%endif%};">
       <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',1)">Mi piace</div>
       <!--button id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',-1)">Non mi piace</button-->
      </div>
-     <div class="comment_vote" id="vote_2_{{comment.key.id()}}" style="display:{%if comment.canvote() %}none{%else%}inline{%endif%};">
+     <div class="comment_vote" id="vote_2_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}none{%else%}inline{%endif%};">
       <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onunvote('{{comment.key.id()}}')">Ho cambiato idea</div>
      </div>
     </div>

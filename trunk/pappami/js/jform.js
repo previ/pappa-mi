@@ -44,7 +44,7 @@ function onMenuChanged() {
 	      $('#s_secondo').text($('#e_secondoEffettivo').val());
 	      $('#step3next').val('step4');
       }
-      $('#s_contorno').text("Contorno: " + $('#e_contornoEffettivo').val());
+      $('#s_contorno').text($('#e_contornoEffettivo').val());
 }
 
 function getPrevIspData() {
