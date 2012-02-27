@@ -22,16 +22,16 @@ class WindowsliveStrategy(OAuth2Strategy):
         }
 
     def user_info(self, req):
-        url = "https://apis.live.net/v5.0/me?access_token=" +\
-              req.credentials.access_token
-        logging.info("live.1: " + url)
-        res, results = self.http(req).request(url)
-        logging.info("live.2")
-        logging.info("live.3: " + res)
-        if res.status is not 200:
-            return self.raise_error('There was an error contacting Windows Live. '
-                                    'Please try again.')
-        logging.info("live.4: " + results)
+        url = "https://apis.live.net/v5.0/me?{0}"# + urlencode({'access_token':req.credentials.access_token})
+        #logging.info("live.1: " + url.format(urlencode({'access_token':req.credentials.access_token})))
+        #res, results = self.http(req).request(url)
+        results = urlfetch.fetch(url.format(urlencode({'access_token':req.credentials.access_token}))).content
+        #logging.info("live.2")
+        #logging.info("live.3: " + res)
+        #if res.status is not 200:
+        #    return self.raise_error('There was an error contacting Windows Live. '
+        #                            'Please try again.')
+        #logging.info("live.4: " + results)
         user = json.loads(results)
         auth_id = User.generate_auth_id(req.provider, user['id'])
         
@@ -40,14 +40,14 @@ class WindowsliveStrategy(OAuth2Strategy):
             'info': {
                 'id': user['id'],
                 'displayName': user.get('name'),
-                'givenName': user.get('given_name'),
-                'familyName': user.get('family_name'),
+                'givenName': user.get('first_name'),
+                'familyName': user.get('last_name'),
                 'image': {
-                    'url': user.get('picture'),
+                    'url': ""#user.get('picture'),
                 },
                 'emails': [
                     {
-                        'value': user.get('email'), # email
+                        'value': user.get('emails').get('preferred'), # email
                     },
                 ],
             },
