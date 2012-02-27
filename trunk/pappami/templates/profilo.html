@@ -5,7 +5,7 @@
   ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
   ('linkedin', '/auth/linkedin'),
   ('windowslive', '/auth/windowslive'),
-  ('password', '/auth/password'),
+  ('password', '/eauth/signup'),
 ] -%}
 
 <script src="/js/profilo.js" type="text/javascript"></script>
@@ -70,22 +70,18 @@
       <div id="auth" class="tab-pane">
 	<fieldset>
 	<legend>Account collegati</legend>	
-	<div class="control-group">    
-	<ul class="unstyled">
       {% for p, u in providers %}
-      <li>
-        <label for="{{ p }}"><img src="/img/eauth/{{ p }}.png"/></label>
-	<div class="controls">   
-	 <div class="radio-group btngroup">
-	  <label class="btn"><input type="radio" name="{{ p }}" value="1" onclick="location.href='{{ u }}'" class="required" id="e_{{ p }}_1" {%if True %}CHECKED{%endif%}/>Attivato</label>
-	  <label class="btn"><input type="radio" name="{{ p }}" value="0" class="required" id="e_{{ p }}_1" {%if False %}CHECKED{%endif%}/>Disattivato</label>	  
-	  {%if p == 'password'%}<button class="btn" onclick="location.href='/eauth/pwdchg'">Cambio password</button>
-	  {%endif%}
-	 </div>
-	</div>	
-	</li>
+	<div class="control-group">    
+	  <label for="{{ p }}"><img src="/img/eauth/{{ p }}.png"/></label>
+	  <div class="controls">   
+	   <div class="radio-group btngroup">
+	    <label class="btn{%if user.has_auth_strategy(p) %} active{%endif%}"><input type="radio" name="{{ p }}" value="1" onclick="location.href='{{ u }}'" class="required" id="e_{{ p }}_1"/>Attivato</label>
+	    <label class="btn{%if not user.has_auth_strategy(p) %} active{%endif%}"><input type="radio" name="{{ p }}" value="0" class="required" id="e_{{ p }}_1"/>Disattivato</label>	  
+	   </div>
+	    {%if p == 'password'%}<button class="btn" onclick="location.href='/eauth/pwdchg'">Cambio password</button>{%endif%}
+	  </div>	
+        </div>	
       {% endfor %}
-      </ul>
 	<legend>Password</legend>	
 	<div class="control-group">
 	  <div class="controls">
