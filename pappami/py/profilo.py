@@ -11,7 +11,7 @@ import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
-from ndb import model
+from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required

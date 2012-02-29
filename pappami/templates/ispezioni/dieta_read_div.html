@@ -1,104 +1,75 @@
-{% if preview %}
-<script type="text/javascript">
-var ulmsg=true;
-function closeIt() {
-if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
-}
-window.onbeforeunload = closeIt;
-</script>
-{% endif %}
 <div>
- <div class="row rowspaced">
-  <div class="span12">
-   <h3>Ispezione Diete Sanitarie ed Etico-Religiose: {{dieta.commissione.nome}} - {{dieta.commissione.tipoScuola}} - Ispezione del {{dieta.dataIspezione}} - Turno {{dieta.turno}}</h3>
+{%if preview%}
+ <div class="row">
+  <div class="span8">
+   <h3>{{dieta.commissione.get().desc()}} - Ispezione del {{dieta.dataIspezione}} - Turno {{dieta.turno}}</h3>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span12">
-  <h4>Ambiente e Attrezzature</h4>
+{%endif%} 
+ <div class="row">
+  <div class="span8">
+  <h3>Ambiente e Attrezzature</h3>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Etichetta &egrave; leggibile? {%if dieta.etichettaLeggibile%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span4">
+   <h4><small>Etichetta &egrave; leggibile ?</small> {%if dieta.etichettaLeggibile%}Si{%else%}No{%endif%}</h4>
+   <h4><small>La vaschetta &egrave; pi&ugrave; fredda, al tatto, rispetto al piatto del vicino ?</small> {%if dieta.temperaturaVaschetta%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Etichetta &egrave; leggibile ?</small> {%if dieta.etichettaLeggibile%}Si{%else%}No{%endif%}</h4>
   </div>
-  <div class="span6">
-  La vaschetta &egrave; pi&ugrave; fredda, al tatto, rispetto al piatto del vicino ? {%if dieta.temperaturaVaschetta%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
- </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Etichetta &egrave; leggibile? {%if dieta.etichettaLeggibile%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
-  <div class="span6">
-  Bambino seduto vicino educatore ? {%if dieta.vicinoEducatore%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+  <div class="span4">
+   <h4><small>Bambino seduto vicino educatore ?</small> {%if dieta.vicinoEducatore%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Vaschetta travasata in altro piatto e conservata ?</small> {%if dieta.vaschettaOriginale%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Se il cibo non &egrave; condito trova facilmente in refettorio olio, aceto, sale e formaggio ?</small> {%if dieta.condimentiVicini%}Si{%else%}No{%endif%}</h4>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Vaschetta travasata in altro piatto e conservata ? {%if dieta.vaschettaOriginale%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
-  <div class="span6">
-  Se il cibo non &egrave; condito trova facilmente in refettorio olio, aceto, sale e formaggio ? {%if dieta.condimentiVicini%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span8">
+  <h3>Gradimento</h3>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span12">
-  <h4>Gradimento</h4>
+ <div class="row">
+  <div class="span4">
+   <h4><small>Il bambino ha mangiato almeno met&agrave; del primo ?</small> {%if dieta.primoAccettato%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Il bambino ha mangiato almeno met&agrave; del secondo ?</small> {%if dieta.secondoAccettato%}Si{%else%}No{%endif%}</h4>
+  </div>
+  <div class="span4">
+   <h4><small>Il bambino ha mangiato almeno met&agrave; del contorno ?</small> {%if dieta.contornoAccettato%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Il bambino ha mangiato almeno met&agrave; della frutta ?</small> {%if dieta.fruttaAccettata%}Si{%else%}No{%endif%}</h4>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Il bambino ha mangiato almeno met&agrave; del primo ? {%if dieta.primoAccettato%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
-  <div class="span6">
-  Il bambino ha mangiato almeno met&agrave; del secondo ? {%if dieta.secondoAccettato%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span8">
+  <h3>Assaggio</h3>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Il bambino ha mangiato almeno met&agrave; del contorno ? {%if dieta.contornoAccettato%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span4">
+   <h4><small>Domani vorrebbe mangiare lo stesso primo ?</small> {%if dieta.gradimentoPrimo%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Domani vorrebbe mangiare lo stesso secondo ?</small> {%if dieta.gradimentoSecondo%}Si{%else%}No{%endif%}</h4>
   </div>
-  <div class="span6">
-  Il bambino ha mangiato almeno met&agrave; della frutta ? {%if dieta.fruttaAccettata%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
- </div>
- <div class="row rowspaced">
-  <div class="span12">
-  <h4>Assaggio</h4>
+  <div class="span4">
+   <h4><small>Domani vorrebbe mangiare lo stesso contorno ?</small> {%if dieta.gradimentoContorno%}Si{%else%}No{%endif%}</h4>
+   <h4><small>Domani vorrebbe mangiare la stessa frutta ?</small> {%if dieta.gradimentoFrutta%}Si{%else%}No{%endif%}</h4>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Domani vorrebbe mangiare lo stesso primo ? {%if dieta.gradimentoPrimo%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
-  <div class="span6">
-  Domani vorrebbe mangiare lo stesso secondo ? {%if dieta.gradimentoSecondo%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span4">
+  <h4><small>Consegnerai questa valutazione ai genitori del bambino, tramite l'educatore ?</small> {%if dieta.comunicazioneGenitori%}Si{%else%}No{%endif%}</h4>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span6">
-  Domani vorrebbe mangiare lo stesso contorno ? {%if dieta.gradimentoContorno%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
-  <div class="span6">
-  Domani vorrebbe mangiare la stessa frutta ? {%if dieta.gradimentoFrutta%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
-  </div>
- </div>
- <div class="row rowspaced">
-  <div class="span12">
-  Consegnerai questa valutazione ai genitori del bambino, tramite l'educatore ? {%if dieta.comunicazioneGenitori%}<span class="label success">Si{%else%}<span class="label important">No{%endif%}</span>
+ <div class="row">
+  <div class="span8">
+   <h3>Note</h3>
+   <div style="height:120px; overflow:auto;">
+    {{dieta.note|replace("\n","<br/>")}}
+   </div>
   </div>
  </div>
- <div class="row rowspaced">
-  <div class="span12">
-  <h4>Note</h4>
-  </div>
- </div>
- <div class="row rowspaced">
-  <div class="span12">
-  {{dieta.note|replace("\n","<br/>")}}
-  </div>
- </div>
+   <div><i class="icon-tags"></i> Categorie</div>
+   <div>
+    {%for tag in dieta.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
+   </div>
 {% if preview %}
 <div class="modal-footer modal-actions">
  <form action="/isp/dieta" method="post" id="form1">

@@ -9,7 +9,7 @@ import cgi
 import logging
 import wsgiref.handlers
 
-from ndb import model
+from google.appengine.ext.ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from jinja2.filters import do_pprint

@@ -69,9 +69,9 @@
   </div>
  </div>
 </div>
-<div class="step form-horizontal" id="step2">
+<div class="step form-vertical" id="step2">
  <div class="row">
-  <div class="span8">
+  <div class="span4">
    <div class="control-group">
     <label >Etichetta &egrave; leggibile?</label>
     <div class="controls">   
@@ -99,6 +99,8 @@
      </div>
     </div>
    </div>
+  </div>
+  <div class="span4">
    <div class="control-group">
     <label >Vaschetta travasata in altro piatto e conservata ?</label>
     <div class="controls">   
@@ -120,9 +122,9 @@
   </div>
  </div>
 </div>
-<div class="step form-horizontal" id="step3">
+<div class="step form-vertical" id="step3">
  <div class="row">
-  <div class="span8">
+  <div class="span4">
    <div class="control-group">
     <label >Il bambino ha mangiato almeno met&agrave; del primo ?</label>
     <div class="controls">   
@@ -141,6 +143,8 @@
      </div>
     </div>
    </div>
+  </div>
+  <div class="span4">
    <div class="control-group">
     <label >Il bambino ha mangiato almeno met&agrave; del contorno ?</label>
     <div class="controls">   
@@ -150,12 +154,6 @@
      </div>
     </div>
    </div>
-  </div>
- </div>
-</div>
-<div class="step form-horizontal" id="step4">
- <div class="row">
-  <div class="span8">
    <div class="control-group">
     <label >Il bambino ha mangiato almeno met&agrave; della frutta ?</label>
     <div class="controls">   
@@ -165,6 +163,12 @@
      </div>
     </div>
    </div>
+  </div>
+ </div>
+</div>
+<div class="step form-vertical" id="step4">
+ <div class="row">
+  <div class="span4">
    <div class="control-group">
     <label >Domani vorrebbe mangiare lo stesso primo ?</label>
     <div class="controls">   
@@ -183,6 +187,8 @@
      </div>
     </div>
    </div>
+  </div>
+  <div class="span4">
    <div class="control-group">
     <label >Domani vorrebbe mangiare lo stesso contorno ?</label>
     <div class="controls">   
@@ -201,6 +207,8 @@
      </div>
     </div>
    </div>
+  </div>
+  <div class="span8">
    <div class="control-group">
     <label >Note</label>
     <div class="controls">   
@@ -208,8 +216,8 @@
     </div>
    </div>
    <div class="control-group">
-    <div class="span8">
-     <label >Categorie</label>
+    <label class="">Categorie</label>
+    <div class="controls">
      <div class="comment_tags">  
       <div>
        <ul id="item_tags_handler"></ul>
@@ -221,8 +229,8 @@
  </div>
 </div>
 <div id="formnav" class="modal-footer modal-actions">
- <input id="e_submit" class="btn btn-primary" type="submit" onclick="" value="Avanti" style="float:right;"/>
- <input type="reset" onclick="" id="e_annulla" class="btn" value="Indietro" style="float:right;"/>
+  <button id="e_submit" class="btn btn-primary" type="submit" onclick="" value="Avanti" style="float:right;">Avanti</button>
+  <button type="reset" class="btn" onclick="" id="e_annulla" value="Indietro" style="float:right;">Indietro</button>
 </div>
 </form>
 </div>
