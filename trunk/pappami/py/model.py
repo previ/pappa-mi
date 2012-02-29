@@ -8,11 +8,10 @@ import fpformat
 import google.appengine.api.images
 import threading
 
-from ndb import model, Cursor
+from google.appengine.ext.ndb import model
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
-from ndb import model, context
 
 from common import Const
 

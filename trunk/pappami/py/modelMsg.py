@@ -9,7 +9,7 @@ from py.model import Commissario, Commissione
 from common import Const
 
 from google.appengine.api import users
-from ndb import model
+from google.appengine.ext.ndb import model
 from google.appengine.api import memcache
 
 class Messaggio(model.Model):

@@ -7,7 +7,7 @@ import logging
 import webapp2 as webapp
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
-from ndb import model
+from google.appengine.ext.ndb import model
 
 from py.facebook import *
 from py.base import BasePage

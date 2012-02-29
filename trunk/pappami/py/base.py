@@ -21,7 +21,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
 
-from ndb import model, toplevel
+from google.appengine.ext.ndb import model, toplevel
 from google.appengine.api import users
 import webapp2 as webapp
 #from webapp2_extras import jinja2
