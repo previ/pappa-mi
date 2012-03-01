@@ -421,6 +421,7 @@ class MenuHelper():
   
 class StatistichePiatto(model.Model):
   piatto = model.KeyProperty(kind=Piatto)
+  citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)
   centroCucina = model.KeyProperty(kind=CentroCucina)
 
@@ -559,7 +560,7 @@ class Ispezione(model.Model):
   stato = model.IntegerProperty()
   
   def data(self): 
-    return self.dataIspezione  
+    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
   
   @classmethod
   def get_last_by_cm(cls, cm_key):
@@ -606,7 +607,8 @@ class Nonconformita(model.Model):
   def get_by_cm_data_turno(cls, cm, data, turno):
     return Nonconformita.query().filter(Nonconformita.dataNonconf == data).filter(Nonconformita.commissione == cm).filter(Nonconformita.turno == turno)
   
-  def data(self): return self.dataNonconf  
+  def data(self): 
+    return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)  
 
   _tipi_n = {1:0,
            2:1,
@@ -673,7 +675,8 @@ class Dieta(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
 
-  def data(self): return self.dataIspezione
+  def data(self): 
+    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
   
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
@@ -759,7 +762,8 @@ class Nota(model.Model):
   creato_il = model.DateTimeProperty(auto_now_add=True)
   stato = model.IntegerProperty()
   
-  def data(self): return self.dataNota  
+  def data(self): 
+    return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)  
 
   def get_allegati(self): 
     if self.key:

@@ -60,6 +60,8 @@ function opennewmsg() {
   }
 }
 
+var auto_open_nc = false;
+
 function opennewwiz(url) {
   $('#new-data-form').load(url, function(){
     initForm();
@@ -117,7 +119,7 @@ function opennewwiz(url) {
 	      { text: "Ok",
 		click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
 	    $('#form-error').dialog('open');
-	    $('#new-data-preview').text('');
+	    $('#new-data-preview').html('');
 	  } else {
 	    $('#new-data-form').hide();  
 	    $('#new-data-preview').show();
@@ -126,16 +128,18 @@ function opennewwiz(url) {
 	    $('#form1').find('#e_submit').click(function() {$(this).button("loading")});
 	    $('#form1').ajaxForm(function(data) {
 	      $('#new-data').dialog('close');
-	      $('#new-data-form').text('');
-	      $('#new-data-preview').text('');
+	      $('#new-data-form').html('');
+	      $('#new-data-preview').html('');
 	      $('#activity_list').prepend(data);
-	      $('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
-	      $('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-		{ text: "Si",
-		  click: function() { $(this).dialog("close"); opennewnc(); } }, 
-		{ text: "No",
-		  click: function() { $(this).dialog("close"); } } ] });
-	      $('#new-nc').dialog('open');
+	      if(auto_open_nc) {
+		$('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
+		$('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+		  { text: "Si",
+		    click: function() { $(this).dialog("close"); opennewnc(); } }, 
+		  { text: "No",
+		    click: function() { $(this).dialog("close"); auto_open_nc = false; } } ] });
+		$('#new-nc').dialog('open');
+	      }
 	    });
 	  }
 	},
@@ -201,16 +205,18 @@ function onopennewitem() {
       $('#form1').find('#e_submit').click(function() {$(this).button("loading")});      
       $('#form1').ajaxForm(function(data) {      
 	$('#new-data').dialog('close');
-	$('#new-data-form').text('');
-	$('#new-data-preview').text('');
+	$('#new-data-form').html('');
+	$('#new-data-preview').html('');
 	$('#activity_list').prepend(data);
 	$('#new-nc').html("Inserire altra Non conformit&agrave; ?")
-	$('#new-nc').dialog({ title: "Nuova Non conformità", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	  { text: "Si",
-	    click: function() { $(this).dialog("close"); opennewnc(); } }, 
-	  { text: "No",
-	    click: function() { $(this).dialog("close"); } } ] });
-	$('#new-nc').dialog('open');
+        if(auto_open_nc) {
+	  $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	    { text: "Si",
+	      click: function() { $(this).dialog("close"); opennewnc(); } }, 
+	    { text: "No",
+	      click: function() { $(this).dialog("close"); auto_open_nc = false;} } ] });
+	  $('#new-nc').dialog('open');
+	}
       });
     }
       
@@ -239,26 +245,28 @@ function onclosenewitem() {
 }
 
 function opennewisp() {
- $('#new-data-form').text("");
- $('#new-data-preview').text("");
+ auto_open_nc = true;
+ $('#new-data-form').html("");
+ $('#new-data-preview').html("");
  opennewwiz("/isp/isp");
 }
 
 function opennewnc() {
- $('#new-data-form').text("");
- $('#new-data-preview').text("");
+ auto_open_nc = true;
+ $('#new-data-form').html("");
+ $('#new-data-preview').html("");
  $('#new-data-form').load("/isp/nc", onopennewitem);
 }
 
 function opennewdieta() {
- $('#new-data-form').text("");
- $('#new-data-preview').text("");
+ $('#new-data-form').html("");
+ $('#new-data-preview').html("");
   opennewwiz("/isp/dieta");
 }
 
 function opennewnota() {
- $('#new-data-form').text("");
- $('#new-data-preview').text("");
+ $('#new-data-form').html("");
+ $('#new-data-preview').html("");
  $('#new-data-form').load("/isp/nota", onopennewitem);
 }
 

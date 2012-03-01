@@ -5,7 +5,6 @@
   ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
   ('linkedin', '/auth/linkedin'),
 ] -%}
-
 <div class="row well">
   <div class="span12">
     <h4>Scegli uno dei seguenti account per registrarti</h4>
@@ -18,7 +17,7 @@
   <div class="span12">
     <h4>Oppure inserisci la tua email e password</h4>
     <div class="password-form">
-      <form method="POST" action="/eauth/signup" class="horizontal-form">
+      <form id="form0" method="POST" action="/eauth/signup" class="horizontal-form">
         <fieldset class="control-group">
           <label for="email" class="control-label">Email</label>
           <div class="controls"><input type="text" name="email" class="span3" /></div>
@@ -36,6 +35,16 @@
         <fieldset class="form-actions">
           <button type="submit" class="btn">Registrati</button>
         </fieldset>
+        {% if messages %}
+          <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">
+            <a href="#" class="close">&times;</a>
+            <ul>
+              {% for message in messages %}
+                <li>{{ message['message']|safe }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
       </form>
     </div>
   </div>
