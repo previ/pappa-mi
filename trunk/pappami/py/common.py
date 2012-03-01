@@ -4,6 +4,7 @@
 
 class Const:
   ACTIVITY_TIME_FORMAT = "%H:%M:%S"
+  ACTIVITY_DATE_FORMAT = "%d/%m/%Y"
   TIME_FORMAT = "T%H:%M:%S"
   DATE_FORMAT = "%Y-%m-%d"
   ACTIVITY_FETCH_LIMIT = 20

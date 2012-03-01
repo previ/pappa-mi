@@ -203,7 +203,7 @@ class Messaggio(model.Model):
     elif delta.days == 0 and delta.seconds < 3600*24:
       return str(delta.seconds / 3600) + " ore fa"
     else:
-      return "il " + datetime.strftime(self.creato_il, Const.DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+      return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
 
   def author(self):
     return self.get_commissario().nomecompleto()
@@ -223,7 +223,7 @@ class Messaggio(model.Model):
   
   def title(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      return self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + datetime.strftime(self.root.get().data(), Const.DATE_FORMAT)
+      return self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + self.root.get().data()
     if self.tipo == 201:
       return self.titolo
     if self.tipo == 202:

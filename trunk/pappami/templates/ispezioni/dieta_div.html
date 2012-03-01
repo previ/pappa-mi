@@ -238,25 +238,5 @@
 <script type="text/javascript">
 $(function() {
  $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
- $("#form0").validate({
-	errorClass: "error",
-	errorPlacement: function(error, element) {	
-	  //error.appendTo( element.parent().parent() );
-	  //alert(error.text());
-	  $($($(element).parent()).parent()).attr("title", error.text());
-	  $($($(element).parent()).parent()).tooltip({title:'data-original-title', trigger:'manual'});
-	  $($($(element).parent()).parent()).tooltip('show');
-        },
-	highlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).tooltip('show');
-	    //alert("pippo");
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(errorClass).removeClass(validClass);
-	 },
-	unhighlight: function(element, errorClass, validClass) {
-	    $($($(element).parent()).parent()).tooltip('hide');
-	    //alert("pappo");	
-	    //$($($($($(element).parent()).parent()).parent()).parent()).addClass(validClass).removeClass(errorClass);
-	 }
-}); 
 });
 </script>

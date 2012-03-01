@@ -43,9 +43,9 @@ class UserProfile(ndb.Expando):
         profile = cls.get_by_id(auth_id)
         if profile is None:
             profile = cls(id=auth_id)
-        profile.user_info = user_info
-        profile.populate(**kwargs)
-        profile.put()
+            profile.user_info = user_info
+            profile.populate(**kwargs)
+            profile.put()
         logging.info("profile key: " + str(profile.key))
         return profile
 
@@ -258,9 +258,16 @@ class User(ndb.Expando):
     def has_auth_strategy(self, auth_strategy):
         for auth_id in self.auth_ids:
             if auth_strategy in auth_id:
-                return True
+                return auth_id
         return False
-    
+
+    def remove_auth_strategy(self, auth_id):
+        if auth_id in self.auth_ids:
+            self.auth_ids.remove(auth_id)
+            profile = UserProfile.get_by_id(auth_id)
+            self.put()
+            profile.key.delete()
+            
     def get_emails(self):
         return self.email_model.get_by_user(self.get_id())
 

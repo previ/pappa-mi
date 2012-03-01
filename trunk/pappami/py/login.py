@@ -114,7 +114,7 @@ class SignupPage(BasePage):
     logging.info("c1: " + c1 + " c2 " + c2)
 
     if c1 != c2:
-      error = "La risposta alla domanda di controllo è sbagliata, riprova"
+      error = "La risposta alla domanda di controllo &egrave; sbagliata, riprova"
     elif password1 != password2:
       error = "Controllo password non corretto"
     elif email is None or email == "":
@@ -134,9 +134,20 @@ class SignupPage(BasePage):
       models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
 
     if error:
-      self.response.out.write(error)
+      template_values = dict()
+      template_values["main"] = '/eauth/main.html'
+      template_values["content"] = '/eauth/signup.html'
+      a = random.randint(1, 10)
+      b = random.randint(1, 10)
+      
+      self.session["c"] = str(a + b)
+      template_values["cap_a"] = a
+      template_values["cap_b"] = b
+      
+      template_values["messages"] = [{'message': error}]
+      self.getBase(template_values)
     else:
-      self.redirect("/auth/password", code=307)
+      self.redirect("/auth/password?next=/signup", code=307)
     
         
 
@@ -259,6 +270,17 @@ class PwdChangePage(BasePage):
       error = "Ok"
     
     self.response.out.write(error)
+
+class RemoveAuthPage(BasePage):
+  
+  def get(self):
+    strategy = self.request.get("p")
+
+    auth_id = self.request.user.has_auth_strategy(strategy)
+    self.request.user.remove_auth_strategy(auth_id)      
+    error = "Ok"
+    
+    self.response.out.write(error)
     
   
 app = webapp.WSGIApplication([
@@ -268,7 +290,8 @@ app = webapp.WSGIApplication([
   ('/eauth/pwdrecch', PwdRecoverChangePage),
   ('/eauth/pwdchg', PwdChangePage),
   ('/eauth/priv', ProtectedPage),
-  ('/eauth/signup', SignupPage)
+  ('/eauth/signup', SignupPage),
+  ('/eauth/rmauth', RemoveAuthPage),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
   
 def main():

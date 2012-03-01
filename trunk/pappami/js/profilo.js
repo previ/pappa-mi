@@ -117,3 +117,14 @@ function getimage() {
     }
   });
 }
+
+function removeAuth(provider) {
+  $.ajax({ url:"/eauth/rmauth?p="+provider, 
+	  success: function() {
+	    $("#"+provider+"_on").attr("checked", false);
+	    $("#"+provider+"_on_lbl").removeClass("active");
+	    $("#"+provider+"_off").attr("checked", true);
+	    $("#"+provider+"_off_lbl").addClass("active");
+	    }
+	  });
+}
