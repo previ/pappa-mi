@@ -271,6 +271,7 @@ function opennewnota() {
 }
 
 function previewback() {
+ $("#e_submit").button("reset");
  $('#new-data-preview').hide();
  $('#new-data-form').show();
 }

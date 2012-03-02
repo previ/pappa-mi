@@ -6,7 +6,7 @@
    <h4>{{nota.titolo}}</h4>
    <div>Testo</div>
    <div class="controls">
-    <div style="height:270px; overflow:auto">{{nota.note}}</div>
+    <div class="scroll" {% if preview %}style="height:270px; overflow:auto"{% endif %}>{{nota.note}}</div>
    </div>
 {% if nota.get_allegati() %}
    <div for="e_attach"><i class="icon-file"></i> Allegati</div>
