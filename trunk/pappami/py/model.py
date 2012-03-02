@@ -8,7 +8,7 @@ import fpformat
 import google.appengine.api.images
 import threading
 
-from google.appengine.ext.ndb import model
+from google.appengine.ext.ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
@@ -199,7 +199,7 @@ class Commissario(model.Model):
     commissario = memcache.get("commissario-"+user.get_id())
     if not commissario:
       commissario = cls.query().filter(Commissario.usera == user.key).get()
-      if not commissario:
+      if not commissario and user.email:
         commissario = cls.query().filter(Commissario.user == users.User(user.email)).get()
         if commissario:
           commissario.usera = user.key

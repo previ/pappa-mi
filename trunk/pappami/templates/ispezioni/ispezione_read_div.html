@@ -63,7 +63,7 @@
 <td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
 </tr>
 <tr>
-<td>Note</td><td colspan="6"><div style="height:100px; overflow:auto;">{{isp.note|replace("\n","<br/>")}}</div></td>
+<td>Note</td><td colspan="6"><div class="scroll" {% if preview %}style="height:100px; overflow:auto;"{% endif %}>{{isp.note|replace("\n","<br/>")}}</div></td>
 </tr>
 </tbody>
 </table>

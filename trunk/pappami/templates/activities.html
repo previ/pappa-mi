@@ -5,21 +5,11 @@ var offset = 1;
 
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
-    // bind 'myForm' and provide a simple callback function 
-    $('textarea').autogrow();
-    //$("#new-msg-form").validate();
     $('#activity_list').load('/comments/load', function(){
       $('#e_act_more').bind( "click", function(){moreactivities();} );
       $('#act_loading').hide();      
       $("#nav-sec").children().removeClass("active");
       $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
-    });
-    
-    $('#form_filter').ajaxForm({ beforeSubmit: function(data) { 
-      query = $.param(data);
-      offset = 1;
-      $('#activity_list').text('');
-      $('#activity_list').load('/comments/load?'+query); return false;}
     });
     
     $('#e_message').tinymce({
@@ -41,95 +31,96 @@ $(document).ready(function() {
      theme_advanced_resizing : false     
     });
 }); 
-
-
-
 </script> 
 {%set tab_activity="active"%}
 {%include "navigation.html"%}
 <div id="activities" class="activity_container">
-{%if commissario or genitore%}
-<div id="nav-priv-cnt"></div>
-<div class="well">
-<h3>Aggiungi nuovo:</h3>
-<button class="btn primary" onclick="opennewmsg();">Messaggio</button>
-<button class="btn primary" onclick="opennewisp();">Ispezione</button>
-<button class="btn primary" onclick="opennewdieta();">Ispezione Diete</button>
-<button class="btn primary" onclick="opennewnc();">Non conformit&agrave;</button>
-<button class="btn primary" onclick="opennewnota();">Nota</button>
-</div>
-<div id="new-data" style="display:none;">
- <div id="new-data-form" style="border: none;"></div> 
- <div id="new-data-preview" style="display:none;"></div> 
-</div> 
-<div id="new-nc" style="display:none;"></div> 
-{%endif%}
-<div class="row">
-  <div class="span9">
-{%if commissario or genitore%}  
-    <div id="new-msg" style="display:none;">
-     <form id="new-msg-form" action="/comments/message" method="post" class="form-stacked" novalidate="true"> 
-      <input type="hidden" id="act_last" name="last" value="" />  
-      <input type="hidden" name="livello" value="0" />  
-      <input type="hidden" name="tipo" value="201" /> 
-      <div class="comment_avatar">
-       <img src="{{user.avatar}}" title="{{user.fullname}}">
-      </div>
-      <div class="comment_body">
-       <div class="comment_author">{{user.fullname}}</div>
-       <div class="comment_author_title"></div>       
-       <div class="comment_text">
-	<div class="clearfix">
-	 <label>Titolo:</label>
-	 <div class="input">
-	  <input type="text" class="span8" name="titolo">
-	 </div>
-	 <label>Testo:</label>
-	 <div class="input">
-    	  <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>
-	 </div>
-	 <label>Categorie:</label>	 
-	 <div class="input">  	  
-	  <ul id="message_tags_handler"></ul>
-	 </div>
-	</div>
-      <div class="actions">
-	<button class="btn btn-primary" type="submit">Invia</button>
-	 <button class="btn" type="reset" onclick="opennewmsg();">Annulla</button>
-	</div>
-       </div>  
-     </form>
-    </div>
-   </div>     
-{%endif%}
-    <div id="act_loading" style="text-align:center;">Loading...</div>
-    <ul class="activity_list" id="activity_list"></ul>
-  </div>
-  
+ <div id="nav-priv-cnt"></div>
+ {#<div class="well">
+ <h3>Aggiungi nuovo:</h3>
+ <button class="btn primary" onclick="opennewmsg();">Messaggio</button>
+ <button class="btn primary" onclick="opennewisp();">Ispezione</button>
+ <button class="btn primary" onclick="opennewdieta();">Ispezione Diete</button>
+ <button class="btn primary" onclick="opennewnc();">Non conformit&agrave;</button>
+ <button class="btn primary" onclick="opennewnota();">Nota</button>
+ </div>#}
+ <div id="new-data" style="display:none;">
+  <div id="new-data-form" style="border: none;"></div> 
+  <div id="new-data-preview" style="display:none;"></div> 
+ </div> 
+ <div id="new-nc" style="display:none;"></div>
+ <div class="row">
   <div class="span3">
-    <ul class="nav nav-list" id="nav-sec">
-      <li class="nav-header"><i class="icon-home"></i>
-	Scuole
-      </li>
-      {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<li id="cm{{cm.key.id()}}typeusertag"><a href="#" onclick="filteractivities('cm={{cm.key.id()}}&type=&user=&tag=')">{{cm.desc()}}</a></li>
-      {%endfor%}{%endif%}
-      <li class="nav-header"><i class="icon-file"></i>
-	Tipo dati
-      </li>
-      <li id="cmtypeusertag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
-      <li class="divider"></li>{%if commissario or genitore%}
-      <li id="user{{user.get_id()}}typetagcm"><a href="#" {%if ctx.user == user.get_id()%}class="active"{%endif%} onclick="filteractivities('user={{user.get_id()}}&type=&tag=&cm=')">Inseriti da me</a></li>
-      <li class="divider"></li>{%endif%}
-      <li id="cmtype201usertag"><a href="#" onclick="filteractivities('cm=&type=201&user=&tag=')">Messaggi</a></li>
-      <li id="cmtype101usertag"><a href="#" onclick="filteractivities('cm=&type=101&user=&tag=')">Ispezioni</a></li>
-      <li id="cmtype102usertag"><a href="#" onclick="filteractivities('cm=&type=102&user=&tag=')">Ispezioni Diete</a></li>
-      <li id="cmtype103usertag"><a href="#"  onclick="filteractivities('cm=&type=103&user=&tag=')">Non conformit&agrave;</a></li>
-      <li id="cmtype104usertag"><a href="#" onclick="filteractivities('cm=&type=104&user=&tag=')">Note</a></li>    
-      <li class="nav-header"><i class="icon-tags"></i>Categorie</li>
-      {%for tag in tags%}<li id="cmtypeusertag{{tag.nome}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>
-      {%endfor%}
-    </ul>    
+   <ul class="nav nav-list" id="nav-sec">
+    <li class="nav-header"><i class="icon-home"></i>Scuole</li>
+    {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<li id="cm{{cm.key.id()}}typeusertag"><a href="#" onclick="filteractivities('cm={{cm.key.id()}}&type=&user=&tag=')">{{cm.desc()}}</a></li>
+    {%endfor%}{%endif%}
+    <li class="nav-header"><i class="icon-file"></i>Tipo dati</li>
+    <li id="cmtypeusertag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
+    <li class="divider"></li>{%if commissario or genitore%}
+    <li id="user{{user.get_id()}}typetagcm"><a href="#" {%if ctx.user == user.get_id()%}class="active"{%endif%} onclick="filteractivities('user={{user.get_id()}}&type=&tag=&cm=')">Inseriti da me</a></li>
+    <li class="divider"></li>{%endif%}
+    <li id="cmtype201usertag"><a href="#" onclick="filteractivities('cm=&type=201&user=&tag=')">Messaggi</a></li>
+    <li id="cmtype101usertag"><a href="#" onclick="filteractivities('cm=&type=101&user=&tag=')">Ispezioni</a></li>
+    <li id="cmtype102usertag"><a href="#" onclick="filteractivities('cm=&type=102&user=&tag=')">Ispezioni Diete</a></li>
+    <li id="cmtype103usertag"><a href="#"  onclick="filteractivities('cm=&type=103&user=&tag=')">Non conformit&agrave;</a></li>
+    <li id="cmtype104usertag"><a href="#" onclick="filteractivities('cm=&type=104&user=&tag=')">Note</a></li>    
+    <li class="nav-header"><i class="icon-tags"></i>Categorie</li>
+    {%for tag in tags%}<li id="cmtypeusertag{{tag.nome}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>
+    {%endfor%}
+   </ul>    
   </div>  
-</div>
-  <div class="span9" style="text-align:center"><button data-loading-text="caricamento in corso..." class="btn span6" id="e_act_more">Carica altri...</button></div>    
+  <div class="span9">
+ {%if commissario or genitore%}
+   <div class="well" style="padding: 10px;"><h4><small>Aggiungi nuovo</small></h4>
+    <div class="btn-toolbar">
+     <button class="btn btn-primary" onclick="opennewmsg();">Messaggio</button>
+     {%if commissario%}
+     <button class="btn btn-primary" onclick="opennewisp();">Ispezione</button>
+     <button class="btn btn-primary" onclick="opennewdieta();">Ispezione Diete</button>
+     <button class="btn btn-primary" onclick="opennewnc();">Non conformit&agrave;</button>
+    {%endif%}
+     <button class="btn btn-primary" onclick="opennewnota();">Nota</button>
+    </div>
+   </div>
+   <div id="new-msg" style="display:none;">
+    <form id="new-msg-form" action="/comments/message" method="post" class="form-stacked" novalidate="true"> 
+     <input type="hidden" id="act_last" name="last" value="" />  
+     <input type="hidden" name="livello" value="0" />  
+     <input type="hidden" name="tipo" value="201" /> 
+     <div class="comment_avatar">
+      <img src="{{user.avatar}}" title="{{user.fullname}}">
+     </div>
+     <div class="comment_body">
+      <div class="comment_author">{{user.fullname}}</div>
+      <div class="comment_author_title"></div>       
+      <div class="comment_text">
+       <div class="clearfix">
+	<label>Titolo:</label>
+	<div class="input">
+	 <input type="text" class="span8" name="titolo">
+	</div>
+	<label>Testo:</label>
+	<div class="input">
+	 <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>
+	</div>
+	<label>Categorie:</label>	 
+	<div class="input">  	  
+	 <ul id="message_tags_handler"></ul>
+	</div>
+       </div>
+       <div class="actions">
+	<button class="btn btn-primary" type="submit">Invia</button>
+	<button class="btn" type="reset" onclick="opennewmsg();">Annulla</button>
+       </div>
+      </div>  
+     </div>  
+    </form>
+   </div>
+  {%endif%}
+   <div id="act_loading" style="text-align:center;">Loading...</div>
+   <ul class="activity_list" id="activity_list"></ul>
+  </div>
+ </div>
+ <div class="span9" style="text-align:center"><button data-loading-text="caricamento in corso..." class="btn span6" id="e_act_more">Carica altri...</button></div>    
 </div>

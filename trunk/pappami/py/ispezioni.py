@@ -101,8 +101,6 @@ class IspezioneHandler(BasePage):
   @commissario_required
   def get(self): 
     commissario = self.getCommissario()
-    if commissario is None or not commissario.isCommissario() :
-      return
 
     if( self.request.get("cmd") == "open" ):
       isp = Ispezione.get(self.request.get("key"))
@@ -486,7 +484,7 @@ class DietaHandler(BasePage):
       
 class NotaHandler(BasePage):
   
-  @commissario_required
+  @reguser_required
   def get(self): 
     commissario = self.getCommissario()
     if commissario is None or not commissario.isCommissario() :
@@ -542,7 +540,7 @@ class NotaHandler(BasePage):
 
       self.getBase(template_values)
 
-  @commissario_required
+  @reguser_required
   def post(self):    
    
     commissario = self.getCommissario()

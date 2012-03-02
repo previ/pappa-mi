@@ -14,7 +14,7 @@
     <legend>I tuoi dati</legend>
     <div class="control-group">
       <label for="avatar">Email</label>
-      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{user.email}}" size="30" type="text" {%if user.email != ""%}readonly{%endif%}></div>
+      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{user.email}}" size="30" type="text" {%if user.email and user.email != ""%}readonly{%endif%}></div>
     </div>
     <div class="control-group">
       <label for="avatar">Immagine</label>

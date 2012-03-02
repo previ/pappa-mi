@@ -46,6 +46,9 @@ class SignupHandler(BasePage):
     user = self.request.user
     form = CommissarioForm(self.request.POST)
 
+    if not user.email:
+      user.email = self.request.get("email")
+      user.put()
     commissario = Commissario()
 
     form.populate_obj(commissario)
