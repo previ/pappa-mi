@@ -69,7 +69,7 @@ class BasePage(webapp.RequestHandler):
         webapp.RequestHandler.dispatch(self)
     finally:
         # Save all sessions.
-        logging.info(self.get_context())
+        #logging.info(self.get_context())
         self.set_context()
         self.session_store.save_sessions(self.response)
 
@@ -154,12 +154,17 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.0.37 - 2012.01.21"
+    template_values["version"] = "2.0.0.0 - 2012.03.01"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
     
+    #this is to avoid that a new user click on "enter" instead of "register" => she will be redirected to "signup" path until she complete the process, or logout
+    if user and not commissario and "signup" not in self.request.uri:
+      self.redirect("/signup")
+      return
+      
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
   

@@ -44,13 +44,9 @@ class LinkedInStrategy(OAuthStrategy):
                     'honorificPrefix': None,
                     'honorificSuffix': None,
                 },
-                'urls': [
-                        {
-                        'type': 'linkedin#profile',
-                        'value': user.get('publicProfileUrl'),
-                        'primary': True,
-                        },
-                ],
+                'image': {
+                    'url': user.get('pictureUrl')
+                },
                 'industry': user.get('industry'),
 #                'utcOffset': user.get('utc_offset'),
 #                'locale': user.get('lang'),

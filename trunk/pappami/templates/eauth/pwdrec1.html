@@ -1,6 +1,17 @@
 <script type="text/javascript">
 $(document).ready(function() { 
-  $("#form0").validate({});
+  $("#form0").validate({
+    rules: {
+      email: {
+        required: true,
+        email: true
+      },
+      c: {
+        required: true,
+        number: true
+      }
+    }
+  });
   
   $('#form0').ajaxForm({success: function(data) {
     if(data == "Ok") {

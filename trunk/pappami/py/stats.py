@@ -77,13 +77,17 @@ class CMStatsHandler(BasePage):
     statCM = None
 
     #logging.info("anno: " + self.request.get("anno"))
-    
     now = datetime.datetime.now().date()
-    anno = now.year
-    if now.month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
-      anno = anno - 1
+
+    anno = self.get_context().get("anno")
+
     if self.request.get("anno"):
       anno = int(self.request.get("anno"))
+
+    if not anno:
+      anno = now.year
+      if now.month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
+        anno = anno - 1
 
     anni = list()
     sts = StatisticheIspezioni.get_cc_cm_time()

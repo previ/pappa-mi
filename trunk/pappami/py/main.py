@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required
+from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required
+from commissioni import ContattiHandler
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -51,9 +52,8 @@ class MainPage(BasePage):
     activities = self.get_activities()
     template_values["activities"] = activities
     template_values["content"] = "public.html"
-    template_values["billboard"] = "billboard.html"
-    template_values["content_right"] = "rightbar.html"
-    template_values["stat"] = stats = self.getStats()
+    template_values["stat"] = self.getStats()
+    template_values["contacts"] = ContattiHandler.get_contacts()
     
     geo = model.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario(self.get_current_user())

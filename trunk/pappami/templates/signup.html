@@ -14,19 +14,20 @@
     <legend>I tuoi dati</legend>
     <div class="control-group">
       <label for="avatar">Email</label>
-      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{user.email}}" size="30" type="text" {%if user.email and user.email != ""%}readonly{%endif%}></div>
+      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{%if user.email%}{{user.email}}{%endif%}" size="30" type="text" {%if user.email and user.email != ""%}readonly{%endif%}></div>
     </div>
     <div class="control-group">
       <label for="avatar">Immagine</label>
-      <div class="controls"><img id="avatar" src="{{default_avatar}}&size=big" class="avatar-big"/></div>
+      <div class="controls"><img id="avatar" src="{{form.avatar_url.data}}" class="avatar-big"/></div>
+      <input type="hidden" name="avatar_url" id="avatar_url" value="{{form.avatar_url.data}}"/>
     </div>
     <div class="control-group">
       <label for="nome">Nome</label>
-      <div class="controls"><input class="xlarge required" id="nome" name="nome" value="" size="30" type="text"></div>
+      <div class="controls"><input class="xlarge required" id="nome" name="nome" value="{{form.nome.data}}" size="30" type="text"></div>
     </div>
     <div class="control-group">
       <label for="cognome">Cognome</label>
-      <div class="controls"><input class="xlarge required" id="cognome" name="cognome" value="" size="30" type="text"></div>
+      <div class="controls"><input class="xlarge required" id="cognome" name="cognome" value="{{form.cognome.data}}" size="30" type="text"></div>
     </div>
     <div class="control-group">
       <label for="citta">Citt&agrave;</label>
@@ -68,8 +69,8 @@
     </fieldset>
   </div>
 </div>
-<div class="actions">
-   <input type="submit" class="btn primary" value="Completa registrazione">&nbsp;<button type="reset" class="btn">Annulla</button>
+<div class="form-actions">
+   <input type="submit" class="btn btn-primary" value="Completa registrazione">&nbsp;<button type="reset" class="btn">Annulla</button>
 </div>
 </div>
 <div id="message" class="span12" style="display:none;">

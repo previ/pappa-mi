@@ -174,8 +174,9 @@ class Commissario(model.Model):
   nome = model.StringProperty()
   cognome = model.StringProperty()
   
-  avatar_url = model.StringProperty()
+  avatar_url = model.StringProperty(indexed=False)
   avatar_data = model.BlobProperty()
+  #avatar_data2 = model.BlobProperty()
 
   emailComunicazioni = model.StringProperty()
 
@@ -207,6 +208,12 @@ class Commissario(model.Model):
       memcache.add("commissario-"+user.get_id(), commissario)
     return commissario
   
+  def set_cache(self):
+    memcache.delete("commissario-"+str(self.usera.get().get_id()))
+
+  @classmethod
+  def get_all(cls):
+    return Commissario.query()
     
   @classmethod
   def get_by_email_lower(cls, email):
@@ -275,12 +282,13 @@ class Commissario(model.Model):
       titolo = titolo + c.tipoScuola + " " + c.nome + "; "
     return titolo + "]"
     
-  def avatar(self):
+  def avatar(self, size = None):
     if not self.avatar_url:
       return "/img/default_avatar.png"
+    elif "?id=" in self.avatar_url and size:
+      return self.avatar_url + "&size="+size
     else:
       return self.avatar_url
-    
   
 class CommissioneCommissario(model.Model):
   commissione = model.KeyProperty(kind=Commissione)

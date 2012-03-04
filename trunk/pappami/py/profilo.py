@@ -93,10 +93,14 @@ class CMAvatarHandler(BasePage):
         if len(avatar_file) < 1000000 :
           logging.info("2")
           avatar = images.resize(self.request.get("avatar_file"), 128,128)
+          #logging.info(commissario.avatar_data)
           commissario.avatar_data = avatar
-          commissario.avatar_url = "/public/avatar?key=" + str(commissario.key)
+          logging.info("len: " + str(len(commissario.avatar_data)))
+          #logging.info(commissario.avatar_data)          
+          commissario.avatar_url = "/public/avatar?id="+str(commissario.usera.id())
           commissario.put()
-          self.response.out.write(commissario.avatar()+"&size=big");
+          commissario.set_cache()
+          self.response.out.write(commissario.avatar('big'));
         else:
           logging.info("attachment is too big.")
     if cmd == "saveurl":

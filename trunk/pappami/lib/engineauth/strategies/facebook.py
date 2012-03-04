@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import json
 from engineauth.models import User
 from engineauth.strategies.oauth2 import OAuth2Strategy
+import logging
 
 
 class FacebookStrategy(OAuth2Strategy):
@@ -24,6 +25,7 @@ class FacebookStrategy(OAuth2Strategy):
                                     'Please try again.')
         user = json.loads(results)
         auth_id = User.generate_auth_id(req.provider, user['id'])
+
         return {
             'auth_id': auth_id,
             'info': {
@@ -31,8 +33,8 @@ class FacebookStrategy(OAuth2Strategy):
                 'displayName': user.get('name'),
                 'name': {
                     'formatted': user.get('name'),
-#                    'familyName': user.get('last_name'),
-#                    'givenName': user.get('first_name'),
+                    'familyName': user.get('last_name'),
+                    'givenName': user.get('first_name'),
 #                    'middleName': user.get('middle_name'),
 #                    'honorificPrefix': None,
 #                    'honorificSuffix': None,

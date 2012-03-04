@@ -32,7 +32,8 @@
 	</div>
 	<div class="control-group">
 	  <label for="avatar">Immagine</label>
-	  <div class="controls"><img id="avatar" src="{{cmsro.avatar()}}" class="avatar-big"/></div>
+	  <div class="controls"><img id="avatar" src="{{cmsro.avatar('big')}}" class="avatar-big"/></div>
+	  <input type="hidden" name="avatar_url" id="avatar_url" value="{{cmsro.avatar()}}"/>
 	</div>
 	<div class="control-group">
 	  <label for="nome">Nome</label>

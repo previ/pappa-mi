@@ -1,6 +1,17 @@
 <script type="text/javascript">
 $(document).ready(function() { 
-  $("#form0").validate({});
+  $("#form0").validate({
+    rules: {
+      password: {
+        required: true,
+        minlength: 6
+      },
+      password2: {
+        required: true,
+        minlength: 6
+      }
+    }
+  });
   
   $('#form0').ajaxForm({success: function(data) {
     if(data == "Ok") {
@@ -15,7 +26,7 @@ $(document).ready(function() {
 </script>
 <div class="row">
   <div class="span11">
-    <legend>Inserisci l'indirizzo email con cui ti sei registrato</legend>
+    <legend>Inserisci la nuova password</legend>
     <div class="password-form">
       <form id="form0" method="POST" action="/eauth/pwdrecch" class="horizontal-form" novalidate>
       <input type="hidden" name="key" value="{{key}}" />
@@ -26,7 +37,7 @@ $(document).ready(function() {
           <div class="controls"><input type="password" name="password2" class="span3 required password" /></div>
         </fieldset>
         <fieldset class="form-actions">
-          <button type="submit" class="btn">Invia richiesta</button>
+          <button type="submit" class="btn">Cambia password</button>
         </fieldset>
         <div id="message"></div>
       </form>

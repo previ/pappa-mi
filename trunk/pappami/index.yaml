@@ -10,9 +10,31 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: CentroCucina
+  properties:
+  - name: citta
+  - name: nome
+
+- kind: CentroCucinaZona
+  properties:
+  - name: centroCucina
+  - name: validitaDa
+    direction: desc
+
+- kind: Commissione
+  properties:
+  - name: tipoScuola
+  - name: numCommissari
+
 - kind: CommissioneCentroCucina
   properties:
   - name: commissione
+  - name: validitaDa
+    direction: desc
+
+- kind: MenuNew
+  properties:
+  - name: citta
   - name: validitaDa
     direction: desc
 
@@ -20,9 +42,10 @@ indexes:
   properties:
   - name: livello
   - name: creato_il
+    direction: desc
 
-- kind: Messaggio
+- kind: ZonaOffset
   properties:
-  - name: livello
-  - name: creato_il
+  - name: zona
+  - name: validitaDa
     direction: desc

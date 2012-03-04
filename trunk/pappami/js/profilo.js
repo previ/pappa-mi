@@ -27,7 +27,7 @@ $(document).ready(function() {
     
     $('#form0').ajaxForm({success: function(data) {
       message = data;
-      if($('#form0').attr("action") == "/signup") {
+      if($('#form0').attr("action") == "/signup2") {
 	$("#message").find(".alert-actions").show();
       } else {
 	$("#message").find(".alert-actions").hide();
@@ -35,7 +35,8 @@ $(document).ready(function() {
       $("#message").hide();      
       $("#message_body").text(message);
       $("#message").fadeIn(300);	  
-      if($('#form0').attr("action") == "/signup") {	
+      if($('#form0').attr("action") == "/signup2") {	
+	setTimeout(function(){location.href="/";}, 2000);
       } else {
 	setTimeout(function(){$("#message").fadeOut(1000, function(){$("#message_body").text('');});}, 2000);
       }
@@ -82,6 +83,7 @@ $(document).ready(function() {
     $('#avatar_file').change(function(){
         $('#avatar_form').ajaxSubmit(function(data) { 
             $('#avatar_edit').attr("src", data);
+	    $('#avatar_url').attr("value", data);
             $('#avatar').attr("src", data);
             $("#avatar_dialog").dialog("close");            
         }); 
@@ -108,10 +110,11 @@ function getimage() {
   FB.api('/me', function(user) {
     if(user != null) {
         picturl = 'https://graph.facebook.com/' + user.id + '/picture'
+        $('#avatar_url').attr("value", picturl);
         $('#avatar').attr("src", picturl);
         $('#avatar_edit').attr("src", picturl);
         data = {cmd: 'saveurl', picture: picturl};
-        $.post('/commissario/avatar', data, function() {
+        $.post('/profilo/avatar', data, function() {
             $("#avatar_dialog").dialog("close");            
         });
     }
