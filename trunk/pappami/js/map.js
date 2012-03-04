@@ -7,6 +7,9 @@ var iLast;
 var locArray;
 var offset = 0;
 var markersArray = [];
+var lat;
+var lon;
+
 var image = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/school.png',
       new google.maps.Size(32, 37),
       new google.maps.Point(0,0),
@@ -73,6 +76,14 @@ function drawMap(data) {
 
 function redraw() {
   $("#loading").show();
+
+  var myOptions = {
+    zoom: 12,
+    center: new google.maps.LatLng(lat,lon),
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }    
+  map = new google.maps.Map(document.getElementById("map"), myOptions);
+  
   list.children().remove();
   list.lenght = 0;
   for (var i = 0; i < markersArray.length; i++) {
@@ -90,14 +101,10 @@ function redraw() {
   jQuery.get("/map?cmd=all", {}, drawMap );
 }
 
-function load(lat, lon) {
-  var myOptions = {
-    zoom: 12,
-    center: new google.maps.LatLng(lat,lon),
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  }    
-  map = new google.maps.Map(document.getElementById("map"), myOptions);
+function load(_lat, _lon) {
 
+  lat = _lat
+  lon = _lon
   list = $("#left_list");
 
   redraw();
@@ -108,7 +115,7 @@ function createMarker(school) {
   fluster.addMarker(marker);
   markersArray.push(marker)
 
-  var html = "<div id='info'><div id='tabs'><ul><li><a href='#general'>Generale</a></li><li><li><a href='/widget/stat?i=n&cm="+school.key+"'>Statistiche</a></li></ul>" + "<div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div>" + "<div id='menu'></div>" + "<div id='stat'></div>" + "</div></div>";
+  var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li><li><a href='#contacts' data-toggle='tab'>Contatti</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div></div><div id='contacts'>contatti...</div></div></div>";
   
   var openiw = function (){
     if (infowindow) infowindow.close();

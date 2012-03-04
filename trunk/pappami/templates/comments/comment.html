@@ -2,11 +2,11 @@
 <li class="comment_item">
 <div class="comment_box" id="comment_{{comment.key.id()}}">
  <div class="comment_avatar">
- <img src="{{comment.author_avatar()}}" title="{{comment.author()}}">
+ <img src="{{comment.author_avatar()}}" title="{{comment.author(cmsro)}}">
  </div>
  <div class="comment_body">
-  <div class="comment_author">{{comment.author()}}</div>
-  <div class="comment_author_title">{{comment.author_title()}}</div>
+  <div class="comment_author">{{comment.author(cmsro)}}</div>
+  <div class="comment_author_title">{{comment.author_title(cmsro)}}</div>
    <div class="comment_date"> - {{comment.data()}}</div>
    <!--div>Titolo: {{comment.titolo}}</div-->
    <div class="comment_text">{{comment.testo}}</div>

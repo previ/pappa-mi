@@ -20,14 +20,14 @@ height: 220px;
 <ul class="nav nav-tabs">
 <li class="dropdown">
  <a class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
-  Commissioni presso le Scuole di <b>{{citta_desc}}</b> - <b>{{stato}}</b><i class="caret"></i>
+  Commissioni presso le Scuole di <b>{{citta.nome}}</b></b><i class="caret"></i>
  </a>
  <ul class="dropdown-menu dropdown-large">
   {#<form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">#}
     <label for="citta">Citt&agrave;</label>
     <select class="large required" id="citta" name="citta" value="{{ctx.citta_key}}">
     <option value=""></option>
-    {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+    {%for cit in cittas%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
     <select class="large required" id="e_cc" name="centroCucina" value="">
     <option value="">Tutti</option>{%for cc in centriCucina%}

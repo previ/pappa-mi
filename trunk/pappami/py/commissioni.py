@@ -33,7 +33,8 @@ class CommissioniHandler(BasePage):
       logging.info(c.nome)
     template_values["content"] = "map.html"
     template_values["limit"] = 100
-    template_values["citta"] = Citta.get_all()
+    template_values["cittas"] = Citta.get_all()
+    template_values["citta"] = model.Key("Citta", int(self.get_context().get("citta_key"))).get()
     template_values["centriCucina"] = CentroCucina.query().filter(CentroCucina.citta == commissario.citta).order(CentroCucina.nome)
     template_values['action'] = self.request.path
     template_values['geo'] = geo
@@ -53,6 +54,9 @@ class ContattiHandler(BasePage):
     else:
       cm = Commissione.get_all_cursor(None).get()
 
+    for c in cm.commissari():
+      logging.info(str(c.id()))
+      logging.info(c.get().nome)
     template_values["content"] = "contatti.html"
     template_values['commissari'] = cm.commissari()
     self.getBase(template_values)
