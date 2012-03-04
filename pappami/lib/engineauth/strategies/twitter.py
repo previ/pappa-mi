@@ -43,33 +43,15 @@ class TwitterStrategy(OAuthStrategy):
 #                    'honorificPrefix': None,
 #                    'honorificSuffix': None,
                 },
-                'urls': [
-                        {
-                        'type': 'twitter#profile',
-                        'value': user.get('url'),
-                        'primary': True,
-                        },
-                ],
-
+                'image': {
+                    'url': user.get('profile_image_url')
+                },
                 'utcOffset': user.get('utc_offset'),
                 'locale': user.get('lang'),
                 'verified': user.get('verified'),
                 'nickname': user.get('screen_name'),
                 'location': user.get('location'), # user_location
-                'aboutMe': user.get('description'),
-                'photos':  [
-                    {
-                        'value': user.get('profile_image_url'),
-                        'type': 'full'
-                    },
-                    {
-                        'value': user.get('profile_image_url_https'),
-                        'type': 'https'
-                    },
-                ],
-                'image': {
-                        'url': user.get('profile_image_url'),
-                    },
+                'aboutMe': user.get('description')
             },
             'extra': {
                 'raw_info': user,

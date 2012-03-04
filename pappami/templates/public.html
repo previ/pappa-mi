@@ -82,8 +82,15 @@ $(function(){
     <p><a class="btn" href="/stats">Dettagli &raquo;</a></p>
   </div>
   <div class="span4">
-    <h2>Social</h2>
-      <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like-box href="http://www.facebook.com/pappami" width="280" show_faces="true" border_color="" stream="false" header="false"></fb:like-box>
+    <h2>Iscritti</h2>
+    <div>
+     <ul class="thumbnails">  
+    {%for c in contacts%}
+      <li><img src="{{c.avatar()}}" alt="{{c.nome}}"></li>
+    {%endfor%}
+     </ul>
+    </div>
+      <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like-box href="http://www.facebook.com/pappami" width="280" show_faces="false" border_color="" stream="false" header="false"></fb:like-box>
     <div id="follow">
       <a href="http://twitter.com/pappa_mi"target="_new"><img src="/img/twitter-icon.png" alt="Twitter" title="Twitter" width="32" height="32"/></a>
       <a href="http://www.google.com/profiles/aiuto.pappami#buzz"target="_new"><img src="/img/gbuzz-icon.png" alt="Google Buzz" title="Google Buzz" width="32" height="32"/></a>

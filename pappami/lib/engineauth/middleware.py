@@ -109,7 +109,7 @@ class EngineAuthRequest(Request):
 
 class AuthMiddleware(object):
     def __init__(self, app, config=None):
-        logging.info("AuthMiddleware.init")
+        #logging.info("AuthMiddleware.init")
         self.app = app
         self._config = load_config(config)
         self._url_parse_re = re.compile(r'%s/([^\s/]+)/*(\S*)' %
@@ -126,7 +126,7 @@ class AuthMiddleware(object):
         req._set_redirect_uri()
         req.ea_config = self._config
         resp = None
-        logging.info("AuthMiddleware.PATH_INFO: " + environ['PATH_INFO'])
+        #logging.info("AuthMiddleware.PATH_INFO: " + environ['PATH_INFO'])
         # If the requesting url is for engineauth load the strategy
         if environ['PATH_INFO'].startswith(self._config['base_uri']):
             # extract provider and additional params from the url
@@ -137,14 +137,14 @@ class AuthMiddleware(object):
                 req.provider = provider
                 req.provider_params = provider_params
                 # load the desired strategy class
-                logging.info("AuthMiddleware.provider: " + provider)
+                #logging.info("AuthMiddleware.provider: " + provider)
                 strategy_class = self._load_strategy(provider)
                 resp = req.get_response(strategy_class(self.app, self._config))
                 if resp.request is None:
                     # TODO: determine why this is necessary.
                     resp.request = req
         if resp is None:
-            logging.info("AuthMiddleware.resp.1")
+            #logging.info("AuthMiddleware.resp.1")
             resp = req.get_response(self.app)
         #logging.info("AuthMiddleware.resp.2: " + str(resp))
         # Save session, return response

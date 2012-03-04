@@ -16,6 +16,7 @@ from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.api import mail
+from engineauth import models
 
 from gviz_api import *
 from model import *
@@ -26,10 +27,26 @@ from form import CommissarioForm
 class SignupPreHandler(BasePage):
   
   @user_required
-  def get(self):      
+  def get(self):   
+    form = CommissarioForm()    
+    user = self.request.user
+    logging.info("1")
+    if len(user.auth_ids) == 1: #ensure this is for first registration only
+      user_info = models.UserProfile.get_by_id(user.auth_ids[0]).user_info.get("info")
+      logging.info("userinfo: " + str(user_info))
+      if user_info.get("name"):
+        if user_info.get("name").get("givenName"):
+          form.nome.data=user_info.get("name").get("givenName")
+        if user_info.get("name").get("familyName"):
+          form.cognome.data=user_info.get("name").get("familyName")
+      if user_info.get("image"):
+        form.avatar_url.data=user_info.get("image").get("url")
+    if not form.avatar_url.data:
+      form.avatar_url.data = "/img/avatar/default_avatar.gif"
     template_values = {
       'content': 'signup.html',
       'citta': Citta.get_all(),
+      'form': form,
       'default_avatar': '/img/avatar/default_avatar.gif'
     }
     self.getBase(template_values)
@@ -47,8 +64,9 @@ class SignupHandler(BasePage):
     form = CommissarioForm(self.request.POST)
 
     if not user.email:
-      user.email = self.request.get("email")
+      user.email = self.request.get("email")      
       user.put()
+      models.UserEmail.create(user.email, user.get_id())
     commissario = Commissario()
 
     form.populate_obj(commissario)

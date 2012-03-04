@@ -134,7 +134,7 @@ class UserEmail(ndb.Model):
 
     @classmethod
     def create(cls, address, user_id, primary=None, verified=None, type=None):
-        logging.info("UserEmail.create")
+        #logging.info("UserEmail.create")
         address = address.lower()
         email = cls.get_by_id(address)
         if email is not None and email.user_id != user_id:

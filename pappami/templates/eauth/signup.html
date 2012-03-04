@@ -1,3 +1,27 @@
+<script type="text/javascript">
+$(document).ready(function() { 
+  $("#form0").validate({
+    rules: {
+      email: {
+        required: true,
+        email: true
+      },
+      password: {
+        required: true,
+        minlength: 6
+      },
+      password2: {
+        required: true,
+        minlength: 6
+      },
+      c: {
+        required: true,
+        number: true
+      }
+    }
+  });
+});
+</script>
 {% set providers = [
   ('google', '/auth/google'),
   ('facebook', '/auth/facebook'),
@@ -20,17 +44,17 @@
       <form id="form0" method="POST" action="/eauth/signup" class="horizontal-form">
         <fieldset class="control-group">
           <label for="email" class="control-label">Email</label>
-          <div class="controls"><input type="text" name="email" class="span3" /></div>
+          <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
         </fieldset>
         <fieldset class="control-group">
           <label for="password" class="control-label">Password</label>
-          <div class="controls"><input type="password" name="password" class="span3" /></div>
+          <div class="controls"><input type="password" name="password" class="span3 required" /></div>
           <label for="password2" class="control-label">Verifica Password</label>
-          <div class="controls"><input type="password" name="password2" class="span3" /></div>
+          <div class="controls"><input type="password" name="password2" class="span3 required" /></div>
         </fieldset>
         <fieldset class="control-group">
           <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}}</label>
-          <div class="controls"><input type="input" name="c" class="span1" /></div>
+          <div class="controls"><input type="input" name="c" class="span1 required" /></div>
         </fieldset>
         <fieldset class="form-actions">
           <button type="submit" class="btn">Registrati</button>
