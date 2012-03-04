@@ -17,12 +17,12 @@
 <li class="activity_item" id="activity_{{activity.key.id()}}">
 <div class="activity_box">
  <div class="activity_avatar">
-  <img class="avatar" src="{{activity.author_avatar()}}" title="{{activity.author()}}">
+  <img class="avatar" src="{{activity.author_avatar()}}" title="{{activity.author(cmsro)}}">
  </div>
  <span class="permalink" onclick="permalink('{{activity.key.id()}}')"></span>
  <div class="activity_body">
-  <div class="activity_author">{{activity.author()}}</div>  
-  <div class="activity_author_title">{{activity.author_title()}}</div>
+  <div class="activity_author">{{activity.author(cmsro)}}</div>  
+  <div class="activity_author_title">{{activity.author_title(cmsro)}}</div>
   <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags()%}
   <div class="activity_tags"><i class="icon-tags"></i> {%for tag in activity.tags()%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a> {%endfor%}</div>{%endif%}
   <div class="activity_title" >{{activity.title()}}</div>

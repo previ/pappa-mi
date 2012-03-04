@@ -42,8 +42,17 @@ class CMProfiloHandler(BasePage):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
       form.citta = model.Key("Citta", int(self.request.get("citta")))
-      commissario.put()
 
+      privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+      for what in range(0,4):
+        for who in range(0,3):
+          if self.request.get("p_"+str(what)+"_"+str(who)):
+            privacy[what][who] = int(self.request.get("p_"+str(what)+"_"+str(who)))
+          
+      commissario.privacy = privacy
+      commissario.put()
+      commissario.set_cache()
+          
       old = list()
       for cm in commissario.commissioni():
         old.append(cm.key)

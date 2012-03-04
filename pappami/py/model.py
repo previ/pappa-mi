@@ -88,6 +88,12 @@ class CentroCucina(model.Model):
     return CentroCucina._zo_of_cache.offset
   
 class Commissione(model.Model):
+  def __init__(self, *args, **kwargs):
+    self._com_cen_cuc_last = None
+    self._cc_last = None
+    self._commissari = None
+    super(Commissione, self).__init__(*args, **kwargs)  
+
   nome = model.StringProperty(default="")
   nomeScuola = model.StringProperty(default="")
   tipoScuola = model.StringProperty(default="")
@@ -116,10 +122,6 @@ class Commissione(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
 
-  _lock = threading.RLock()
-  _com_cen_cuc_last = None
-  _cc_last = None
-  
   @classmethod
   def get_by_citta(cls, citta_key):
     commissioni = memcache.get("cm-citta-"+str(citta_key.id()))
@@ -149,17 +151,17 @@ class Commissione(model.Model):
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
     
   def commissari(self):
-    commissari = []
-    for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissione == self.key):
-      commissari.append(cc.commissario)
-    return commissari
+    if not self._commissari:
+      self._commissari = list()
+      for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissione == self.key):
+        self._commissari.append(cc.commissario)
+    return self._commissari
   
   def getCentroCucina(self, data=datetime.now().date()):
-    with Commissione._lock:
-      if not (Commissione._com_cen_cuc_last and Commissione._com_cen_cuc_last.validitaDa <= data and Commissione._com_cen_cuc_last.validitaA >= data):
-        Commissione._com_cen_cuc_last = CommissioneCentroCucina.query().filter(CommissioneCentroCucina.commissione == self.key).filter(CommissioneCentroCucina.validitaDa <= data).order(-CommissioneCentroCucina.validitaDa).get()
-        Commissione._cc_last = Commissione._com_cen_cuc_last.centroCucina.get()
-    return Commissione._cc_last
+    if not (self._com_cen_cuc_last and self._com_cen_cuc_last.validitaDa <= data and self._com_cen_cuc_last.validitaA >= data):
+      self._com_cen_cuc_last = CommissioneCentroCucina.query().filter(CommissioneCentroCucina.commissione == self.key).filter(CommissioneCentroCucina.validitaDa <= data).order(-CommissioneCentroCucina.validitaDa).get()
+      self._cc_last = self._com_cen_cuc_last.centroCucina.get()
+    return self._cc_last
 
   def desc(self):
     return self.nome + " " + self.tipoScuola
@@ -167,6 +169,7 @@ class Commissione(model.Model):
 class Commissario(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissioni = list()
+    self._privacy = None
     super(Commissario, self).__init__(*args, **kwargs)  
 
   user = model.UserProperty()
@@ -176,9 +179,10 @@ class Commissario(model.Model):
   
   avatar_url = model.StringProperty(indexed=False)
   avatar_data = model.BlobProperty()
-  #avatar_data2 = model.BlobProperty()
 
   emailComunicazioni = model.StringProperty()
+
+  privacy = model.PickleProperty()
 
   user_email_lower = model.StringProperty()
   
@@ -266,21 +270,28 @@ class Commissario(model.Model):
     if len(cms) > 0:
       return cms[0]
   
-  def nomecompleto(self):
-    if self.nome or self.cognome:
-      return self.nome + " " + self.cognome
-    else:
-      return self.user.nickname()
+  def nomecompleto(self, cmsro):
+    nome = ""
+    if self.can_show(1,self.get_user_type(cmsro)):
+      nome = nome + self.nome
+    if self.can_show(2,self.get_user_type(cmsro)):
+      if nome != "":
+        nome = nome + " "
+      nome = nome + self.cognome
+    if nome == "":
+      nome = "Anonimo"
+    return nome
 
-  def titolo(self):
-    titolo = None
+  def titolo(self, cmsro):
+    titolo = ""
     if self.isCommissario():
-      titolo = "Commissione Mensa - ["
+      titolo = "Commissione Mensa "
     else:
-      titolo = "Genitore - ["
-    for c in self.commissioni():
-      titolo = titolo + c.tipoScuola + " " + c.nome + "; "
-    return titolo + "]"
+      titolo = "Genitore "
+    if self.can_show(3,self.get_user_type(cmsro)):
+      for c in self.commissioni():
+        titolo = titolo + c.tipoScuola + " " + c.nome + "; "
+    return titolo
     
   def avatar(self, size = None):
     if not self.avatar_url:
@@ -289,6 +300,35 @@ class Commissario(model.Model):
       return self.avatar_url + "&size="+size
     else:
       return self.avatar_url
+
+  def email(self, cmsro):
+    email = ""
+    if self.can_show(0,self.get_user_type(cmsro)):
+      email = self.usera.get().email
+    return email
+
+  def get_user_type(self, cmsro):
+    if cmsro == None:
+      return 0
+    if cmsro.isGenitore():
+      return 1
+    if cmsro.isCommissario():
+      return 2
+    
+  def can_show(self, what, whom):
+    if self._privacy == None:
+      if self.privacy == None:
+        self.privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+      self._privacy = self.privacy
+    return self._privacy[what][whom]
+  
+  privacy_objects = {0: "email",
+                     1: "name",
+                     2: "surname",
+                     3: "cm"}
+  privacy_subjects = {0: "anyone",
+                      1: "registered",
+                      2: "cm"}
   
 class CommissioneCommissario(model.Model):
   commissione = model.KeyProperty(kind=Commissione)

@@ -80,6 +80,8 @@ cursor: pointer;
 
 .activity_feedback, .activity_vote, .activity_vote_button, .activity_comments {
 display: inline;
+cursor: pointer;
+color: rgb(59, 89, 152);
 }
 
 .activity_comment_new {

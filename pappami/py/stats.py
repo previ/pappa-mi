@@ -79,7 +79,7 @@ class CMStatsHandler(BasePage):
     #logging.info("anno: " + self.request.get("anno"))
     now = datetime.datetime.now().date()
 
-    anno = self.get_context().get("anno")
+    anno = int(self.get_context().get("anno"))
 
     if self.request.get("anno"):
       anno = int(self.request.get("anno"))

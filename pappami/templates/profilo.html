@@ -20,6 +20,7 @@
     <ul class="nav nav-tabs">
       <li class="active"><a href="#profile" data-toggle="tab">Profilo</a></li>
       <li><a href="#auth" data-toggle="tab">Account e Password</a></li>
+      <li><a href="#privacy" data-toggle="tab">Privacy</a></li>
       <li><a href="#notifications" data-toggle="tab">Notifiche</a></li>
     </ul>
     <div class="tab-content">
@@ -94,6 +95,44 @@
 	    <input id="password2" name="password" value="" type="password" class="span3 password"/>
 	  </div>
 	</div>
+	</fieldset>
+      </div>
+      <div id="privacy" class="tab-pane">
+	<fieldset>
+	<legend>Scegli quali dati mostrare e a chi:</legend>
+	<div class="control-group">    
+	<table>
+	<tr>
+	<td class="span2"></td>
+	<td class="span2">A tutti</td>
+	<td class="span2">Agli utenti registrati</td>
+	<td class="span2">Alle CM</td>
+	</tr>
+	<tr>
+	<td>email</td>
+	<td><input id="p_1_1" name="p_0_0" value="1" type="checkbox"{%if cmsro.can_show(0,0)%} checked{%endif%}/></td>
+	<td><input id="p_1_2" name="p_0_1" value="1" type="checkbox"{%if cmsro.can_show(0,1)%} checked{%endif%}/></td>
+	<td><input id="p_1_3" name="p_0_2" value="1" type="checkbox"{%if cmsro.can_show(0,2)%} checked{%endif%}/></td>
+	</tr>
+	<tr>
+	<td>Nome</td>
+	<td><input id="p_2_1" name="p_1_0" value="1" type="checkbox"{%if cmsro.can_show(1,0)%} checked{%endif%}/></td>
+	<td><input id="p_2_2" name="p_1_1" value="1" type="checkbox"{%if cmsro.can_show(1,1)%} checked{%endif%}/></td>
+	<td><input id="p_2_3" name="p_1_2" value="1" type="checkbox"{%if cmsro.can_show(1,2)%} checked{%endif%}/></td>
+	</tr>
+	<tr>
+	<td>Cognome</td>
+	<td><input id="p_3_1" name="p_2_0" value="1" type="checkbox"{%if cmsro.can_show(2,0)%} checked{%endif%}/></td>
+	<td><input id="p_3_2" name="p_2_1" value="1" type="checkbox"{%if cmsro.can_show(2,1)%} checked{%endif%}/></td>
+	<td><input id="p_3_3" name="p_2_2" value="1" type="checkbox"{%if cmsro.can_show(2,2)%} checked{%endif%}/></td>
+	</tr>
+	<tr>
+	<td>Scuola</td>
+	<td><input id="p_4_1" name="p_3_0" value="1" type="checkbox"{%if cmsro.can_show(3,0)%} checked{%endif%}/></td>
+	<td><input id="p_4_2" name="p_3_1" value="1" type="checkbox"{%if cmsro.can_show(3,1)%} checked{%endif%}/></td>
+	<td><input id="p_4_3" name="p_3_2" value="1" type="checkbox"{%if cmsro.can_show(3,2)%} checked{%endif%}/></td>
+	</tr>
+	</table>
 	</fieldset>
       </div>
       <div id="notifications" class="tab-pane">

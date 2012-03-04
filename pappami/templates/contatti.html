@@ -8,6 +8,7 @@
   <img class="avatar" src="{{c.avatar()}}" title="{{c.nomecompleto()}}">
   <div class="activity_author">{{c.nomecompleto()}}</div>  
   <div class="activity_author_title">{{c.titolo()}}</div>
+  <div class="activity_author_email"><a href="mailto:{{c.email(cmsro)}}" target="new">{{c.email(cmsro)}}</a></div>
   </div>
 </li>{%endfor%}
 </ul>

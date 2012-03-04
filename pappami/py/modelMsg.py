@@ -205,11 +205,11 @@ class Messaggio(model.Model):
     else:
       return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
 
-  def author(self):
-    return self.get_commissario().nomecompleto()
+  def author(self, cmsro):
+    return self.get_commissario().nomecompleto(cmsro)
 
-  def author_title(self):
-    return self.get_commissario().titolo()
+  def author_title(self, cmsro):
+    return self.get_commissario().titolo(cmsro)
 
   def author_avatar(self):
     return self.get_commissario().avatar()
@@ -328,14 +328,14 @@ class Voto(model.Model):
   c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
   
-  def author(self):
+  def author(self, cmsro):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.nomecompleto()
-  def author_title(self):
+    return self._commissario.nomecompleto(cmsro)
+  def author_title(self, cmsro):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.titolo()
+    return self._commissario.titolo(cmsro)
   def author_avatar(self):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
