@@ -272,9 +272,9 @@ class Commissario(model.Model):
   
   def nomecompleto(self, cmsro):
     nome = ""
-    if self.can_show(1,self.get_user_type(cmsro)):
+    if not cmsro or self.can_show(1,self.get_user_type(cmsro)):
       nome = nome + self.nome
-    if self.can_show(2,self.get_user_type(cmsro)):
+    if not cmsro or self.can_show(2,self.get_user_type(cmsro)):
       if nome != "":
         nome = nome + " "
       nome = nome + self.cognome
@@ -288,22 +288,23 @@ class Commissario(model.Model):
       titolo = "Commissione Mensa "
     else:
       titolo = "Genitore "
-    if self.can_show(3,self.get_user_type(cmsro)):
+    if not cmsro or self.can_show(3,self.get_user_type(cmsro)):
       for c in self.commissioni():
         titolo = titolo + c.tipoScuola + " " + c.nome + "; "
     return titolo
     
-  def avatar(self, size = None):
-    if not self.avatar_url:
-      return "/img/default_avatar.png"
-    elif "?id=" in self.avatar_url and size:
-      return self.avatar_url + "&size="+size
+  def avatar(self, cmsro, size = None):
+    if self.avatar_url and ( not cmsro or self.can_show(4,self.get_user_type(cmsro))):    
+      if "?id=" in self.avatar_url and size:
+        return self.avatar_url + "&size="+size
+      else:
+        return self.avatar_url
     else:
-      return self.avatar_url
+      return "/img/default_avatar.png"
 
   def email(self, cmsro):
     email = ""
-    if self.can_show(0,self.get_user_type(cmsro)):
+    if not cmsro or self.can_show(0,self.get_user_type(cmsro)):
       email = self.usera.get().email
     return email
 
@@ -317,15 +318,16 @@ class Commissario(model.Model):
     
   def can_show(self, what, whom):
     if self._privacy == None:
-      if self.privacy == None:
-        self.privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+      if self.privacy == None or len(self.privacy) < 5:
+        self.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
       self._privacy = self.privacy
     return self._privacy[what][whom]
   
   privacy_objects = {0: "email",
                      1: "name",
                      2: "surname",
-                     3: "cm"}
+                     3: "cm",
+                     4: "avatar"}
   privacy_subjects = {0: "anyone",
                       1: "registered",
                       2: "cm"}

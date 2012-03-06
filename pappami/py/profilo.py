@@ -28,9 +28,12 @@ class CMProfiloHandler(BasePage):
   @user_required
   def get(self):
     commissario = self.getCommissario()
+    form = CommissarioForm(obj=commissario)
+    form.email = commissario.usera.get().email
     template_values = {
       'content': 'profilo.html',
       'cmsro': commissario,
+      'form': form,
       'citta': Citta.get_all()      
     }
     self.getBase(template_values)
@@ -43,9 +46,9 @@ class CMProfiloHandler(BasePage):
       form.populate_obj(commissario)
       form.citta = model.Key("Citta", int(self.request.get("citta")))
 
-      privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
-      for what in range(0,4):
-        for who in range(0,3):
+      privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+      for what in range(0,len(privacy)):
+        for who in range(0,len(privacy[0])):
           if self.request.get("p_"+str(what)+"_"+str(who)):
             privacy[what][who] = int(self.request.get("p_"+str(what)+"_"+str(who)))
           
@@ -109,7 +112,7 @@ class CMAvatarHandler(BasePage):
           commissario.avatar_url = "/public/avatar?id="+str(commissario.usera.id())
           commissario.put()
           commissario.set_cache()
-          self.response.out.write(commissario.avatar('big'));
+          self.response.out.write(commissario.avatar(cmsro=None));
         else:
           logging.info("attachment is too big.")
     if cmd == "saveurl":

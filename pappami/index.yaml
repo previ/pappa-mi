@@ -10,13 +10,14 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: CommissioneCentroCucina
+  properties:
+  - name: commissione
+  - name: validitaDa
+    direction: desc
+
 - kind: Messaggio
   properties:
   - name: livello
   - name: creato_il
     direction: desc
-
-- kind: Messaggio
-  properties:
-  - name: par
-  - name: creato_il

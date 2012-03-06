@@ -11,6 +11,10 @@ $(function(){
   onSlideComplete: function(slider) {$(slider.$currentPage).find('.caption').animate({bottom:0},200);},
   navigationFormatter : function(index, panel){ return '';}
  });
+// tooltip demo
+ $('#contacts').tooltip({
+  selector: "img"
+ }) 
 });
 </script> 
 <div class="row">
@@ -81,12 +85,12 @@ $(function(){
     </div>
     <p><a class="btn" href="/stats">Dettagli &raquo;</a></p>
   </div>
-  <div class="span4">
+  <div id="contacts" class="span4">
     <h2>Iscritti</h2>
     <div>
      <ul class="thumbnails">  
     {%for c in contacts%}
-      <li><img src="{{c.avatar()}}" alt="{{c.nome}}"></li>
+      <li><img class="avatar" src="{{c.avatar(cmsro=None)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nome}}"></li>
     {%endfor%}
      </ul>
     </div>
