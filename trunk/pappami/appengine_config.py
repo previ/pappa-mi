@@ -74,6 +74,8 @@ engineauth['provider.windowslive'] = {
     'client_secret': 'Dpv8pn1-BbZGx8o1ZLrG7v1kJ4ZQTy21',
     }
 
+appstats_MAX_STACK = 15
+
 def webapp_add_wsgi_middleware(app):
     from engineauth import middleware
     from google.appengine.ext.appstats import recording

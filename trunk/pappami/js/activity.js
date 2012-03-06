@@ -24,7 +24,7 @@ function cleardirty() {
 
 function initForm() {
   ulmsg=true;
-  $('#new-data').find("[title]").tooltip({"delay":3000});
+  $('#new-data').find("[data-content]").popover({"delay":500, title:"Informazioni"});
   $("#item_tags_handler").tagHandler({
       getData: { 'msg': "" },
       getURL: '/comments/gettags',            

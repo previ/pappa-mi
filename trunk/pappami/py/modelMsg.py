@@ -68,12 +68,12 @@ class Messaggio(model.Model):
 
   @classmethod
   def get_by_user(cls, user_id, offset=0):
-    activities = memcache.get("msg-user-" + user_id + "-" + str(offset))
+    activities = memcache.get("msg-user-" + str(user_id) + "-" + str(offset))
     if activities == None:
       activities = list()
       for msg in Messaggio.query().filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
         activities.append(msg)
-      memcache.add("msg-user-" + user_email + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+      memcache.add("msg-user-" + str(user_id) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
     return activities
 
   @classmethod

@@ -1,16 +1,20 @@
 <style>
-#slider { width:940px; height: 270px; }
+#slider { width:100%; }
 </style>
 <script> 
 $(function(){
  loadSmallMap({{geo.lat}},{{geo.lon}});  
  $('#slider').anythingSlider({ 
+  expand: true,
   buildStartStop : true,
   buildNavigation: true,
   onSlideInit: function(slider) { $('#slider').find('.caption').css("bottom",-35);},
   onSlideComplete: function(slider) {$(slider.$currentPage).find('.caption').animate({bottom:0},200);},
   navigationFormatter : function(index, panel){ return '';}
  });
+ $(window).resize(function() {
+  $('#log').append('<div>Handler for .resize() called.</div>');
+ }); 
 // tooltip demo
  $('#contacts').tooltip({
   selector: "img"
@@ -18,9 +22,9 @@ $(function(){
 });
 </script> 
 <div class="row">
-	<div class="span12" style="margin-left:0;">
+	<div class="span12" style="margin-left:0; height:270px; padding-bottom:30px;">
 		<div id="slider"> 
-			<div style="background:url('img/slider/slide1.jpg'); background-size:100%; width:940px;"> 
+			<div style="background:url('img/slider/slide1.jpg'); background-size:100%;"> 
 				<div class="slide_container">
 					<div style="padding:20px; background:url('img/back_transp.png');">
 					<h1>Benvenuti in Pappa-Mi</h1>

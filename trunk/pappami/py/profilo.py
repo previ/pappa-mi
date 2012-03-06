@@ -98,7 +98,7 @@ class CMAvatarHandler(BasePage):
     cmd = self.request.get("cmd")
     logging.info("cmd:" + cmd)
     if cmd == "upload":
-      commissario = self.getCommissario(users.get_current_user())
+      commissario = self.getCommissario()
       avatar_file = self.request.get("avatar_file")
       logging.info("1")
       if avatar_file:

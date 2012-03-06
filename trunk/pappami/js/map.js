@@ -115,8 +115,9 @@ function createMarker(school) {
   fluster.addMarker(marker);
   markersArray.push(marker)
 
-  var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li><li><a href='#contacts' data-toggle='tab'>Contatti</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div></div><div id='contacts'>contatti...</div></div></div>";
-  
+  //var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li><li><a href='#contacts' data-toggle='tab'>Contatti</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div><div id='contacts'>contatti...</div></div></div>";
+
+  var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div></div></div>";  
   var openiw = function (){
     if (infowindow) infowindow.close();
     infowindow = new google.maps.InfoWindow({ content: html });
