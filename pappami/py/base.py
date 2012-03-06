@@ -87,6 +87,8 @@ class BasePage(webapp.RequestHandler):
         ctx["citta_key"] = commissario.citta.id()
         ctx["cm_key"] = commissario.commissione().key.id()
         ctx["cm_name"] = str(commissario.commissione().desc())
+      else:
+        ctx["citta_key"] = Citta.get_first().key.id()
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
@@ -217,7 +219,7 @@ class BasePage(webapp.RequestHandler):
     elif msgtype:
       activities = Messaggio.get_by_msgtype(int(msgtype),offset)
     elif user:
-      activities = Messaggio.get_by_user(user,offset)
+      activities = Messaggio.get_by_user(int(user),offset)
     elif cm:
       activities = Messaggio.get_by_grp(model.Key("Commissione", int(cm)),offset)
     else:
@@ -405,7 +407,7 @@ class CMMenuHandler(BasePage):
       if commissario and commissario.citta:
         cm = Commissione.get_by_citta(commissario.citta).get()
       else:
-        cm = Commissione.get_by_citta(Citta.get_first().key).get()
+        cm = Commissione.get_by_citta(Citta.get_first().key)[0]
       
     date = self.request.get("data")
     if date:

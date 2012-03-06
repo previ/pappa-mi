@@ -23,12 +23,14 @@ class AppEngineOpenIDStrategy(BaseStrategy):
         return {
             'auth_id': auth_id,
             'info': {
-                'email': {
-                    'value': user.email(),
+                'emails': [
+                    {
+                        'value': user.email(), # email
                     },
+                ],
                 'nickname': user.nickname(),
-                },
-            }
+            },
+        }
 
     def start(self, req):
         provider_uri = req.GET['provider']

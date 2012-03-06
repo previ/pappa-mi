@@ -360,8 +360,6 @@ class DietaHandler(BasePage):
   @commissario_required
   def get(self): 
     commissario = self.getCommissario()
-    if commissario is None or not commissario.isCommissario() :
-      return
 
     if( self.request.get("cmd") == "open" ):
       dieta = Dieta.get(self.request.get("key"))
@@ -487,8 +485,6 @@ class NotaHandler(BasePage):
   @reguser_required
   def get(self): 
     commissario = self.getCommissario()
-    if commissario is None or not commissario.isCommissario() :
-      return
 
     if( self.request.get("cmd") == "open" ):
       nota = Nota.get(self.request.get("key"))

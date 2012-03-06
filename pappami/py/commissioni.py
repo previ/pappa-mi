@@ -26,19 +26,13 @@ class CommissioniHandler(BasePage):
     template_values = dict()
     geo = model.GeoPt(45.463681,9.188171)
     commissario = self.getCommissario()
-    if commissario:
-      geo = commissario.citta.get().geo
-    logging.info(commissario.citta)
-    for c in CentroCucina.query().filter(CentroCucina.citta == commissario.citta).order(CentroCucina.nome):
-      logging.info(c.nome)
+    citta = model.Key("Citta", self.get_context().get("citta_key")).get()
     template_values["content"] = "map.html"
     template_values["limit"] = 100
     template_values["cittas"] = Citta.get_all()
-    if self.get_context().get("citta_key"):
-      template_values["citta"] = model.Key("Citta", self.get_context().get("citta_key")).get()
-    template_values["centriCucina"] = CentroCucina.query().filter(CentroCucina.citta == commissario.citta).order(CentroCucina.nome)
+    template_values["citta"] = citta
+    template_values["centriCucina"] = CentroCucina.query().filter(CentroCucina.citta == citta.key).order(CentroCucina.nome)
     template_values['action'] = self.request.path
-    template_values['geo'] = geo
     self.getBase(template_values)
     
   
@@ -52,14 +46,10 @@ class ContattiHandler(BasePage):
       cm = Commissione.get(self.request.get("cm"))
     elif commissario and commissario.commissione() :
       cm = commissario.commissione()
-    else:
-      cm = Commissione.get_all_cursor(None).get()
 
-    for c in cm.commissari():
-      logging.info(str(c.id()))
-      logging.info(c.get().nome)
+    if cm:
+      template_values['commissari'] = cm.commissari()
     template_values["content"] = "contatti.html"
-    template_values['commissari'] = cm.commissari()
     self.getBase(template_values)
 
   _contacts_lock = threading.RLock()

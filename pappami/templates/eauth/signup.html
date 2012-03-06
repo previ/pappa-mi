@@ -56,8 +56,8 @@ $(document).ready(function() {
           <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}}</label>
           <div class="controls"><input type="input" name="c" class="span1 required" /></div>
         </fieldset>
-        <fieldset class="form-actions">
-          <button type="submit" class="btn">Registrati</button>
+        <fieldset class="">
+          <button type="submit" class="btn btn-primary">Registrati</button>
         </fieldset>
         {% if messages %}
           <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">

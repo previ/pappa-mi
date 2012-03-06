@@ -1,7 +1,7 @@
 ﻿<script type="text/javascript">
 var limit = {{limit}};
 $(document).ready(function () {
-  load({{geo.lat}},{{geo.lon}});
+  load({{citta.geo.lat}},{{citta.geo.lon}});
 });      
 </script>
 {%set tab_map="active"%}
@@ -42,7 +42,7 @@ $(document).ready(function () {
 </li>
 </ul><div class="row">
  <div class="span3">
-  <div id="left_list" style="height: 600px; overflow: auto;"></div>
+  <div id="left_list" class="scroll" style="height: 600px; overflow: auto;"></div>
  </div>
  <div class="span9">
   <div id="map" style="height: 600px;"></div>
