@@ -211,8 +211,8 @@ class Messaggio(model.Model):
   def author_title(self, cmsro):
     return self.get_commissario().titolo(cmsro)
 
-  def author_avatar(self):
-    return self.get_commissario().avatar()
+  def author_avatar(self, cmsro):
+    return self.get_commissario().avatar(cmsro)
 
   def tags(self):
     if not self._tags:
@@ -336,10 +336,10 @@ class Voto(model.Model):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
     return self._commissario.titolo(cmsro)
-  def author_avatar(self):
+  def author_avatar(self, cmsro):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.avatar()
+    return self._commissario.avatar(cmsro)
   
   @classmethod
   def get_by_msg(cls, msg):

@@ -82,7 +82,7 @@ class BasePage(webapp.RequestHandler):
     ctx = self.session.get("ctx")
     if ctx == None:
       ctx = dict()
-      commissario = self.getCommissario(self.get_current_user())
+      commissario = self.getCommissario()
       if commissario:
         ctx["citta_key"] = commissario.citta.id()
         ctx["cm_key"] = commissario.commissione().key.id()
@@ -137,9 +137,9 @@ class BasePage(webapp.RequestHandler):
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
       template_values["cmsro"] = commissario
-      user.fullname = commissario.nomecompleto(commissario)
-      user.title = commissario.titolo(commissario)
-      user.avatar = commissario.avatar()
+      #user.fullname = commissario.nomecompleto(commissario)
+      #user.title = commissario.titolo(commissario)
+      #user.avatar = commissario.avatar()
       logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
        
       #logging.info("commissario: " + str(commissario.isCommissario()))

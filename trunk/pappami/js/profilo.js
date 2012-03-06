@@ -82,9 +82,9 @@ $(document).ready(function() {
     // bind 'myForm' and provide a simple callback function 
     $('#avatar_file').change(function(){
         $('#avatar_form').ajaxSubmit(function(data) { 
-            $('#avatar_edit').attr("src", data);
+            $('#avatar_edit').attr("src", data + "&size=big");
 	    $('#avatar_url').attr("value", data);
-            $('#avatar').attr("src", data);
+            $('#avatar').attr("src", data + "&size=big");
             $("#avatar_dialog").dialog("close");            
         }); 
     }); 

@@ -28,9 +28,10 @@ class SignupPreHandler(BasePage):
   
   @user_required
   def get(self):   
-    form = CommissarioForm()    
+    form = CommissarioForm()
+    form.nome.data=""
+    form.cognome.data=""
     user = self.request.user
-    logging.info("1")
     if len(user.auth_ids) == 1: #ensure this is for first registration only
       user_info = models.UserProfile.get_by_id(user.auth_ids[0]).user_info.get("info")
       logging.info("userinfo: " + str(user_info))
@@ -43,6 +44,12 @@ class SignupPreHandler(BasePage):
         form.avatar_url.data=user_info.get("image").get("url")
     if not form.avatar_url.data:
       form.avatar_url.data = "/img/avatar/default_avatar.gif"
+      
+    form.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
+    if user.email:
+      form.email = user.email
+    else:
+      form.email = ""
     template_values = {
       'content': 'signup.html',
       'citta': Citta.get_all(),

@@ -4,9 +4,9 @@
     <h2>Completa i tuoi dati</h2>
     <ul class="nav nav-tabs">
      <li class="active"><a href="#profile" data-toggle="tab">Profilo</a></li>
+     <li><a href="#privacy" data-toggle="tab">Privacy</a></li>
      <li><a href="#notifications" data-toggle="tab">Notifiche</a></li>
     </ul>
-
 <form action="/signup2" method="POST" id="form0" novalidate class="form-horizontal">
 <div class="tab-content">
   <div id="profile" class="tab-pane active">
@@ -14,7 +14,7 @@
     <legend>I tuoi dati</legend>
     <div class="control-group">
       <label for="avatar">Email</label>
-      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{%if user.email%}{{user.email}}{%endif%}" size="30" type="text" {%if user.email and user.email != ""%}readonly{%endif%}></div>
+      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{form.email}}" size="30" type="text" {%if form.email != ""%}readonly{%endif%}></div>
     </div>
     <div class="control-group">
       <label for="avatar">Immagine</label>
@@ -58,13 +58,57 @@
     </div>
     </fieldset>
   </div>
+  <div id="privacy" class="tab-pane">
+    <fieldset>
+    <legend>Scegli quali dati mostrare e a chi:</legend>
+    <div class="control-group">    
+    <table>
+    <tr>
+    <td class="span2"></td>
+    <td class="span2">A tutti</td>
+    <td class="span2">Agli utenti registrati</td>
+    <td class="span2">Alle CM</td>
+    </tr>
+    <tr>
+    <td>email</td>
+    <td><input id="p_1_1" name="p_0_0" value="1" type="checkbox"{%if form.privacy[0][0]%} checked{%endif%}/></td>
+    <td><input id="p_1_2" name="p_0_1" value="1" type="checkbox"{%if form.privacy[0][1]%} checked{%endif%}/></td>
+    <td><input id="p_1_3" name="p_0_2" value="1" type="checkbox"{%if form.privacy[0][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Nome</td>
+    <td><input id="p_2_1" name="p_1_0" value="1" type="checkbox"{%if form.privacy[1][0]%} checked{%endif%}/></td>
+    <td><input id="p_2_2" name="p_1_1" value="1" type="checkbox"{%if form.privacy[1][1]%} checked{%endif%}/></td>
+    <td><input id="p_2_3" name="p_1_2" value="1" type="checkbox"{%if form.privacy[1][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Cognome</td>
+    <td><input id="p_3_1" name="p_2_0" value="1" type="checkbox"{%if form.privacy[2][0]%} checked{%endif%}/></td>
+    <td><input id="p_3_2" name="p_2_1" value="1" type="checkbox"{%if form.privacy[2][1]%} checked{%endif%}/></td>
+    <td><input id="p_3_3" name="p_2_2" value="1" type="checkbox"{%if form.privacy[2][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Scuola</td>
+    <td><input id="p_4_1" name="p_3_0" value="1" type="checkbox"{%if form.privacy[3][0]%} checked{%endif%}/></td>
+    <td><input id="p_4_2" name="p_3_1" value="1" type="checkbox"{%if form.privacy[3][1]%} checked{%endif%}/></td>
+    <td><input id="p_4_3" name="p_3_2" value="1" type="checkbox"{%if form.privacy[3][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Immagine</td>
+    <td><input id="p_5_1" name="p_4_0" value="1" type="checkbox"{%if form.privacy[4][0]%} checked{%endif%}/></td>
+    <td><input id="p_5_2" name="p_4_1" value="1" type="checkbox"{%if form.privacy[4][1]%} checked{%endif%}/></td>
+    <td><input id="p_5_3" name="p_4_2" value="1" type="checkbox"{%if form.privacy[4][2]%} checked{%endif%}/></td>
+    </tr>
+    </table>
+    </fieldset>
+  </div>
   <div id="notifications" class="tab-pane">
     <fieldset>
     <legend>Avvisami via mail in caso di:</legend>
     <div class="control-group">    
-      <div class="controls"><input id="nome" name="nome" value="" type="checkbox"> Novit&agrave; sulla mia Scuola</controls></div>
-      <div class="controls"><input id="nome" name="nome" value="" type="checkbox"> Novit&agrave; sulla mia Citt&agrave;</controls></div>
-      <div class="controls"><input id="nome" name="nome" value="" type="checkbox"> Tutte le novit&agrave;</div>
+      <div class="controls"><input id="email_1" name="email_1" value="" type="checkbox"> Novit&agrave; sulla mia Scuola</controls></div>
+      <div class="controls"><input id="email_2" name="email_2" value="" type="checkbox"> Novit&agrave; sulla mia Citt&agrave;</controls></div>
+      <div class="controls"><input id="email_3" name="email_3" value="" type="checkbox"> Tutte le novit&agrave;</div>
     </div>
     </fieldset>
   </div>

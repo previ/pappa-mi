@@ -4,16 +4,6 @@ $(document).ready(function () {
   load({{geo.lat}},{{geo.lon}});
 });      
 </script>
-<style> 
-#info {
-width:250px;
-height: 230px;
-}
-#tabs {
-width:230px;
-height: 220px;
-}
-</style>
 {%set tab_map="active"%}
 {%include "navigation.html"%}
 <div style="position:absolute; top:20em; left:18em; width:30em; background: #ffffff; border: 1px;z-index:999;display:none;" id="loading"><center><img src="/img/loading.gif"/><br/>Caricamento in corso ...</center></div>

@@ -5,9 +5,9 @@
 <div class="span12">
 <ul class="thumbnails">
 {%for ck in commissari%}<li class="span6"><div class="thumbnail">{%set c = ck.get() %}
-  <img class="avatar" src="{{c.avatar()}}" title="{{c.nomecompleto()}}">
-  <div class="activity_author">{{c.nomecompleto()}}</div>  
-  <div class="activity_author_title">{{c.titolo()}}</div>
+  <img class="avatar" src="{{c.avatar(cmsro)}}" title="{{c.nomecompleto(cmsro)}}">
+  <div class="activity_author">{{c.nomecompleto(cmsro)}}</div>  
+  <div class="activity_author_title">{{c.titolo(cmsro)}}</div>
   <div class="activity_author_email"><a href="mailto:{{c.email(cmsro)}}" target="new">{{c.email(cmsro)}}</a></div>
   </div>
 </li>{%endfor%}
