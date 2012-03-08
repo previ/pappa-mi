@@ -55,7 +55,7 @@ class ContattiHandler(BasePage):
   _contacts_lock = threading.RLock()
   _contacts = None
   @classmethod
-  def get_contacts(cls, num=20):
+  def get_contacts(cls, num=12):
     if not cls._contacts:
       with cls._contacts_lock:     
         cls._contacts = list()

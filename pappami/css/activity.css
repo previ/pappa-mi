@@ -35,8 +35,9 @@ padding-right: 5px;
 
 .activity_body {
 display: table-cell;
-min-width:586px;
-max-width:866px;
+width: auto;
+#min-width:586px;
+#max-width:866px;
 padding-left: 5px;
 padding-right: 5px;
 }

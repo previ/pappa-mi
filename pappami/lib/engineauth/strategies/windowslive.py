@@ -47,7 +47,8 @@ class WindowsliveStrategy(OAuth2Strategy):
                 },
                 'emails': [
                     {
-                        'value': user.get('emails').get('preferred'), # email
+                        'value': user.get('emails').get('preferred'),
+                        'verified': True # email
                     },
                 ],
             },

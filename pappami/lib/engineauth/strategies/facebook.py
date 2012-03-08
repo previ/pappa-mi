@@ -48,7 +48,8 @@ class FacebookStrategy(OAuth2Strategy):
                         {
                         'value': user.get('email'), # email
                         'type': None, # home, work
-                        'primary': True # boolean
+                        'primary': True, # boolean
+                        'verified': True # email                        
                     },
                 ],
                 'nickname': user.get('login'),

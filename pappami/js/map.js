@@ -170,7 +170,7 @@ function drawSmallMap(data) {
 
 function loadSmallMap(lat,lon) {
   var myOptions = {
-    zoom: 10,
+    zoom: 4,
     center: new google.maps.LatLng(lat,lon),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     mapTypeControl: false

@@ -26,7 +26,7 @@ class PasswordStrategy(BaseStrategy):
     def user_info(self, req):
         email = req.POST['email']
         user_info = req.POST.get('user_info', {})
-        user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True}]
+        user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True, 'verified': False}]
         auth_id = models.User.generate_auth_id(req.provider, email)
         return {
             'auth_id': auth_id,
