@@ -362,7 +362,7 @@ class User(ndb.Expando):
         if user is None and emails:
             # TODO: email should only be trusted if it is verified.
             assert isinstance(emails, list), 'Emails must be a list'
-            address = [e['value'] for e in emails]
+            address = [e['value'] for e in emails if e['verified'] == True]
             user = cls.email_model.get_by_emails(address)
         return user
 

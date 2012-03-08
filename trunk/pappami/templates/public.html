@@ -12,10 +12,9 @@ $(function(){
   onSlideComplete: function(slider) {$(slider.$currentPage).find('.caption').animate({bottom:0},200);},
   navigationFormatter : function(index, panel){ return '';}
  });
- $(window).resize(function() {
-  $('#log').append('<div>Handler for .resize() called.</div>');
- }); 
-// tooltip demo
+ $('#activity_list').load('/comments/load?limit=5', function(){
+  $('#act_loading').hide();      
+ });
  $('#contacts').tooltip({
   selector: "img"
  }) 
@@ -65,31 +64,18 @@ $(function(){
 </div> 
 
 <div class="row">
-  <div class="span4" style="margin-left:22px;">
+  <div class="span3" style="margin-left:22px;">
     <h2>Commissioni iscritte</h2>
-    <div id="map" style="height: 200px; border: 1px solid black; overflow:hidden;"></div>
+    <div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div>
     <p><a class="btn" href="/commissioni">Dettagli &raquo;</a></p>
   </div>
-  <div class="span4" style="margin-left:18px;">
-    <div id="stats">
-      <h2>Dati raccolti {{stat.anno1}}/{{stat.anno2}}</h2>
-      <table class="statsmall" cellspacing="0" width="100%">
-      <tr>
-      <td width="70%">Commissioni registrate</td><td align="right">{{stat.numeroCommissioni}}</td>
-      </tr><tr>
-      <td width="70%">Schede Ispezione</td><td align="right">{{stat.numeroSchede}}</td>
-      </tr><tr>
-      <td>Non conformit&agrave;</td><td align="right">{{stat.ncTotali}}</td>
-      </tr><tr>
-      <td width="70%">Schede Diete</td><td align="right">{{stat.diete}}</td>
-      </tr><tr>
-      <td width="70%">Note</td><td align="right">{{stat.note}}</td>
-      </tr>
-      </table>
-    </div>
+  <div class="span6" style="margin-left:18px;">
+    <h2>Ultime news</h2>
+     <div id="act_loading" style="text-align:center;">Loading...</div>
+     <ul class="activity_list" id="activity_list"></ul>
     <p><a class="btn" href="/stats">Dettagli &raquo;</a></p>
   </div>
-  <div id="contacts" class="span4">
+  <div id="contacts" class="span3">
     <h2>Iscritti</h2>
     <div>
      <ul class="thumbnails">  

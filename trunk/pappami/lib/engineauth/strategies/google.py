@@ -41,6 +41,7 @@ class GoogleStrategy(OAuth2Strategy):
                 'emails': [
                     {
                         'value': user.get('email'), # email
+                        'verified': True # email                        
                     },
                 ],
             },

@@ -26,6 +26,7 @@ class AppEngineOpenIDStrategy(BaseStrategy):
                 'emails': [
                     {
                         'value': user.email(), # email
+                        'verified': True # email
                     },
                 ],
                 'nickname': user.nickname(),

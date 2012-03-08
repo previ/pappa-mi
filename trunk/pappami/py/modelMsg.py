@@ -165,6 +165,8 @@ class Messaggio(model.Model):
     return len(self.get_votes())
 
   def canvote(self, user):
+    if not user:
+      return False
     canvote = True
     for p_voto in self.get_votes():
       if p_voto.c_ua == user.key:

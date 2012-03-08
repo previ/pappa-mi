@@ -121,7 +121,7 @@ class SignupPage(BasePage):
       error = "Email non valida"
     else:
       user_info = {}
-      user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True}]
+      user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True, 'verified': False}]
       auth_id = models.User.generate_auth_id('password', email)
       u_i = {
           'auth_id': auth_id,
@@ -148,6 +148,12 @@ class SignupPage(BasePage):
       self.getBase(template_values)
     else:
       self.redirect("/auth/password?next=/signup", code=307)
+
+      #template_values = dict()
+      #template_values["main"] = '/eauth/main.html'
+      #template_values["content"] = '/eauth/emailwait.html'
+      #self.getBase(template_values)
+      
     
         
 

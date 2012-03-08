@@ -178,12 +178,14 @@ class ActivityLoadHandler(BasePage):
 
     buff = ""
     
-    
     offset = 0
     if self.request.get("offset") != "":
       offset = int(self.request.get("offset"))
-    
-    template_values['activities'] = self.get_activities(offset)       
+
+    limit = None
+    if self.request.get("limit") != "":     
+      template_values['limit'] = int(self.request.get("limit"))
+    template_values['activities'] = self.get_activities(offset)
 
     self.getBase(template_values)
     

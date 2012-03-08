@@ -44,21 +44,14 @@ class MainPage(BasePage):
     template_values["host"] = self.getHost()
         
     commissario = self.getCommissario(self.get_current_user())
-    if commissario and commissario.isCommissario():
-      return self.getPrivate(template_values)
-    if commissario and commissario.isGenitore():
+    if commissario:
       return self.getPrivate(template_values)
           
-    activities = self.get_activities()
-    template_values["activities"] = activities
     template_values["content"] = "public.html"
-    template_values["stat"] = self.getStats()
     template_values["contacts"] = ContattiHandler.get_contacts()
     
-    geo = model.GeoPt(45.463681,9.188171)
-    commissario = self.getCommissario(self.get_current_user())
+    geo = model.GeoPt(41.754922,12.502441)
     
-    template_values["news_pappami"] = self.getNews("news_pappami")
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
     template_values["geo"] = geo
       
@@ -84,8 +77,6 @@ class MainPage(BasePage):
     template_values = dict()
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"    
-    activities = self.get_activities(offset)
-    template_values["activities"] = activities
     template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
     #template_values["act_last"] = activities[0]
     template_values["geo"] = geo

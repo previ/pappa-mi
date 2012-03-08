@@ -1,4 +1,5 @@
 {%for activity in activities %}
+{%if not limit or loop.index < limit%}
 <script type="text/javascript"> 
     // wait for the DOM to be loaded 
     $(document).ready(function() { 
@@ -40,7 +41,6 @@
    </div>
    <div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:{%if activity.comments() > 0 %}inline{%else%}none{%endif%};" onclick="onexpcomments('{{activity.key.id()}}')"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>
    <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</span></div>
-   
    <div id="comments_container_{{activity.key.id()}}" style="display:none;">
     <ul class="comment_list" id="comment_list_{{activity.key.id()}}"></ul>
    </div>   
@@ -73,6 +73,7 @@
  </div>
 </div>
 </li>
+{%endif%}  
 {%endfor%}
 {%if ease%}
 <script type="text/javascript"> 
