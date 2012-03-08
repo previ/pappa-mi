@@ -71,16 +71,16 @@ function opennewwiz(url) {
       validationOptions: {
 	errorClass: "error",
 	errorPlacement: function(error, element) {	
-	  item = $(element).parents(".control-group");
+	  item = $(element).parent(".control-group");
 	  item.tooltip({title:error.text(), trigger:'manual'});
 	  item.tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	  item = $(element).parents(".control-group");
+	  item = $(element).parent(".control-group");
 	  item.addClass(errorClass); 
 	 },
   	unhighlight: function(element, errorClass, validClass) {
-	  item = $(element).parents(".control-group");
+	  item = $(element).parent(".control-group");
 	  item.removeClass(errorClass); 
 	  item.tooltip('hide');
 	 }

@@ -50,12 +50,6 @@ indexes:
   - name: creato_il
     direction: desc
 
-- kind: Messaggio
-  properties:
-  - name: tipo
-  - name: creato_il
-    direction: desc
-
 - kind: ZonaOffset
   properties:
   - name: zona
