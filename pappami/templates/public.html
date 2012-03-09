@@ -12,6 +12,14 @@ $(function(){
   onSlideComplete: function(slider) {$(slider.$currentPage).find('.caption').animate({bottom:0},200);},
   navigationFormatter : function(index, panel){ return '';}
  });
+ /*$('#news').anythingSlider({ 
+  expand: true,
+  vertical: true,
+  buildStartStop : true,
+  showMultiple : 4,
+  changeBy     : 1,
+  navigationFormatter : function(index, panel){ return '';}
+ });*/
  $('#activity_list').load('/comments/load?limit=5', function(){
   $('#act_loading').hide();      
  });
@@ -80,7 +88,7 @@ $(function(){
     <div>
      <ul class="thumbnails">  
     {%for c in contacts%}
-      <li><img class="avatar" src="{{c.avatar(cmsro=None)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nome}}"></li>
+      <li><img class="avatar" src="{{c.avatar(cmsro)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(cmsro)}}"></li>
     {%endfor%}
      </ul>
     </div>

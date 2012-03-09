@@ -270,11 +270,11 @@ class Commissario(model.Model):
     if len(cms) > 0:
       return cms[0]
   
-  def nomecompleto(self, cmsro):
+  def nomecompleto(self, cmsro, myself=False):
     nome = ""
-    if not cmsro or self.can_show(1,self.get_user_type(cmsro)):
+    if myself or self.can_show(1,self.get_user_type(cmsro)):
       nome = nome + self.nome
-    if not cmsro or self.can_show(2,self.get_user_type(cmsro)):
+    if myself or self.can_show(2,self.get_user_type(cmsro)):
       if nome != "":
         nome = nome + " "
       nome = nome + self.cognome
@@ -282,19 +282,19 @@ class Commissario(model.Model):
       nome = "Anonimo"
     return nome
 
-  def titolo(self, cmsro):
+  def titolo(self, cmsro, myself=False):
     titolo = ""
     if self.isCommissario():
       titolo = "Commissione Mensa "
     else:
       titolo = "Genitore "
-    if not cmsro or self.can_show(3,self.get_user_type(cmsro)):
+    if myself or self.can_show(3,self.get_user_type(cmsro)):
       for c in self.commissioni():
         titolo = titolo + c.tipoScuola + " " + c.nome + "; "
     return titolo
     
-  def avatar(self, cmsro, size = None):
-    if self.avatar_url and ( not cmsro or self.can_show(4,self.get_user_type(cmsro))):    
+  def avatar(self, cmsro, size = None, myself=False):
+    if self.avatar_url and ( myself or self.can_show(4,self.get_user_type(cmsro))):    
       if "?id=" in self.avatar_url and size:
         return self.avatar_url + "&size="+size
       else:
@@ -302,9 +302,9 @@ class Commissario(model.Model):
     else:
       return "/img/default_avatar.png"
 
-  def email(self, cmsro):
+  def email(self, user, myself=False):
     email = ""
-    if not cmsro or self.can_show(0,self.get_user_type(cmsro)):
+    if myself or self.can_show(0,self.get_user_type(cmsro)):
       email = self.usera.get().email
     return email
 
