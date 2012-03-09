@@ -207,14 +207,14 @@ class Messaggio(model.Model):
     else:
       return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
 
-  def author(self, cmsro):
-    return self.get_commissario().nomecompleto(cmsro)
+  def author(self, cmsro, myself=False):
+    return self.get_commissario().nomecompleto(cmsro, myself)
 
-  def author_title(self, cmsro):
-    return self.get_commissario().titolo(cmsro)
+  def author_title(self, cmsro, myself=False):
+    return self.get_commissario().titolo(cmsro, myself)
 
-  def author_avatar(self, cmsro):
-    return self.get_commissario().avatar(cmsro)
+  def author_avatar(self, cmsro, myself=False):
+    return self.get_commissario().avatar(cmsro, myself)
 
   def tags(self):
     if not self._tags:
@@ -330,18 +330,18 @@ class Voto(model.Model):
   c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
   
-  def author(self, cmsro):
+  def author(self, cmsro, myself=False):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.nomecompleto(cmsro)
-  def author_title(self, cmsro):
+    return self._commissario.nomecompleto(cmsro, myself)
+  def author_title(self, cmsro, myself=False):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.titolo(cmsro)
-  def author_avatar(self, cmsro):
+    return self._commissario.titolo(cmsro, myself)
+  def author_avatar(self, cmsro, myself=False):
     if not self._commissario:
       self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario.avatar(cmsro)
+    return self._commissario.avatar(cmsro, myself)
   
   @classmethod
   def get_by_msg(cls, msg):

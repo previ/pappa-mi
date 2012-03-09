@@ -146,7 +146,8 @@ class BasePage(webapp.RequestHandler):
        
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
-
+    template_values["cmsro"] = commissario
+    
     if "main" not in template_values:
       template_values["main"] = 'main.html'
     template_values["user"] = user
