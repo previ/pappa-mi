@@ -48,7 +48,7 @@ font-weight: bold;
 
 .comment_textarea, .comment_text {
 display: block;
-width: 100%;
+#width: 100%;
 }
 
 .comment_footer {
