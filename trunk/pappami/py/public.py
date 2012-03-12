@@ -192,8 +192,8 @@ class CMAvatarRenderHandler(BasePage):
     commissario = self.getCommissario(user)
     self.response.headers['Content-Type'] = "image/png"
     img = commissario.avatar_data
-    logging.info("len: " + str(len(img)))
-    logging.info("size: " + self.request.get("size"))
+    #logging.info("len: " + str(len(img)))
+    #logging.info("size: " + self.request.get("size"))
     if self.request.get("size") != "big":
       img = images.resize(img, 48,48)
     self.response.out.write(img)

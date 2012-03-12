@@ -196,14 +196,14 @@ class CMVoteHandler(BasePage):
     messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()
 
     messaggio.vote(int(self.request.get('voto')), self.request.user)
-    self.response.out.write(len(messaggio.get_votes()))
+    self.response.out.write(len(messaggio.votes))
 
 class CMVotersHandler(BasePage):  
   def get(self):
     messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()    
     template_values = {
       'main': 'comments/voters.html',
-      'votes': messaggio.get_votes()
+      'votes': messaggio.votes
     }
     self.getBase(template_values)    
 

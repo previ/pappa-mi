@@ -1,60 +1,63 @@
-<script type="text/javascript">
-var ulmsg = true;
-function closeIt() {
-if(ulmsg) return "Attenzione, la pagina contiene dati non salvati, uscire comunque ?";
-}
-window.onbeforeunload = closeIt;
-</script>
 <div id="form-error"></div>
 <div class="">
  <form action="/isp/nota" method="post" id="form0" enctype="multipart/form-data" novalidate>
   <h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
-   <input type="hidden" name="key" value="{{key}}"/>
-   <div class="step form-stacked">
-    <div class="row">
-      <div class="span4 control-group">
-       <label for="e_commissione">Commissione</label>
-       <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
-        <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
-       </select>
-      </div>
-      <div class="span2 control-group">
-       <label for="e_dataNotaViz">Data Ispezione</label>
-       <input title="Inserire la data a cui si riferisce la segnalazione." type="text" class="span2 required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
-       <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
-      </div>   
-    </div>   
-    <div class="row">
-     <div class="span8 control-group">
+  <input type="hidden" name="key" value="{{key}}"/>
+  <div class="step form-stacked">
+   <div class="row">
+    <div class="span4">
+     <div class="control-group">       
+      <label for="e_commissione">Commissione</label>
+      <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
+       <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+      </select>
+     </div>
+    </div>
+    <div class="span2">
+     <div class="control-group">       
+      <label for="e_dataNotaViz">Data Ispezione</label>
+      <input title="Inserire la data a cui si riferisce la segnalazione." type="text" class="span2 required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
+      <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
+     </div>   
+    </div>
+   </div>
+   <div class="row">
+    <div class="span8">
+     <div class="control-group">       
       <label for="e_titolo">Titolo</label>
       <input type="text" id="e_titolo" class="required span8" name="titolo" value="{{form.data.titolo}}"></input>
      </div>
-    </div>   
-    <div class="row">
-     <div class="span8 control-group">
+    </div>
+   </div>   
+   <div class="row">
+    <div class="span8">
+     <div class="control-group">       
       <label for="e_titolo">Testo</label>
       <textarea required="true" name="note" rows="2" class="required span8" id="e_note">{{form.data.note}}</textarea>
      </div>
-    </div>   
-    <div class="row">
-     <div class="span8 control-group">
+    </div>
+   </div>   
+   <div class="row">
+    <div class="span8">
+     <div class="control-group">       
       <label for="e_attach">Allegati</label>
       <input type="file" name="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_1" allow="*"/>
       {#<input type="file" name="allegato_file_2" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_2" allow="*"/>
       <input type="file" name="allegato_file_3" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf"/> Descrizione (opzionale)<input type="text" name="allegato_desc_3" allow="*"/>#}
      </div>
-    </div>   
-    <div class="row">
-     <div class="span8 control-group">
-      <label>Categorie</label>
-      <div class="comment_tags">  
-       <div>
-        <ul id="item_tags_handler"></ul>
-       </div>
+    </div>
+   </div>   
+   <div class="row">
+    <div class="span8 control-group">
+     <label>Categorie</label>
+     <div class="comment_tags">  
+      <div>
+       <ul id="item_tags_handler"></ul>
       </div>
      </div>
     </div>
    </div>
+  </div>
   <div id="formnav" class="modal-footer modal-actions">
    <input id="e_submit" class="btn btn-primary" type="submit" onclick="" value="Salva dati" style="float:right;" data-loading-text="Salvataggio in corso..."/> 
    <input type="reset" onclick="closedialog();" id="e_annulla" class="btn" value="Annulla" style="float:right;"/>

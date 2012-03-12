@@ -23,7 +23,7 @@ from google.appengine.api import urlfetch
 from datetime import datetime, date, time
 import wsgiref.handlers
 
-from ndb import model
+from google.appengine.ext.ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -451,22 +451,39 @@ class CMAdminHandler(BasePage):
       self.response.out.write("initCity2 Ok")
       return
         
-    if self.request.get("cmd") == "initStream":
-      for isp in Ispezione().all():
-        messaggio = Messaggio(par = isp, root = isp, grp = isp.commissione, tipo = 101, livello = 0, creato_da = isp.creato_da, creato_il = isp.creato_il, modificato_da = isp.modificato_da, modificato_il = isp.modificato_il)
-        messaggio.put_async()
-      for nc in Nonconformita().all():
-        messaggio = Messaggio(par = nc, root = nc, grp = nc.commissione, tipo = 102, livello = 0, creato_da = nc.creato_da, creato_il = nc.creato_il, modificato_da = nc.modificato_da, modificato_il = nc.modificato_il)
-        messaggio.put_async()
-      for nota in Nota():
-        messaggio = Messaggio(par = nota, root = nota, grp = nota.commissione, tipo = 103, livello = 0, creato_da = nota.creato_da, creato_il = nota.creato_il, modificato_da = nota.creato_da, modificato_il = nota.creato_il)
-        messaggio.put_async()
-      for dieta in Dieta():
-        messaggio = Messaggio(par = dieta, root = dieta, grp = dieta.commissione, tipo = 104, livello = 0, creato_da = dieta.creato_da, creato_il = dieta.creato_il, modificato_da = dieta.creato_da, modificato_il = dieta.creato_il)
-        messaggio.put_async()
+    if self.request.get("cmd") == "initStream1":
+      offset = 0
+      limit = 50
+      if self.request.get("offset"):
+        offset = int(self.request.get("offset"))
+
+      if self.request.get("kind") == "isp":
+        for isp in Ispezione.query().fetch(offset=offset, limit=limit):
+          messaggio = Messaggio(par = isp, root = isp, grp = isp.commissione, tipo = 101, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = isp.creato_il, modificato_il = isp.modificato_il)
+          messaggio.put_async()
+      elif self.request.get("kind") == "nc":
+        for nc in Nonconformita.query():
+          messaggio = Messaggio(par = nc, root = nc, grp = nc.commissione, tipo = 102, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = nc.creato_il, modificato_il = nc.modificato_il)
+          messaggio.put_async()
+      elif self.request.get("kind") == "dieta":
+        for nota in Nota.query():
+          messaggio = Messaggio(par = nota, root = nota, grp = nota.commissione, tipo = 103, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = nota.creato_il, modificato_il = nota.creato_il)
+          messaggio.put_async()
+      elif self.request.get("kind") == "nota":
+        for dieta in Dieta.query():
+          messaggio = Messaggio(par = dieta, root = dieta, grp = dieta.commissione, tipo = 104, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = dieta.creato_il, modificato_il = dieta.creato_il)
+          messaggio.put_async()
       self.response.out.write("initStream Ok")
       return
-
+    
+    _users = dict()
+    def get_user(self, user):
+      if not self._users.get(user.user_id()):
+        a_id = models.User.generate_auth_id('google', user.user_id(), 'legacy')
+        ua = models.User.get_by_auth_id(a_id)          
+        self._users[user.user_id()] = ua
+      return ua
+      
     if self.request.get("cmd") == "initStream2":
       for msg in Messaggio().query():
         if msg.tipo in range(101, 104):
@@ -522,7 +539,8 @@ class CMAdminHandler(BasePage):
     
     if self.request.get("cmd") == "initAuth":
       logging.info("initAuth")
-      for c in Commissario.query().filter().fetch(limit=50):
+      offset = int(self.request.get("offset"))
+      for c in Commissario.query().filter().fetch(limit=50, offset=offset):
         if c.usera is None:
           logging.info("initAuth: " + str(c.user.email()))
           auth_id = models.User.generate_auth_id('google', c.user.user_id(), 'legacy')

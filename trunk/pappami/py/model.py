@@ -13,6 +13,8 @@ from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
 
+from common import cached_property
+
 from common import Const
 
 class Citta(model.Model):
@@ -795,7 +797,7 @@ class Dieta(model.Model):
 
 class Nota(model.Model):
   def __init__(self, *args, **kwargs):
-    logging.info("__init__")
+    #logging.info("__init__")
     self.allegati = list()
     self.tags = list()
     super(Nota, self).__init__(*args, **kwargs)  

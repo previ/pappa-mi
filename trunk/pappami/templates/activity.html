@@ -13,6 +13,7 @@
            //$('#comments_{{activity.key.id()}}').load('/comments/comment?par={{activity.key.id()}}')
         }}); 
         {%if detail is defined%}onexpcomments('{{activity.key.id()}}');{%endif%}
+        $("[data-original-title]").tooltip();
     });
 </script> 
 <li class="activity_item" id="activity_{{activity.key.id()}}">
@@ -20,19 +21,19 @@
  <div class="activity_avatar">
   <img class="avatar" src="{{activity.author_avatar(cmsro)}}" title="{{activity.author(cmsro)}}">
  </div>
- <span class="permalink" onclick="permalink('{{activity.key.id()}}')"></span>
+ <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-original-title="apri in un'altra finestra"></span>
+ {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-original-title="mostra / nascondi dettagli"></span>{%endif%}  
  <div class="activity_body">
   <div class="activity_author">{{activity.author(cmsro)}}</div>  
   <div class="activity_author_title">{{activity.author_title(cmsro)}}</div>
-  <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags()%}
-  <div class="activity_tags"><i class="icon-tags"></i> {%for tag in activity.tags()%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{{tag.nome}}</a> {%endfor%}</div>{%endif%}
-  <div class="activity_title" >{{activity.title()}}</div>
-  {%if detail is defined%}{% include detail %}{%else%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')"></span>{%endif%}
-  <div class="activity_summary" id="summary_{{activity.key.id()}}">{{activity.summary()}}</div>  
+  <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags%}
+  <div class="activity_tags"><i class="icon-tags"></i> {%for tag in activity.tags%}{%if user%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{%endif%}{{tag.nome}}{%if user%}</a>{%endif%} {%endfor%}</div>{%endif%}
+  <div class="activity_title"{%if detail is undefined and activity.hasdetail%} style="cursor:pointer;" onclick="ondetail('{{activity.key.id()}}')"{%endif%}>{{activity.title}}</div>  
+  {%if detail is undefined%}<div class="activity_summary" id="summary_{{activity.key.id()}}"{%if detail is undefined and activity.hasdetail%} style="cursor:pointer;" onclick="ondetail('{{activity.key.id()}}')"{%endif%}>{{activity.summary}}</div>{%else%}{% include detail %}{%endif%}
   <div class="activity_detail" id="detail_{{activity.key.id()}}"></div>
   <div class="activity_footer">   
-   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key.id()}}_me" {%if activity.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
-   <div class="activity_vote" id="vote_1_{{activity.key.id()}}" style="display:{%if activity.canvote(user) %}inline{%else%}none{%endif%};">
+   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key.id()}}_me" {%if user is none or activity.canvote(user)%}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+   <div class="activity_vote" id="vote_1_{{activity.key.id()}}" style="display:{%if activity.canvote(user)%}inline{%else%}none{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',1)">Mi piace</div>
     <!--button id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',-1)">Non mi piace</button-->
    </div>
@@ -55,12 +56,12 @@
     <input type="hidden" name="par" value="{{activity.key.id()}}" /> 
     <input type="hidden" name="root" value="{{activity.key.id()}}" /> 
      <div class="comment_avatar">
-     <img src="{{user.avatar}}" title="{{user.fullname}}">
+     <img src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.nomecompleto(cmsro)}}">
      </div>
      <div class="comment_body">
-      <div class="comment_author">{{user.fullname}} </div>
-      <div class="comment_author_title">{{user.title}}</div>
-      <div class="comment_text"><textarea class="comment_textarea" name="testo"></textarea></div>
+      <div class="comment_author">{{cmsro.nomecompleto(cmsro)}} </div>
+      <div class="comment_author_title">{{cmsro.title}}</div>
+      <div class="comment_text"><textarea class="span6 comment_textarea" name="testo"></textarea></div>
       <div class="actions"><button class="btn btn-primary" type="submit">Invia</button><button class="btn"  type="button" onclick="onexpcommentnew('{{activity.key.id()}}')">Annulla</button></div>
      </div>
     </form>

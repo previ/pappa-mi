@@ -8,18 +8,19 @@ padding-left: 0px;
 padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
-font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
 /*font-size: 11px;*/
 }
 
 .activity_root {
 padding-bottom: 10px;
 padding-top: 10px;
-font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
 /*font-size: 14px;*/
 }
 
 .activity_box {
+width: 100%;
 }
 
 .activity_item {
@@ -36,8 +37,6 @@ padding-right: 5px;
 .activity_body {
 display: table-cell;
 width: auto;
-#min-width:586px;
-#max-width:866px;
 padding-left: 5px;
 padding-right: 5px;
 }
