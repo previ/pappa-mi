@@ -19,16 +19,15 @@
     <div class="span3">
      <div class="control-group">
       <label class="" for="e_commissione">Commissione</label>
-      <select class="span3 required" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">
-      <option value=""></option>{% for cm in commissioni %}
-      <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+      <select class="span3 required" name="commissione" value="" id="e_commissione" onchange="getPrevIspData()">{% for cm in commissioni %}
+       <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
       </select>
      </div>
     </div>
     <div class="span2">
      <div class="control-group">
-      <label class="" for="e_dataIspezioneViz">Data Ispezione</label>
-      <input type="text" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione." onchange="getMenu()" name="dataIspezioneViz" value="" class="span2 required" id="e_dataIspezioneViz"/>
+      <label class="" for="e_dataIspezioneViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
+      <input type="text" onchange="getMenu()" name="dataIspezioneViz" value="" class="span2 required" id="e_dataIspezioneViz"/>
       <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
      </div>
     </div>
@@ -36,7 +35,6 @@
      <div class="control-group">
       <label class="" for="e_turno">Turno</label>
       <select name="turno" id="e_turno" class="span2 required">
-      <option value=""></option>
       <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
       <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
       </select>

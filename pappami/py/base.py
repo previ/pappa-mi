@@ -97,7 +97,9 @@ class BasePage(webapp.RequestHandler):
     return ctx
 
   def set_context(self):
-    self.session["ctx"] = self.session["ctx"]
+    ctx = self.session.get("ctx")
+    if ctx:
+      self.session["ctx"] = ctx
   
   def get_or_set_ctx(self, key, value):
     if value != None:
@@ -142,7 +144,7 @@ class BasePage(webapp.RequestHandler):
       #user.fullname = commissario.nomecompleto(commissario)
       #user.title = commissario.titolo(commissario)
       #user.avatar = commissario.avatar()
-      logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
+      #logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
        
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
@@ -175,7 +177,7 @@ class BasePage(webapp.RequestHandler):
     if user is None:
       user = self.request.user
     if user :
-      logging.info("userid: " + str(user.key.id()))
+      #logging.info("userid: " + str(user.key.id()))
       return Commissario.get_by_user(user)
     else:
       return None
@@ -208,7 +210,7 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
+    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
     tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
     msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
@@ -416,6 +418,8 @@ class CMMenuHandler(BasePage):
     else:
       date = datetime.now().date()
     
+    date = self.get_next_working_day(date)
+    
     date1 = date - timedelta(date.isoweekday() - 1)
     datep = date1 - timedelta(7)
     daten = date1 + timedelta(7)
@@ -430,6 +434,13 @@ class CMMenuHandler(BasePage):
     super(CMMenuHandler,self).getBase(template_values)
     
 
+  def get_next_working_day(self, date):
+    while date.isoweekday() > 5:
+      date = date + timedelta(1)
+
+    return date;
+
+    
 class CMCittaHandler(webapp.RequestHandler):
   def get(self):        
     citta = Citta.get_all()
@@ -467,3 +478,4 @@ def reguser_required(func):
     else:
       return func(basePage, *args, **kwargs)
   return callf    
+

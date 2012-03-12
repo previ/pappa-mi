@@ -13,54 +13,62 @@
 <div class="step form-stacked" id="step1">
  <div class="row">
   <div class="span4">
-   <label for="e_commissione">Commissione</label>
-   <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
-    <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
-   </select>
+   <div class="control-group">
+    <label for="e_commissione">Commissione</label>
+    <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
+     <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
+    </select>
+   </div>
   </div>
   <div class="span2">
-   <label for="e_dataNonconfViz">Data Ispezione</label>
-   <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="span2 required" name="dataIspezioneViz" value="" id="e_dataIspezioneViz"/>
-   <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
+   <div class="control-group">
+    <label for="e_dataNonconfViz">Data Ispezione</label>
+    <input title="Inserire la data in cui &egrave; stata effettuata l'ispezione." type="text" class="span2 required" name="dataIspezioneViz" value="" id="e_dataIspezioneViz"/>
+    <input type="hidden" name="dataIspezione" value="" id="e_dataIspezione"/>
+   </div>
   </div>
   <div class="span2">
-   <label for="e_turno">Turno</label>
-   <select name="turno" id="e_turno" class="span2 required">
-    <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
-    <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
-   </select>
+   <div class="control-group">
+    <label for="e_turno">Turno</label>
+    <select name="turno" id="e_turno" class="span2 required">
+     <option value="1"{% if form.data.turno == "1" %} selected{% endif %}>Primo</option>
+     <option value="2"{% if form.data.turno == "2" %} selected{% endif %}>Secondo</option>
+    </select>
+   </div>
   </div>
  </div>
  <div class="row">
   <div class="span8">
-   <label for="e_commissione">Tipo Dieta</label>
-   <select name="tipoDieta" id="e_tipoDieto" class="required span8" value="{{form.data.tipoDieta}}" required="true">
-   <option value=""></option>
-   <option value="1">menu privo di fave e piselli</option>
-   <option value="2">menu privo di cereali contenenti glutine</option>
-   <option value="3">menu privo di proteine del latte</option>
-   <option value="4">menu privo di uovo</option>
-   <option value="5">menu privo di pesce, molluschi e crostacei</option>
-   <option value="6">menu privo di proteine del latte, e uova</option>
-   <option value="7">menu privo di solanacee</option>
-   <option value="8">menu privo di frutta a guscio, pinoli, lupini, semi di sesamo</option>
-   <option value="9">menu privo di legumi, soia,arachidi</option>
-   <option value="10">menu a ridotto apporto di sostanze istamino-liberatrici</option>
-   <option value="11">menu ridotto in nichel</option>
-   <option value="12">menu privo di tutti gli allergeni (D.L.vo n.114/ 06)</option>
-   <option value="13">esclusione di sola frutta</option>
-   <option value="14">menu diabete e/o ipocalorico</option>
-   <option value="15">menu ipolipidico</option>
-   <option value="16">menu iposodico</option>
-   <option value="17">menu tritato / frullato</option>
-   <option value="18">menu per stipsi (nido)</option>
-   <option value="19">menu privo di carni bianche</option>
-   <option value="20">menu privo di carne suina</option>
-   <option value="21">menu privo di tutte le carni</option>
-   <option value="22">menu privo di carni bovine e suine</option>
-   <option value="23">menu privo di carni di origine animale</option>
-   <option value="24">menu privo di carne e pesce</option>
-   </select>
+   <div class="control-group">
+    <label for="e_commissione">Tipo Dieta</label>
+    <select name="tipoDieta" id="e_tipoDieto" class="span8 required" value="{{form.data.tipoDieta}}">
+     <option value=""></option>
+     <option value="1">menu privo di fave e piselli</option>
+     <option value="2">menu privo di cereali contenenti glutine</option>
+     <option value="3">menu privo di proteine del latte</option>
+     <option value="4">menu privo di uovo</option>
+     <option value="5">menu privo di pesce, molluschi e crostacei</option>
+     <option value="6">menu privo di proteine del latte, e uova</option>
+     <option value="7">menu privo di solanacee</option>
+     <option value="8">menu privo di frutta a guscio, pinoli, lupini, semi di sesamo</option>
+     <option value="9">menu privo di legumi, soia,arachidi</option>
+     <option value="10">menu a ridotto apporto di sostanze istamino-liberatrici</option>
+     <option value="11">menu ridotto in nichel</option>
+     <option value="12">menu privo di tutti gli allergeni (D.L.vo n.114/ 06)</option>
+     <option value="13">esclusione di sola frutta</option>
+     <option value="14">menu diabete e/o ipocalorico</option>
+     <option value="15">menu ipolipidico</option>
+     <option value="16">menu iposodico</option>
+     <option value="17">menu tritato / frullato</option>
+     <option value="18">menu per stipsi (nido)</option>
+     <option value="19">menu privo di carni bianche</option>
+     <option value="20">menu privo di carne suina</option>
+     <option value="21">menu privo di tutte le carni</option>
+     <option value="22">menu privo di carni bovine e suine</option>
+     <option value="23">menu privo di carni di origine animale</option>
+     <option value="24">menu privo di carne e pesce</option>
+    </select>
+   </div>
   </div>
  </div>
  <div class="row">
@@ -74,7 +82,7 @@
   <div class="span4">
    <div class="control-group">
     <label >Etichetta &egrave; leggibile?</label>
-    <div class="controls">   
+    <div class="control">
      <div class="radio-group btngroup" title="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
       <label class="btn"><input type="radio" name="etichettaLeggibile" value="1" class="required" id="e_aarc_1" {%if form.data.etichettaLeggibile == "1" %}CHECKED{%endif%}/>Si</label>
       <label class="btn"><input type="radio" name="etichettaLeggibile" value="0" class="required" id="e_aarc_2" {%if form.data.etichettaLeggibile == "0" %}CHECKED{%endif%}/>No</label>

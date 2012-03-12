@@ -11,10 +11,14 @@ $(function(){
 
  date = new Date("{{data1}}");
  
+ chgscope();
+
+ $('#slider').load("/menuslide", function() {
  $('#slider').anythingSlider({ 
   buildStartStop : false,
   buildNavigation: false,
   expand: true,
+  startPanel: {{todayofweek}},
   navigationFormatter : function(index, panel){ return ['Luned&igrave;', 'Marted&igrave;', 'Mercoled&igrave;', 'Gioved&igrave;', 'Venerd&igrave;'][index - 1];}
  });
  
@@ -42,11 +46,7 @@ $(function(){
    $('#slider').data("AnythingSlider").goBackBase();
   }
  }; 
-
- chgscope();
-
- $('#slider').load("/menuslide", function() {$('#slider').anythingSlider(); });
-
+ });
 });
 
 </script>

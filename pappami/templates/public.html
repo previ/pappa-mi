@@ -2,6 +2,7 @@
 #slider { width:100%; }
 </style>
 <script> 
+titles = ["Benvenuti", "Cosa serve", "Come si usa"];
 $(function(){
  loadSmallMap({{geo.lat}},{{geo.lon}});  
  $('#slider').anythingSlider({ 
@@ -10,7 +11,7 @@ $(function(){
   buildNavigation: true,
   onSlideInit: function(slider) { $('#slider').find('.caption').css("bottom",-35);},
   onSlideComplete: function(slider) {$(slider.$currentPage).find('.caption').animate({bottom:0},200);},
-  navigationFormatter : function(index, panel){ return '';}
+  navigationFormatter : function(index, panel){ return titles[index-1];}
  });
  /*$('#news').anythingSlider({ 
   expand: true,
@@ -20,7 +21,7 @@ $(function(){
   changeBy     : 1,
   navigationFormatter : function(index, panel){ return '';}
  });*/
- $('#activity_list').load('/comments/load?limit=5', function(){
+ $('#activity_list').load('/comments/load?limit=10', function(){
   $('#act_loading').hide();      
  });
  $('#contacts').tooltip({
@@ -36,7 +37,7 @@ $(function(){
 					<div style="padding:20px; background:url('img/back_transp.png');">
 					<h1>Benvenuti in Pappa-Mi</h1>
 					<h2>Cosa e Come si mangia nelle mense scolastiche milanesi</h2>
-					<p><a class="btn primary" href="/login">Accedi &raquo;</a> oppure <a class="btn success" href="/signup">Registrati &raquo;</a></p>
+					<p><a class="btn btn-primary" href="/eauth/login">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a></p>
 					</div> 
 					<div class="caption" style="bottom:0"> 
 						<p>Titolo</p> 					
@@ -46,24 +47,22 @@ $(function(){
 			<div class="slide" style="background:url('img/slider/slide2.jpg'); background-size:100%; width:940px;"> 
 				<div class="slide_container">
 					<div style="padding:20px; background:url('img/back_transp.png');">
-					<h1>Cosa si mangia ?</h1>
-					<p>Controlla cosa si mangia oggi nella scuola dei tuoi figli.</p>
-					<p>Scrivi le tue opinioni sui piatti.</p>
-					</div> 
-					<div class="caption"> 
-						<p>Partecipa !</p> 					
+						<h1>A cosa serve ?</h1>
+						<div class="alert alert-info span3" style="height:180px;"><h3>1.Guarda cosa si mangia</h3>Consulta il menu di oggi nella scuola dei tuoi figli.</div>
+						<div class="alert alert-info span3" style="height:180px;"><h3>2.Controlla come si mangia</h3>Consulta le segnalazioni delle Commissioni Mensa, guarda le statistiche sul servizio.</div>
+						<div class="alert alert-info span3" style="height:180px;"><h3>3.Partecipa</h3>Commenta le segnalazioni delle Commissioni Mensa, chiedi informazioni, suggerisci soluzioni.</div>
 					</div> 
 				</div>
 			</div>
-			<div class="slide" style="background:url('img/slider/slide1.jpg'); background-size:100%; width:940px;"> 
+			<div class="slide" style="background:url('img/slider/slide3.jpg'); background-size:100%; width:940px;"> 
 				<div class="slide_container">
 					<div style="padding:20px; background:url('img/back_transp.png');">
-					<h1>Come si mangia ?</h1>
-					<p>Controlla i giudizi riportati dalle Commissioni Mensa e dagli altri genitori come te !</p>
-					<p>Chiedi consigli agli altri</p>
-					</div> 
+						<h1>Come si usa ?</h1>
+						<div class="alert alert-info span3" style="height:180px;"><h3>1.Registrati</h3>Inserisci i tuoi dati</div>
+						<div class="alert alert-info span3" style="height:180px;"><h3>2.Inserisi i dati</h3>Se fai parte di una Commissione Mensa puoi inserire i dati dei questionari di ispezion e non conformit&agrave;, oppure anche solo le tue impressioni come note a testo livero.</div>
+						<div class="alert alert-info span3" style="height:180px;"><h3>3.Partecipa</h3>Se sei un genitore puoi inserire commenti, richieste di informazioni, suggerimenti.</div>
 					<div class="caption"> 
-						<p>Partecipa !</p> 					
+						<p>Partecipa ! <a class="btn btn-success" href="/signup">Registrati &raquo;</a></p> 					
 					</div> 
 				</div>
 			</div>
@@ -80,7 +79,7 @@ $(function(){
   <div class="span6" style="margin-left:18px;">
     <h2>Ultime news</h2>
      <div id="act_loading" style="text-align:center;">Loading...</div>
-     <ul class="activity_list" id="activity_list"></ul>
+     <ul class="activity_list scroll" id="activity_list" style="height:300px; overflow:auto"></ul>
     <p><a class="btn" href="/stats">Dettagli &raquo;</a></p>
   </div>
   <div id="contacts" class="span3">

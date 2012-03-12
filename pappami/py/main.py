@@ -59,7 +59,7 @@ class MainPage(BasePage):
     
   def post(self):
     return self.get()
-
+    
   def getPrivate(self, template_values):
 
     c = None
@@ -71,9 +71,7 @@ class MainPage(BasePage):
     offset = 0
     if self.request.get("offset") != "":
       offset = int(self.request.get("offset"))
-
-    logging.info("tag1: " + self.request.get("tag"))
-    
+   
     template_values = dict()
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"    
@@ -186,7 +184,7 @@ class MapDataHandler(webapp.RequestHandler):
           raise
           logging.error("Timeout")
           
-        logging.info(markers_list)
+        #logging.info(markers_list)
         if i >= limit:
           markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
         else:

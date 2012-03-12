@@ -45,6 +45,7 @@ class CMMenuDataHandler(CMMenuHandler):
     else:
       template_values = dict()
       template_values['content'] = 'menu.html'      
+      template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
       template_values["citta"] = Citta.get_all()
       self.getBase(template_values)
 

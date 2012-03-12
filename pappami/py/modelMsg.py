@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 #
 
+import sys
 from datetime import date, datetime, time, timedelta
 import logging
+import threading
 import fpformat
+from common import cached_property
 from py.model import Commissario, Commissione
-from common import Const
+from common import Const, Parser
 
 from google.appengine.api import users
 from google.appengine.ext.ndb import model
@@ -14,9 +17,9 @@ from google.appengine.api import memcache
 
 class Messaggio(model.Model):
   def __init__(self, *args, **kwargs):
-    self._commissario = None
-    self._tags = None
-    self._votes = None
+    #self._commissario = None
+    #self._tags = None
+    #self._votes = None
     super(Messaggio, self).__init__(*args, **kwargs)  
 
   root = model.KeyProperty()
@@ -37,69 +40,86 @@ class Messaggio(model.Model):
 
   @classmethod
   def get_by_tagname(cls, tagname, offset=0):
-    #logging.info("get_activities_by_tagname")
-    activities = memcache.get("msg-tag-" + tagname + "-" + str(offset))
-    if activities == None:
-      activities = list()
-      tag = Tag.get_by_name(tagname)
-      if tag:
-        count = 0
-        for tagobj in TagObj.get_by_tag(tag):
-          count += 1
-          if count > Const.ACTIVITY_FETCH_LIMIT:
-            break
-          activities.append(tagobj.obj.get())
-      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("msg-tag-" + tagname + "-" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, Const.ACTIVITY_CACHE_EXP)
+    #activities = memcache.get("msg-tag-" + tagname + "-" + str(offset))
+    with cls._activities_lock:
+      cls.check_cache()
+      activities = cls._activities.get("msg-tag-" + tagname + "-" + str(offset))
+      if activities == None:
+        activities = list()
+        tag = Tag.get_by_name(tagname)
+        if tag:
+          count = 0
+          for tagobj in TagObj.get_by_tag(tag):
+            count += 1
+            if count > Const.ACTIVITY_FETCH_LIMIT:
+              break
+            activities.append(tagobj.obj.get())
+        activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+        #memcache.add("msg-tag-" + tagname + "-" + str(offset/Const.ACTIVITY_FETCH_LIMIT), activities, Const.ACTIVITY_CACHE_EXP)
+        cls._activities["msg-tag-" + tagname + "-" + str(offset)] = activities
     return activities
 
   @classmethod
   def get_by_msgtype(cls, msgtype, offset=0):
-    #logging.info("get_activities_by_msgtype")
-    activities = memcache.get("msg-type-" + str(msgtype) + "-" + str(offset))
-    if activities == None:
-      activities = list()
-      #logging.info("get_activities_by_msgtype: " + str(msgtype))
-      for msg in Messaggio.query().filter(Messaggio.tipo == msgtype).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
-        #logging.info("get_activities_by_msgtype: " + str(msg.tipo))
-        activities.append(msg)
-      memcache.add("msg-type-" + str(msgtype) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
-    return activities
+    #activities = memcache.get("msg-type-" + str(msgtype) + "-" + str(offset))
+    with cls._activities_lock:
+      cls.check_cache()
+      activities = cls._activities.get("msg-type-"  + str(msgtype) + "-" + str(offset))
+      if activities == None:
+        activities = list()
+        for msg in Messaggio.query().filter(Messaggio.tipo == msgtype).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+          activities.append(msg)
+        #memcache.add("msg-type-" + str(msgtype) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+        cls._activities["msg-type-"  + str(msgtype) + "-" + str(offset)] = activities
+      return activities
 
   @classmethod
   def get_by_user(cls, user_id, offset=0):
-    activities = memcache.get("msg-user-" + str(user_id) + "-" + str(offset))
-    if activities == None:
-      activities = list()
-      for msg in Messaggio.query().filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
-        activities.append(msg)
-      memcache.add("msg-user-" + str(user_id) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
-    return activities
+    #activities = memcache.get("msg-user-" + str(user_id) + "-" + str(offset))
+    with cls._activities_lock:
+      cls.check_cache()
+      activities = cls._activities.get("msg-user-" + str(user_id) + "-" + str(offset))    
+      if activities == None:
+        activities = list()
+        for msg in Messaggio.query().filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+          activities.append(msg)
+        #memcache.add("msg-user-" + str(user_id) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+        cls._activities["msg-user-" + str(user_id) + "-" + str(offset)] = activities
+      return activities
 
-  @classmethod
+  _activities = dict()
+  _activities_cache_ver = 1
+  _activities_lock = threading.RLock()
+  @classmethod  
   def get_all(cls, offset=0):
-    #logging.info('get_activities_all')
-    activities = memcache.get("msg-all-" + str(offset))
-    if not activities:
-      activities = list()
-      for msg in Messaggio.query().filter(Messaggio.livello == 0).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
-        activities.append(msg)
-        
-      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("msg-all-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
-    return activities
+    #activities = memcache.get("msg-all-" + str(offset))
+    with cls._activities_lock:
+      cls.check_cache()
+      activities = cls._activities.get("msg-all-" + str(offset))
+      if not activities:      
+        activities = list()
+        for msg in Messaggio.query().filter(Messaggio.livello == 0).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+          activities.append(msg)
+          
+        activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+        #memcache.add("msg-all-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+        cls._activities["msg-all-" + str(offset)] = activities
+      return activities
 
   @classmethod
   def get_by_grp(cls, grp_key, offset=0):
-    activities = memcache.get("msg-grp-" + str(grp_key) + "-" + str(offset))
-    if not activities:
-      activities = list()
-      for msg in Messaggio.query().filter(Messaggio.grp == grp_key).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
-        activities.append(msg)
-        
-      activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      memcache.add("msg-grp-" + str(grp_key) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
-    return activities
+    #activities = memcache.get("msg-grp-" + str(grp_key) + "-" + str(offset))
+    with cls._activities_lock:
+      cls.check_cache()
+      activities = cls._activities.get("msg-grp-" + str(grp_key) + "-" + str(offset))
+      if not activities:
+        activities = list()
+        for msg in Messaggio.query().filter(Messaggio.grp == grp_key).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+          activities.append(msg)
+          
+        activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
+        memcache.add("msg-grp-" + str(grp_key) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
+      return activities
   
   @classmethod
   def get_by_parent(cls, parent):
@@ -137,57 +157,78 @@ class Messaggio(model.Model):
   def get_root(cls, parent):
     return cls.query().filter(Messaggio.par == parent).get()
 
-  def invalidate_cache(self):
-    for i in range(0,1000):
-      if memcache.get("msg-user-"+str(self.c_ua.id())+"-"+str(i)) == None:
-        break
-      memcache.delete("msg-user-"+str(self.c_ua.id())+"-"+str(i))
-    if self.grp:
-      for i in range(0,1000):
-        if memcache.get("msg-grp-"+str(self.grp.id())+"-"+str(i)) == None:
-          break
-        memcache.delete("msg-grp-"+str(self.grp.id())+"-"+str(i))
-    for i in range(0,1000):
-      if memcache.get("msg-type-"+str(self.tipo)+"-"+str(i)) == None:
-        break
-      memcache.delete("msg-type-"+str(self.tipo)+"-"+str(i))
-    for i in range(0,1000):
-      if memcache.get("msg-all-"+str(i)) == None:
-        break
-      memcache.delete("msg-all-"+str(i))
+  @classmethod
+  def check_cache(cls):    
+    with cls._activities_lock:
+      cache_ver = memcache.get("act-cache-ver")
+      if cache_ver is None:
+        cache_ver = 1
+        memcache.set("act-cache-ver", cache_ver)
+      if cache_ver > cls._activities_cache_ver:
+        cls._activities = dict()
+        cls._activities_cache_ver = cache_ver
+        
+        
+  
+  @classmethod
+  def invalidate_cache(cls):
+    with cls._activities_lock:
+      memcache.incr("act-cache-ver")
+    #for i in range(0,1000):
+      #if memcache.get("msg-user-"+str(self.c_ua.id())+"-"+str(i)) == None:
+        #break
+      #memcache.delete("msg-user-"+str(self.c_ua.id())+"-"+str(i))
+    #if self.grp:
+      #for i in range(0,1000):
+        #if memcache.get("msg-grp-"+str(self.grp.id())+"-"+str(i)) == None:
+          #break
+        #memcache.delete("msg-grp-"+str(self.grp.id())+"-"+str(i))
+    #for i in range(0,1000):
+      #if memcache.get("msg-type-"+str(self.tipo)+"-"+str(i)) == None:
+        #break
+      #memcache.delete("msg-type-"+str(self.tipo)+"-"+str(i))
+    #for i in range(0,1000):
+      #if memcache.get("msg-all-"+str(i)) == None:
+        #break
+      #memcache.delete("msg-all-"+str(i))
     
-  def get_commissario(self):
-    if not self._commissario:
-      self._commissario = Commissario.get_by_user(self.c_ua.get())
-    return self._commissario
-    
+  @cached_property
+  def commissario(self):    
+    return Commissario.get_by_user(self.c_ua.get())
+  
   def likes(self):
-    return len(self.get_votes())
+    return len(self.votes)
 
   def canvote(self, user):
     if not user:
       return False
     canvote = True
-    for p_voto in self.get_votes():
+    for p_voto in self.votes:
       if p_voto.c_ua == user.key:
         canvote = False
         break;
     return canvote
-
-  def get_votes(self):
-    voti = self._votes
-    #voti = memcache.get("msg-voti-"+str(self.key.id()))
-    if voti is None:
-      voti = list()
-      for voto in Voto.get_by_msg(self.key):
-        voti.append(voto)
-      #memcache.add("msg-voti-"+str(self.key.id()), voti)
-      self._votes = voti
+  
+  @cached_property
+  def votes(self):
+    voti = list()
+    for voto in Voto.get_by_msg(self.key):
+      voti.append(voto)
     return voti
   
+  #def get_votes(self):
+    #voti = self._votes
+    #if voti is None:
+      #voti = list()
+      #for voto in Voto.get_by_msg(self.key):
+        #voti.append(voto)
+      #self._votes = voti
+    #return voti
+  
   def vote(self, vote, user):
+    logging.info("vote.1")
     if vote == 0:
-      for p_voto in self.get_votes():
+      for p_voto in self.votes:
         if p_voto.c_ua == user.key:
           if p_voto.voto == 1:
             p_voto.key.delete()
@@ -195,8 +236,14 @@ class Messaggio(model.Model):
     else :
       voto = Voto(messaggio = self.key, voto = vote, c_ua = user.key)
       voto.put()
-    #memcache.delete("msg-voti-"+str(self.key.id()))
-    self._votes = None
+
+    try:
+      logging.info(str(self.cache))
+      del self.cache["votes"]
+      logging.info(str(self.cache))
+    except AttributeError:
+      pass
+    Messaggio.invalidate_cache()
   
   def data(self):
     delta = datetime.now() - self.creato_il
@@ -208,29 +255,33 @@ class Messaggio(model.Model):
       return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
 
   def author(self, cmsro, myself=False):
-    return self.get_commissario().nomecompleto(cmsro, myself)
+    return self.commissario.nomecompleto(cmsro, myself)
 
   def author_title(self, cmsro, myself=False):
-    return self.get_commissario().titolo(cmsro, myself)
+    return self.commissario.titolo(cmsro, myself)
 
   def author_avatar(self, cmsro, myself=False):
-    return self.get_commissario().avatar(cmsro, myself)
+    return self.commissario.avatar(cmsro, myself)
 
+  @cached_property
   def tags(self):
-    if not self._tags:
-      self._tags = list()
-      for to in TagObj.get_by_obj_key(self.key):
-        self._tags.append(to.tag.get())
-    return self._tags
-  
+    tags = list()
+    for to in TagObj.get_by_obj_key(self.key):
+      tags.append(to.tag.get())
+    return tags
+
+  @cached_property
   def title(self):
+    title = ""
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      return self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + self.root.get().data()
-    if self.tipo == 201:
-      return self.titolo
-    if self.tipo == 202:
-      return ""
-    return "default"
+      title = self.root.get().commissione.get().desc() + " - " + self.tipodesc() + " del " + self.root.get().data()
+    elif self.tipo == 201:
+      title = self.titolo
+    elif self.tipo == 202:
+      pass
+    else:
+      pass
+    return title
 
   def body(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
@@ -238,20 +289,30 @@ class Messaggio(model.Model):
     if self.tipo == 201 or self.tipo == 202:
       return self.testo
 
+  @cached_property
   def summary(self):
+    summary = ""
     if self.tipo == 101 :
-      return self.root.get().note
+      summary = self.root.get().note
     if self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      return ""
+      pass
     if self.tipo == 201 or self.tipo == 202:
-      s = ""
-      if len(self.testo) > 77:
-        s = "(leggi...)"
+      if len(self.testo) > 80:        
+        p = Parser()
+        p.text = ""
+        p.feed(self.testo)
+        summary = p.text[0:80] + " (continua...)"
       else:
-        s = self.testo
-        
-      return s
+        summary = self.testo
+    return summary
 
+  @cached_property
+  def hasdetail(self):
+    if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
+      return True
+    elif self.tipo == 201 or self.tipo == 202:
+      return len(self.testo) > 80
+        
   def comments(self):
     if self.commenti is None:
       return 0
