@@ -163,8 +163,9 @@ class Messaggio(model.Model):
       cache_ver = memcache.get("act-cache-ver")
       if cache_ver is None:
         cache_ver = 1
-        memcache.set("act-cache-ver", cache_ver)
+        memcache.add("act-cache-ver", cache_ver)
       if cache_ver > cls._activities_cache_ver:
+        logging.info("cache not valid")
         cls._activities = dict()
         cls._activities_cache_ver = cache_ver
         
@@ -172,8 +173,11 @@ class Messaggio(model.Model):
   
   @classmethod
   def invalidate_cache(cls):
-    with cls._activities_lock:
+    with cls._activities_lock:      
+      logging.info("invalidate_cache")
+      #cls._activities_cache_ver += 1
       memcache.incr("act-cache-ver")
+      
     #for i in range(0,1000):
       #if memcache.get("msg-user-"+str(self.c_ua.id())+"-"+str(i)) == None:
         #break
@@ -226,7 +230,6 @@ class Messaggio(model.Model):
     #return voti
   
   def vote(self, vote, user):
-    logging.info("vote.1")
     if vote == 0:
       for p_voto in self.votes:
         if p_voto.c_ua == user.key:
@@ -238,9 +241,7 @@ class Messaggio(model.Model):
       voto.put()
 
     try:
-      logging.info(str(self.cache))
       del self.cache["votes"]
-      logging.info(str(self.cache))
     except AttributeError:
       pass
     Messaggio.invalidate_cache()

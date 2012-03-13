@@ -41,7 +41,7 @@ class ContattiHandler(BasePage):
   def get(self):
     template_values = dict()
     cm = None
-    commissario = self.getCommissario(users.get_current_user())
+    commissario = self.getCommissario()
     if self.request.get("cm") != "":
       cm = Commissione.get(self.request.get("cm"))
     elif commissario and commissario.commissione() :
@@ -66,22 +66,7 @@ class ContattiHandler(BasePage):
           if i >= num:
             break
     return cls._contacts
-    
-config = {
-    'webapp2_extras.sessions': {
-        'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
-    },
-    'webapp2_extras.auth': {
-        #        'user_model': 'models.User',
-        'user_attributes': ['displayName', 'email'],
-        },
-    'webapp2_extras.jinja2': {
-        'filters': {
-            'do_pprint': do_pprint,
-            },
-        },
-    }
-    
+        
 app = webapp.WSGIApplication([
   ('/contatti', ContattiHandler),
   ('/commissioni', CommissioniHandler)

@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import Const, BasePage, commissario_required, reguser_required
+from py.base import Const, BasePage, commissario_required, reguser_required, config
 
 import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.gviz_api import *
@@ -277,7 +275,7 @@ app = webapp.WSGIApplication([
     ('/comments/voters', CMVotersHandler),
     ('/comments/gettags', CMTagHandler), 
     ('/comments/updatetags', CMTagHandler)    
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
   app.run();

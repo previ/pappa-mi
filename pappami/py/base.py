@@ -140,7 +140,6 @@ class BasePage(webapp.RequestHandler):
         commissario.put()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
-      template_values["cmsro"] = commissario
       #user.fullname = commissario.nomecompleto(commissario)
       #user.title = commissario.titolo(commissario)
       #user.avatar = commissario.avatar()
@@ -169,7 +168,7 @@ class BasePage(webapp.RequestHandler):
     if user and not commissario and "signup" not in self.request.uri:
       self.redirect("/signup")
       return
-      
+
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
   
@@ -479,3 +478,8 @@ def reguser_required(func):
       return func(basePage, *args, **kwargs)
   return callf    
 
+config = {
+    'webapp2_extras.sessions': {
+        'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
+    }
+}

@@ -69,7 +69,7 @@ class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
             
 app = webapp.WSGIApplication([
-    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
  
 def main():
   app.run();

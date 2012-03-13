@@ -20,7 +20,7 @@ from engineauth import models
 
 from gviz_api import *
 from model import *
-from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required
+from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required, config
 from gcalendar import *
 from form import CommissarioForm
 
@@ -28,6 +28,8 @@ class SignupPreHandler(BasePage):
   
   @user_required
   def get(self):   
+    if self.getCommissario():
+      self.redirect("/")
     form = CommissarioForm()
     form.nome.data=""
     form.cognome.data=""
@@ -162,7 +164,7 @@ app = webapp.WSGIApplication([
   ('/signup', SignupPreHandler),
   ('/signup2', SignupHandler),
   ('/profilo/getcm', CMCommissioniDataHandler)], 
-  debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
   app.run();

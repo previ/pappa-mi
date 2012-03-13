@@ -20,7 +20,7 @@ from google.appengine.api import mail
 from gviz_api import *
 from model import *
 from form import CommissarioForm
-from base import BasePage, CMCommissioniDataHandler, user_required
+from base import BasePage, CMCommissioniDataHandler, user_required, config
 from gcalendar import *
 
 class CMProfiloHandler(BasePage):
@@ -112,7 +112,7 @@ class CMAvatarHandler(BasePage):
           commissario.avatar_url = "/public/avatar?id="+str(commissario.usera.id())
           commissario.put()
           commissario.set_cache()
-          self.response.out.write(commissario.avatar(cmsro=None));
+          self.response.out.write(commissario.avatar(cmsro=None,myself=True));
         else:
           logging.info("attachment is too big.")
     if cmd == "saveurl":
@@ -124,7 +124,7 @@ app = webapp.WSGIApplication([
     ('/profilo', CMProfiloHandler),
     ('/profilo/avatar', CMAvatarHandler),
     ('/profilo/getcm', CMCommissioniDataHandler)],
-    debug = os.environ['HTTP_HOST'].startswith('localhost'))
+    debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
   app.run();

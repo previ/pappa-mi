@@ -46,7 +46,7 @@ class UserProfile(ndb.Expando):
             profile.user_info = user_info
             profile.populate(**kwargs)
             profile.put()
-        logging.info("profile key: " + str(profile.key))
+        #logging.info("profile key: " + str(profile.key))
         return profile
 
 class UserToken(ndb.Model):
@@ -159,11 +159,11 @@ class UserEmail(ndb.Model):
         user  = None
         if not addresses: return None
         for addr in addresses:
-            logging.info("find user by mail: " + addr)
+            #logging.info("find user by mail: " + addr)
             user_email = cls.query(cls.value == addr).get()
             if user_email:
                 user = ndb.Key("User", int(user_email.user_id)).get();
-                logging.info("user found by mail: " + str(user.key))
+                #logging.info("user found by mail: " + str(user.key))
                 break
         return user
 
@@ -405,19 +405,19 @@ class User(ndb.Expando):
 
     @classmethod
     def _get_or_create(cls, auth_id, emails, **kwarg):
-        logging.info("1")
-        logging.info(emails)
+        #logging.info("1")
+        #logging.info(emails)
         assert isinstance(emails, list), 'Emails must be a list'
         user = cls._find_user(auth_id, emails)
         if user and emails is not None:
             user._add_emails(emails)
-            logging.info("2")
+            #logging.info("2")
             if len(emails) > 0:
-                logging.info("3")
+                #logging.info("3")
                 user.email = emails[0]["value"]
                 user.put()
-                logging.info(user.email)
-                logging.info("4: " + str(user.key))
+                #logging.info(user.email)
+                #logging.info("4: " + str(user.key))
             if auth_id not in user.auth_ids:
                 user._add_auth_id(auth_id)
         if user is None:
@@ -426,13 +426,13 @@ class User(ndb.Expando):
             if len(emails) > 0:
                 user.email = emails[0]["value"]
                 user.put()
-                logging.info(user.email)
-                logging.info("5: " + str(user.key))
+                #logging.info(user.email)
+                #logging.info("5: " + str(user.key))
         return user
 
     @classmethod
     def get_or_create_by_profile(cls, profile):
-        logging.info("get_or_create_by_profile")
+        #logging.info("get_or_create_by_profile")
         assert isinstance(profile, UserProfile), \
             'You must pass an instance of type engineauth.models.UserProfile.'
         emails = profile.user_info.get('info').get('emails') or []

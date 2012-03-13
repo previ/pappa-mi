@@ -31,14 +31,13 @@ from google.appengine.ext.ndb import model
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.base import BasePage, CMCommissioniDataHandler
+from py.base import BasePage, CMCommissioniDataHandler, config
 from py.stats import CMStatsHandler
 from py.comments import CMCommentHandler
 
@@ -210,7 +209,7 @@ app = webapp.WSGIApplication([
     ('/public/act', ActivityPublicHandler),
     ('/public/getcm', CMCommissioniDataHandler),
     ('/public/getcity', CMCittaHandler)
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
     
 def main():
   app.run();

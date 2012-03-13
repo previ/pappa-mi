@@ -31,7 +31,7 @@ from webapp2_extras import security
 from google.appengine.api import memcache
 
 from google.appengine.ext.webapp import util
-from base import BasePage
+from base import BasePage, config
 
 class LoginPage(BasePage):
   
@@ -298,7 +298,7 @@ app = webapp.WSGIApplication([
   ('/eauth/priv', ProtectedPage),
   ('/eauth/signup', SignupPage),
   ('/eauth/rmauth', RemoveAuthPage),
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
   
 def main():
   app.run();

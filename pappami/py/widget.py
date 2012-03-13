@@ -11,7 +11,6 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
