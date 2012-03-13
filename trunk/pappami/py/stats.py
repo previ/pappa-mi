@@ -28,14 +28,13 @@ from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 from google.appengine.api.taskqueue import Task, Queue
 
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
-from py.base import BasePage
+from py.base import BasePage, config
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -625,7 +624,7 @@ app = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
   ('/admin/stats/calc', CMStatCalcHandler),
   ('/admin/stats/calcisp', CMStatIspCalcHandler),
-  ('/admin/stats/calcnc', CMStatNCCalcHandler)], debug=True)
+  ('/admin/stats/calcnc', CMStatNCCalcHandler)], config=config)
 
 def main():
   app.run();

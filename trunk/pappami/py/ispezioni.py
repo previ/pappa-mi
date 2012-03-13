@@ -16,7 +16,6 @@ from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.gviz_api import *
@@ -24,7 +23,7 @@ from py.model import *
 from py.site import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config
 from py.modelMsg import *
 from py.comments import CMCommentHandler
          
@@ -616,7 +615,7 @@ app = webapp.WSGIApplication([
     ('/isp/nc', NonconfHandler),
     ('/isp/dieta', DietaHandler),
     ('/isp/nota', NotaHandler),
-    ('/isp/getispdata', CMGetIspDataHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+    ('/isp/getispdata', CMGetIspDataHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
  
 def main():
   app.run();

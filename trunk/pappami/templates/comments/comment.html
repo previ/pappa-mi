@@ -9,7 +9,7 @@
   <div class="comment_author_title">{{comment.author_title(cmsro)}}</div>
    <div class="comment_date"> - {{comment.data()}}</div>
    <!--div>Titolo: {{comment.titolo}}</div-->
-   <div class="comment_text">{{comment.testo}}</div>
+   <div class="comment_text">{{comment.testo|replace("\n","<br/>")}}</div>
    <div class="comment_footer">   
     <div class="comment_feedback" id="votes_{{comment.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment.key.id()}}">{{comment.likes()}}</span> persone<span id="vnum_{{comment.key.id()}}_me" {%if comment.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
      <div class="comment_vote" id="vote_1_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}inline{%else%}none{%endif%};">

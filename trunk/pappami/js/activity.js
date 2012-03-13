@@ -94,8 +94,8 @@ function opennewwiz(url) {
       remoteAjax : {"step1" : { // add a remote ajax call when moving next from the second step
 	url : url + "val", 
 	dataType : 'text',
-	//beforeSend : function(){alert("Starting validation.")},
-	//complete : function(){alert("Validation complete.")},
+	//beforeSend : function(){alert("pippo");$("e_submit").attr('disabled', 'disabled');},
+	//complete : function(){alert("pippo");$("e_submit").attr('disabled', '');},
 	success : function(data){
 	  if(data != "Ok") {	    
 	    $("#formwiz-container").html('<div id="formwiz-error" class="alert alert-error fade in" style="display:none;"><a class="close" data-dismiss="alert" href="#">&times;</a>'+data+'</div>');
@@ -111,7 +111,7 @@ function opennewwiz(url) {
 	  }
 	  return true; //return true to make the wizard move to the next step
 	}
-      }},      
+      }},
       formOptions :{
 	// on new form submit
 	success: function(data){

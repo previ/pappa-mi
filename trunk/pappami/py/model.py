@@ -304,7 +304,7 @@ class Commissario(model.Model):
     else:
       return "/img/default_avatar.png"
 
-  def email(self, user, myself=False):
+  def email(self, cmsro, myself=False):
     email = ""
     if myself or self.can_show(0,self.get_user_type(cmsro)):
       email = self.usera.get().email

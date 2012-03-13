@@ -28,7 +28,6 @@ from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 from engineauth import models
 
@@ -36,7 +35,7 @@ from model import *
 from modelMsg import *
 from form import CommissioneForm
 from gviz_api import *
-from base import BasePage
+from base import BasePage, config
 from gcalendar import *
 
 TIME_FORMAT = "T%H:%M:%S"
@@ -793,7 +792,7 @@ app = webapp.WSGIApplication([
   ('/admin/menu', CMAdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
   app.run();

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required
+from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, config
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -76,16 +76,6 @@ class CMMenuSlideHandler(CMMenuHandler):
     template_values['main'] = 'menu_slides.html'    
     self.getBase(template_values)
 
-config = {
-    'webapp2_extras.sessions': {
-        'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
-    },
-    'webapp2_extras.auth': {
-        #        'user_model': 'models.User',
-        'user_attributes': ['displayName', 'email'],
-        },
-    }
-    
 app = webapp.WSGIApplication([
   ('/menu', CMMenuDataHandler),
   ('/menuslide', CMMenuSlideHandler)

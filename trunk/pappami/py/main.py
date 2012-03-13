@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required
+from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required, config
 from commissioni import ContattiHandler
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
@@ -45,7 +45,9 @@ class MainPage(BasePage):
         
     commissario = self.getCommissario(self.get_current_user())
     if commissario:
-      return self.getPrivate(template_values)
+      self.redirect("/a")
+      return
+      #return self.getPrivate(template_values)
           
     template_values["content"] = "public.html"
     template_values["contacts"] = ContattiHandler.get_contacts()
@@ -109,8 +111,31 @@ class MainPage(BasePage):
       memcache.add("stats", stats)
       
     return stats
-    
-    
+
+class ActivityHandler(BasePage):
+  def get(self):
+    template_values = dict()
+    template_values["host"] = self.getHost()
+        
+    c = None
+    geo = model.GeoPt(45.463681,9.188171)
+
+    offset = 0
+    if self.request.get("offset") != "":
+      offset = int(self.request.get("offset"))
+   
+    template_values = dict()
+    template_values["bgcolor"] = "eeeeff"
+    template_values["fgcolor"] = "000000"    
+    template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
+    template_values["geo"] = geo
+    template_values["billboard"] = "navigation.html"
+    template_values["content"] = "activities.html"
+    template_values["host"] = self.getHost()
+    template_values["tags"] = self.getTopTags()
+   
+    self.getBase(template_values)
+        
 class CMSupportoHandler(BasePage):
   
   def get(self):
@@ -249,20 +274,10 @@ class ChiSiamoPage(BasePage):
     template_values["content"] = "chi.html"
     self.getBase(template_values)
 
-config = {
-    'webapp2_extras.auth': {
-        #        'user_model': 'models.User',
-        'user_attributes': ['displayName', 'email'],
-        },
-    'webapp2_extras.jinja2': {
-        'filters': {
-            'do_pprint': do_pprint,
-            },
-        },
-    }
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
+  ('/a', ActivityHandler),
   ('/tags', TagsPage),
   ('/chi', ChiSiamoPage),
   ('/map', MapDataHandler),  
