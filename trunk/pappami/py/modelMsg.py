@@ -10,6 +10,7 @@ import fpformat
 from common import cached_property
 from py.model import Commissario, Commissione
 from common import Const, Parser
+from engineauth import models
 
 from google.appengine.api import users
 from google.appengine.ext.ndb import model
@@ -32,10 +33,9 @@ class Messaggio(model.Model):
   titolo = model.StringProperty(indexed=False)
   testo = model.TextProperty(indexed=False)
   
-  creato_da = model.UserProperty()
-  c_ua = model.KeyProperty()
+  c_ua = model.KeyProperty(kind=models.User)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty()
+  m_ua = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
 
   @classmethod
@@ -337,7 +337,6 @@ class Tag(model.Model):
   last = model.DateTimeProperty(auto_now_add=True)
   maxRef = int()
 
-  creato_da = model.UserProperty(auto_current_user_add=True)
   c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
 
@@ -388,7 +387,7 @@ class Voto(model.Model):
   
   messaggio = model.KeyProperty(kind=Messaggio)
   voto = model.IntegerProperty()
-  creato_da = model.UserProperty(auto_current_user_add=True)  
+
   c_ua = model.KeyProperty()
   creato_il = model.DateTimeProperty(auto_now_add=True)
   

@@ -405,16 +405,19 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     if stats.numeroNonconf > 0 :
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
+      stats.creato_da = self.get_current_user()
       stats.put()
       
     for stat in statsCM.values() :
       if count < limit :  
         stat.dataCalcolo = dataCalcolo
+      stat.creato_da = self.get_current_user()
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
         stat.dataCalcolo = dataCalcolo
+      stat.creato_da = self.get_current_user()        
       stat.put()
     
     finish = count < limit    
@@ -529,16 +532,19 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     if stats.numeroSchede > 0 :
       if count < limit :  
         stats.dataCalcolo = dataCalcolo
+      stats.creato_da = self.get_current_user()
       stats.put()
       
     for stat in statsCM.values() :
       if count < limit :  
         stat.dataCalcolo = dataCalcolo
+      stat.creato_da = self.get_current_user()
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
         stat.dataCalcolo = dataCalcolo
+      stat.creato_da = self.get_current_user()
       stat.put()
     
     finish = count < limit    
@@ -617,6 +623,7 @@ class CMStatCalcHandlerOld(BasePage):
         stat.valoreSomma4 = stat.valoreSomma4 + 1 if getattr(isp, attr) == 4 else 0
         stat.valoreSomma5 = stat.valoreSomma5 + 1 if getattr(isp, attr) == 5 else 0
     for attr, stat in attrs.iteritems():
+      stat.creato_da = self.get_current_user()
       stat.put()
 
       

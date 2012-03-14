@@ -28,19 +28,22 @@ $(document).ready(function() {
   ('twitter', '/auth/twitter'),
   ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
   ('linkedin', '/auth/linkedin'),
+  ('windowslive', '/auth/windowslive'),  
 ] -%}
-<div class="row well">
+<div class="row">
   <div class="span12">
-    <h4>Scegli uno dei seguenti account per registrarti</h4>
+    <legend>Scegli uno dei seguenti account per registrarti</legend>
+    <div class="well">
     <ul>
       {% for p, u in providers %}
         <li class="provider-btn"><a href="{{ u }}" class="btn"><img src="/img/eauth/{{ p }}.png" /></a></li>
       {% endfor %}
     </ul>
+    </div>
   </div>
   <div class="span12">
-    <h4>Oppure inserisci la tua email e password</h4>
-    <div class="password-form">
+    <legend>Oppure inserisci la tua email e password</legend>
+    <div class="password-form well">
       <form id="form0" method="POST" action="/eauth/signup" class="horizontal-form">
         <fieldset class="control-group">
           <label for="email" class="control-label">Email</label>

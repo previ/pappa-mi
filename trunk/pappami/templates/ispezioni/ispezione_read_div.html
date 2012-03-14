@@ -1,25 +1,25 @@
-﻿{% set testi = { "assaggio": ["Non accettabile", "Accettabile", "Gradevole"], 
-                 "gradimento": ["Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
-                 "cottura": ["Scarsa", "Giusta", "Eccessiva"], 
-                 "temperatura": ["Freddo", "Giusta", "Caldo"], 
-                 "maturazione": ["Acerba", "Giusta", "Matura"], 
-                 "quantita": ["Scarsa", "Sufficiente", "Abbondante"],
-                 "condito": ["No", "Si"],
-                 "pulizia": ["Scarso", "Mediocre", "Sufficiente", "Ottimo"],
-                 "distribuzione": ["< 30 min.", "30 < 60 min.", "> 60 min."],
-                 "giudizio": ["Insufficiente", "Sufficiente", "Buono"]
+﻿{% set testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
+                 "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
+                 "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
+                 "temperatura": ["","Freddo", "Giusta", "Caldo"], 
+                 "maturazione": ["","Acerba", "Giusta", "Matura"], 
+                 "quantita": ["","Scarsa", "Sufficiente", "Abbondante"],
+                 "condito": ["","No", "Si"],
+                 "pulizia": ["","Scarso", "Mediocre", "Sufficiente", "Ottimo"],
+                 "distribuzione": ["","< 30 min.", "30 < 60 min.", "> 60 min."],
+                 "giudizio": ["","Insufficiente", "Sufficiente", "Buono"]
                  }
 %}
-{% set cls = {   "assaggio": ["label131", "label132", "label133"], 
-                 "gradimento": ["label41", "label42", "label43", "label44"],
-                 "cottura": ["label231", "label232", "label233"], 
-                 "temperatura": ["label231", "label232", "label233"], 
-                 "maturazione": ["label231", "label232", "label233"], 
-                 "quantita": ["label131", "label132", "label133"],
-                 "condito": ["", ""],
-                 "pulizia": ["label41", "label42", "label43", "label44"],
-                 "distribuzione": ["label131", "label132", "label133"], 
-                 "giudizio": ["label131", "label132", "label133"] 
+{% set cls = {   "assaggio": ["","label131", "label132", "label133"], 
+                 "gradimento": ["","label41", "label42", "label43", "label44"],
+                 "cottura": ["","label231", "label232", "label233"], 
+                 "temperatura": ["","label231", "label232", "label233"], 
+                 "maturazione": ["","label231", "label232", "label233"], 
+                 "quantita": ["","label131", "label132", "label133"],
+                 "condito": ["label232", ""],
+                 "pulizia": ["","label41", "label42", "label43", "label44"],
+                 "distribuzione": ["","label131", "label132", "label133"], 
+                 "giudizio": ["","label131", "label132", "label133"] 
                  }
 %}
 {% macro label(t, a) -%}

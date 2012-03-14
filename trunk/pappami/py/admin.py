@@ -72,7 +72,7 @@ class CMAdminMenuHandler(BasePage):
 
       if self.request.get("data") :
         data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-        menu = Menu.all().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
+        menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
         template_values['data'] = data
         template_values['menu'] = menu
 
@@ -107,7 +107,7 @@ class CMAdminCommissioneHandler(BasePage):
         'centroCucina': self.request.get("centroCucina"),
         'zona': self.request.get("zona"),
         'distretto': self.request.get("distretto"),
-        'centriCucina': CentroCucina.all().order("nome")
+        'centriCucina': CentroCucina.query().order("nome")
       }
     
       self.getBase(template_values)
@@ -117,7 +117,7 @@ class CMAdminCommissioneHandler(BasePage):
       url_linktext = 'Logout'
       user = users.get_current_user()
 
-      centriCucina = CentroCucina.all().order("nome")
+      centriCucina = CentroCucina.query().order("nome")
 
       template_values = {
         'content_left': 'admin/leftbar.html',
@@ -147,7 +147,7 @@ class CMAdminCommissioneHandler(BasePage):
                      #"geo": ("string", "Geo"),
                      #"comando": ("string", "")}
       
-      #commissioni = Commissione.all()
+      #commissioni = Commissione.query()
       #if self.request.get("tipoScuola") :
         #commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
       #if self.request.get("centroCucina") :
@@ -170,7 +170,7 @@ class CMAdminCommissioneHandler(BasePage):
       ## Creating a JSon string
       #gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
 
-      #centriCucina = CentroCucina.all().order("nome")
+      #centriCucina = CentroCucina.query().order("nome")
 
       #template_values = {
         #'content_left': 'admin/leftbar.html',
@@ -208,10 +208,10 @@ class CMAdminCommissioneHandler(BasePage):
       url_linktext = 'Logout'
       user = users.get_current_user()
  
-      centriCucina = CentroCucina.all().order("nome")
+      centriCucina = CentroCucina.query().order("nome")
       
       #if query.is_valid():
-      commissioni = Commissione.all()
+      commissioni = Commissione.query()
       if self.request.get("tipoScuola") :
         commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
       if self.request.get("centroCucina") :
@@ -285,7 +285,7 @@ class CMAdminCommissioneDataHandler(BasePage):
                      "geo": ("string", "Geo"),
                      "comando": ("string", "")}
       
-      commissioni = Commissione.all()
+      commissioni = Commissione.query()
       if tipoScuola :
         commissioni = commissioni.filter("tipoScuola", tipoScuola)
       if centroCucina :
@@ -329,15 +329,15 @@ class CMAdminHandler(BasePage):
      
     if self.request.get("cmd") == "initMenu":
       citta = self.getCommissario(users.get_current_user()).citta
-      for menu in Menu.all().filter("tipoScuola", "Materna"):
-        nm = MenuNew.all().filter("validitaA", menu.validitaA).get()
+      for menu in Menu.query().filter(Menu.tipoScuola=="Materna"):
+        nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
         if not nm:
           nm = MenuNew()
           nm.validitaDa = menu.validitaDa
           nm.validitaA = menu.validitaA
           nm.citta = citta
           nm.put()
-        piatto = Piatto.all().filter("nome", menu.primo).get()
+        piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
         if not piatto:
           piatto = Piatto()
           piatto.nome = menu.primo
@@ -347,7 +347,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
           piattoGiorno.menu = nm
@@ -356,7 +356,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
-        piatto = Piatto.all().filter("nome", menu.secondo).get()
+        piatto = Piatto.query().filter(Piatto.nome==menu.secondo).get()
         if not piatto:
           piatto = Piatto()
           piatto.nome = menu.secondo
@@ -366,7 +366,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
           piattoGiorno.menu = nm
@@ -375,7 +375,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
-        piatto = Piatto.all().filter("nome", menu.contorno).get()
+        piatto = Piatto.query().filter(Piatto.nome==menu.contorno).get()
         if not piatto:
           piatto = Piatto()
           piatto.nome = menu.contorno
@@ -385,7 +385,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
           piattoGiorno.menu = nm
@@ -394,7 +394,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
-        piatto = Piatto.all().filter("nome", menu.dessert).get()
+        piatto = Piatto.query().filter("nome", menu.dessert).get()
         if not piatto:
           piatto = Piatto()
           piatto.nome = menu.dessert
@@ -404,7 +404,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.all().filter("menu",nm).filter("piatto",piatto).filter("giorno",menu.giorno).filter("settimana", menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
           piattoGiorno.menu = nm
@@ -417,18 +417,18 @@ class CMAdminHandler(BasePage):
       return      
                 
     if self.request.get("cmd") == "initCity1":
-      for cm in Commissione.all().filter("citta","Milano"):
+      for cm in Commissione.query().filter(Commissione.citta=="Milano"):
         cm.citta = None
         cm.put()
 
-      for cc in CentroCucina.all():
+      for cc in CentroCucina.query():
         cc.citta = None
         cc.put()
       self.response.out.write("initCity1 Ok")
       return
 
     if self.request.get("cmd") == "initCity2":
-      c = Citta.all().get()
+      c = Citta.query().get()
       if not c:
         c = Citta()
         c.nome = "Milano"
@@ -436,15 +436,15 @@ class CMAdminHandler(BasePage):
         c.provincia = "MI"
         c.geo = db.GeoPt(45.463681,9.188171)
         c.put()
-      for cm in Commissione.all().filter("citta",None):
+      for cm in Commissione.query().filter(Commissione.citta==None):
         cm.citta = c
         cm.put()
 
-      for cc in CentroCucina.all():
+      for cc in CentroCucina.query():
         cc.citta = c
         cc.put()
 
-      for cs in Commissario.all():
+      for cs in Commissario.query():
         cs.citta = c
         cs.put()
       self.response.out.write("initCity2 Ok")
@@ -566,6 +566,7 @@ class CMAdminHandler(BasePage):
           profile = models.UserProfile.get_or_create(auth_id, user_info)
           usera = models.User.get_or_create_by_profile(profile)
           c.usera = usera.key
+          c.avatar_url = "/img/default_avatar_" + c.key.id() % 8 + ".png"
           c.put()
       self.response.out.write("initAuth Ok")
       return
@@ -578,7 +579,7 @@ class CMAdminHandler(BasePage):
       d2009a = date(2010,7,31)
       d2010da = date(2010,9,1)
       d2010a = date(2011,7,31)
-      for isp in Ispezione.all() :
+      for isp in Ispezione.query() :
         if isp.dataIspezione >= d2008da and isp.dataIspezione < d2008a :
           isp.anno = 2008
         if isp.dataIspezione >= d2009da and isp.dataIspezione < d2009a :
@@ -586,7 +587,7 @@ class CMAdminHandler(BasePage):
         if isp.dataIspezione >= d2010da and isp.dataIspezione < d2010a :
           isp.anno = 2010
         isp.put()
-      for nc in Nonconformita.all() :
+      for nc in Nonconformita.query() :
         if nc.dataNonconf >= d2008da and nc.dataNonconf < d2008a :
           nc.anno = 2008
         if nc.dataNonconf >= d2009da and nc.dataNonconf < d2009a :
@@ -598,10 +599,10 @@ class CMAdminHandler(BasePage):
           
     
     if self.request.get("cmd") == "initZone":
-      for cc in CentroCucina.all():
+      for cc in CentroCucina.query():
         ccZona = CentroCucinaZona(centroCucina = cc, zona = cc.menuOffset + 1, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
         ccZona.put()
-      for cm in Commissione.all():
+      for cm in Commissione.query():
         cmCC = CommissioneCentroCucina(commissione = cm, centroCucina = cm.centroCucina, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2099,month=12, day=31))
         cmCC.put()
       for z in range(1,5):
@@ -612,7 +613,7 @@ class CMAdminHandler(BasePage):
         
     if self.request.get("cmd") == "getCommissari":
       buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-      for c in Commissario.all():
+      for c in Commissario.query():
         if c.isCommissario():
           buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
         
@@ -621,7 +622,7 @@ class CMAdminHandler(BasePage):
 
     if self.request.get("cmd") == "getGenitori":
       buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-      for c in Commissario.all():
+      for c in Commissario.query():
         if c.isGenitore():
           buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user.email() + "\r"
         
@@ -630,7 +631,7 @@ class CMAdminHandler(BasePage):
       
     
     if self.request.get("cmd") == "flush":
-      memcache.flush_all()
+      memcache.flush_query()
       self.response.out.write("flush Ok")
       return
 
@@ -651,7 +652,7 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "offset":
-      ccs = CentroCucina.all()
+      ccs = CentroCucina.query()
       for cc in ccs:
         if cc.menuOffset == None:
           cc.menuOffset = None
@@ -677,7 +678,7 @@ class CMAdminCommissarioHandler(BasePage):
       user = users.get_current_user()
 
       calendario = Calendario()
-      calendario.logon(user=Configurazione.all().filter("nome","calendar_user").get().valore, password=Configurazione.all().filter("nome", "calendar_password").get().valore)
+      calendario.logon(user=Configurazione.query().filter("nome","calendar_user").get().valore, password=Configurazione.query().filter("nome", "calendar_password").get().valore)
       
       if self.request.get("cmd") == "enable":
         if commissario.isRegCommissario():
@@ -751,7 +752,7 @@ class CMAdminCommissarioHandler(BasePage):
                      "comando": ("string", "Azione")}
       
       data = list()
-      for commissario in Commissario.all():
+      for commissario in Commissario.query():
         if commissario.isRegCommissario():
           stato = "Richiesta"
           comando = "Attiva"
