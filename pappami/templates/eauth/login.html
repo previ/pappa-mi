@@ -11,18 +11,20 @@ $(document).ready(function() {
   ('linkedin', '/auth/linkedin'),
   ('windowslive', '/auth/windowslive'),
 ] -%}
-<div class="row well">
+<div class="row">
   <div class="span12">
-    <legend>Scegli uno dei seguenti account per accedere</legend>
+    <legend>Scegli uno dei seguenti account per accedere</legend>    
+    <div class="well">
     <ul>
       {% for p, u in providers %}
         <li class="provider-btn"><a href="{{ u }}" class="btn"><img src="/img/eauth/{{ p }}.png" /></a></li>
       {% endfor %}
     </ul>
+    </div>
   </div>
-  <div class="span11">
+  <div class="span12">
     <legend>Oppure inserisci la tua email e password</legend>
-    <div class="password-form">
+    <div class="password-form well">
       <form id="form0" method="POST" action="/auth/password" class="horizontal-form" novalidate>
         <fieldset class="control-group">
           <label for="email" class="control-label">Email</label>

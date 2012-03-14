@@ -40,7 +40,7 @@ class CMMenuWidgetHandler(CMMenuHandler):
 
     c = None
     if self.request.get("cm"):
-      c = Commissione.get(self.request.get("cm"))
+      c = model.Key(urlsafe=self.request.get("cm")).get()
     
     self.createMenu(self.request,c,template_values)
 
@@ -68,7 +68,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
 
     c = None
     if self.request.get("cm"):
-      c = Commissione.get(self.request.get("cm"))
+      c = model.Key(urlsafe=self.request.get("cm")).get()
     
     self.createStat(self.request,c,template_values)
     
@@ -174,20 +174,21 @@ class CMListWidgetHandler(BasePage):
     
     items=list()
     cm = Commissione.get(self.request.get("cm"))
-    if cm:
-      isps = Ispezione.get_by_cm(cm)
+    if cm:      
+      cmk = model.Key(urlsafe=cm)
+      isps = Ispezione.get_by_cm(cmk)
       for isp in isps:
         items.append(WidgetListitem(isp, isp.dataIspezione))
       
-      ncs = Nonconformita.get_by_cm(cm)
+      ncs = Nonconformita.get_by_cm(cmk)
       for nc in ncs:
         items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
 
-      diete = Dieta.get_by_cm(cm)
+      diete = Dieta.get_by_cm(cmk)
       for dieta in diete:
         items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
 
-      note = Nota.get_by_cm(cm)
+      note = Nota.get_by_cm(cmk)
       for nota in note:
         items.append(WidgetListitem(item=nota, date=nota.dataNota))
         
@@ -195,7 +196,7 @@ class CMListWidgetHandler(BasePage):
     
     template_values["host"] = self.getHost()
     template_values["items"] = items
-    template_values["scuola"] = cm.nome + " " + cm.tipoScuola
+    template_values["scuola"] = cmk.get().desc()
 
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/list.html')
     self.response.out.write(template.render(path, template_values))

@@ -13,9 +13,8 @@ from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
 
-from common import cached_property
-
-from common import Const
+from common import cached_property, Const
+from engineauth import models
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -23,9 +22,7 @@ class Citta(model.Model):
   provincia = model.StringProperty()
   geo = model.GeoPtProperty()
 
-  creato_da = model.UserProperty(auto_current_user=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
 
   stato = model.IntegerProperty()
@@ -62,16 +59,13 @@ class CentroCucina(model.Model):
   email = model.StringProperty()
   menuOffset = model.IntegerProperty()
 
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
 
   _lock = threading.RLock()
   _ce_cu_zo_cache = None
   _zo_of_cache = None  
-
   
   @classmethod
   def get_by_citta(cls, citta_key):
@@ -118,10 +112,10 @@ class Commissione(model.Model):
 
   calendario = model.StringProperty(default="")
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
+  modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
 
   @classmethod
@@ -190,11 +184,11 @@ class Commissario(model.Model):
   
   citta = model.KeyProperty(kind=Citta)
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
-
+  modificato_da = model.KeyProperty(kind=models.User)
+  
   ultimo_accesso_il = model.DateTimeProperty()
 
   stato = model.IntegerProperty()
@@ -206,11 +200,11 @@ class Commissario(model.Model):
     commissario = memcache.get("commissario-"+user.get_id())
     if not commissario:
       commissario = cls.query().filter(Commissario.usera == user.key).get()
-      if not commissario and user.email:
-        commissario = cls.query().filter(Commissario.user == users.User(user.email)).get()
-        if commissario:
-          commissario.usera = user.key
-          commissario.put()
+      #if not commissario and user.email:
+        #commissario = cls.query().filter(Commissario.user == users.User(user.email)).get()
+        #if commissario:
+          #commissario.usera = user.key
+          #commissario.put()
       memcache.add("commissario-"+user.get_id(), commissario)
     return commissario
   
@@ -363,7 +357,7 @@ class MenuNew(model.Model):
   validitaDa = model.DateProperty()
   validitaA = model.DateProperty()
 
-  creato_da = model.UserProperty(auto_current_user_add=True)
+  creato_da = model.KeyProperty(kind=models.User)
   creato_il = model.DateTimeProperty(auto_now_add=True)
   stato = model.IntegerProperty()
 
@@ -494,9 +488,7 @@ class StatistichePiatto(model.Model):
   assaggio = model.IntegerProperty(repeated=True, indexed=False)
   gradimento = model.IntegerProperty(repeated=True, indexed=False)
 
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
   
@@ -605,10 +597,11 @@ class Ispezione(model.Model):
 
   anno = model.IntegerProperty()
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
+  modificato_da = model.KeyProperty(kind=models.User)
+
   stato = model.IntegerProperty()
   
   def data(self): 
@@ -645,10 +638,10 @@ class Nonconformita(model.Model):
 
   anno = model.IntegerProperty()
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
+  modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
   
   @classmethod
@@ -721,10 +714,10 @@ class Dieta(model.Model):
 
   anno = model.IntegerProperty()
   
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
-  modificato_da = model.UserProperty(auto_current_user=True)
+  creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
+  modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
 
   def data(self): 
@@ -810,8 +803,10 @@ class Nota(model.Model):
   note = model.TextProperty(default="")
   anno = model.IntegerProperty()
     
-  creato_da = model.UserProperty(auto_current_user_add=True)
   creato_il = model.DateTimeProperty(auto_now_add=True)
+  creato_da = model.KeyProperty(kind=models.User)
+  modificato_il = model.DateTimeProperty(auto_now=True)
+  modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
   
   def data(self): 
@@ -1128,6 +1123,7 @@ class StatisticheIspezioni(model.Model):
   
 
 class StatisticheNonconf(model.Model):
+  citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)
   centroCucina = model.KeyProperty(kind=CentroCucina)
 

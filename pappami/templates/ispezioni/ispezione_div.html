@@ -79,8 +79,8 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">
-      <label class="" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione</label>
-      <div class="radio-group btngroup" data-content="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+      <label class="" for="entry_15">Tempo trascorso dall'arrivo alla distribuzione<i class="icon-info-sign" data-content="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'"></i></label>
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="arrivoDist" value="1" class="required" id="e_ad_1" {%if form.data.arrivoDist == "1" %}CHECKED{%endif%}/>10 min.</label>
        <label class="btn"><input type="radio" name="arrivoDist" value="2" class="required" id="e_ad_2" {%if form.data.arrivoDist == "2" %}CHECKED{%endif%}/>20 min.</label>
        <label class="btn"><input type="radio" name="arrivoDist" value="3" class="required" id="e_ad_3" {%if form.data.arrivoDist == "3" %}CHECKED{%endif%}/>30 min.</label>
@@ -99,7 +99,7 @@
     <div class="span4">
      <div class="control-group">
       <label class="" for="entry_15">Pulizia Centro Cottura/Cucina/Dispensa</label>
-      <div class="radio-group btngroup" data-content="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="puliziaCentroCottura" value="1" class="required" id="e_pc_1" {%if form.data.puliziaCentroCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
        <label class="btn"><input type="radio" name="puliziaCentroCottura" value="2" class="required" id="e_pc_2" {%if form.data.puliziaCentroCottura == "2" %}CHECKED{%endif%}/>Mediocre</label>
        <label class="btn"><input type="radio" name="puliziaCentroCottura" value="3" class="required" id="e_pc_3" {%if form.data.puliziaCentroCottura == "3" %}CHECKED{%endif%}/>Sufficiente</label>
@@ -110,7 +110,7 @@
     <div class="span4">
      <div class="control-group">
       <label class="" for="entry_15">Pulizia Refettorio</label>
-      <div class="radio-group btngroup" data-content="In caso di scuola dotata di Centro Cucina selezionare '&lt; 10 min'">
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="puliziaRefettorio" value="1" class="required" id="e_pr_1" {%if form.data.puliziaRefettorio == "1" %}CHECKED{%endif%}/>Scarsa</label>
        <label class="btn"><input type="radio" name="puliziaRefettorio" value="2" class="required" id="e_pr_2" {%if form.data.puliziaRefettorio == "2" %}CHECKED{%endif%}/>Mediocre</label>
        <label class="btn"><input type="radio" name="puliziaRefettorio" value="3" class="required" id="e_pr_3" {%if form.data.puliziaRefettorio == "3" %}CHECKED{%endif%}/>Sufficiente</label>
@@ -122,9 +122,9 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">
-      <label class="" for="entry_42">Derrate alimentari come da capitolato?</label>
-      <div class="radio-group btngroup" data-content="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
-   Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa.">
+      <label class="" for="entry_42">Derrate alimentari come da capitolato? <i class="icon-info-sign" data-content="Differenze tra men&ugrave; previsto e men&ugrave; effettivo devono essere segnalate anche nella scheda 'Non conformit&agrave;'.<br/>
+   Indicare 'No' anche nel caso in cui il Capitolato d'Appalto (i termini del contratto in essere tra Comune di Milano e MilanoRistorazione S.p.A. che riguardano le caratteristiche dei cibi erogati) non &egrave; a disposizione della Commissione Mensa."></i></label>
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="1" class="required" id="e_aarc_1" {%if form.data.aaRispettoCapitolato == "1" %}CHECKED{%endif%}/>Si</label>
        <label class="btn"><input type="radio" name="aaRispettoCapitolato" value="0" class="required" id="e_aarc_2" {%if form.data.aaRispettoCapitolato == "0" %}CHECKED{%endif%}/>No</label>   
       </div>
@@ -163,8 +163,8 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">
-      <label class="" for="entry_42">Ci sono sistemi di mantenimento della temperatura?</label>
-      <div class="radio-group btngroup" data-content="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte.">
+      <label class="" for="entry_42">Ci sono sistemi di mantenimento della temperatura? <i class="icon-info-sign"  data-content="Si intendono ad esempio carrelli termici o scaldavivande. Le scatole termiche di trasporto ('termobox') non sono equiparabili a carrelli o tavoli termici in quanto non sono in grado di mantenere costante la temperatura del cibo una volta aperte."></i></label>
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="aaScaldaVivande" value="1" class="required" id="e_ncsv_1" {%if form.data.aaScaldaVivande == "1" %}CHECKED{%endif%}/>Si</label>
        <label class="btn"><input type="radio" name="aaScaldaVivande" value="0" class="required" id="e_ncsv_2" {%if form.data.aaScaldaVivande == "0" %}CHECKED{%endif%}/>No</label>   
       </div>
@@ -183,8 +183,8 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">
-      <label class="" for="entry_42">Tabella dietetica e Men&ugrave; esposti</label>
-      <div class="radio-group btngroup" data-content="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera">
+      <label class="" for="entry_42">Tabella dietetica e Men&ugrave; esposti? <i class="icon-info-sign" data-content="Nel <b>menu</b> viene indicata la composizione del pasto, ad esempio: 'pasta al pomodoro, vitellone alla cacciatora, pur&egrave; di patate'. <br>Nella <b>tabella dietetica</b> per ogni portata viene specificata la grammatura che viene somministrata in base alla fascia di et&agrave;, ad esempio: pasta gr. 50, pomodori pelati gr. 30, cipolla gr. 4, olio gr. 3, parmigiano reggiano gr. 3, eccetera"></i></label>
+      <div class="radio-group btngroup">
        <label class="btn"><input type="radio" name="aaTabellaEsposta" value="1" class="required" id="e_ncte_1" {%if form.data.aaTabellaEsposta == "1" %}CHECKED{%endif%}/>Si</label>
        <label class="btn"><input type="radio" name="aaTabellaEsposta" value="0" class="required" id="e_ncte_2" {%if form.data.aaTabellaEsposta == "0" %}CHECKED{%endif%}/>No</label>   
       </div>
@@ -237,7 +237,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="e_pd_1">Condito al momoento</label>
+      <label class="control-label" for="e_pd_1">Condito al momento</label>
       <div class="controls">
        <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="primoCondito" value="1" class="required" id="e_pd_1" {%if form.data.primoCondito == "1" %}CHECKED{%endif%}/>Si</label>
@@ -246,9 +246,9 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="e_pc_1">Cottura</label>
+      <label class="control-label" for="e_pc_1">Cottura <i class="icon-info-sign" data-content="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="primoCottura" value="1" class="required" id="e_pc_1" {%if form.data.primoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
         <label class="btn"><input type="radio" name="primoCottura" value="2" class="required" id="e_pc_2" {%if form.data.primoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
         <label class="btn"><input type="radio" name="primoCottura" value="3" class="required" id="e_pc_3" {%if form.data.primoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
@@ -256,9 +256,9 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Temperatura</label>
+      <label class="control-label" for="entry_42">Temperatura <i class="icon-info-sign" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="primoTemperatura" value="1" class="required" id="e_primoTemperatura_1" {%if form.data.primoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
         <label class="btn"><input type="radio" name="primoTemperatura" value="2" class="required" id="e_primoTemperatura_2" {%if form.data.primoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
         <label class="btn"><input type="radio" name="primoTemperatura" value="3" class="required" id="e_primoTemperatura_3" {%if form.data.primoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
@@ -286,9 +286,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Gradimento (%)</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare circa 20 bambini campione<br/>
+      <label class="control-label" for="entry_42">Gradimento (%) <i class="icon-info-sign" data-content="Considerare circa 20 bambini campione<br/>
   Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
   Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
   Selezionare:<br/>
@@ -297,7 +295,9 @@
   <li><b>Parzialmente rifiutato</b> se la percentuale &egrave; compresa tra 26 e 50%</li>
   <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
   <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="primoGradimento" value="1" class="required" id="e_primoGradimento_1" {%if form.data.primoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
         <label class="btn"><input type="radio" name="primoGradimento" value="2" class="required" id="e_primoGradimento_2" {%if form.data.primoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
         <label class="btn"><input type="radio" name="primoGradimento" value="3" class="required" id="e_primoGradimento_3" {%if form.data.primoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -323,9 +323,9 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="e_pc_1">Cottura</label>
+      <label class="control-label" for="e_pc_1">Cottura <i class="icon-info-sign" data-content="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta').">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="secondoCottura" value="1" class="required" id="e_sc_1" {%if form.data.secondoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
         <label class="btn"><input type="radio" name="secondoCottura" value="2" class="required" id="e_sc_2" {%if form.data.secondoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
         <label class="btn"><input type="radio" name="secondoCottura" value="3" class="required" id="e_sc_3" {%if form.data.secondoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
@@ -333,9 +333,9 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Temperatura</label>
+      <label class="control-label" for="entry_42">Temperatura <i class="icon-info-sign" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="secondoTemperatura" value="1" class="required" id="e_st_1" {%if form.data.secondoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
         <label class="btn"><input type="radio" name="secondoTemperatura" value="2" class="required" id="e_st_2" {%if form.data.secondoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>   
         <label class="btn"><input type="radio" name="secondoTemperatura" value="3" class="required" id="e_st_3" {%if form.data.secondoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
@@ -363,9 +363,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Gradimento (%)</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare circa 20 bambini campione<br/>
+      <label class="control-label" for="entry_42">Gradimento (%) <i class="icon-info-sign" data-content="Considerare circa 20 bambini campione<br/>
   Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
   Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
   Selezionare:<br/>
@@ -374,7 +372,9 @@
   <li><b>Parzialmente rifiutato</b> se la percentuale &egrave; compresa tra 26 e 50%</li>
   <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
   <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="secondoGradimento" value="1" class="required" id="e_sg_1" {%if form.data.secondoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
         <label class="btn"><input type="radio" name="secondoGradimento" value="2" class="required" id="e_sg_2" {%if form.data.secondoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
         <label class="btn"><input type="radio" name="secondoGradimento" value="3" class="required" id="e_sg_3" {%if form.data.secondoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -399,9 +399,9 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Temperatura</label>
+      <label class="control-label" for="entry_42">Temperatura <i class="icon-info-sign" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta').">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="contornoTemperatura" value="1" class="required" id="e_ct_1" {%if form.data.contornoTemperatura == "1" %}CHECKED{%endif%}/>Scarsa</label>
         <label class="btn"><input type="radio" name="contornoTemperatura" value="2" class="required" id="e_ct_2" {%if form.data.contornoTemperatura == "2" %}CHECKED{%endif%}/>Giusta</label>
         <label class="btn"><input type="radio" name="contornoTemperatura" value="3" class="required" id="e_ct_3" {%if form.data.contornoTemperatura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
@@ -429,9 +429,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Gradimento (%)</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare circa 20 bambini campione<br/>
+      <label class="control-label" for="entry_42">Gradimento (%) <i class="icon-info-sign" data-content="Considerare circa 20 bambini campione<br/>
   Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
   Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
   Selezionare:<br/>
@@ -440,7 +438,9 @@
   <li><b>Parzialmente rifiutato</b> se la percentuale &egrave; compresa tra 26 e 50%</li>
   <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
   <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="contornoGradimento" value="1" class="required" id="e_cg_1" {%if form.data.contornoGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
         <label class="btn"><input type="radio" name="contornoGradimento" value="2" class="required" id="e_cg_2" {%if form.data.contornoGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
         <label class="btn"><input type="radio" name="contornoGradimento" value="3" class="required" id="e_cg_3" {%if form.data.contornoGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -497,9 +497,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Gradimento (%)</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare circa 20 bambini campione<br/>
+      <label class="control-label" for="entry_42">Gradimento (%) <i class="icon-info-sign" data-content="Considerare circa 20 bambini campione<br/>
   Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
   Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
   Selezionare:<br/>
@@ -508,7 +506,9 @@
   <li><b>Parzialmente rifiutato</b> se la percentuale &egrave; compresa tra 26 e 50%</li>
   <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
   <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="paneGradimento" value="1" class="required" id="e_bg_1" {%if form.data.paneGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
         <label class="btn"><input type="radio" name="paneGradimento" value="2" class="required" id="e_bg_2" {%if form.data.paneGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
         <label class="btn"><input type="radio" name="paneGradimento" value="3" class="required" id="e_bg_3" {%if form.data.paneGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -540,7 +540,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Quantit&agrave;</label>
+      <label class="control-label" for="entry_42">Maturazione</label>
       <div class="controls">
        <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="fruttaMaturazione" value="1" class="required" id="e_fq_1" {%if form.data.fruttaMaturazione == "1" %}CHECKED{%endif%}/>Scarsa</label>
@@ -570,9 +570,7 @@
       </div>
      </div>
      <div class="control-group">
-      <label class="control-label" for="entry_42">Gradimento (%)</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare circa 20 bambini campione<br/>
+      <label class="control-label" for="entry_42">Gradimento (%) <i class="icon-info-sign" data-content="Considerare circa 20 bambini campione<br/>
   Ritenere 'soddisfatto' un bambino che consuma almeno met&agrave; porzione<br/>
   Calcolare la percentuale di bambini soddisfatti all'interno del campione.<br/>
   Selezionare:<br/>
@@ -581,7 +579,9 @@
   <li><b>Parzialmente rifiutato</b> se la percentuale &egrave; compresa tra 26 e 50%</li>
   <li><b>Parzialmente accettato</b> se la percentuale &egrave; compresa tra 51 e 75%</li>
   <li><b>Accettato</b> se la percentuale &egrave; compresa tra 76 e 100%</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="fruttaGradimento" value="1" class="required" id="e_fg_1" {%if form.data.fruttaGradimento == "1" %}CHECKED{%endif%}/>Tot. Rifiutato</label>
         <label class="btn"><input type="radio" name="fruttaGradimento" value="2" class="required" id="e_fg_2" {%if form.data.fruttaGradimento == "2" %}CHECKED{%endif%}/>Parz. Rifiutato</label>
         <label class="btn"><input type="radio" name="fruttaGradimento" value="3" class="required" id="e_fg_3" {%if form.data.fruttaGradimento == "3" %}CHECKED{%endif%}/>Parz. Accettato</label>   
@@ -596,9 +596,9 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">
-      <label class="control-label" for="entry_42">Durata complessiva pasto</label>
+      <label class="control-label" for="entry_42">Durata complessiva pasto <i class="icon-info-sign" data-content="Considerare il tempo intercorso dall'inizio della distribuzione alla fine del pasto dell'ultimo bambino."></i></label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="Considerare il tempo intercorso dall'inizio della distribuzione alla fine del pasto dell'ultimo bambino.">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="durataPasto" value="1" class="required" id="e_pd_1" {%if form.data.durataPasto == "1" %}CHECKED{%endif%}/>&lt; 30 min.</label>
         <label class="btn"><input type="radio" name="durataPasto" value="2" class="required" id="e_pd_2" {%if form.data.durataPasto == "2" %}CHECKED{%endif%}/>30 min. &lt; 60</label>   
         <label class="btn"><input type="radio" name="durataPasto" value="3" class="required" id="e_pd_3" {%if form.data.durataPasto == "3" %}CHECKED{%endif%}/>&gt; 60 min.</label>   
@@ -610,9 +610,9 @@
    <div class="row">
     <div class="span2">
      <div class="control-group" >
-      <label class="control-label" for="e_numeroPastiTotale">Pasti serviti</label>
+      <label class="control-label" for="e_numeroPastiTotale">Pasti serviti <i class="icon-info-sign" data-content="Indicare il numero di pasti serviti complessivamente, ai bambini e agli adulti, comprese eventuali diete speciali."></i></label>
       <div class="controls">
-       <input type="text" name="numeroPastiTotale" value="" class="span1 required" id="e_numeroPastiTotale"  data-content="Indicare il numero di pasti serviti complessivamente, ai bambini e agli adulti, comprese eventuali diete speciali."/>    
+       <input type="text" name="numeroPastiTotale" value="" class="span1 required" id="e_numeroPastiTotale"/>    
       </div>
      </div>
     </div>
@@ -626,9 +626,9 @@
     </div>
     <div class="span2">
      <div class="control-group" >
-      <label class="control-label" for="e_numeroPastiSpeciali">Pasti speciali serviti</label>
+      <label class="control-label" for="e_numeroPastiSpeciali">Pasti speciali serviti <i class="icon-info-sign" data-content="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."></i></label>
       <div class="controls">
-       <input type="text" name="numeroPastiSpeciali" value="" class="span1 required" id="e_numeroPastiSpeciali" data-content="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."/>    
+       <input type="text" name="numeroPastiSpeciali" value="" class="span1 required" id="e_numeroPastiSpeciali"/>    
       </div>
      </div>
     </div>
@@ -636,7 +636,7 @@
      <div class="control-group">
       <label class="control-label" for="e_numeroAddetti">Addetti alla distribuzione</label>
       <div class="controls">
-       <input type="text" name="numeroAddetti" value="" class="span1 required" id="e_numeroAddetti" data-content="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."/>    
+       <input type="text" name="numeroAddetti" value="" class="span1 required" id="e_numeroAddetti"/>    
       </div>
      </div>
     </div>
@@ -644,15 +644,15 @@
    <div class="row">
     <div class="span4">
      <div class="control-group" >
-      <label class="control-label" for="e_numeroAddetti">Smaltimento rifiuti</label>
-      <div class="controls">
-       <div class="radio-group btngroup" data-content="Lo smaltimento rifiuti &egrave; a carico di MilanoRistorazione e ha ingenti criticit&agrave; igienico-sanitarie.<br>
+      <label class="control-label" for="e_numeroAddetti">Smaltimento rifiuti <i class="icon-info-sign" data-content="Lo smaltimento rifiuti &egrave; a carico di MilanoRistorazione e ha ingenti criticit&agrave; igienico-sanitarie.<br>
   Specificare:<ul>
   <li><b>Scarso</b> - Evidenti problemi igienici (es. cassonetti della spazzatura facilmente raggiungibili dai bambini)</li>
   <li><b>Mediocre</b> - Potenziali problemi igienici (es. pulizia del locale che contiene i cassonetti giudicata inadeguata)</li>
   <li><b>Sufficiente</b> - Nessun problema igienico ma scarsa attenzione alla raccolta differenziata</li>
   <li><b>Ottimo</b> - Nessun problema igienico e raccolta differenziata ottimizzata</li>
-  </ul>">
+  </ul>"></i></label>
+      <div class="controls">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="1" class="required" id="e_sr_1" {%if form.data.smaltimentoRifiuti == "1" %}CHECKED{%endif%}/>Scarso</label>
         <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="2" class="required" id="e_sr_2" {%if form.data.smaltimentoRifiuti == "2" %}CHECKED{%endif%}/>Mediocre</label>   
         <label class="btn"><input type="radio" name="smaltimentoRifiuti" value="3" class="required" id="e_sr_3" {%if form.data.smaltimentoRifiuti == "3" %}CHECKED{%endif%}/>Sufficiente</label>
@@ -665,7 +665,7 @@
      <div class="control-group">
       <label class="control-label" for="e_numeroAddetti">Giudizio globale sul servizio</label>
       <div class="controls">
-       <div class="radio-group btngroup" data-content="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie.">
+       <div class="radio-group btngroup">
         <label class="btn"><input type="radio" name="giudizioGlobale" value="1" class="required" id="e_gg_1" {%if form.data.giudizioGlobale == "1" %}CHECKED{%endif%}/>Insufficiente</label>
         <label class="btn"><input type="radio" name="giudizioGlobale" value="2" class="required" id="e_gg_2" {%if form.data.giudizioGlobale == "2" %}CHECKED{%endif%}/>Sufficiente</label>   
         <label class="btn"><input type="radio" name="giudizioGlobale" value="3" class="required" id="e_gg_3" {%if form.data.giudizioGlobale == "3" %}CHECKED{%endif%}/>Buono</label>
@@ -679,7 +679,7 @@
      <div class="control-group">
       <label class="control-label" for="e_note">Note</label>
       <div class="controls">
-       <textarea name="note" rows="4" cols="120" id="entry_13" class="span6">{{form.data.note}}</textarea>
+       <textarea name="note" rows="4" cols="120" id="entry_13" class="span8">{{form.data.note}}</textarea>
       </div>
      </div>
     </div>

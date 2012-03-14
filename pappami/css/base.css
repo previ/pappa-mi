@@ -386,6 +386,10 @@ box-sizing: border-box;
     border-radius: 4px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
+
+.table tbody tr:hover td, .table tbody tr:hover th {
+background-color: transparent;
+}
 .modal-xlarge {
   position: fixed;
   top: 50%;
