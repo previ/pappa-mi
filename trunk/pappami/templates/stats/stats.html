@@ -7,8 +7,9 @@ $(function(){
   init1();
   init2();
 
-  chgscope();
+ $('#citta').change(oncitychanged());  
 });
+
 
 var cm_data; 
 var dati_ins;
@@ -116,8 +117,8 @@ function init1() {
     {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
     <label for="commissione_sel">Scuola (Commissione Mensa)</label>
-    <div class="input"><input class="large" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
-    <input type="hidden" id="commissione" name="cm" value="{{ctx.cm_key}}"/>
+    <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+    <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
     </div>
     <label for="e_aa">Anno scolastico: </label>
     <select name="anno" id="e_aa">

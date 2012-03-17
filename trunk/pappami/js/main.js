@@ -1,5 +1,36 @@
 var cache = {},	lastXhr, city = null;
+combo_config = {
+  'lang'        : 'it',
+  'sub_info'    : false,
+  'select_only' : true,
+  'primary_key' : 'value',
+  'bind_to'	: 'selected',
+  'init_val'    : '{{ctx.cm_key}}',
+  'field'	: 'label',
+  'button_img'  : '/img/combobox_button.png',
+  'load_img'    : '/img/ajax-loader.gif'
+}
 
+function oncitychanged() {
+  if( $("#citta").val() != "" && $("#citta").val() != city) {        
+    if( !cache[$("#citta").val()] ) {
+      query = { 'city': $("#citta").val() }
+      lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
+	city = $("#citta").val()
+	cache[city] = data
+	$('#commissione_sel').ajaxComboBox(data, combo_config).bind("selected", function(event, ui) { 
+	  $("#cm").val($("#commissione_sel_hidden").val()); 
+	}); 	
+      });    
+    } else {
+      city = $("#citta").val()
+      $('#commissione_sel').ajaxComboBox(cache[city], combo_config).bind("selected", function(event, ui) { 
+	  $("#cm").val($("#commissione_sel_hidden").val()); 
+	});
+    }
+  }
+}
+/*
 function getCommissioniFromCache(term) {
   found = Array();
   for(c in cache) {	
@@ -36,3 +67,4 @@ function chgscope() {
     } 
   });    
 }
+*/

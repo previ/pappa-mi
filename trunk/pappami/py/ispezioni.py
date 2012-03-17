@@ -166,8 +166,8 @@ class IspezioneHandler(BasePage):
       else:
         isp.anno = isp.dataIspezione.year - 1
         
-      isp.creato_da = self.get_current_user()
-      isp.modificato_da = self.get_current_user()
+      isp.creato_da = self.get_current_user().key
+      isp.modificato_da = self.get_current_user().key
       isp.put()
 
       for allegato in isp.allegati:
@@ -299,8 +299,8 @@ class NonconfHandler(BasePage):
       else:
         nc.anno = nc.dataNonconf.year - 1
 
-      nc.creato_da = self.get_current_user()
-      nc.modificato_da = self.get_current_user()
+      nc.creato_da = self.get_current_user().key
+      nc.modificato_da = self.get_current_user().key
       nc.put()
 
       for allegato in nc.allegati:
@@ -429,8 +429,8 @@ class DietaHandler(BasePage):
       else:
         dieta.anno = dieta.dataIspezione.year - 1
 
-      dieta.creato_da = self.get_current_user()
-      dieta.modificato_da = self.get_current_user()
+      dieta.creato_da = self.get_current_user().key
+      dieta.modificato_da = self.get_current_user().key
       dieta.put()
 
       for allegato in dieta.allegati:
@@ -558,8 +558,8 @@ class NotaHandler(BasePage):
       else:
         nota.anno = nota.dataNota.year - 1
      
-      nota.creato_da = self.get_current_user()
-      nota.modificato_da = self.get_current_user()
+      nota.creato_da = self.get_current_user().key
+      nota.modificato_da = self.get_current_user().key
       nota.put()
       
       logging.info(nota.allegati)

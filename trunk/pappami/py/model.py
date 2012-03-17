@@ -230,7 +230,7 @@ class Commissario(model.Model):
     self._commissioni = list()
   
   def unregister(self, cm):
-    CommissioneCommissarioquery().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissariocommissione == cm.key).remove()
+    CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissario.commissione == cm.key).get().key.delete()
     cm.numCommissari -= 1
     cm.put()
     self._commissioni = list()

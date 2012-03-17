@@ -1,17 +1,12 @@
-<!-- Anything Slider -->
-<link rel="stylesheet" href="/css/anythingslider.css">
-<script src="/js/jquery.anythingslider.min.js"></script>
-<style>
-#slider { width: 100%; height: 100%; }
-</style>
 <script> 
 $(function(){
  // Initialize Slides
  // DOM Ready
 
  date = new Date("{{data1}}");
- 
- chgscope();
+
+ $('#citta').change(oncitychanged());
+
 
  $('#slider').load("/menuslide", function() {
  $('#slider').anythingSlider({ 
@@ -60,13 +55,13 @@ $(function(){
  <ul class="dropdown-menu dropdown-large">
   <form class="form-vertical" id="f_chgscope" action="/menu" method="post">
     <label for="citta">Citt&agrave;</label>
-    <select class="large required" id="citta" name="citta" value="{{ctx.citta_key}}">
+    <select class="large required" id="citta" name="citta">
     <option value=""></option>
     {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
     <label for="commissione_sel">Scuola (Commissione Mensa)</label>
-    <div class="input"><input class="large" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
-    <input type="hidden" id="commissione" name="cm" value="{{ctx.cm_key}}"/>
+    <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+    <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
     </div>
     <div class="controls">
       <button type="submit" class="btn primary" onclick="$('#e_chgscope').popover('hide');">Ok</button>

@@ -1,5 +1,17 @@
 fblogged = false;
 var cache = {},	lastXhr, city = null;
+combo_config = {
+  'lang'        : 'it',
+  'sub_info'    : false,
+  'select_only' : true,
+  'bind_to'	: 'selected',
+  'primary_key' : 'value',
+  'field'	: 'label',
+  'button_img'  : '/img/combobox_button.png',
+  'load_img'    : '/img/ajax-loader.gif'
+}
+
+
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
     $("#avatar_dialog").dialog({ title:"Immagine", modal: true, width: "30em", zIndex: 3, autoOpen: false });
@@ -41,10 +53,6 @@ $(document).ready(function() {
 	setTimeout(function(){$("#message").fadeOut(1000, function(){$("#message_body").text('');});}, 2000);
       }
     }});
-
-    function closeSignupNotification() {
-      window.location.href = "/";
-    }
     
     function getCommissioniFromCache(term) {
       found = Array();
@@ -55,6 +63,7 @@ $(document).ready(function() {
       }
       return found;
     }
+    /*
     $("#commissione_sel").autocomplete({
       minLength: 2,
       source: function( request, response ) {
@@ -78,6 +87,7 @@ $(document).ready(function() {
 	$("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+ui.item.value+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+ui.item.label+'</b></p></div>');
         ui.item.value= ''; } 
     });    
+    */
     
     // bind 'myForm' and provide a simple callback function 
     $('#avatar_file').change(function(){
@@ -94,6 +104,8 @@ $(document).ready(function() {
 	      { text: "Ok", click: function() { $(this).dialog("close"); } } ] });
       $("#dialog").load("/condizioni", function(){$("#dialog").dialog("open");});
     });
+
+    $('#citta').change(oncitychanged());
     
     FB.init({ 
        appId:'103254759720309', cookie:true, 
@@ -105,6 +117,32 @@ $(document).ready(function() {
        }
     });
 });     
+
+function oncitychanged() {
+  if( $("#citta").val() != "" && $("#citta").val() != city) {        
+    if( !cache[$("#citta").val()] ) {
+      query = { 'city': $("#citta").val() }
+      lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
+	city = $("#citta").val()
+	cache[city] = data
+	$('#commissione_sel').ajaxComboBox(data, combo_config).bind("selected", function() { 
+	  $("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+$("#commissione_sel_hidden").val()+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+$(this).val()+'</b></p></div>');
+	  $(this).val(''); 
+	}); 
+      });    
+    } else {
+      city = $("#citta").val()
+      $('#commissione_sel').ajaxComboBox(cache[city], combo_config).bind("selected", function(event, ui) { 
+	  $("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+$("#commissione_sel_hidden").val()+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+$(this).val()+'</b></p></div>');
+	  $(this).val(''); 
+	});    
+    }
+  }
+}
+
+function closeSignupNotification() {
+  window.location.href = "/";
+}
 
 function getimage() {
   FB.api('/me', function(user) {
