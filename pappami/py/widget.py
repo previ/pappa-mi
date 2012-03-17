@@ -40,7 +40,11 @@ class CMMenuWidgetHandler(CMMenuHandler):
 
     c = None
     if self.request.get("cm"):
-      c = model.Key(urlsafe=self.request.get("cm")).get()
+      cmk = self.request.get("cm")
+      if cmk.isnumeric():
+        c = model.Key("Commissione", int(self.request.get("cm"))).get()
+      else:
+        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
     
     self.createMenu(self.request,c,template_values)
 
@@ -68,7 +72,11 @@ class CMStatWidgetHandler(webapp.RequestHandler):
 
     c = None
     if self.request.get("cm"):
-      c = model.Key(urlsafe=self.request.get("cm")).get()
+      cmk = self.request.get("cm")
+      if cmk.isnumeric():
+        c = model.Key("Commissione", int(self.request.get("cm"))).get()
+      else:
+        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
     
     self.createStat(self.request,c,template_values)
     
@@ -100,16 +108,16 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     statCC = None
     statCM = None
     if c:
-      statCC = memcache.get("statCC" + str(c.centroCucina.key()))
+      statCC = memcache.get("statCC" + str(c.centroCucina))
       if not statCC:
         logging.info("statCC miss")
         statCC = StatisticheIspezioni.get_cc_cm_time(cc=c.centroCucina, timeId=year).get()
-        memcache.set("statCC" + str(c.centroCucina.key()), statCC, 3600)
-      statCM = memcache.get("statCM" + str(c.key()))
+        memcache.set("statCC" + str(c.centroCucina), statCC, 3600)
+      statCM = memcache.get("statCM" + str(c.key))
       if not statCM:
         logging.info("statCM miss")
-        statCM = StatisticheIspezioni.StatisticheIspezioni.get_cc_cm_time(cm=c, timeId=year).get()
-        memcache.set("statCM" + str(c.key()), statCM, 3600)
+        statCM = StatisticheIspezioni.get_cc_cm_time(cm=c.key, timeId=year).get()
+        memcache.set("statCM" + str(c.key), statCM, 3600)
       
     template_values["stats"] = stats
     template_values["statCC"] = statCC
@@ -173,22 +181,27 @@ class CMListWidgetHandler(BasePage):
     template_values["fcolor"] = fcolor
     
     items=list()
-    cm = Commissione.get(self.request.get("cm"))
-    if cm:      
-      cmk = model.Key(urlsafe=cm)
-      isps = Ispezione.get_by_cm(cmk)
+    c = None
+    if self.request.get("cm"):
+      cmk = self.request.get("cm")
+      if cmk.isnumeric():
+        c = model.Key("Commissione", int(self.request.get("cm"))).get()
+      else:
+        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+
+      isps = Ispezione.get_by_cm(c.key)
       for isp in isps:
         items.append(WidgetListitem(isp, isp.dataIspezione))
       
-      ncs = Nonconformita.get_by_cm(cmk)
+      ncs = Nonconformita.get_by_cm(c.key)
       for nc in ncs:
         items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
 
-      diete = Dieta.get_by_cm(cmk)
+      diete = Dieta.get_by_cm(c.key)
       for dieta in diete:
         items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
 
-      note = Nota.get_by_cm(cmk)
+      note = Nota.get_by_cm(c.key)
       for nota in note:
         items.append(WidgetListitem(item=nota, date=nota.dataNota))
         
@@ -196,7 +209,7 @@ class CMListWidgetHandler(BasePage):
     
     template_values["host"] = self.getHost()
     template_values["items"] = items
-    template_values["scuola"] = cmk.get().desc()
+    template_values["scuola"] = c.desc()
 
     path = os.path.join(os.path.dirname(__file__), '../templates/widget/list.html')
     self.response.out.write(template.render(path, template_values))
@@ -217,6 +230,7 @@ class CMWidgetHandler(BasePage):
     template_values = dict()
     template_values["content"] = "widget/widgetindex.html"
     template_values["host"] = self.getHost()
+    template_values["citta"] = Citta.get_all()    
     self.getBase(template_values)
     
 app = webapp.WSGIApplication([

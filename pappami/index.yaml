@@ -16,10 +16,21 @@ indexes:
   - name: validitaDa
     direction: desc
 
+- kind: Commissione
+  properties:
+  - name: citta
+  - name: nome
+
 - kind: CommissioneCentroCucina
   properties:
   - name: commissione
   - name: validitaDa
+    direction: desc
+
+- kind: Dieta
+  properties:
+  - name: commissione
+  - name: dataIspezione
     direction: desc
 
 - kind: Ispezione
@@ -38,17 +49,19 @@ indexes:
   properties:
   - name: livello
   - name: creato_il
-
-- kind: Messaggio
-  properties:
-  - name: livello
-  - name: creato_il
     direction: desc
 
-- kind: Messaggio
+- kind: Nonconformita
   properties:
-  - name: par
-  - name: creato_il
+  - name: commissione
+  - name: dataNonconf
+    direction: desc
+
+- kind: Nota
+  properties:
+  - name: commissione
+  - name: dataNota
+    direction: desc
 
 - kind: ZonaOffset
   properties:

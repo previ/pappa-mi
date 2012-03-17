@@ -40,7 +40,6 @@ class CMMenuDataHandler(CMMenuHandler):
       menu = self.getMenu(data, c)[0]
       
       json.dump(menu.to_dict(), self.response.out)
-      logging.info(json.dumps(menu.to_dict()))
 
     else:
       template_values = dict()
@@ -54,17 +53,21 @@ class CMMenuDataHandler(CMMenuHandler):
     if cm_key:
       cm = model.Key("Commissione", cm_key).get()
     if self.request.get("cm"):
+      logging.info(self.request.get("cm"))
       cm = model.Key("Commissione", int(self.request.get("cm"))).get()
     
     template_values = dict()
     template_values['content'] = 'menu.html'      
     template_values["citta"] = Citta.get_all()
+    template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
 
     if cm:
       self.get_context()["citta_key"] = cm.citta.id()
       self.get_context()["cm_key"] = cm.key.id()
       self.get_context()["cm_name"] = cm.desc()    
-    
+
+    logging.info(self.get_context()["cm_name"])
+      
     self.getBase(template_values)
     
       
