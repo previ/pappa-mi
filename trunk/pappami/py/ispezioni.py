@@ -32,11 +32,10 @@ class CMGetIspDataHandler(BasePage):
   @commissario_required
   def get(self): 
     commissario = self.getCommissario()
-    logging.info("isp1")
     if( commissario is not None):    
       cm_id = self.request.get("cm")
       isp = Ispezione.get_last_by_cm(model.Key("Commissione", int(cm_id)))
-      logging.info("isp: " + str(isp))
+      #logging.info("isp: " + str(isp))
         
       buff = ""
       if( isp ):
@@ -65,20 +64,19 @@ class DietaValidationHandler(BasePage):
     dataIspezione = datetime.strptime(self.request.get("dataIspezione"),Const.DATE_FORMAT).date()
     tipo = int(self.request.get("tipoDieta"))
 
-    logging.info(dataIspezione);
+    #logging.info(dataIspezione);
     
     message = "Ok"
     if Dieta.get_by_cm_data_turno(model.Key("Commissione", int(cm_id)), dataIspezione, turno).get() :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
-    logging.info(message);
+    #logging.info(message);
     self.response.out.write(message)
     
   
 def populate_tags_attach(request, obj):
   obj.tags = list()
   for tag in request.get_all("tags"):
-    logging.info(tag)
     obj.tags.append(tag)
   
   obj.allegati = list()
@@ -203,7 +201,9 @@ class IspezioneHandler(BasePage):
         form.populate_obj(isp)        
         isp.commissario = commissario.key
         isp.commissione = form.commissione
-   
+
+        populate_tags_attach(self.request, isp)
+        
         self.session["pw_obj"] = isp
         self.session["pw_att"] = isp.allegati
         self.session["pw_tags"] = isp.tags
@@ -216,7 +216,7 @@ class IspezioneHandler(BasePage):
         
         self.getBase(template_values) 
       else:
-        logging.info("data: %s", form.data)
+        #logging.info("data: %s", form.data)
         for e in form.errors :
           logging.info("errors: %s", e)
 
@@ -330,7 +330,6 @@ class NonconfHandler(BasePage):
         nc.commissione = form.commissione
         
         populate_tags_attach(self.request, nc)
-        logging.info(nc.allegati)
         
         self.session["pw_obj"] = nc
         self.session["pw_att"] = nc.allegati
@@ -343,7 +342,7 @@ class NonconfHandler(BasePage):
         }
         
       else:
-        logging.info("data: %s", form.data)
+        #logging.info("data: %s", form.data)
         for f in form.errors :
           for e in form[f].errors:
             logging.info("errors: %s %s", f, e)
@@ -472,7 +471,7 @@ class DietaHandler(BasePage):
         }
         
       else:
-        logging.info("data: %s", form.data)
+        #logging.info("data: %s", form.data)
         for e in form.errors :
           logging.info("errors: %s", e)
 
@@ -562,7 +561,7 @@ class NotaHandler(BasePage):
       nota.modificato_da = self.get_current_user().key
       nota.put()
       
-      logging.info(nota.allegati)
+      #logging.info(nota.allegati)
             
       for allegato in nota.allegati:
         allegato.obj = nota.key
@@ -594,7 +593,7 @@ class NotaHandler(BasePage):
         self.session["pw_att"] = nota.allegati
         self.session["pw_tags"] = nota.tags
 
-        logging.info(nota.allegati)
+        #logging.info(nota.allegati)
         
         template_values = {
           'main': 'ispezioni/nota_read_div.html',
@@ -603,7 +602,7 @@ class NotaHandler(BasePage):
         }
         
       else:
-        logging.info("data: %s", form.data)
+        #logging.info("data: %s", form.data)
         for e in form.errors :
           logging.info("errors: %s", e)
 

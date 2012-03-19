@@ -1,3 +1,2 @@
-<div>{{msg.root.get().titolo|replace("\n","<br/>")}}</div>
-<div>{{msg.root.get().note|replace("\n","<br/>")}}</div>
-<div>{%for allegato in msg.root.get().get_allegati()%}<a href="{{allegato.path()}}" target="_new"><img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/></a>&nbsp;{{allegato.descrizione}}<br/>{%endfor%}</div>
+{% set nota = msg.root.get() %}
+{% include "ispezioni/nota_read_div.html" %}
