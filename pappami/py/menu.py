@@ -50,6 +50,7 @@ class CMMenuDataHandler(CMMenuHandler):
 
   def post(self):
     cm_key = self.get_context().get("cm_key")
+    cm = None
     if cm_key:
       cm = model.Key("Commissione", cm_key).get()
     if self.request.get("cm"):
@@ -65,8 +66,6 @@ class CMMenuDataHandler(CMMenuHandler):
       self.get_context()["citta_key"] = cm.citta.id()
       self.get_context()["cm_key"] = cm.key.id()
       self.get_context()["cm_name"] = cm.desc()    
-
-    logging.info(self.get_context()["cm_name"])
       
     self.getBase(template_values)
     

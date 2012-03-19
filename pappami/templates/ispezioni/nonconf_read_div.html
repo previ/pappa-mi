@@ -1,5 +1,5 @@
 <div class="form-vertical">
-{% if True  %}
+{% if preview %}
  <div class="row">
   <div class="span8">
    <h3>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.data()}} - Turno {{nc.turno}}</h3>
@@ -23,7 +23,7 @@
  </div>
  <div class="row">
   <div class="span8">
-  <div{% if preview %} class="scroll" style="height:250px; overflow:auto;"{% endif %}>{{nc.note|replace("\n","<br/>")}}</div>
+  <div{% if preview %} class="scroll" style="height:240px; overflow:auto;"{% endif %}>{{nc.note|replace("\n","<br/>")}}</div>
   </div>
  </div>
 {% if preview %}

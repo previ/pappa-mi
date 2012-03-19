@@ -606,7 +606,40 @@ class Ispezione(model.Model):
   
   def data(self): 
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
+
+  testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
+            "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
+            "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
+            "temperatura": ["","Freddo", "Giusta", "Caldo"], 
+            "maturazione": ["","Acerba", "Giusta", "Matura"], 
+            "quantita": ["","Scarsa", "Sufficiente", "Abbondante"],
+            "condito": ["","No", "Si"],
+            "pulizia": ["","Scarso", "Mediocre", "Sufficiente", "Ottimo"],
+            "distribuzione": ["","< 30 min.", "30 < 60 min.", "> 60 min."],
+            "giudizio": ["","Insufficiente", "Sufficiente", "Buono"]
+           }  
+  cls = {   "assaggio": ["","label131", "label132", "label133"], 
+            "gradimento": ["","label41", "label42", "label43", "label44"],
+            "cottura": ["","label231", "label232", "label233"], 
+            "temperatura": ["","label231", "label232", "label233"], 
+            "maturazione": ["","label231", "label232", "label233"], 
+            "quantita": ["","label131", "label132", "label133"],
+            "condito": ["label232", ""],
+            "pulizia": ["","label41", "label42", "label43", "label44"],
+            "distribuzione": ["","label131", "label132", "label133"], 
+            "giudizio": ["","label131", "label132", "label133"] 
+        }  
   
+  def sommario(self):
+    sommario = ""
+    sommario += '<i class="primo" title="Primo piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.primoAssaggio] + '" title="' + self.testi['assaggio'][self.primoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.primoGradimento] + '" title="' + self.testi['gradimento'][self.primoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
+    sommario += '<i class="secondo" title="Secondo piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.secondoAssaggio] + '" title="' + self.testi['assaggio'][self.secondoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.secondoGradimento] + '" title="' + self.testi['gradimento'][self.secondoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
+    sommario += '<i class="contorno" title="Contorno piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.contornoAssaggio] + '" title="' + self.testi['assaggio'][self.contornoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.contornoGradimento] + '" title="' + self.testi['gradimento'][self.contornoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
+    sommario += '<i class="pane" title="Pane piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.paneAssaggio] + '" title="' + self.testi['assaggio'][self.paneAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.paneGradimento] + '" title="' + self.testi['gradimento'][self.paneGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
+    sommario += '<i class="dessert" title="Dessert piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.paneAssaggio] + '" title="' + self.testi['assaggio'][self.fruttaAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.fruttaGradimento] + '" title="' + self.testi['gradimento'][self.fruttaGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
+      
+    return sommario  
+    
   @classmethod
   def get_last_by_cm(cls, cm_key):
     return Ispezione.query().filter(Ispezione.commissione == cm_key).order(-Ispezione.dataIspezione).get()
@@ -655,6 +688,9 @@ class Nonconformita(model.Model):
   def data(self): 
     return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)  
 
+  def sommario(self):
+    return self.tipoNome()
+  
   _tipi_n = {1:0,
            2:1,
            3:2,
@@ -722,6 +758,9 @@ class Dieta(model.Model):
 
   def data(self): 
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
+
+  def sommario(self):
+    return self.tipoNome()
   
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
@@ -786,7 +825,7 @@ class Dieta(model.Model):
     return cls._tipi
   
   def tipoNome(self):
-    return cls._tipi[self.tipoDieta]
+    return self._tipi[self.tipoDieta]
 
 class Nota(model.Model):
   def __init__(self, *args, **kwargs):
@@ -812,6 +851,9 @@ class Nota(model.Model):
   def data(self): 
     return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)  
 
+  def sommario(self):
+    return self.titolo
+  
   def get_allegati(self): 
     if self.key:
       return Allegato.query().filter(Allegato.obj == self.key)

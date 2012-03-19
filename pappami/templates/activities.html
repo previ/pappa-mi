@@ -62,8 +62,8 @@ $(document).ready(function() {
     <li class="divider"></li>{%endif%}
     <li id="cmtype201usertag"><a href="#" onclick="filteractivities('cm=&type=201&user=&tag=')">Messaggi</a></li>
     <li id="cmtype101usertag"><a href="#" onclick="filteractivities('cm=&type=101&user=&tag=')">Ispezioni</a></li>
-    <li id="cmtype102usertag"><a href="#" onclick="filteractivities('cm=&type=102&user=&tag=')">Ispezioni Diete</a></li>
-    <li id="cmtype103usertag"><a href="#"  onclick="filteractivities('cm=&type=103&user=&tag=')">Non conformit&agrave;</a></li>
+    <li id="cmtype103usertag"><a href="#" onclick="filteractivities('cm=&type=103&user=&tag=')">Ispezioni Diete</a></li>
+    <li id="cmtype102usertag"><a href="#"  onclick="filteractivities('cm=&type=102&user=&tag=')">Non conformit&agrave;</a></li>
     <li id="cmtype104usertag"><a href="#" onclick="filteractivities('cm=&type=104&user=&tag=')">Note</a></li>    
     <li class="nav-header"><i class="icon-tags"></i>Categorie</li>
     {%for tag in tags%}<li id="cmtypeusertag{{tag.nome}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>

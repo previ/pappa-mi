@@ -11,7 +11,7 @@
 <script src="/js/profilo.js" type="text/javascript"></script>
 <div class="row">
   <div class="span12">
-    <h2><img src="{{cmsro.avatar(None)}}" class="avatar"> <span>{{cmsro.nomecompleto(None)}}</span></h2>
+    <h2><img src="{{cmsro.avatar(cmsro,myself=True)}}" class="avatar"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span></h2>
   </div>
 </div>
 <form action="/profilo" method="POST" id="form0" novalidate class="form-horizontal">
@@ -33,7 +33,7 @@
 	</div>
 	<div class="control-group">
 	  <label for="avatar">Immagine</label>
-	  <div class="controls"><img id="avatar" src="{{cmsro.avatar(cmsro=None, size='big')}}" class="avatar-big"/></div>
+	  <div class="controls"><img id="avatar" src="{{cmsro.avatar(cmsro,myself=True, size='big')}}" class="avatar-big"/></div>
 	  <input type="hidden" name="avatar_url" id="avatar_url" value="{{form.avatar_url.data}}"/>
 	</div>
 	<div class="control-group">

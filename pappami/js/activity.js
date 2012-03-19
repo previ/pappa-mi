@@ -145,10 +145,10 @@ function opennewwiz(url) {
 	  }
 	},
 	resetForm: false,
-	beforeSubmit: function() {	
+	beforeSubmit: function(arr,$form) {
 	  $("e_submit").button("loading");
 	  $("[name='tags']").attr('value','');
-          tags = $("#wiz_tags_handler").tagHandler("getTags")
+          tags = $("#item_tags_handler").tagHandler("getTags")
           for(tag in tags) {
     	    arr.push({name: "tags", value: tags[tag]});
 	  }
@@ -221,12 +221,11 @@ function onopennewitem() {
     }
       
   }, beforeSubmit: function(arr,$form) {
-    $("#e_submit").button("loading");
-    $("[name='tags']").attr('value','');
     tags = $("#item_tags_handler").tagHandler("getTags")
-    for(tag in tags) {
+    for(tag in tags) {    
       arr.push({name: "tags", value: tags[tag]});
     }
+    $("#e_submit").button("loading");
   }});
   //$('textarea').autogrow();
   $.validator.messages = {

@@ -293,10 +293,8 @@ class Messaggio(model.Model):
   @cached_property
   def summary(self):
     summary = ""
-    if self.tipo == 101 :
-      summary = self.root.get().note
-    if self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
-      pass
+    if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
+      summary = self.root.get().sommario()
     if self.tipo == 201 or self.tipo == 202:
       if len(self.testo) > 80:        
         p = Parser()
