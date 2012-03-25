@@ -3,10 +3,10 @@ $(function(){
  // Initialize Slides
  // DOM Ready
 
- date = new Date("{{data1}}");
+ var date = new Date("{{data1}}");
 
- $('#citta').change(oncitychanged());
-
+ $('#citta').change( oncitychanged);
+ oncitychanged();
 
  $('#slider').load("/menuslide", function() {
  $('#slider').anythingSlider({ 

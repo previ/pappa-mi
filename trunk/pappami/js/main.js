@@ -1,5 +1,7 @@
+"use strict";
+
 var cache = {},	lastXhr, city = null;
-combo_config = {
+var combo_config = {
   'lang'        : 'it',
   'sub_info'    : false,
   'select_only' : true,
@@ -14,7 +16,7 @@ combo_config = {
 function oncitychanged() {
   if( $("#citta").val() != "" && $("#citta").val() != city) {        
     if( !cache[$("#citta").val()] ) {
-      query = { 'city': $("#citta").val() }
+      var query = { 'city': $("#citta").val() }
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
 	city = $("#citta").val()
 	cache[city] = data

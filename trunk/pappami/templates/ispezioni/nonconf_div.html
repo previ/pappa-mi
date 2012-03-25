@@ -57,9 +57,9 @@
     <div class="span2">
      <div class="control-group">    
       <label class="label_isp_1">Richiesta campionatura</label>
-      <div class="radio-group btngroup">
-       <label class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" id="e_rc_1" {%if form.richiestaCampionatura.data == "1" %}CHECKED{%endif%}/>Si</label>
-       <label class="btn"><input type="radio" name="richiestaCampionatura" value="0" class="required" id="e_rc_2" {%if form.richiestaCampionatura.data == "0" %}CHECKED{%endif%}/>No</label>
+      <div class="radio-group btn-group" data-toggle="buttons-radio">
+       <label for="e_rc_1" class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" onclick="alert('1');" id="e_rc_1" {%if form.richiestaCampionatura.data == "1" %}CHECKED{%endif%}/>Si</label>
+       <label for="e_rc_2" class="btn"><input type="radio" name="richiestaCampionatura" value="0" class="required" onclick="alert('0');" id="e_rc_2" {%if form.richiestaCampionatura.data == "0" %}CHECKED{%endif%}/>No</label>
       </div>
      </div>
     </div>
@@ -87,7 +87,7 @@
   </div>
   <div class="modal-footer modal-actions">
    <button id="e_submit" type="submit" class="btn btn-primary" style="float:right;" data-loading-text="Salvataggio in corso...">Salva dati</button>
-   <button onclick="closedialog();" id="e_annulla" class="btn" style="float:right;">Annulla</button>
+   <button onclick="closedialog(); return false;" id="e_annulla" class="btn" style="float:right;">Annulla</button>
   </div>
  </form>
 </div>

@@ -1,5 +1,9 @@
+"use strict";
+
 var ulmsg=false;
 window.onbeforeunload = closeAlert;
+
+//$.metadata.setType("attr", "validate");
 
 function closeAlert() {
   if(ulmsg) {
@@ -33,22 +37,42 @@ function initForm() {
       autocomplete: true
   }); 
  $('#new-data').find( "[type='radio']" ).button();
- $('#new-data').find('.radio-group > label').radioGroup();
- $('#new-data').find('.btn.toggle').toggleBtn();
+ //$('#new-data').find('.radio-group > label').radioGroup();
+ //$('#new-data').find('.btn.toggle').toggleBtn();
 }
 
 function opennewmsg() {  
   if($('#new-msg').is(':visible') ) {
     $('#new-msg').slideUp();
   } else {
+
+    $('#e_message').tinymce({
+     // Location of TinyMCE script
+     script_url : '/js/tiny_mce/tiny_mce.js',     
+     // General options
+     width : "100%",
+     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+     theme : "advanced",
+     plugins : "autolink, autoresize", 
+     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+     theme_advanced_buttons2 : "",
+     theme_advanced_buttons3 : "",			
+     theme_advanced_toolbar_location : "top",
+     theme_advanced_toolbar_align : "left",
+     theme_advanced_resizing : false     
+    });
+  
+  
     $('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
       $('#activity_list').prepend(data);
       //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     }, beforeSubmit: function(arr,$form) {     
       $("[name='tags']").attr('value','');
-      tags = $("#message_tags_handler").tagHandler("getTags")
-      for(tag in tags) {
+      var tags = $("#message_tags_handler").tagHandler("getTags")
+      for(var tag in tags) {
 	arr.push({name: "tags", value: tags[tag]});
       }
       $('#new-msg').slideUp();
@@ -72,17 +96,17 @@ function opennewwiz(url) {
       validationEnabled: true,
       validationOptions: {
 	errorClass: "error",
-	errorPlacement: function(error, element) {	
-	  var item = $(element).parents("div.control-group");
+	errorPlacement: function(error, element) {
+	  var item = $(element).parents(".control-group");
 	  item.tooltip({title:error.text(), trigger:'manual'});
 	  item.tooltip('show');
         },
 	highlight: function(element, errorClass, validClass) {
-	  var item = $(element).parents("div.control-group");
+	  var item = $(element).parents(".control-group");
 	  item.addClass(errorClass); 
         },
   	unhighlight: function(element, errorClass, validClass) {
-	  var item = $(element).parents("div.control-group");
+	  var item = $(element).parents(".control-group");
 	  item.removeClass(errorClass); 
 	  item.tooltip('hide');
 	}
@@ -117,9 +141,10 @@ function opennewwiz(url) {
 	success: function(data){
 	  $('#new-data-preview').html(data);
 	  if($('#form-error').html()) {
+	    alert($('#form-error').html());
 	    $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	      { text: "Ok",
-		click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
+		click: function() { $('#form-error').detach(); $(this).dialog("close"); $("e_submit").button("reset"); } } ] });
 	    $('#form-error').dialog('open');
 	    $('#new-data-preview').html('');
 	  } else {
@@ -148,8 +173,8 @@ function opennewwiz(url) {
 	beforeSubmit: function(arr,$form) {
 	  $("e_submit").button("loading");
 	  $("[name='tags']").attr('value','');
-          tags = $("#item_tags_handler").tagHandler("getTags")
-          for(tag in tags) {
+          var tags = $("#item_tags_handler").tagHandler("getTags")
+          for(var tag in tags) {
     	    arr.push({name: "tags", value: tags[tag]});
 	  }
 	}
@@ -175,30 +200,31 @@ function onopennewitem() {
  initForm();
  
  $("#form0").validate({
-   errorClass: "error",
-   errorPlacement: function(error, element) {	
-    var item = $(element).parents("div.control-group");
-    item.tooltip({title:error.text(), trigger:'manual'});
-    item.tooltip('show');
-   },
-   highlight: function(element, errorClass, validClass) {
-    var item = $(element).parents("div.control-group");
-    item.addClass(errorClass); 
+    errorClass: "error",
+    errorPlacement: function(error, element) {	      
+      var item = $(element).parents(".control-group");
+      item.tooltip({title:error.text(), trigger:'manual'});
+      item.tooltip('show');
     },
-   unhighlight: function(element, errorClass, validClass) {
-    var item = $(element).parents("div.control-group");
-    item.removeClass(errorClass); 
-    item.tooltip('hide');
+    highlight: function(element, errorClass, validClass) {
+      var item = $(element).parents(".control-group");
+      item.addClass(errorClass); 
+    },
+    unhighlight: function(element, errorClass, validClass) {
+      var item = $(element).parents(".control-group");
+      item.removeClass(errorClass); 
+      item.tooltip('hide');
     }
   });
   
   $('#form0').ajaxForm({clearForm: false, success: function(data) { 
     $('#new-data-preview').html(data);
-    if(data.indexOf('form-error')>0) {
-      $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+    if($('#new-data-preview').find('#form-error').html()) {
+      var err = $('#new-data-preview').find('#form-error');
+      err.dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	{ text: "Ok",
-          click: function() { $('#form-error').detach(); $(this).dialog("close"); } } ] });
-      $('#form-error').dialog('open');      
+          click: function() { $(this).dialog("close"); $('#new-data-preview').find('#form-error').detach(); $("e_submit").button("reset"); } } ] });
+      err.dialog('open');      
     } else {
       $('#new-data-form').hide();  
       $('#new-data-preview').show();
@@ -221,8 +247,8 @@ function onopennewitem() {
     }
       
   }, beforeSubmit: function(arr,$form) {
-    tags = $("#item_tags_handler").tagHandler("getTags")
-    for(tag in tags) {    
+    var tags = $("#item_tags_handler").tagHandler("getTags")
+    for(var tag in tags) {    
       arr.push({name: "tags", value: tags[tag]});
     }
     $("#e_submit").button("loading");

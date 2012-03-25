@@ -1,6 +1,8 @@
-fblogged = false;
+"use strict";
+
+var fblogged = false;
 var cache = {},	lastXhr, city = null;
-combo_config = {
+var combo_config = {
   'lang'        : 'it',
   'sub_info'    : false,
   'select_only' : true,
@@ -38,7 +40,7 @@ $(document).ready(function() {
     });
     
     $('#form0').ajaxForm({success: function(data) {
-      message = data;
+      var message = data;
       if($('#form0').attr("action") == "/signup2") {
 	$("#message").find(".alert-actions").show();
       } else {
@@ -121,7 +123,7 @@ $(document).ready(function() {
 function oncitychanged() {
   if( $("#citta").val() != "" && $("#citta").val() != city) {        
     if( !cache[$("#citta").val()] ) {
-      query = { 'city': $("#citta").val() }
+      var query = { 'city': $("#citta").val() }
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
 	city = $("#citta").val()
 	cache[city] = data

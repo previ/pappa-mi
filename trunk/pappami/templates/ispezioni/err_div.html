@@ -2,8 +2,10 @@
 <p>Non &egrave; stato possibile salvare i dati per i seguenti errori:<br />Correggere i dati e salvare nuovamente</p>
 {% if form.errors %}
 <ul class="errors">
-{% for field_errors in form.errors if field_errors %}
-        <li>{{ field_errors }}</li>
+{% for field in form.errors %}
+        {% for e in form.errors[field] %}
+        <li>{{ e }}</li>
+        {% endfor %}
 {% endfor %}
 </ul>
 {% endif %}

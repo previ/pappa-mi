@@ -1,6 +1,8 @@
+"use strict";
+
 var getMenu = function(){  
-  date = $("#e_dataIspezione").val();
-  commissione = $("#e_commissione").val();
+  var date = $("#e_dataIspezione").val();
+  var commissione = $("#e_commissione").val();
   if(date && commissione) {
     //dateArr = date.split("/");
     //date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
@@ -22,9 +24,9 @@ var getMenu = function(){
 
 function onMenuChanged() {
       if($("#e_primoEffettivo").val() != "" && $("#e_primoEffettivo").val() == $("#e_secondoEffettivo").val() ) {
-	      oldDisp_1 = $('#s_secondo_1').css('display');
-	      oldDisp_2 = $('#s_secondo_2').css('display');
-	      oldDisp_3 = $('#s_secondo_3').css('display');
+	      var oldDisp_1 = $('#s_secondo_1').css('display');
+	      var oldDisp_2 = $('#s_secondo_2').css('display');
+	      var oldDisp_3 = $('#s_secondo_3').css('display');
 	      //$('#s_secondo_1').css('display', "none");
 	      //$('#s_secondo_2').css('display', "none");
 	      //$('#s_secondo_3').css('display', "none");
@@ -49,7 +51,7 @@ function onMenuChanged() {
 
 function getPrevIspData() {
   getMenu();
-  commissione = $("#e_commissione").attr("value");
+  var commissione = $("#e_commissione").attr("value");
 
   if(($('[name="aaRispettoCapitolato"]')[0].checked != 
       $('[name="aaRispettoCapitolato"]')[1].checked ) && 
@@ -59,32 +61,21 @@ function getPrevIspData() {
   }
 
   $.ajax({url:"/isp/getispdata?cm="+commissione, success: function(data){ 
-	var ispdata = data.split("|");
-	if(ispdata.length > 1) {
-	  $('[name="aaRispettoCapitolato"]')[0].checked = ispdata[0] == 1;
-	  $('[name="aaRispettoCapitolato"]')[1].checked = ispdata[0] == 0;
-	  $('[name="aaTavoliApparecchiati"]')[0].checked = ispdata[1] == 1;
-	  $('[name="aaTavoliApparecchiati"]')[1].checked = ispdata[1] == 0;
-	  $('[name="aaTermichePulite"]')[0].checked = ispdata[2] == 1;
-	  $('[name="aaTermichePulite"]')[1].checked = ispdata[2] == 0;
-	  $('[name="aaAcqua"]')[0].checked = ispdata[3] == 1;
-	  $('[name="aaAcqua"]')[1].checked = ispdata[3] == 0;
-	  $('[name="aaScaldaVivande"]')[0].checked = ispdata[4] == 1;
-	  $('[name="aaScaldaVivande"]')[1].checked = ispdata[4] == 0;
-	  $('[name="aaSelfService"]')[0].checked = ispdata[5] == 1;
-	  $('[name="aaSelfService"]')[1].checked = ispdata[5] == 0;
-	  $('[name="aaTabellaEsposta"]')[0].checked = ispdata[6] == 1;
-	  $('[name="aaTabellaEsposta"]')[1].checked = ispdata[6] == 0;
-	  $('[name="ricicloStoviglie"]')[0].checked = ispdata[7] == 1;
-	  $('[name="ricicloStoviglie"]')[1].checked = ispdata[7] == 0;
-	  $('[name="ricicloPosate"]')[0].checked = ispdata[8] == 1;
-	  $('[name="ricicloPosate"]')[1].checked = ispdata[8] == 0;
-	  $('[name="ricicloBicchieri"]')[0].checked = ispdata[9] == 1;
-	  $('[name="ricicloBicchieri"]')[1].checked = ispdata[9] == 0;
-	  $('#step2').updateRadioState();
-	}
-	}
-	});
+    var ispdata = data.split("|");
+      if(ispdata.length > 1) {
+	$($('[name="aaRispettoCapitolato"]')[ispdata[0]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaTavoliApparecchiati"]')[ispdata[1]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaTermichePulite"]')[ispdata[2]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaAcqua"]')[ispdata[3]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaScaldaVivande"]')[ispdata[4]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaSelfService"]')[ispdata[5]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaTabellaEsposta"]')[ispdata[6]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="ricicloStoviglie"]')[ispdata[7]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="ricicloPosate"]')[ispdata[8]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="ricicloBicchieri"]')[ispdata[9]==0 ? 1 : 0]).parent().click();	  
+      }
+    }
+  });
 }
 
 function createCookie(name,value,days) {
