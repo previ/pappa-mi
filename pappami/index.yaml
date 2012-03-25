@@ -16,6 +16,16 @@ indexes:
   - name: validitaDa
     direction: desc
 
+- kind: Commissione
+  properties:
+  - name: citta
+  - name: nome
+
+- kind: Commissione
+  properties:
+  - name: tipoScuola
+  - name: numCommissari
+
 - kind: CommissioneCentroCucina
   properties:
   - name: commissione
@@ -38,7 +48,17 @@ indexes:
   properties:
   - name: livello
   - name: creato_il
+
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: creato_il
     direction: desc
+
+- kind: Messaggio
+  properties:
+  - name: par
+  - name: creato_il
 
 - kind: ZonaOffset
   properties:

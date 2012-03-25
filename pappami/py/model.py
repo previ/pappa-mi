@@ -763,8 +763,8 @@ class Dieta(model.Model):
     return self.tipoNome()
   
   @classmethod
-  def get_by_cm_data_turno(cls, cm, data, turno):
-    return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno)
+  def get_by_cm_data_turno_tipo(cls, cm, data, turno, tipo):
+    return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno).filter(Dieta.tipo==tipo)
 
   @classmethod
   def get_by_cm(cls, cm):

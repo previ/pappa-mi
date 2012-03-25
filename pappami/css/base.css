@@ -201,7 +201,10 @@ cursor: pointer;
 .radio-group input[type=radio],
 .toggle-group input[type=checkbox],
 .toggle input[type=checkbox] {
-    display: none;
+    visibility: hidden;
+    position:absolute;
+    top:-5000px;
+    left:-5000px;
 }
 
 /* because bootstrap "label" selector is too generic we have add another selector to override some properties */
@@ -215,24 +218,6 @@ cursor: pointer;
 
 label.toggle {
     float: none;
-}
-
-.btngroup {
-  display: inline-block;
-  vertical-align: bottom;
-}
-.btngroup .btn {
-  float: left;
-  border-radius: 0;
-}
-.btngroup .btn:nth-child(n+2) {
-  border-left: none;
-}
-.btngroup .btn:first-child {
-  border-radius: 4px 0 0 4px;
-}
-.btngroup .btn:last-child {
-  border-radius: 0px 4px 4px 0px;
 }
 
 .label_isp_1 {

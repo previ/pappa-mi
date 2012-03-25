@@ -217,14 +217,13 @@ class IspezioneHandler(BasePage):
         self.getBase(template_values) 
       else:
         #logging.info("data: %s", form.data)
-        for e in form.errors :
-          logging.info("errors: %s", e)
+        for f in form.errors :
+          logging.info("errors: %s, %s", f, form.errors[f])
 
         template_values = {
           'main': 'ispezioni/err_div.html',
           'commissioni': commissario.commissioni(),
-          'form': form,
-          'form_errors': form.errors
+          'form': form
         }
 
         self.getBase(template_values)
@@ -342,7 +341,7 @@ class NonconfHandler(BasePage):
         }
         
       else:
-        #logging.info("data: %s", form.data)
+        logging.info("data: %s", form.data)
         for f in form.errors :
           for e in form[f].errors:
             logging.info("errors: %s %s", f, e)

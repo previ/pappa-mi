@@ -45,9 +45,9 @@ class NonconformitaForm(model_form(model=Nonconformita, exclude=['creato_il','cr
   def validate_dataNonconf(form, field):
     dataNonconf = field.data
     logging.info(dataNonconf)
-    if Nonconformita.get_by_cm_data_turno(cm=form.commissione, data=dataNonconf, turno=form.turno.data).get() :
-      logging.info("Esiste gia' una scheda di Non Conformita' per questa commissione con la stessa data e turno.")
-      raise ValidationError("Esiste gia' una scheda di Non Conformita' per questa commissione con la stessa data e turno.")
+    if Nonconformita.get_by_cm_data_turno(cm=form.commissione, data=dataNonconf, turno=form.turno.data).count() > 10 :
+      logging.info("Esistona gia' 10 Non Conformita' per questa commissione con la stessa data e turno.")
+      raise ValidationError("Esiste gia' 10 segnalazioni di Non Conformita' per questa commissione con la stessa data e turno.")
 
     logging.info("1")
     if dataNonconf.isoweekday() > 5 :
@@ -67,8 +67,8 @@ class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modifi
 
   def validate_dataIspezione(form, field):
     dataIspezione = field.data
-    if Dieta.get_by_cm_data_turno(form.commissione, dataIspezione, form.turno.data).get() :
-      raise ValidationError("Esiste gia una scheda di ispezione Diete per questa commissione con la stessa data e turno.")
+    if Dieta.get_by_cm_data_turno_tipo(form.commissione, dataIspezione, form.turno.data, form.tipo.data).get() :
+      raise ValidationError("Esiste gia una scheda di ispezione Diete per questa commissione con la stessa data e turno e tipo di dieta.")
   
     if dataIspezione.isoweekday() > 5 :
       raise ValidationError("L'ispezione deve essere fatta in un giorno feriale")
