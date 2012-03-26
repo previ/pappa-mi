@@ -115,10 +115,18 @@ class CMAvatarHandler(BasePage):
           self.response.out.write(commissario.avatar(cmsro=None,myself=True));
         else:
           logging.info("attachment is too big.")
-    if cmd == "saveurl":
-      commissario = self.getCommissario(users.get_current_user())
-      commissario.avatar_url = self.request.get("picture")
+    if cmd == "getimage":
+      commissario = self.getCommissario()
+      profile = commissario.usera.get().get_profile_by_strategy(self.request.get("provider"))
+      if profile:
+        user_info = profile.user_info.get("info")
+        if user_info.get("image"):
+          commissario.avatar_url=user_info.get("image").get("url")
+
       commissario.put()
+      commissario.set_cache()
+      self.response.out.write(commissario.avatar(cmsro=None,myself=True));
+      
     
 app = webapp.WSGIApplication([
     ('/profilo', CMProfiloHandler),

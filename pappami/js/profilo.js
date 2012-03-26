@@ -1,6 +1,5 @@
 "use strict";
 
-var fblogged = false;
 var cache = {},	lastXhr, city = null;
 var combo_config = {
   'lang'        : 'it',
@@ -19,15 +18,6 @@ $(document).ready(function() {
     $("#avatar_dialog").dialog({ title:"Immagine", modal: true, width: "30em", zIndex: 3, autoOpen: false });
     $("#avatar").click(function() {
         $("#avatar_dialog").dialog("open");
-        $("#fbgetimage").click(function() {
-            if(!fblogged) {
-                FB.login(function(response) {
-                    getimage();
-                });
-            } else {
-                getimage();
-            }            
-        });
     });
     $("#form0").validate({ 
       rules: {
@@ -107,17 +97,10 @@ $(document).ready(function() {
       $("#dialog").load("/condizioni", function(){$("#dialog").dialog("open");});
     });
 
-    $('#citta').change(oncitychanged());
+    $('#citta').change(oncitychanged);
     
-    FB.init({ 
-       appId:'103254759720309', cookie:true, 
-       status:true, xfbml:true 
-    });        
-    FB.getLoginStatus(function(response) {
-       if (response.session) {
-         fblogged = true;
-       }
-    });
+    if($('#citta').val() != "") oncitychanged();
+    
 });     
 
 function oncitychanged() {
@@ -127,6 +110,7 @@ function oncitychanged() {
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
 	city = $("#citta").val()
 	cache[city] = data
+	$('#commissione_sel').parent().html('<input id="commissione_sel" name="commissione_sel" type="text"/>');	
 	$('#commissione_sel').ajaxComboBox(data, combo_config).bind("selected", function() { 
 	  $("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+$("#commissione_sel_hidden").val()+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+$(this).val()+'</b></p></div>');
 	  $(this).val(''); 
@@ -134,6 +118,7 @@ function oncitychanged() {
       });    
     } else {
       city = $("#citta").val()
+      $('#commissione_sel').parent().html('<input id="commissione_sel" name="commissione_sel" type="text"/>');	
       $('#commissione_sel').ajaxComboBox(cache[city], combo_config).bind("selected", function(event, ui) { 
 	  $("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+$("#commissione_sel_hidden").val()+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+$(this).val()+'</b></p></div>');
 	  $(this).val(''); 
@@ -146,18 +131,13 @@ function closeSignupNotification() {
   window.location.href = "/";
 }
 
-function getimage() {
-  FB.api('/me', function(user) {
-    if(user != null) {
-        picturl = 'https://graph.facebook.com/' + user.id + '/picture'
-        $('#avatar_url').attr("value", picturl);
-        $('#avatar').attr("src", picturl);
-        $('#avatar_edit').attr("src", picturl);
-        data = {cmd: 'saveurl', picture: picturl};
-        $.post('/profilo/avatar', data, function() {
-            $("#avatar_dialog").dialog("close");            
-        });
-    }
+function getimage( p) {
+  var postdata = {cmd: 'getimage', provider: p};
+  $.post('/profilo/avatar', postdata, function(picturl) {
+      $("#avatar_dialog").dialog("close");            
+      $('#avatar_url').attr("value", picturl);
+      $('#avatar').attr("src", picturl);
+      $('#avatar_edit').attr("src", picturl);
   });
 }
 

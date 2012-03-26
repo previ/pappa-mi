@@ -1623,7 +1623,7 @@ Contents
 
 			case 'it':
 				var msg = {
-					'add_btn'     : 'Aggiungu',
+					'add_btn'     : 'Aggiungi',
 					'add_title'   : 'Aggiungi',
 					'del_btn'     : 'Togli',
 					'del_title'   : 'Togli',
