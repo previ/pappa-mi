@@ -102,7 +102,9 @@ class SignupHandler(BasePage):
 
     commissario.setCMDefault()
     memcache.set("commissario" + str(user.get_id()), commissario, 600)
-      
+
+    self.sendRegistrationRequestMail(commissario)
+    
     message = "Registrazione completata."
     if commissario.isRegCommissario():
       message = "Grazie per esserti registrato, riceverai una mail quando il tuo profilo sarà stato attivato."
@@ -112,11 +114,11 @@ class SignupHandler(BasePage):
 
   def sendRegistrationRequestMail(self, commissario):
     if commissario.isGenitore():
-      cls.sendRegistrationGenitoreRequestMail(commissario)
+      self.sendRegistrationConfirmGenitoreMail(commissario)
     else:
-      cls.sendRegistrationCommissarioRequestMail(commissario)      
+      self.sendRegistrationConfirmCommissarioMail(commissario)      
 
-  def sendRegistrationGenitoreRequestMail(self, commissario) :
+  def sendRegistrationConfirmGenitoreMail(self, commissario) :
 
     host = self.getHost()
 
@@ -129,10 +131,11 @@ class SignupHandler(BasePage):
     message.subject = "Benvenuto in Pappa-Mi"
     message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
     
-    Ora puoi accedere all'area a te riservata:
-    http://"""  + host + """/genitore
+    Clicca qui per accedere a Pappa-Mi:
+    http://"""  + host + """/
 
-    PappaPedia (documenti):
+    
+    Ti rocordo anche il sito PappaPedia (documenti):
     http://pappapedia.pappa-mi.it
     
     Ciao !
@@ -142,6 +145,33 @@ class SignupHandler(BasePage):
       
     message.send()
 
+  def sendRegistrationConfirmCommissarioMail(self, commissario) :
+
+    host = self.getHost()
+
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+    
+    message = mail.EmailMessage()
+    message.sender = sender
+    message.to = commissario.usera.get().email
+    message.bcc = sender
+    message.subject = "Benvenuto in Pappa-Mi"
+    message.body = """ La tua richiesta di registrazione come Commissione Mensa e' stata confermata.
+    
+    Clicca qui per accedere a Pappa-Mi:
+    http://"""  + host + """/
+
+    
+    Ti rocordo anche il sito PappaPedia (documenti):
+    http://pappapedia.pappa-mi.it
+    
+    Ciao !
+    Pappa-Mi staff
+    
+    """
+      
+    message.send()
+    
   def sendRegistrationCommissarioRequestMail(self, commissario) :
 
     host = self.getHost()
@@ -152,11 +182,11 @@ class SignupHandler(BasePage):
     message.sender = sender
     message.to = sender
     message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
-    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.user.email() + """ ha inviato una richiesta di registrazione come Commissario. 
+    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.usera.get().email + """ ha inviato una richiesta di registrazione come Commissario. 
     
     Per abilitarlo usare il seguente link:
     
-    """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key())
+    """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key.id())
 
     message.send()
     

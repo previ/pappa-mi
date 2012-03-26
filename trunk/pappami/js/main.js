@@ -2,6 +2,7 @@
 
 var cache = {},	lastXhr, city = null;
 var combo_config = {
+  'navi_simple' : true,
   'lang'        : 'it',
   'sub_info'    : false,
   'select_only' : true,
@@ -9,10 +10,16 @@ var combo_config = {
   'bind_to'	: 'selected',
   'init_val'    : '{{ctx.cm_key}}',
   'field'	: 'label',
+  'db_table'    : 'citta',
   'button_img'  : '/img/combobox_button.png',
   'load_img'    : '/img/ajax-loader.gif'
 }
 
+function initcmcombo() {
+  $('#commissione_sel').ajaxComboBox("/profilo/getcm", combo_config).bind("selected", function(event, ui) { 
+    $("#cm").val($("#commissione_sel_hidden").val()); 
+  });
+}
 function oncitychanged() {
   if( $("#citta").val() != "" && $("#citta").val() != city) {        
     if( !cache[$("#citta").val()] ) {
@@ -20,12 +27,14 @@ function oncitychanged() {
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
 	city = $("#citta").val()
 	cache[city] = data
+	$('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/><input type="hidden" id="cm" name="cm" value=""/>');
 	$('#commissione_sel').ajaxComboBox(data, combo_config).bind("selected", function(event, ui) { 
 	  $("#cm").val($("#commissione_sel_hidden").val()); 
 	}); 	
       });    
     } else {
       city = $("#citta").val()
+      $('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/><input type="hidden" id="cm" name="cm" value=""/>');
       $('#commissione_sel').ajaxComboBox(cache[city], combo_config).bind("selected", function(event, ui) { 
 	  $("#cm").val($("#commissione_sel_hidden").val()); 
 	});

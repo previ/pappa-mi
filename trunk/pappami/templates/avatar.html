@@ -1,14 +1,29 @@
-<div id="avatar_dialog" style="display:none;">
-<script src="http://connect.facebook.net/it_IT/all.js"></script> 
-<img id="avatar_edit" src="{{form.avatar_url.data}}" class="avatar-big"/>
-<form id="avatar_form" action="/profilo/avatar" method="POST">
-<input type="hidden" name="cmd" value="upload"/>
-Carica una immagine: <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
-</form>
-<p>Oppure:</p>
-<div id="fb-root"></div>
-<div id="fb"><a id="fbgetimage" class="btn">Aggiorna da Facebook</a></div>
-<div id="gp"><a id="gpgetimage" class="btn">Aggiorna da Google</a></div>
-<div id="tw"><a id="twgetimage" class="btn">Aggiorna da Twitter</a></div>
-<div id="tw"><a id="ligetimage" class="btn">Aggiorna da LinkedIn</a></div>
+{% set providers = [
+  ('google', '/auth/google'),
+  ('facebook', '/auth/facebook'),
+  ('twitter', '/auth/twitter'),
+  ('linkedin', '/auth/linkedin'),
+  ('windowslive', '/auth/windowslive')
+] -%}
+
+<div id="avatar_dialog" class="row span4" style="display:none;">
+  <img id="avatar_edit" src="{{cmsro.avatar(cmsro,myself=True, size='big')}}" class="avatar-big"/>
+  <form id="avatar_form" action="/profilo/avatar" method="post">
+    <input type="hidden" name="cmd" value="upload"/>
+    <div class="control-group">
+      <div class="controls">      
+        <label>Carica una immagine:</label>
+        <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">      
+        {% for p, u in providers %}{%if user.has_auth_strategy(p) %} {% set hasimage=True %}{% endif %} {% endfor %}
+        {%if hasimage %}<label>Oppure usa una delle immagini di questi account:</label>{% endif %}
+        {% for p, u in providers %}{%if user.has_auth_strategy(p) %}        
+          <button class="btn btn-normal" onclick="getimage('{{ p }}'); return false;"><img src="/img/eauth/{{ p }}.png"/> Aggiorna da {{ p }}</button>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </form>  
 </div>

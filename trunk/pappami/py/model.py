@@ -311,6 +311,7 @@ class Commissario(model.Model):
       return 1
     if cmsro.isCommissario():
       return 2
+    return 0
     
   def can_show(self, what, whom):
     if self._privacy == None:

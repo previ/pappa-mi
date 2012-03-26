@@ -261,6 +261,12 @@ class User(ndb.Expando):
                 return auth_id
         return False
 
+    def get_profile_by_strategy(self, auth_strategy):
+        for auth_id in self.auth_ids:
+            if auth_strategy in auth_id:
+                return UserProfile.get_by_id(auth_id)
+        return False
+    
     def remove_auth_strategy(self, auth_id):
         if auth_id in self.auth_ids:
             self.auth_ids.remove(auth_id)
