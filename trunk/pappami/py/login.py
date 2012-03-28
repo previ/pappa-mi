@@ -29,6 +29,7 @@ from google.appengine.api import users
 import webapp2 as webapp
 from webapp2_extras import security
 from google.appengine.api import memcache
+from google.appengine.api import mail
 
 from google.appengine.ext.webapp import util
 from base import BasePage, config
@@ -195,9 +196,34 @@ class PwdRecoverRequestPage(BasePage):
     self.response.out.write(error)
 
   def sendPwdRecEmail(self, email):
+
+    host = self.getHost()
+
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+
     auth_id = models.User.generate_auth_id("password", email)
     profile = models.UserProfile.get_by_id(auth_id)
     url = self.getHost() + "/eauth/pwdrecch?key="+profile.key.urlsafe()
+
+    message = mail.EmailMessage()
+    message.sender = sender
+    message.to = email
+    message.bcc = sender
+    message.subject = "Pappa-Mi: richiesta di cambio password"
+    message.body = """ Hai chiesto di cambiare la password del tuo account.
+    
+    Clicca sul link di seguito per continuare:
+    http://"""  + url + """
+
+        
+    Ciao
+    Pappa-Mi staff
+    
+    """
+      
+    message.send()
+
+    
     logging.info("url: " + url)
     
 class PwdRecoverChangePage(BasePage):
