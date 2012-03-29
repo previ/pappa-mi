@@ -336,38 +336,41 @@ class CMMenuHandler(BasePage):
       memcache.set("menu-" + str(offset) + "-" + str(data), menu, 60)
     return menu
 
-  def getMenuHelper(self, menu, data, offset, citta):
+  def getMenuHelper(self, menu, data, offset, citta):    
     mn = MenuNew.get_by(citta, data)
     
-    piatti = dict()
-    if offset > 0:
-      piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
-      mh = MenuHelper()
-      mh.data = data + timedelta(data.isoweekday()-1)      
-      mh.giorno = data.isoweekday()
-      mh.primo = piatti["p"]
-      mh.secondo = piatti["s"]
-      mh.contorno = piatti["c"]
-      mh.dessert = piatti["d"]
-      menu.append(mh)
-    else:
-      settimane = Piatto.get_by_date(data)
-    
-      for i in range(1,5):
-        piatti = settimane[i]
+    if mn:
+      piatti = dict()
+      if offset > 0:
+        piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
         mh = MenuHelper()
         mh.data = data + timedelta(data.isoweekday()-1)      
         mh.giorno = data.isoweekday()
-        mh.settimana = i
         mh.primo = piatti["p"]
         mh.secondo = piatti["s"]
         mh.contorno = piatti["c"]
         mh.dessert = piatti["d"]
-        menu.append(mh)      
+        menu.append(mh)
+      else:
+        settimane = Piatto.get_by_date(data)
+      
+        for i in range(1,5):
+          piatti = settimane[i]
+          mh = MenuHelper()
+          mh.data = data + timedelta(data.isoweekday()-1)      
+          mh.giorno = data.isoweekday()
+          mh.settimana = i
+          mh.primo = piatti["p"]
+          mh.secondo = piatti["s"]
+          mh.contorno = piatti["c"]
+          mh.dessert = piatti["d"]
+          menu.append(mh)      
     
 
   def getMenuWeek(self, data, cm): 
 
+    logging.info(str(cm.key))
+    logging.info(str(data))
     offset = cm.getCentroCucina(data).getMenuOffset(data)
 
     if offset == None:
@@ -376,25 +379,26 @@ class CMMenuHandler(BasePage):
     # settimana corrente
     menu = MenuNew.get_by(cm.citta, data)
 
-    giorni = Piatto.get_by_settimana((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
-    #for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
-      #if not pg.giorno in giorni:
-        #giorni[pg.giorno] = dict()
-      #giorni[pg.giorno][pg.tipo] = pg.piatto
-
-    data = data + timedelta(data.isoweekday()-1)      
-      
     mlist = list()
-    for i in range(1,6):
-      piatti = giorni[i]
-      mh = MenuHelper()
-      mh.data = data + timedelta(i - 1) 
-      mh.giorno = i
-      mh.primo = piatti["p"]
-      mh.secondo = piatti["s"]
-      mh.contorno = piatti["c"]
-      mh.dessert = piatti["d"]
-      mlist.append(mh)
+    if menu:
+      giorni = Piatto.get_by_settimana((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
+      #for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+        #if not pg.giorno in giorni:
+          #giorni[pg.giorno] = dict()
+        #giorni[pg.giorno][pg.tipo] = pg.piatto
+  
+      data = data + timedelta(data.isoweekday()-1)      
+        
+      for i in range(1,6):
+        piatti = giorni[i]
+        mh = MenuHelper()
+        mh.data = data + timedelta(i - 1) 
+        mh.giorno = i
+        mh.primo = piatti["p"]
+        mh.secondo = piatti["s"]
+        mh.contorno = piatti["c"]
+        mh.dessert = piatti["d"]
+        mlist.append(mh)
       
     return mlist
       

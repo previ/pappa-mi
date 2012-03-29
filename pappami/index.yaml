@@ -37,7 +37,23 @@ indexes:
   properties:
   - name: livello
   - name: creato_il
+
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: creato_il
     direction: desc
+
+- kind: Messaggio
+  properties:
+  - name: livello
+  - name: par
+  - name: creato_il
+
+- kind: Messaggio
+  properties:
+  - name: par
+  - name: creato_il
 
 - kind: ZonaOffset
   properties:

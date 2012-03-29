@@ -37,7 +37,9 @@ class CMMenuDataHandler(CMMenuHandler):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
       c = model.Key("Commissione", int(self.request.get("commissione"))).get()
-      menu = self.getMenu(data, c)[0]
+      menus = self.getMenu(data, c)      
+      if len(menus):
+        menu = self.getMenu(data, c)[0]
       
       json.dump(menu.to_dict(), self.response.out)
 

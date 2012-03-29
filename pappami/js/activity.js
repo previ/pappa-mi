@@ -66,10 +66,12 @@ function opennewmsg() {
   
   
     $('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
-    $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	
+    $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	    
       $('#activity_list').prepend(data);
+      $("#e_submit").button("reset");
       //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
-    }, beforeSubmit: function(arr,$form) {     
+    }, beforeSubmit: function(arr,$form) {
+      $("#e_submit").button("loading");
       $("[name='tags']").attr('value','');
       var tags = $("#message_tags_handler").tagHandler("getTags")
       for(var tag in tags) {

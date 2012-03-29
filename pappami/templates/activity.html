@@ -11,6 +11,7 @@
            $('#comments_num_{{activity.key.id()}}').text($('#comment_list_{{activity.key.id()}}').children().length);
            $('#comments_header_{{activity.key.id()}}').show();
            //$('#comments_{{activity.key.id()}}').load('/comments/comment?par={{activity.key.id()}}')
+           $("#e_comment_{{activity.key.id()}}_submit").button("reset");
         }}); 
         {%if detail is defined%}onexpcomments('{{activity.key.id()}}');{%endif%}
         $("[data-original-title]").tooltip();
@@ -62,7 +63,7 @@
       <div class="comment_author">{{cmsro.nomecompleto(cmsro)}} </div>
       <div class="comment_author_title">{{cmsro.titolo(cmsro)}}</div>
       <div class="comment_text"><textarea class="span6 comment_textarea" name="testo"></textarea></div>
-      <div class="actions"><button class="btn btn-primary" type="submit">Invia</button><button class="btn"  type="button" onclick="onexpcommentnew('{{activity.key.id()}}')">Annulla</button></div>
+      <div class="actions"><button id="e_comment_{{activity.key.id()}}_submit" class="btn btn-primary" type="submit" onclick="$(this).button('loading');" data-loading-text="Invia...">Invia</button><button class="btn"  type="button" onclick="onexpcommentnew('{{activity.key.id()}}')">Annulla</button></div>
      </div>
     </form>
     </div>
