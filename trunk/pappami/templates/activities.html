@@ -10,23 +10,13 @@ $(document).ready(function() {
       $('#act_loading').hide();      
       $("#nav-sec").children().removeClass("active");
       $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
-    });
-    
-    
+    });        
 }); 
 </script> 
 {%set tab_activity="active"%}
 {%include "navigation.html"%}
 <div id="activities" class="activity_container">
  <div id="nav-priv-cnt"></div>
- {#<div class="well">
- <h3>Aggiungi nuovo:</h3>
- <button class="btn primary" onclick="opennewmsg();">Messaggio</button>
- <button class="btn primary" onclick="opennewisp();">Ispezione</button>
- <button class="btn primary" onclick="opennewdieta();">Ispezione Diete</button>
- <button class="btn primary" onclick="opennewnc();">Non conformit&agrave;</button>
- <button class="btn primary" onclick="opennewnota();">Nota</button>
- </div>#}
  <div id="new-data" style="display:none;">
   <div id="new-data-form" style="border: none;"></div> 
   <div id="new-data-preview" style="display:none;"></div> 
