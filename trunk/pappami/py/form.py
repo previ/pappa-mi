@@ -67,7 +67,7 @@ class DietaForm(model_form(model=Dieta, exclude=['creato_il','creato_da','modifi
 
   def validate_dataIspezione(form, field):
     dataIspezione = field.data
-    if Dieta.get_by_cm_data_turno_tipo(form.commissione, dataIspezione, form.turno.data, form.tipo.data).get() :
+    if Dieta.get_by_cm_data_turno_tipo(form.commissione, dataIspezione, form.turno.data, form.tipoDieta.data).get() :
       raise ValidationError("Esiste gia una scheda di ispezione Diete per questa commissione con la stessa data e turno e tipo di dieta.")
   
     if dataIspezione.isoweekday() > 5 :

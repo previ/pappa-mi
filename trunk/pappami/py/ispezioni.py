@@ -67,7 +67,7 @@ class DietaValidationHandler(BasePage):
     #logging.info(dataIspezione);
     
     message = "Ok"
-    if Dieta.get_by_cm_data_turno(model.Key("Commissione", int(cm_id)), dataIspezione, turno).get() :
+    if Dieta.get_by_cm_data_turno_tipo(model.Key("Commissione", int(cm_id)), dataIspezione, turno, tipo).get() :
       message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
 
     #logging.info(message);

@@ -177,7 +177,8 @@ function opennewwiz(url) {
 	  $("[name='tags']").attr('value','');
           var tags = $("#item_tags_handler").tagHandler("getTags")
           for(var tag in tags) {
-    	    arr.push({name: "tags", value: tags[tag]});
+    	    //arr.push({name: "tags", value: tags[tag]});
+	    $form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
 	  }
 	}
       }
@@ -231,8 +232,8 @@ function onopennewitem() {
       $('#new-data-form').hide();  
       $('#new-data-preview').show();
       $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
-      $('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      
-	$('#new-data').dialog('close');
+      $('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      	
+	$('#new-data').dialog('close');	
 	$('#new-data-form').html('');
 	$('#new-data-preview').html('');
 	$('#activity_list').prepend(data);
@@ -250,8 +251,9 @@ function onopennewitem() {
       
   }, beforeSubmit: function(arr,$form) {
     var tags = $("#item_tags_handler").tagHandler("getTags")
-    for(var tag in tags) {    
-      arr.push({name: "tags", value: tags[tag]});
+    for(var tag in tags) {          
+      //arr.push({name: "tags", value: tags[tag]});
+      $form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
     }
     $("#e_submit").button("loading");
   }});
