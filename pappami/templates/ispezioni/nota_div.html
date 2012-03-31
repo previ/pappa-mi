@@ -1,6 +1,6 @@
 <div id="form-error"></div>
 <div class="">
- <form action="/isp/nota" method="post" id="form0" enctype="multipart/form-data" novalidate>
+ <form action="/isp/nota" method="post" id="form0" enctype="multipart/form-data" encoding="multipart/form-data" novalidate>
   <h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
   <input type="hidden" name="key" value="{{key}}"/>
   <div class="step form-stacked">
@@ -68,6 +68,7 @@
 </div>
 
 <script type="text/javascript">
+"use strict";
 $(document).ready(function() { 
  $( "#e_dataNotaViz" ).datepicker({ altField: '#e_dataNota', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
 
@@ -87,16 +88,15 @@ $(document).ready(function() {
   theme_advanced_buttons3 : "",			
   theme_advanced_toolbar_location : "top",
   theme_advanced_toolbar_align : "left",
-  theme_advanced_resizing : false,
-  
+  theme_advanced_resizing : false  
  });
- 
- 
+
  $('#allegato_file_1').change(function(){
-  $('#allegato_file_2').show();
+  $('#allegato_file_2').show(); 
  });
  $('#allegato_file_2').change(function(){
   $('#allegato_file_3').show();
  });
+
 });
 </script>

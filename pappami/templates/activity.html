@@ -6,7 +6,8 @@
         // bind 'myForm' and provide a simple callback function 
         $('#comment_{{activity.key.id()}}').ajaxForm({clearForm: true, success:function(data) { 
            $('#comment_list_{{activity.key.id()}}').append(data);
-           last = $('#comment_list_{{activity.key.id()}}').children().last().children().first().attr('id').substring("comment_".length);
+           //last = $('#comment_list_{{activity.key.id()}}').children().last().children().first().attr('id').substring("comment_".length);
+           last = $(data).find(".comment_box:last").attr("id");
            $('#comment_last_{{activity.key.id()}}').val(last);
            $('#comments_num_{{activity.key.id()}}').text($('#comment_list_{{activity.key.id()}}').children().length);
            $('#comments_header_{{activity.key.id()}}').show();
