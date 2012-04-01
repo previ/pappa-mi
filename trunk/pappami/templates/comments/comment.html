@@ -2,36 +2,37 @@
 <li class="comment_item">
 <div class="comment_box" id="comment_{{comment.key.id()}}">
  <div class="comment_avatar">
- <img class="avatar" src="{{comment.author_avatar(cmsro)}}" title="{{comment.author(cmsro)}}">
+  <img class="avatar" src="{{comment.author_avatar(cmsro)}}" title="{{comment.author(cmsro)}}">
  </div>
  <div class="comment_body">
   <div class="comment_author">{{comment.author(cmsro)}}</div>
   <div class="comment_author_title">{{comment.author_title(cmsro)}}</div>
-   <div class="comment_date"> - {{comment.data()}}</div>
-   <!--div>Titolo: {{comment.titolo}}</div-->
-   <div class="comment_text">{{comment.testo|replace("\n","<br/>")}}</div>
-   <div class="comment_footer">   
-    <div class="comment_feedback" id="votes_{{comment.key.id()}}" onclick="onshowvotes('{{comment_root.key.id()}}')" style="display:{%if comment.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment.key.id()}}">{{comment.likes()}}</span> persone<span id="vnum_{{comment.key.id()}}_me" {%if comment.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
-     <div class="comment_vote" id="vote_1_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}inline{%else%}none{%endif%};">
-      <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',1)">Mi piace</div>
-      <!--button id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',-1)">Non mi piace</button-->
-     </div>
-     <div class="comment_vote" id="vote_2_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}none{%else%}inline{%endif%};">
-      <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onunvote('{{comment.key.id()}}')">Ho cambiato idea</div>
-     </div>
-    </div>
-    {%endif%}
+  <div class="comment_date"> - {{comment.data()}}</div>
+  <!--div>Titolo: {{comment.titolo}}</div-->
+  <div class="comment_text">{{comment.testo|replace("\n","<br/>")}}</div>
+  <div class="comment_footer">   
+   <div class="comment_feedback" id="votes_{{comment.key.id()}}" onclick="onshowvotes('{{comment.key.id()}}')" style="display:{%if comment.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{comment.key.id()}}">{{comment.likes()}}</span> persone<span id="vnum_{{comment.key.id()}}_me" {%if comment.canvote(user) %}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+    <div class="comment_vote" id="vote_1_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}inline{%else%}none{%endif%};">
+    <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',1)">Mi piace</div>
+    <!--button id="vote_{{comment.key.id()}}" onclick="onvote('{{comment.key.id()}}',-1)">Non mi piace</button-->
    </div>
+   <div class="comment_vote" id="vote_2_{{comment.key.id()}}" style="display:{%if comment.canvote(user) %}none{%else%}inline{%endif%};">
+    <div class="comment_vote_button" id="vote_{{comment.key.id()}}" onclick="onunvote('{{comment.key.id()}}')">Ho cambiato idea</div>
+   </div>
+  </div>
+  {%endif%}
  </div>
 </div>
 </li>
 {%if ease%}
 <script type="text/javascript"> 
 $(function() {
-$( "#comment_{{comment.key.id()}}" ).css("background-color", "#aaa");
+/*$( "#comment_{{comment.key.id()}}" ).css("background-color", "#aaa");
 $( "#comment_{{comment.key.id()}}" ).animate({
 	 backgroundColor: "#fff"
-}, 2000 );
+}, 2000 );*/
+$( "#activity_{{comment.key.id()}}" ).css("opacity", "0");
+$( "#activity_{{comment.key.id()}}" ).animate({ opacity: 1}, 2000 );
 });
 </script>
 {%endif%}

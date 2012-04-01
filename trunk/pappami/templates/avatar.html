@@ -7,7 +7,7 @@
 ] -%}
 
 <div id="avatar_dialog" class="row span4" style="display:none;">
-  <img id="avatar_edit" src="{{cmsro.avatar(cmsro,myself=True, size='big')}}" class="avatar-big"/>
+  <img id="avatar_edit" src="{%if cmsro%}{{cmsro.avatar(cmsro,myself=True, size='big')}}{%else%}{{form.avatar_url.data}}{%endif%}" class="avatar-big"/>
   <form id="avatar_form" action="/profilo/avatar" method="post">
     <input type="hidden" name="cmd" value="upload"/>
     <div class="control-group">

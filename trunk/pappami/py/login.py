@@ -100,8 +100,10 @@ class SignupPage(BasePage):
     b = random.randint(1, 10)
     
     self.session["c"] = str(a + b)
-    template_values["cap_a"] = a
-    template_values["cap_b"] = b
+    template_values["cap_a"] = str(a)
+    template_values["cap_b"] = str(b)    
+    logging.info("SignupPage a: " + str(a) + " b " + str(b) + " c " + str(a + b))
+    logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
     
     self.getBase(template_values)
     
@@ -144,7 +146,8 @@ class SignupPage(BasePage):
       self.session["c"] = str(a + b)
       template_values["cap_a"] = a
       template_values["cap_b"] = b
-      
+      logging.info("a: " + str(a) + " b " + str(b) + " c " + str(a + b))
+
       template_values["messages"] = [{'message': error}]
       self.getBase(template_values)
     else:

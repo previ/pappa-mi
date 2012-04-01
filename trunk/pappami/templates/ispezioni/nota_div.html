@@ -1,6 +1,6 @@
 <div id="form-error"></div>
 <div class="">
- <form action="/isp/nota" method="post" id="form0" enctype="multipart/form-data" encoding="multipart/form-data" novalidate>
+ <form action="/isp/nota" method="post" id="form0" enctype="multipart/form-data" novalidate>
   <h1 class="table_separator" id="title" style="display:none;">Nuova Nota</h1>
   <input type="hidden" name="key" value="{{key}}"/>
   <div class="step form-stacked">
@@ -15,8 +15,8 @@
     </div>
     <div class="span2">
      <div class="control-group">       
-      <label for="e_dataNotaViz">Data Ispezione</label>
-      <input title="Inserire la data a cui si riferisce la segnalazione." type="text" class="span2 required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
+      <label for="e_dataNotaViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
+      <input type="text" class="span2 required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
       <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
      </div>   
     </div>
