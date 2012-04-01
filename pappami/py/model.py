@@ -49,7 +49,7 @@ class CentroCucina(model.Model):
   codice = model.StringProperty()
   strada = model.StringProperty()
   civico = model.StringProperty()
-  #citta = model.StringProperty()
+  #citta = model.StringProperty()  # PRE_MIGRATION
   citta = model.KeyProperty(kind=Citta)
   cap = model.StringProperty()
   nomeContatto = model.StringProperty()
@@ -98,8 +98,8 @@ class Commissione(model.Model):
   zona = model.StringProperty(default="")
   strada = model.StringProperty(default="")
   civico = model.StringProperty(default="")
-  #citta = model.StringProperty(default="")
-  citta = model.KeyProperty(kind=Citta)
+  #citta = model.StringProperty(default="") # PRE_MIGRATION
+  citta = model.KeyProperty(kind=Citta) 
   cap = model.StringProperty(default="")
   telefono = model.StringProperty(default="")
   fax = model.StringProperty(default="")

@@ -30,7 +30,7 @@ function cleardirty() {
 
 function initForm() {
   ulmsg=true;
-  $('#new-data').find("[data-content]").popover({"delay":500, title:"Informazioni"});
+  $('#new-data-form').find("[data-content]").popover({"delay":500, title:"Informazioni"});
   $("#item_tags_handler").tagHandler({
       getData: { 'msg': "" },
       getURL: '/comments/gettags',            
@@ -199,72 +199,78 @@ function opennewwiz(url) {
   });
 }
 
-function onopennewitem() {
- initForm();
+function opennewitem(url) {
+  $('#new-data-form').load(url, function() {
+    initForm();
  
- $("#form0").validate({
-    errorClass: "error",
-    errorPlacement: function(error, element) {	      
-      var item = $(element).parents(".control-group");
-      item.tooltip({title:error.text(), trigger:'manual'});
-      item.tooltip('show');
-    },
-    highlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".control-group");
-      item.addClass(errorClass); 
-    },
-    unhighlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".control-group");
-      item.removeClass(errorClass); 
-      item.tooltip('hide');
-    }
-  });
-  
-  $('#form0').ajaxForm({clearForm: false, success: function(data) { 
-    $('#new-data-preview').html(data);
-    if($('#new-data-preview').find('#form-error').html()) {
-      var err = $('#new-data-preview').find('#form-error');
-      err.dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	{ text: "Ok",
-          click: function() { $(this).dialog("close"); $('#new-data-preview').find('#form-error').detach(); $("e_submit").button("reset"); } } ] });
-      err.dialog('open');      
-    } else {
-      $('#new-data-form').hide();  
-      $('#new-data-preview').show();
-      $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
-      $('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      	
-	$('#new-data').dialog('close');	
-	$('#new-data-form').html('');
-	$('#new-data-preview').html('');
-	$('#activity_list').prepend(data);
-	$('#new-nc').html("Inserire altra Non conformit&agrave; ?")
-        if(auto_open_nc) {
-	  $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	    { text: "Si",
-	      click: function() { $(this).dialog("close"); opennewnc(); } }, 
-	    { text: "No",
-	      click: function() { $(this).dialog("close"); auto_open_nc = false;} } ] });
-	  $('#new-nc').dialog('open');
-	}
-      }});
-    }
-      
-  }, beforeSubmit: function(arr,$form) {
-    var tags = $("#item_tags_handler").tagHandler("getTags")
-    for(var tag in tags) {          
-      //arr.push({name: "tags", value: tags[tag]});
-      $form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
-    }
-    $("#e_submit").button("loading");
-  }});
-  //$('textarea').autogrow();
-  $.validator.messages = {
-      required: "Inserire o selezionare un valore",
-      range: "Inserire un valore compreso tra {0} e {1}" };
-  $('#new-data').show();
-  $('#new-data-form').show();
-  $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 810, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
-  $('#new-data').dialog('open');
+     
+    $('#form0').ajaxForm({clearForm: false, success: function(data) { 
+      $('#new-data-preview').html(data);
+      if($('#new-data-preview').find('#form-error').html()) {
+	var err = $('#new-data-preview').find('#form-error');
+	err.dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	  { text: "Ok",
+	    click: function() { $(this).dialog("close"); $('#new-data-preview').find('#form-error').detach(); $("e_submit").button("reset"); } } ] });
+	err.dialog('open');      
+      } else {
+	$('#new-data-form').hide();  
+	$('#new-data-preview').show();
+	$('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+	$('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      	
+	  $('#new-data').dialog('close');	
+	  $('#new-data-form').html('');
+	  $('#new-data-preview').html('');
+	  $('#activity_list').prepend(data);	
+	  if(auto_open_nc) {
+	    $('#new-nc').html("Inserire altra Non conformit&agrave; ?")
+	    $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
+	      { text: "Si",
+		click: function() { $(this).dialog("close"); opennewnc(); } }, 
+	      { text: "No",
+		click: function() { $(this).dialog("close"); auto_open_nc = false;} } ] });
+	    $('#new-nc').dialog('open');
+	  } else if( $.browser.msie && ($.browser.version == "7.0" || $.browser.version == "8.0") ) {
+	    window.location.href = "/a";
+	  }	
+	}});
+      }
+	
+    }, beforeSubmit: function(arr,$form) {
+      var tags = $("#item_tags_handler").tagHandler("getTags")
+      for(var tag in tags) {          
+	//arr.push({name: "tags", value: tags[tag]});
+	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
+      }
+      $("#e_submit").button("loading");
+    }});
+    //$('textarea').autogrow();
+    $.validator.messages = {
+	required: "Inserire o selezionare un valore",
+	range: "Inserire un valore compreso tra {0} e {1}" };
+	
+    $("#form0").validate({
+       errorClass: "error",
+       errorPlacement: function(error, element) {	      
+	 var item = $(element).parents(".control-group");
+	 item.tooltip({title:error.text(), trigger:'manual'});
+	 item.tooltip('show');
+       },
+       highlight: function(element, errorClass, validClass) {
+	 var item = $(element).parents(".control-group");
+	 item.addClass(errorClass); 
+       },
+       unhighlight: function(element, errorClass, validClass) {
+	 var item = $(element).parents(".control-group");
+	 item.removeClass(errorClass); 
+	 item.tooltip('hide');
+       }
+    });
+	
+    $('#new-data').show();
+    $('#new-data-form').show();
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 810, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
+    $('#new-data').dialog('open');
+  }); 
 }
 
 function onclosenewitem() {
@@ -285,7 +291,7 @@ function opennewnc() {
  auto_open_nc = true;
  $('#new-data-form').html("");
  $('#new-data-preview').html("");
- $('#new-data-form').load("/isp/nc", onopennewitem);
+ opennewitem("/isp/nc");
 }
 
 function opennewdieta() {
@@ -297,7 +303,7 @@ function opennewdieta() {
 function opennewnota() {
  $('#new-data-form').html("");
  $('#new-data-preview').html("");
- $('#new-data-form').load("/isp/nota", onopennewitem);
+ opennewitem("/isp/nota");
 }
 
 function previewback() {
