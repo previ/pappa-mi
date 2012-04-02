@@ -36,10 +36,8 @@ class UserProfile(ndb.Expando):
     credentials = ndb.PickleProperty(indexed=False)
 
     @classmethod
-    def get_or_create(cls, auth_id, user_info, **kwargs):
-        """
-
-        """
+    def get_or_create(cls, auth_id, user_info, **kwargs):        
+        
         profile = cls.get_by_id(auth_id)
         if profile is None:
             profile = cls(id=auth_id)
@@ -412,7 +410,6 @@ class User(ndb.Expando):
     @classmethod
     def _get_or_create(cls, auth_id, emails, **kwarg):
         #logging.info("1")
-        #logging.info(emails)
         assert isinstance(emails, list), 'Emails must be a list'
         user = cls._find_user(auth_id, emails)
         if user and emails is not None:

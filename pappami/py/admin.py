@@ -313,13 +313,15 @@ class CMAdminHandler(BasePage):
   def get(self):    
 
     """
-    Pappa-Mi 1 to 2.0 migration
-    1.initMenu
-    2.deploy app with citta = TextProperty
-    3.initCity1
-    4.deploy app with citta = ReferenceProperty
-    5.initCity2
-    6.initStream
+    Pappa-Mi 1 to 2.0 migration    
+    1.deploy app with citta = TextProperty
+    2.initCity1
+    3.deploy app with citta = ReferenceProperty
+    4.initCity2
+    5.initAuthR
+    6.initAuth
+    7.initMenu
+    8.initStream
     """
     
     if self.request.get("cmd") == "initConfig":
@@ -328,14 +330,14 @@ class CMAdminHandler(BasePage):
       return      
      
     if self.request.get("cmd") == "initMenu":
-      citta = self.getCommissario(users.get_current_user()).citta
+      citta = Citta.query().get()
       for menu in Menu.query().filter(Menu.tipoScuola=="Materna"):
         nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
         if not nm:
           nm = MenuNew()
           nm.validitaDa = menu.validitaDa
           nm.validitaA = menu.validitaA
-          nm.citta = citta
+          nm.citta = citta.key
           nm.put()
         piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
         if not piatto:
@@ -347,12 +349,12 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm
+          piattoGiorno.menu = nm.key
           piattoGiorno.tipo = "p"
-          piattoGiorno.piatto = piatto
+          piattoGiorno.piatto = piatto.key
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
@@ -366,12 +368,12 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm
+          piattoGiorno.menu = nm.key
           piattoGiorno.tipo = "s"
-          piattoGiorno.piatto = piatto
+          piattoGiorno.piatto = piatto.key
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
@@ -385,16 +387,16 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm
+          piattoGiorno.menu = nm.key
           piattoGiorno.tipo = "c"
-          piattoGiorno.piatto = piatto
+          piattoGiorno.piatto = piatto.key
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
-        piatto = Piatto.query().filter("nome", menu.dessert).get()
+        piatto = Piatto.query().filter(Piatto.nome == menu.dessert).get()
         if not piatto:
           piatto = Piatto()
           piatto.nome = menu.dessert
@@ -404,12 +406,12 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm).filter(PiattoGiorno.piatto==piatto).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm
+          piattoGiorno.menu = nm.key
           piattoGiorno.tipo = "d"
-          piattoGiorno.piatto = piatto
+          piattoGiorno.piatto = piatto.key
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
@@ -437,52 +439,44 @@ class CMAdminHandler(BasePage):
         c.geo = db.GeoPt(45.463681,9.188171)
         c.put()
       for cm in Commissione.query().filter(Commissione.citta==None):
-        cm.citta = c
-        cm.put()
+        cm.citta = c.key
+        cm.put_async()
 
       for cc in CentroCucina.query():
-        cc.citta = c
-        cc.put()
+        cc.citta = c.key
+        cc.put_async()
 
       for cs in Commissario.query():
-        cs.citta = c
-        cs.put()
+        cs.citta = c.key
+        cs.put_async()
       self.response.out.write("initCity2 Ok")
       return
         
     if self.request.get("cmd") == "initStream1":
       offset = 0
-      limit = 50
+      limit = 100
       if self.request.get("offset"):
         offset = int(self.request.get("offset"))
 
       if self.request.get("kind") == "isp":
         for isp in Ispezione.query().fetch(offset=offset, limit=limit):
-          messaggio = Messaggio(par = isp, root = isp, grp = isp.commissione, tipo = 101, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = isp.creato_il, modificato_il = isp.modificato_il)
+          messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
           messaggio.put_async()
       elif self.request.get("kind") == "nc":
-        for nc in Nonconformita.query():
-          messaggio = Messaggio(par = nc, root = nc, grp = nc.commissione, tipo = 102, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = nc.creato_il, modificato_il = nc.modificato_il)
+        for nc in Nonconformita.query().fetch(offset=offset, limit=limit):
+          messaggio = Messaggio(par = nc.key, root = nc.key, grp = nc.commissione, tipo = 102, livello = 0, c_ua = nc.commissario.get().usera, creato_il = nc.creato_il, modificato_il = nc.modificato_il)
           messaggio.put_async()
       elif self.request.get("kind") == "dieta":
-        for nota in Nota.query():
-          messaggio = Messaggio(par = nota, root = nota, grp = nota.commissione, tipo = 103, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = nota.creato_il, modificato_il = nota.creato_il)
+        for dieta in Dieta.query().fetch(offset=offset, limit=limit):
+          messaggio = Messaggio(par = dieta.key, root = dieta.key, grp = dieta.commissione, tipo = 103, livello = 0, c_ua = dieta.commissario.get().usera, creato_il = dieta.creato_il, modificato_il = dieta.creato_il)
           messaggio.put_async()
       elif self.request.get("kind") == "nota":
-        for dieta in Dieta.query():
-          messaggio = Messaggio(par = dieta, root = dieta, grp = dieta.commissione, tipo = 104, livello = 0, usera = self.get_user(isp.modificato_da), creato_il = dieta.creato_il, modificato_il = dieta.creato_il)
+        for nota in Nota.query().fetch(offset=offset, limit=limit):
+          messaggio = Messaggio(par = nota.key, root = nota.key, grp = nota.commissione, tipo = 104, livello = 0, c_ua = nota.commissario.get().usera, creato_il = nota.creato_il, modificato_il = nota.creato_il)
           messaggio.put_async()
       self.response.out.write("initStream Ok")
       return
-    
-    _users = dict()
-    def get_user(self, user):
-      if not self._users.get(user.user_id()):
-        a_id = models.User.generate_auth_id('google', user.user_id(), 'legacy')
-        ua = models.User.get_by_auth_id(a_id)          
-        self._users[user.user_id()] = ua
-      return ua
-      
+          
     if self.request.get("cmd") == "initStream2":
       for msg in Messaggio().query():
         if msg.tipo in range(101, 104):
@@ -529,7 +523,8 @@ class CMAdminHandler(BasePage):
 
     if self.request.get("cmd") == "initAuthR":
       logging.info("initAuth")
-      for c in Commissario.query().filter().fetch(limit=100):
+      offset = int(self.request.get("offset"))
+      for c in Commissario.query().filter().fetch(limit=100, offset=offset):
         c.usera = None
         c.put()
       self.response.out.write("initAuthR Ok")
@@ -541,7 +536,7 @@ class CMAdminHandler(BasePage):
       offset = int(self.request.get("offset"))
       for c in Commissario.query().filter().fetch(limit=50, offset=offset):
         if c.usera is None:
-          logging.info("initAuth: " + str(c.user.email()))
+          logging.info("initAuth.1: " + str(c.user.email()))
           auth_id = models.User.generate_auth_id('google', c.user.user_id(), 'legacy')
           user_info = {
               'auth_id': auth_id,
@@ -556,17 +551,18 @@ class CMAdminHandler(BasePage):
                       },
                   'emails': [
                       {
-                          'value': c.user.email()
-                      },
-                  ],
+                          'value': c.user.email(),                          
+                          'verified': True                          
+                      }
+                  ]
               },
               'extra': {
-                  }
+              }
           }
           profile = models.UserProfile.get_or_create(auth_id, user_info)
-          usera = models.User.get_or_create_by_profile(profile)
+          usera = models.User.get_or_create_by_profile(profile)          
           c.usera = usera.key
-          c.avatar_url = "/img/default_avatar_" + c.key.id() % 8 + ".png"
+          c.avatar_url = "/img/default_avatar_" + str(c.key.id() % 8) + ".png"
           c.put()
       self.response.out.write("initAuth Ok")
       return
@@ -664,6 +660,13 @@ class CMAdminHandler(BasePage):
     }
     self.getBase(template_values)
 
+  _users = dict()
+  def get_user(self, user):
+    if not self._users.get(user.email()):
+      ua = UserEmail.get_by_emails([user.email()])
+      self._users[user.user_id()] = ua
+    return ua
+    
 class CMAdminCommissarioHandler(BasePage):
 
   def get(self):    

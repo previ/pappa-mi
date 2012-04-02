@@ -40,8 +40,10 @@ class WindowsliveStrategy(OAuth2Strategy):
             'info': {
                 'id': user['id'],
                 'displayName': user.get('name'),
-                'givenName': user.get('first_name'),
-                'familyName': user.get('last_name'),
+                'name': {
+                    'givenName': user.get('first_name'),
+                    'familyName': user.get('last_name'),
+                },                
                 'image': {
                     'url': ""#user.get('picture'),
                 },
