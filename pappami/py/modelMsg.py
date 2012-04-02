@@ -287,8 +287,11 @@ class Messaggio(model.Model):
   def body(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
       return self.root.get()
-    if self.tipo == 201 or self.tipo == 202:
-      return self.testo
+    if self.tipo == 201 or self.tipo == 202:      
+      if "<p>" not in self.testo:
+        return self.testo.replace("\n","<br/>")
+      else:
+        return self.testo
 
   @cached_property
   def summary(self):

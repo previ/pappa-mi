@@ -45,42 +45,7 @@ $(document).ready(function() {
 	setTimeout(function(){$("#message").fadeOut(1000, function(){$("#message_body").text('');});}, 2000);
       }
     }});
-    
-    function getCommissioniFromCache(term) {
-      found = Array();
-      for(c in cache) {	
-	if(term.toUpperCase() == c.substring(0,term.length).toUpperCase()) {
-	  found.push({"label": c, "value": cache[c]});
-	}
-      }
-      return found;
-    }
-    /*
-    $("#commissione_sel").autocomplete({
-      minLength: 2,
-      source: function( request, response ) {
-	var term = request.term;
-	request.city = $("#citta").val();
-	if ( city == null || city != $("#citta").val() ) {
-	  cache = {};
-	  lastXhr = $.getJSON( "/profilo/getcm", request, function( data, status, xhr ) {
-	    items = data;
-	    for (item in items) {
-	      cache[items[item]["label"]] = items[item]["value"];
-	    }
-	    city = $("#citta").val();
-	    response(getCommissioniFromCache(term));
-	  });
-	} else {
-	  response(getCommissioniFromCache(term));
-	}
-      },
-      select: function(event, ui) { 
-	$("#commissioni").append('<div class="list-item" style="width:280px;"><input type="hidden" id="commissione" name="commissione" value="'+ui.item.value+'"/><a class="close" href="#" onclick="$(this).parent(\'div\').remove();">x</a><p><b>'+ui.item.label+'</b></p></div>');
-        ui.item.value= ''; } 
-    });    
-    */
-    
+        
     // bind 'myForm' and provide a simple callback function 
     $('#avatar_file').change(function(){
         $('#avatar_form').ajaxSubmit(function(data) { 
@@ -96,11 +61,11 @@ $(document).ready(function() {
 	      { text: "Ok", click: function() { $(this).dialog("close"); } } ] });
       $("#dialog").load("/condizioni", function(){$("#dialog").dialog("open");});
     });
-
-    $('#citta').change(oncitychanged);
     
+    $('#citta').change(oncitychanged);    
     if($('#citta').val() != "") oncitychanged();
     
+    $("[data-content]").popover({"delay":500, title:"Informazioni"});    
 });     
 
 function oncitychanged() {

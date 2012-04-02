@@ -8,20 +8,17 @@ var combo_config = {
   'select_only' : true,
   'primary_key' : 'value',
   'bind_to'	: 'selected',
-  'init_val'    : '{{ctx.cm_key}}',
   'field'	: 'label',
   'db_table'    : 'citta',
   'button_img'  : '/img/combobox_button.png',
   'load_img'    : '/img/ajax-loader.gif'
 }
 
-function initcmcombo() {
-  $('#commissione_sel').ajaxComboBox("/profilo/getcm", combo_config).bind("selected", function(event, ui) { 
-    $("#cm").val($("#commissione_sel_hidden").val()); 
-  });
-}
+var init_value = "";
+
 function oncitychanged() {
-  if( $("#citta").val() != "" && $("#citta").val() != city) {        
+  combo_config['init_val'] = init_value;
+  if( $("#citta").val() != "" && $("#citta").val() != city) {
     if( !cache[$("#citta").val()] ) {
       var query = { 'city': $("#citta").val() }
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {

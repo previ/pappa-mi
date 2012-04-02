@@ -9,6 +9,8 @@ $(function(){
   init1();
   init2();
 
+ init_value = "{{ctx.cm_key}}";
+  
  $('#citta').change(oncitychanged);  
  oncitychanged();
 });
@@ -129,7 +131,7 @@ function init1() {
     </select>
     <div class="controls">
       <button type="submit" class="btn primary">Ok</button>
-      <button type="reset" class="btn" onclick="">Annulla</button>
+      <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
     </div>
   </form>
  </ul>

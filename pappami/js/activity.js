@@ -72,12 +72,13 @@ function opennewmsg() {
       //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     }, beforeSubmit: function(arr,$form) {
       $("#e_submit").button("loading");
+      $('#new-msg').slideUp();
+    }, beforeSerialize: function($form, options) {
       $("[name='tags']").attr('value','');
       var tags = $("#message_tags_handler").tagHandler("getTags")
       for(var tag in tags) {
-	arr.push({name: "tags", value: tags[tag]});
+	$($form).append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
       }
-      $('#new-msg').slideUp();
     }}); 
     $("#message_tags_handler").tagHandler({
 	getData: { 'msg': "" },
@@ -142,8 +143,7 @@ function opennewwiz(url) {
 	// on new form submit
 	success: function(data){
 	  $('#new-data-preview').html(data);
-	  if($('#form-error').html()) {
-	    alert($('#form-error').html());
+	  if($('#form-error').html()) {	    
 	    $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	      { text: "Ok",
 		click: function() { $('#form-error').detach(); $(this).dialog("close"); $("e_submit").button("reset"); } } ] });
@@ -174,13 +174,14 @@ function opennewwiz(url) {
 	resetForm: false,
 	beforeSubmit: function(arr,$form) {
 	  $("e_submit").button("loading");
+	},
+	beforeSerialize: function($form, options) {
 	  $("[name='tags']").attr('value','');
-          var tags = $("#item_tags_handler").tagHandler("getTags")
-          for(var tag in tags) {
-    	    //arr.push({name: "tags", value: tags[tag]});
+	  var tags = $("#message_tags_handler").tagHandler("getTags")
+	  for(var tag in tags) {
 	    $form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
 	  }
-	}
+        }
       }
     });
     $.validator.messages = {
@@ -238,10 +239,16 @@ function opennewitem(url) {
     }, beforeSubmit: function(arr,$form) {
       var tags = $("#item_tags_handler").tagHandler("getTags")
       for(var tag in tags) {          
-	//arr.push({name: "tags", value: tags[tag]});
 	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
       }
       $("#e_submit").button("loading");
+    },
+    beforeSerialize: function($form, options) {
+      $("[name='tags']").attr('value','');
+      var tags = $("#message_tags_handler").tagHandler("getTags")
+      for(var tag in tags) {
+	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
+      }
     }});
     //$('textarea').autogrow();
     $.validator.messages = {
@@ -254,6 +261,7 @@ function opennewitem(url) {
 	 var item = $(element).parents(".control-group");
 	 item.tooltip({title:error.text(), trigger:'manual'});
 	 item.tooltip('show');
+	 $("#e_submit").button("reset");
        },
        highlight: function(element, errorClass, validClass) {
 	 var item = $(element).parents(".control-group");
