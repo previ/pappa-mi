@@ -13,24 +13,24 @@
     <fieldset>
     <legend>I tuoi dati</legend>
     <div class="control-group">
-      <label for="avatar">Email</label>
+      <label class="control-label" for="avatar">Email</label>
       <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{form.email}}" size="30" type="text" {%if form.email != ""%}readonly{%endif%}></div>
     </div>
     <div class="control-group">
-      <label for="avatar">Immagine</label>
+      <label class="control-label" for="avatar">Immagine</label>
       <div class="controls"><img id="avatar" src="{{form.avatar_url.data}}" class="avatar-big"/></div>
       <input type="hidden" name="avatar_url" id="avatar_url" value="{{form.avatar_url.data}}"/>
     </div>
     <div class="control-group">
-      <label for="nome">Nome</label>
+      <label class="control-label" for="nome">Nome</label>
       <div class="controls"><input class="xlarge required" id="nome" name="nome" value="{{form.nome.data}}" size="30" type="text"></div>
     </div>
     <div class="control-group">
-      <label for="cognome">Cognome</label>
+      <label class="control-label" for="cognome">Cognome</label>
       <div class="controls"><input class="xlarge required" id="cognome" name="cognome" value="{{form.cognome.data}}" size="30" type="text"></div>
     </div>
     <div class="control-group">
-      <label for="citta">Citt&agrave;</label>
+      <label class="control-label" for="citta">Citt&agrave;<i class="icon-info-sign" data-content="Non trovi la tua Citta ? <a href='/citta' target='new'>clicca qui per richiedere l'attivazione</a>"></i></label>
       <div class="controls">
 	<select class="xlarge required" id="citta" name="citta" value="">
 	<option value=""></option>
@@ -39,12 +39,12 @@
       </div>
     </div>
     <div class="control-group">
-      <label for="commissione_sel"></label>
+      <label class="control-label" for="commissione_sel"></label>
       <div class="controls"><input id="tipo_cm" name="stato" value="1" class="required" type="radio"> Faccio parte di una Commissione mensa</controls></div>
       <div class="controls"><input id="tipo_g" name="stato" value="11" class="required" type="radio"> Sono una mamma o un pap&agrave;</controls></div>
     </div>
     <div class="control-group">
-      <label for="commissione_sel">Seleziona una o pi&ugrave; scuole</label>
+      <label class="control-label" for="commissione_sel">Seleziona una o pi&ugrave; scuole</label>
       <div class="controls"><input id="commissione_sel" name="commissione_sel" type="text"/>	    
       </div>
     </div>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="control-group">
-      <label for="commissione_sel"></label>
+      <label class="control-label" for="commissione_sel"></label>
       <div class="controls"><input id="condizioni" name="condizioni" value="" type="checkbox" class="required"> Accetto le <a id="cond_open" href="#">condizioni del servizio</a></controls></div>
     </div>
     </fieldset>

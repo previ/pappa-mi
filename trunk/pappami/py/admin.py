@@ -460,20 +460,24 @@ class CMAdminHandler(BasePage):
 
       if self.request.get("kind") == "isp":
         for isp in Ispezione.query().fetch(offset=offset, limit=limit):
+          logging.info(isp)
           messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
-          messaggio.put_async()
+          messaggio.put()
       elif self.request.get("kind") == "nc":
         for nc in Nonconformita.query().fetch(offset=offset, limit=limit):
+          logging.info(nc)
           messaggio = Messaggio(par = nc.key, root = nc.key, grp = nc.commissione, tipo = 102, livello = 0, c_ua = nc.commissario.get().usera, creato_il = nc.creato_il, modificato_il = nc.modificato_il)
-          messaggio.put_async()
+          messaggio.put()
       elif self.request.get("kind") == "dieta":
         for dieta in Dieta.query().fetch(offset=offset, limit=limit):
+          logging.info(dieta)
           messaggio = Messaggio(par = dieta.key, root = dieta.key, grp = dieta.commissione, tipo = 103, livello = 0, c_ua = dieta.commissario.get().usera, creato_il = dieta.creato_il, modificato_il = dieta.creato_il)
-          messaggio.put_async()
+          messaggio.put()
       elif self.request.get("kind") == "nota":
         for nota in Nota.query().fetch(offset=offset, limit=limit):
+          logging.info(nota)
           messaggio = Messaggio(par = nota.key, root = nota.key, grp = nota.commissione, tipo = 104, livello = 0, c_ua = nota.commissario.get().usera, creato_il = nota.creato_il, modificato_il = nota.creato_il)
-          messaggio.put_async()
+          messaggio.put()
       self.response.out.write("initStream Ok")
       return
           

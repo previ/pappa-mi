@@ -147,7 +147,7 @@ class CMCondizioniHandler(BasePage):
   
   def get(self):
     template_values = dict()
-    template_values["main"] = "../templates/condizioni.html"
+    template_values["content"] = "condizioni.html"
     self.getBase(template_values)    
          
 class MapDataHandler(webapp.RequestHandler):
@@ -274,6 +274,11 @@ class ChiSiamoPage(BasePage):
     template_values["content"] = "chi.html"
     self.getBase(template_values)
 
+class AddCityHandler(BasePage):
+  
+  def get(self):
+    self.redirect("https://docs.google.com/a/pappa-mi.it/spreadsheet/viewform?formkey=dGpyOHNISHBjQnZqWjUwSzdJU3hPMnc6MQ")
+    
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
@@ -283,7 +288,8 @@ app = webapp.WSGIApplication([
   ('/map', MapDataHandler),  
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
-  ('/condizioni', CMCondizioniHandler)
+  ('/condizioni', CMCondizioniHandler),
+  ('/citta', AddCityHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():

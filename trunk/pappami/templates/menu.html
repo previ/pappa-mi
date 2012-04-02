@@ -4,7 +4,7 @@ $(function(){
  // DOM Ready
 
  var date = new Date("{{data1}}");
-
+ init_value = "{{ctx.cm_key}}";
  $('#citta').change( oncitychanged);
  oncitychanged();
 
@@ -49,7 +49,7 @@ $(function(){
 {%include "navigation.html"%}
 <ul class="nav nav-tabs">
 <li class="dropdown">
- <a class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
+ <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
   Menu per la Scuola <b>{{ctx.cm_name}}</b><b class="caret"></b>
  </a>
  <ul class="dropdown-menu dropdown-large">
@@ -63,8 +63,8 @@ $(function(){
     <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
     </div>
     <div class="controls">
-      <button type="submit" class="btn primary" onclick="$('#e_chgscope').popover('hide');">Ok</button>
-      <button type="reset" class="btn" onclick="$('#e_chgscope').popover('hide');">Annulla</button>
+      <button type="submit" class="btn primary">Ok</button>
+      <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
     </div>
   </form>
  </ul>
