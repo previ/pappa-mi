@@ -45,7 +45,7 @@ class SignupPreHandler(BasePage):
       if user_info.get("image"):
         form.avatar_url.data=user_info.get("image").get("url")
     if not form.avatar_url.data:
-      form.avatar_url.data = "/img/avatar/default_avatar.gif"
+      form.avatar_url.data = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
       
     form.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
     if user.email:
@@ -56,7 +56,7 @@ class SignupPreHandler(BasePage):
       'content': 'signup.html',
       'citta': Citta.get_all(),
       'form': form,
-      'default_avatar': '/img/avatar/default_avatar.gif'
+      'default_avatar': "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
     }
     self.getBase(template_values)
     

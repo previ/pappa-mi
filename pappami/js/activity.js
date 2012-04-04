@@ -30,15 +30,13 @@ function cleardirty() {
 
 function initForm() {
   ulmsg=true;
-  $('#new-data-form').find("[data-content]").popover({"delay":500, title:"Informazioni"});
+  $('#new-data-form').find("[data-content]").popover({delay: { show: 500, hide: 1000 }, title:"Informazioni"});
   $("#item_tags_handler").tagHandler({
       getData: { 'msg': "" },
       getURL: '/comments/gettags',            
       autocomplete: true
   }); 
  $('#new-data').find( "[type='radio']" ).button();
- //$('#new-data').find('.radio-group > label').radioGroup();
- //$('#new-data').find('.btn.toggle').toggleBtn();
 }
 
 function opennewmsg() {  
@@ -65,11 +63,27 @@ function opennewmsg() {
     });
   
   
-    $('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
+    //$('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
+    $("#new-msg-form").validate({errorClass: "error",
+	  errorPlacement: function(error, element) {
+	  var item = $(element).parents(".control-group");
+	  item.tooltip({title:error.text(), trigger:'manual'});
+	  item.tooltip('show');
+        },
+	highlight: function(element, errorClass, validClass) {
+	  var item = $(element).parents(".control-group");
+	  item.addClass(errorClass); 
+        },
+  	unhighlight: function(element, errorClass, validClass) {
+	  var item = $(element).parents(".control-group");
+	  item.removeClass(errorClass); 
+	  item.tooltip('hide');
+	}
+    });
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	    
       $('#activity_list').prepend(data);
       $("#e_submit").button("reset");
-      //$('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
+      $('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     }, beforeSubmit: function(arr,$form) {
       $("#e_submit").button("loading");
       $('#new-msg').slideUp();
@@ -79,7 +93,7 @@ function opennewmsg() {
       for(var tag in tags) {
 	$($form).append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
       }
-    }}); 
+    }});
     $("#message_tags_handler").tagHandler({
 	getData: { 'msg': "" },
 	getURL: '/comments/gettags',            
@@ -203,8 +217,30 @@ function opennewwiz(url) {
 function opennewitem(url) {
   $('#new-data-form').load(url, function() {
     initForm();
- 
-     
+
+    $.validator.messages = {
+	required: "Inserire o selezionare un valore",
+	range: "Inserire un valore compreso tra {0} e {1}" };
+	
+    $("#form0").validate({
+       errorClass: "error",
+       errorPlacement: function(error, element) {	      
+	 var item = $(element).parents(".control-group");
+	 item.tooltip({title:error.text(), trigger:'auto'});
+	 item.tooltip('show');
+	 $("#e_submit").button("reset");
+       },
+       highlight: function(element, errorClass, validClass) {
+	 var item = $(element).parents(".control-group");
+	 item.addClass(errorClass); 
+       },
+       unhighlight: function(element, errorClass, validClass) {
+	 var item = $(element).parents(".control-group");
+	 item.removeClass(errorClass); 
+	 item.tooltip('hide');
+       }
+    });
+    
     $('#form0').ajaxForm({clearForm: false, success: function(data) { 
       $('#new-data-preview').html(data);
       if($('#new-data-preview').find('#form-error').html()) {
@@ -216,7 +252,7 @@ function opennewitem(url) {
       } else {
 	$('#new-data-form').hide();  
 	$('#new-data-preview').show();
-	$('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
+	//$('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	$('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      	
 	  $('#new-data').dialog('close');	
 	  $('#new-data-form').html('');
@@ -250,33 +286,10 @@ function opennewitem(url) {
 	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
       }
     }});
-    //$('textarea').autogrow();
-    $.validator.messages = {
-	required: "Inserire o selezionare un valore",
-	range: "Inserire un valore compreso tra {0} e {1}" };
-	
-    $("#form0").validate({
-       errorClass: "error",
-       errorPlacement: function(error, element) {	      
-	 var item = $(element).parents(".control-group");
-	 item.tooltip({title:error.text(), trigger:'manual'});
-	 item.tooltip('show');
-	 $("#e_submit").button("reset");
-       },
-       highlight: function(element, errorClass, validClass) {
-	 var item = $(element).parents(".control-group");
-	 item.addClass(errorClass); 
-       },
-       unhighlight: function(element, errorClass, validClass) {
-	 var item = $(element).parents(".control-group");
-	 item.removeClass(errorClass); 
-	 item.tooltip('hide');
-       }
-    });
 	
     $('#new-data').show();
     $('#new-data-form').show();
-    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 810, zIndex: 20000, autoOpen: false,  beforeClose: closeAlert});
+    $('#new-data').dialog({ title: $('#title').text(), modal: true, height: 550, width: 810, zIndex: 2, autoOpen: false,  beforeClose: closeAlert});
     $('#new-data').dialog('open');
   }); 
 }

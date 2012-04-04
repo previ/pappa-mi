@@ -7,7 +7,7 @@
    <div class="row">
     <div class="span4">
      <div class="control-group">       
-      <label for="e_commissione">Commissione</label>
+      <label class="control-label" for="e_commissione">Commissione</label>
       <select class="required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
        <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
       </select>
@@ -15,7 +15,7 @@
     </div>
     <div class="span2">
      <div class="control-group">       
-      <label for="e_dataNotaViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
+      <label class="control-label" for="e_dataNotaViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
       <input type="text" class="span2 required" name="dataNotaViz" value="" id="e_dataNotaViz"/>
       <input type="hidden" name="dataNota" value="" id="e_dataNota"/>
      </div>   
@@ -24,7 +24,7 @@
    <div class="row">
     <div class="span8">
      <div class="control-group">       
-      <label for="e_titolo">Titolo</label>
+      <label class="control-label" for="e_titolo">Titolo</label>
       <input type="text" id="e_titolo" class="required span8" name="titolo" value="{{form.data.titolo}}"></input>
      </div>
     </div>
@@ -32,7 +32,7 @@
    <div class="row">
     <div class="span8">
      <div class="control-group">       
-      <label for="e_titolo">Testo</label>
+      <label class="control-label" for="e_titolo">Testo</label>
       <textarea required="true" name="note" rows="2" class="required span8" id="e_note">{{form.data.note}}</textarea>
      </div>
     </div>
@@ -40,7 +40,7 @@
    <div class="row">
     <div class="span8">
      <div class="control-group">       
-      <label for="e_attach">Allegati</label>
+      <label class="control-label" for="e_attach">Allegati</label>
       <input type="file" name="allegato_file_1" id="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
       <input type="file" name="allegato_file_2" id="allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
       <input type="file" name="allegato_file_3" id="allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
@@ -51,7 +51,7 @@
    </div>   
    <div class="row">
     <div class="span8 control-group">
-     <label>Categorie</label>
+     <label class="control-label">Categorie</label>
      <div class="comment_tags">  
       <div>
        <ul id="item_tags_handler"></ul>

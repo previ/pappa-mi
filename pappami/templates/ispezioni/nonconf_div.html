@@ -8,7 +8,7 @@
    <div class="row">
     <div class="span4">
      <div class="control-group"> 
-      <label for="e_commissione">Commissione</label>
+      <label class="control-label" for="e_commissione">Commissione</label>
       <select class="span4 required" name="commissione" id="e_commissione" value="">{% for cm in commissioni %}
        <option value="{{cm.key.id()}}">{{cm.nome}} - {{cm.tipoScuola}}</option>{% endfor %}
       </select>
@@ -16,14 +16,14 @@
     </div>
     <div class="span2">
      <div class="control-group"> 
-      <label for="e_dataNonconfViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
+      <label class="control-label" for="e_dataNonconfViz">Data Ispezione<i class="icon-info-sign" data-content="Inserire la data in cui &egrave; stata effettuata l'ispezione."></i></label>
       <input type="text" class="span2 required" name="dataNonconfViz" value="" id="e_dataNonconfViz"/>
       <input type="hidden" name="dataNonconf" value="" id="e_dataNonconf"/>
      </div>
     </div>
     <div class="span2">
      <div class="control-group"> 
-      <label for="e_turno">Turno</label>
+      <label class="control-label" for="e_turno">Turno</label>
       <select name="turno" id="e_turno" class="span2 required">
        <option value="1"{% if form.turno.data == "1" %} selected{% endif %}>Primo</option>
        <option value="2"{% if form.turno.data == "2" %} selected{% endif %}>Secondo</option>
@@ -34,7 +34,7 @@
    <div class="row">
     <div class="span6">
      <div class="control-group"> 
-      <label for="e_tipo">Tipo Non Conformit&agrave</label>
+      <label class="control-label" for="e_tipo">Tipo Non Conformit&agrave</label>
       <div class="controls">    
        <select name="tipo" id="e_tipo" class="span6 required" value="{{form.tipo.data}}">
         <option value=""></option>
@@ -57,7 +57,7 @@
     </div>
     <div class="span2">
      <div class="control-group" id="123">    
-      <label class="label_isp_1">Richiesta campionatura</label>
+      <label class="control-label">Richiesta campionatura</label>
       <div class="radio-group btn-group" data-toggle="buttons-radio">
        <label for="e_rc_1" class="btn"><input type="radio" name="richiestaCampionatura" value="1" class="required" onclick="alert('1');" id="e_rc_1" {%if form.richiestaCampionatura.data == "1" %}CHECKED{%endif%}/>Si</label>
        <label for="e_rc_2" class="btn"><input type="radio" name="richiestaCampionatura" value="0" class="required" onclick="alert('0');" id="e_rc_2" {%if form.richiestaCampionatura.data == "0" %}CHECKED{%endif%}/>No</label>
@@ -68,7 +68,7 @@
    <div class="row">
     <div class="span6">
      <div class="control-group"> 
-      <label for="e_ncNote">Note</label>
+      <label class="control-label" for="e_ncNote">Note</label>
       <div class="controls">    
        <textarea name="note" rows="8" cols="120" id="e_note" class="span8">{{form.note.data}}</textarea>
       </div>
@@ -77,7 +77,7 @@
    </div>   
    <div class="row">
     <div class="span8">
-     <label class="label_isp_1">Categorie</label>
+     <label class="control-label">Categorie</label>
      <div class="comment_tags">  
       <div style="width:40em; display:inline;">
        <ul id="item_tags_handler"></ul>
