@@ -162,6 +162,7 @@ class Messaggio(model.Model):
     with cls._activities_lock:
       cache_ver = memcache.get("act-cache-ver")
       if cache_ver is None:
+        cls._activities_cache_ver = 0
         cache_ver = 1
         memcache.add("act-cache-ver", cache_ver)
       if cache_ver > cls._activities_cache_ver:
