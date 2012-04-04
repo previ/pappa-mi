@@ -30,12 +30,12 @@
       <div class="controls"><input class="xlarge required" id="cognome" name="cognome" value="{{form.cognome.data}}" size="30" type="text"></div>
     </div>
     <div class="control-group">
-      <label class="control-label" for="citta">Citt&agrave;<i class="icon-info-sign" data-content="Non trovi la tua Citta ? <a href='/citta' target='new'>clicca qui per richiedere l'attivazione</a>"></i></label>
+      <label class="control-label" for="citta">Citt&agrave;</label>
       <div class="controls">
 	<select class="xlarge required" id="citta" name="citta" value="">
 	<option value=""></option>
 	{%for cit in citta%}<option value="{{cit.key.id()}}">{{cit.nome}}</option>{%endfor%}
-	</select>
+	</select><i class="icon-info-sign" data-content="Non trovi la tua Citta ? <a href='/citta' target='new'>clicca qui per richiedere l'attivazione</a>"></i>
       </div>
     </div>
     <div class="control-group">
@@ -54,7 +54,9 @@
     </div>
     <div class="control-group">
       <label class="control-label" for="commissione_sel"></label>
-      <div class="controls"><input id="condizioni" name="condizioni" value="" type="checkbox" class="required"> Accetto le <a id="cond_open" href="#">condizioni del servizio</a></controls></div>
+      <div class="controls">
+	<input id="condizioni" name="condizioni" value="" type="checkbox" class="required"> Accetto le <a id="cond_open" href="/condizioni">condizioni del servizio</a>
+      </div>
     </div>
     </fieldset>
   </div>

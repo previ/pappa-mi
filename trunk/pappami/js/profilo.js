@@ -19,7 +19,22 @@ $(document).ready(function() {
     $("#avatar").click(function() {
         $("#avatar_dialog").dialog("open");
     });
-    $("#form0").validate({ 
+    $("#form0").validate({
+      errorClass: "error",
+      errorPlacement: function(error, element) {
+	var item = $(element);
+	item.tooltip({title:error.text(), trigger:'manual'});
+	item.tooltip('show');
+      },
+      highlight: function(element, errorClass, validClass) {
+	var item = $(element).parents(".control-group");
+	item.addClass(errorClass); 
+      },
+      unhighlight: function(element, errorClass, validClass) {
+	var item = $(element).parents(".control-group");
+	item.removeClass(errorClass); 
+	$(element).tooltip('hide');
+      },  
       rules: {
 	commissione_sel: {
 	  required: function(element) {
@@ -65,7 +80,7 @@ $(document).ready(function() {
     $('#citta').change(oncitychanged);    
     if($('#citta').val() != "") oncitychanged();
     
-    $("[data-content]").popover({"delay":500, title:"Informazioni"});    
+    $("[data-content]").popover({delay: { show: 500, hide: 2000 }, title:"Informazioni"});    
 });     
 
 function oncitychanged() {

@@ -35,10 +35,10 @@ skip_files: |
  (index\.yml)|
  (#.*#)|
  (.*~)|
- (.bak)|
  (.*\.py[co])|
+ (.*\.bak)|
  (.*/RCS/.*)|
- (\..*)|
+ (\..*)| 
  )$
  
 handlers:

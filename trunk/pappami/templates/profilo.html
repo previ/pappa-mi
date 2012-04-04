@@ -83,7 +83,7 @@
 	   <div class="radio-group btngroup">
 	    <label class="btn{%if user.has_auth_strategy(p) %} active{%endif%}" id="{{ p }}_on_lbl"><input type="radio" name="{{ p }}" {%if user.has_auth_strategy(p) %} checked{%endif%} value="1" onclick="location.href='{{ u }}'" class="" id="{{ p }}_on"/>Attivato</label>
 	    <label class="btn{%if not user.has_auth_strategy(p) %} active{%endif%}" id="{{ p }}_off_lbl"><input type="radio" name="{{ p }}" {%if not user.has_auth_strategy(p) %} active{%endif%} value="0" onclick="removeAuth('{{ p }}')" class="" id="{{ p }}_off"/>Disattivato</label>	  
-	     {%if p == 'password'%}<button class="btn" onclick="location.href='/eauth/pwdchg'">Cambio password</button>{%endif%}
+	     {%if p == 'password' and user.has_auth_strategy(p)%}<button class="btn" onclick="location.href='/eauth/pwdchg'">Cambio password</button>{%endif%}
 	   </div>	   
 	  </div>	
         </div>	

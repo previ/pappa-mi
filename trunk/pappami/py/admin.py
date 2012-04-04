@@ -566,7 +566,7 @@ class CMAdminHandler(BasePage):
           profile = models.UserProfile.get_or_create(auth_id, user_info)
           usera = models.User.get_or_create_by_profile(profile)          
           c.usera = usera.key
-          c.avatar_url = "/img/default_avatar_" + str(c.key.id() % 8) + ".png"
+          c.avatar_url = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
           c.put()
       self.response.out.write("initAuth Ok")
       return

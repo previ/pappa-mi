@@ -49,6 +49,8 @@ class ContattiHandler(BasePage):
 
     if cm:
       template_values['commissari'] = cm.commissari()
+
+    template_values["citta"] = Citta.get_all()
     template_values["content"] = "contatti.html"
     self.getBase(template_values)
 
@@ -66,6 +68,28 @@ class ContattiHandler(BasePage):
           if i >= num:
             break
     return cls._contacts
+  
+  def post(self):
+    cm_key = self.get_context().get("cm_key")
+    cm = None
+    if cm_key:
+      cm = model.Key("Commissione", cm_key).get()
+    if self.request.get("cm"):
+      logging.info(self.request.get("cm"))
+      cm = model.Key("Commissione", int(self.request.get("cm"))).get()
+    
+    template_values = dict()
+    template_values['content'] = 'contatti.html'
+    template_values["citta"] = Citta.get_all()
+
+    if cm:
+      template_values['commissari'] = cm.commissari()
+      self.get_context()["citta_key"] = cm.citta.id()
+      self.get_context()["cm_key"] = cm.key.id()
+      self.get_context()["cm_name"] = cm.desc() 
+    self.getBase(template_values)
+      
+    
         
 app = webapp.WSGIApplication([
   ('/contatti', ContattiHandler),

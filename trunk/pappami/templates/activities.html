@@ -68,17 +68,17 @@ $(document).ready(function() {
       <div class="comment_author">{{cmsro.nomecompleto(cmsro)}}</div>
       <div class="comment_author_title">{{cmsro.titolo(cmsro)}}</div>       
       <div class="comment_text">
-       <div class="clearfix">
+       <div class="controls">
 	<label>Titolo:</label>
-	<div class="input">
-	 <input type="text" class="span8" name="titolo">
+	<div class="control-group">
+	 <input type="text" class="span8 required" name="titolo">
 	</div>
-	<label>Testo:</label>
-	<div class="input">
+	<label class="control-label">Testo:</label>
+	<div class="control-group">
 	 <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>
 	</div>
-	<label>Categorie:</label>	 
-	<div class="input">  	  
+	<label class="control-label">Categorie:</label>	 
+	<div class="control-group">  	  
 	 <ul id="message_tags_handler"></ul>
 	</div>
        </div>
