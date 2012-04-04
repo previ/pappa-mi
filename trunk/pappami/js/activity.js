@@ -191,7 +191,7 @@ function opennewwiz(url) {
 	},
 	beforeSerialize: function($form, options) {
 	  $("[name='tags']").attr('value','');
-	  var tags = $("#message_tags_handler").tagHandler("getTags")
+	  var tags = $("#item_tags_handler").tagHandler("getTags")
 	  for(var tag in tags) {
 	    $form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
 	  }
@@ -273,15 +273,10 @@ function opennewitem(url) {
       }
 	
     }, beforeSubmit: function(arr,$form) {
-      var tags = $("#item_tags_handler").tagHandler("getTags")
-      for(var tag in tags) {          
-	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
-      }
       $("#e_submit").button("loading");
-    },
-    beforeSerialize: function($form, options) {
+    }, beforeSerialize: function($form, options) {
       $("[name='tags']").attr('value','');
-      var tags = $("#message_tags_handler").tagHandler("getTags")
+      var tags = $("#item_tags_handler").tagHandler("getTags")
       for(var tag in tags) {
 	$form.append("<input type='hidden' name='tags' value='"+tags[tag]+"'/>");
       }
