@@ -71,12 +71,13 @@ $(document).ready(function() {
         }); 
     }); 
 
+    /*
     $('#cond_open').click(function(){
-      $("#dialog").dialog({ title: "Cambia l'immagine del tuo profilo", modal: true, width: "40em", zIndex: 3, autoOpen: false, buttons: [
+      $("#dialog").dialog({ title: "Condizioni del servizio", modal: true, width: "40em", zIndex: 3, autoOpen: false, buttons: [
 	      { text: "Ok", click: function() { $(this).dialog("close"); } } ] });
       $("#dialog").load("/condizioni", function(){$("#dialog").dialog("open");});
     });
-    
+    */
     $('#citta').change(oncitychanged);    
     if($('#citta').val() != "") oncitychanged();
     

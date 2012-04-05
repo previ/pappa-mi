@@ -9,13 +9,13 @@ $(document).ready(function () {
 <div style="position:absolute; top:20em; left:18em; width:30em; background: #ffffff; border: 1px;z-index:999;display:none;" id="loading"><center><img src="/img/loading.gif"/><br/>Caricamento in corso ...</center></div>
 <ul class="nav nav-tabs">
 <li class="dropdown">
- <a class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
-  Commissioni presso le Scuole di <b>{{citta.nome}}</b></b><i class="caret"></i>
+ <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
+  Commissioni presso le Scuole di <b id="l_citta">{{citta.nome}}</b><i class="caret"></i>
  </a>
  <ul class="dropdown-menu dropdown-large">
   {#<form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">#}
     <label for="citta">Citt&agrave;</label>
-    <select class="large required" id="citta" name="citta" value="{{ctx.citta_key}}">
+    <select class="large required" id="e_citta" name="citta" value="{{ctx.citta_key}}">
     <option value=""></option>
     {%for cit in cittas%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
@@ -34,8 +34,8 @@ $(document).ready(function () {
     <option value="1" selected>Attive</option>
     </select>    
     <div class="controls">
-      <button type="submit" class="btn primary" onclick="redraw();">Ok</button>
-      <button type="reset" class="btn" onclick="">Annulla</button>
+      <button type="submit" class="btn primary" onclick="$('#dropdown').click(); redraw();">Ok</button>
+      <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
     </div>
   {#</form>#}
  </ul>

@@ -135,9 +135,9 @@ class Commissione(model.Model):
   @classmethod
   def get_all_cursor(cls, cursor):
     if cursor and cursor != "":
-      return Commissione.query().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
+      return Commissione.query().order(Commissione.nome).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
     else:
-      return Commissione.query().iter(produce_cursors=True)
+      return Commissione.query().order(Commissione.nome).iter(produce_cursors=True)
 
   @classmethod
   def get_active_cursor(cls, cursor):
@@ -156,7 +156,8 @@ class Commissione(model.Model):
   def getCentroCucina(self, data=datetime.now().date()):
     if not (self._com_cen_cuc_last and self._com_cen_cuc_last.validitaDa <= data and self._com_cen_cuc_last.validitaA >= data):
       self._com_cen_cuc_last = CommissioneCentroCucina.query().filter(CommissioneCentroCucina.commissione == self.key).filter(CommissioneCentroCucina.validitaDa <= data).order(-CommissioneCentroCucina.validitaDa).get()
-      self._cc_last = self._com_cen_cuc_last.centroCucina.get()
+      if self._com_cen_cuc_last:
+        self._cc_last = self._com_cen_cuc_last.centroCucina.get()
     return self._cc_last
 
   def desc(self):

@@ -43,6 +43,7 @@ var fstyles = {
 };
 
 function drawMap(data) {
+  var f_citta = $("#e_citta").val();
   var f_cc = $("#e_cc").val();
   var f_type = $("#e_tipo").val();
   var f_numcm = $("#e_numcm").val();
@@ -56,8 +57,9 @@ function drawMap(data) {
     var address = marker.attr("indirizzo");
     var type = marker.attr("tipo");
     var numcm = marker.attr("numcm");
+    var citta = marker.attr("citta");
     var cc = marker.attr("cc");
-    if(( !f_cc || cc == f_cc) && (!f_type || type == f_type) && (f_numcm == 0 || numcm > 0)) {
+    if(( !f_citta || citta == f_citta) && ( !f_cc || cc == f_cc) && (!f_type || type == f_type) && (f_numcm == 0 || numcm > 0)) {
       var latlng = new google.maps.LatLng(parseFloat(marker.attr("lat")),
                               parseFloat(marker.attr("lon")));
       var school = {key: key, latlng: latlng, name: name, address: address, type: type};
@@ -76,6 +78,8 @@ function drawMap(data) {
 
 function redraw() {
   $("#loading").show();
+  
+  $("#l_citta").html($("#e_citta option[value='"+$("#e_citta").val()+"']").text());
 
   var myOptions = {
     zoom: 12,

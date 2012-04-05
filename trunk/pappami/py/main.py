@@ -174,7 +174,12 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo:
-              markers_list.append( '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n')
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="' 
+              if c.getCentroCucina(datetime.now().date()):
+                mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
+              else:
+                mark += '" />\n'              
+              markers_list.append(mark)
         except:
           logging.error("Timeout")
         if i >= limit:
@@ -204,7 +209,12 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo :
-              markers_list.append( '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" cc="' + str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n')
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="' 
+              if c.getCentroCucina(datetime.now().date()):
+                mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
+              else:
+                mark += '" />\n'              
+              markers_list.append(mark)
         except:
           raise
           logging.error("Timeout")
@@ -279,6 +289,10 @@ class AddCityHandler(BasePage):
   def get(self):
     self.redirect("https://docs.google.com/a/pappa-mi.it/spreadsheet/viewform?formkey=dGpyOHNISHBjQnZqWjUwSzdJU3hPMnc6MQ")
     
+class ContactusHandler(BasePage):
+ 
+  def get(self):
+    self.redirect("https://docs.google.com/spreadsheet/viewform?formkey=dE82eHdyRVJ0VVpNUVBCLXIwNDMwN1E6MQ#gid=0")
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
@@ -289,7 +303,8 @@ app = webapp.WSGIApplication([
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
-  ('/citta', AddCityHandler)
+  ('/citta', AddCityHandler),
+  ('/contattaci', ContactusHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():

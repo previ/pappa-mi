@@ -6,18 +6,36 @@ var getMenu = function(){
   if(date && commissione) {
     //dateArr = date.split("/");
     //date=dateArr[2]+"-"+dateArr[1]+"-"+dateArr[0];
-    $.ajax({url:"/menu?cmd=getbydate&data="+date+"&commissione="+commissione, success:function(data){ 
-	var menu = eval("("+data+")");				        	
-	$('#e_primoPrevisto').val(menu["primo"]);
-	$('#e_secondoPrevisto').val(menu["secondo"]);
-	$('#e_contornoPrevisto').val(menu["contorno"]);
-	$('#e_primoEffettivo').val(menu["primo"]);
-	$('#e_secondoEffettivo').val(menu["secondo"]);
-	$('#e_contornoEffettivo').val( menu["contorno"]);	
-	$('#e_primoPiattoEffettivo').val(menu["primo_key"]);
-	$('#e_secondoPiattoEffettivo').val(menu["secondo_key"]);
-	$('#e_contornoPiattoEffettivo').val( menu["contorno_key"]);	
-	onMenuChanged();
+    $.ajax({url:"/menu?cmd=getbydate&data="+date+"&commissione="+commissione, success:function(data){     
+	var menu = eval("("+data+")");		
+	if( menu["primo"] ) {
+	  $('#e_primoPrevisto').attr('readonly', true);
+	  $('#e_secondoPrevisto').attr('readonly', true);
+	  $('#e_contornoPrevisto').attr('readonly', true);
+	  $('#e_primoPrevisto').removeClass('required');
+	  $('#e_secondoPrevisto').removeClass('required');
+	  $('#e_contornoPrevisto').removeClass('required');	  
+	  $('#e_primoPrevisto').val(menu["primo"]);
+	  $('#e_secondoPrevisto').val(menu["secondo"]);
+	  $('#e_contornoPrevisto').val(menu["contorno"]);
+	  $('#e_primoEffettivo').val(menu["primo"]);
+	  $('#e_secondoEffettivo').val(menu["secondo"]);
+	  $('#e_contornoEffettivo').val( menu["contorno"]);	
+	  $('#e_primoPiattoEffettivo').val(menu["primo_key"]);
+	  $('#e_secondoPiattoEffettivo').val(menu["secondo_key"]);
+	  $('#e_contornoPiattoEffettivo').val( menu["contorno_key"]);	
+	  onMenuChanged();
+	} else {
+	  $('#e_primoPrevisto').attr('readonly', false);
+	  $('#e_secondoPrevisto').attr('readonly', false);
+	  $('#e_contornoPrevisto').attr('readonly', false);
+	  $('#e_primoPrevisto').addClass('required');
+	  $('#e_secondoPrevisto').addClass('required');
+	  $('#e_contornoPrevisto').addClass('required');
+	  $('#e_primoPrevisto').change(function () {$('#e_primoEffettivo').val($('#e_primoPrevisto').val());});
+	  $('#e_secondoPrevisto').change(function () {$('#e_secondoEffettivo').val($('#e_secondoPrevisto').val());});
+	  $('#e_contornoPrevisto').change(function () {$('#e_contornoEffettivo').val($('#e_contornoPrevisto').val());});
+	}
     }});
   }
 }
