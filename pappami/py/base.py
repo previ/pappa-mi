@@ -321,6 +321,10 @@ class CMMenuHandler(BasePage):
   def getMenu(self, data, c):
     offset = -1
     citta = Citta.get_first()
+    
+    if c and not c.getCentroCucina(data):
+      return list()
+    
     if c and c.getCentroCucina(data).getMenuOffset(data) is not None:
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta

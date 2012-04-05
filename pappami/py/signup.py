@@ -10,6 +10,8 @@ import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
+import random
+
 
 from google.appengine.ext.ndb import model
 from google.appengine.api import users
