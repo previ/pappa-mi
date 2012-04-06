@@ -539,3 +539,17 @@ font-weight: bold;
     width: 90px;
     height: 30px;
 }
+
+.carousel-control.left{
+  left: -26px;
+}
+
+.carousel-control.right {
+  right: -26px;
+}
+
+.carousel-control.loading {
+  background-image: url('/img/loading.gif');
+  background-repeat:no-repeat;
+  background-position:center;
+}
