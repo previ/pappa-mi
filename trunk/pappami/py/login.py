@@ -96,15 +96,18 @@ class SignupPage(BasePage):
     template_values["main"] = '/eauth/main.html'
     template_values["content"] = '/eauth/signup.html'
 
-    a = random.randint(1, 10)
-    b = random.randint(1, 10)
-    
-    self.session["c"] = str(a + b)
-    template_values["cap_a"] = str(a)
-    template_values["cap_b"] = str(b)    
-    logging.info("SignupPage a: " + str(a) + " b " + str(b) + " c " + str(a + b))
+    if not self.session.get("c"):
+      a = random.randint(1, 10)
+      b = random.randint(1, 10)
+      
+      self.session["a"] = str(a)
+      self.session["b"] = str(b)
+      self.session["c"] = str(a + b)
+      
+    template_values["cap_a"] = self.session["a"]
+    template_values["cap_b"] = self.session["b"]
     logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
-    
+      
     self.getBase(template_values)
     
   def post(self):
@@ -115,6 +118,10 @@ class SignupPage(BasePage):
     c1 = self.session.get("c")
     c2 = self.request.get("c")
     logging.info("c1: " + c1 + " c2 " + c2)
+
+    self.session["a"] = None
+    self.session["b"] = None
+    self.session["c"] = None
 
     if c1 != c2:
       error = "La risposta alla domanda di controllo &egrave; sbagliata, riprova"
@@ -135,18 +142,22 @@ class SignupPage(BasePage):
       }
       
       models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
-
+    
     if error:
       template_values = dict()
       template_values["main"] = '/eauth/main.html'
       template_values["content"] = '/eauth/signup.html'
       a = random.randint(1, 10)
       b = random.randint(1, 10)
-      
-      self.session["c"] = str(a + b)
-      template_values["cap_a"] = a
-      template_values["cap_b"] = b
-      logging.info("a: " + str(a) + " b " + str(b) + " c " + str(a + b))
+            
+      if not self.session.get("c"):
+        self.session["a"] = str(a)
+        self.session["b"] = str(b)
+        self.session["c"] = str(a + b)
+
+      template_values["cap_a"] = self.session["a"]
+      template_values["cap_b"] = self.session["b"]
+      logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
 
       template_values["messages"] = [{'message': error}]
       self.getBase(template_values)

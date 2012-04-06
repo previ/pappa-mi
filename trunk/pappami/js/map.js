@@ -13,11 +13,11 @@ var lon;
 var image = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/school.png',
       new google.maps.Size(32, 37),
       new google.maps.Point(0,0),
-      new google.maps.Point(16, 0));
+      new google.maps.Point(16, 37));
 var shadow = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/shadow.png',
       new google.maps.Size(51, 37),
       new google.maps.Point(0,0),
-      new google.maps.Point(16, 0));
+      new google.maps.Point(16, 37));
 var fluster = null;
 var fstyles = {
   // This style will be used for clusters with more than 0 markers

@@ -61,7 +61,7 @@ class PasswordStrategy(BaseStrategy):
 
     def handle_request(self, req):
         # confirm that required fields are provided.
-        email = req.POST['email']
+        email = req.POST['email'].lower()
         password = req.POST['password']
         if not password or not email:
             return self.raise_error('Please provide a valid email '

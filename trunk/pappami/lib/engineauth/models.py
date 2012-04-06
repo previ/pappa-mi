@@ -158,7 +158,7 @@ class UserEmail(ndb.Model):
         if not addresses: return None
         for addr in addresses:
             #logging.info("find user by mail: " + addr)
-            user_email = cls.query(cls.value == addr).get()
+            user_email = cls.query(cls.value == addr.lower()).get()
             if user_email:
                 user = ndb.Key("User", int(user_email.user_id)).get();
                 #logging.info("user found by mail: " + str(user.key))

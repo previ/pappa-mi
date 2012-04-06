@@ -165,7 +165,7 @@ class BasePage(webapp.RequestHandler):
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
     
     #this is to avoid that a new user click on "enter" instead of "register" => she will be redirected to "signup" path until she complete the process, or logout
-    if user and not commissario and "signup" not in self.request.uri:
+    if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
       return
 

@@ -103,7 +103,7 @@ class SignupHandler(BasePage):
         #calendario.share(commissario.usera.get().email)
 
     commissario.setCMDefault()
-    memcache.set("commissario" + str(user.get_id()), commissario, 600)
+    commissario.set_cache()
 
     self.sendRegistrationRequestMail(commissario)
     
