@@ -8,14 +8,14 @@ padding-left: 0px;
 padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
-#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
 /*font-size: 11px;*/
 }
 
 .activity_root {
 padding-bottom: 10px;
 padding-top: 10px;
-#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
 /*font-size: 14px;*/
 }
 
@@ -32,6 +32,7 @@ min-height:50px;
 float: left;
 padding-left: 5px;
 padding-right: 5px;
+cursor: pointer;
 }
 
 .activity_body {
@@ -45,6 +46,7 @@ padding-right: 5px;
 display: inline;
 color: rgb(59, 89, 152);
 font-weight: bold;
+cursor: pointer;
 }
 
 .activity_summary {
@@ -64,7 +66,7 @@ width: 500px;
 }
 
 .activity_author_title, .activity_date {
-color: rgb(128, 128, 128);
+#color: rgb(128, 128, 128);
 display: inline;
 }
 
@@ -103,7 +105,7 @@ padding-left: 0px;
 padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
-font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
 /*font-size: 11px;*/
 }
 
@@ -136,7 +138,7 @@ font-weight: bold;
 }
 
 .voter_author_title, .voter_date {
-color: rgb(128, 128, 128);
+/*color: rgb(128, 128, 128);*/
 display: inline;
 }
 

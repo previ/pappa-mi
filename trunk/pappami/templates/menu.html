@@ -1,5 +1,5 @@
 <script> 
-var date = new Date("{{data1}}");
+var date = new Date(); //("{{data1}}");
 $(function(){
  // Initialize Slides
  // DOM Ready
@@ -21,6 +21,7 @@ function slideprev() {
   $('#menu_carousel_prev').html("");
   $('#menu_carousel_prev').addClass("loading");
   $('#menu_carousel_inner').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+   //$('#menu_carousel').carousel({interval:600000});
    $('#menu_carousel').find("#5").addClass("active");
    $('#menu_carousel_prev').removeClass("loading");
    $('#menu_carousel_prev').html("&lsaquo;");
@@ -35,6 +36,7 @@ function slidenext() {
   $('#menu_carousel_next').html("");
   $('#menu_carousel_next').addClass("loading");
   $('#menu_carousel_inner').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+   //$('#menu_carousel').carousel({interval:600000});
    $('#menu_carousel').find("#1").addClass("active");
    $('#menu_carousel_next').removeClass("loading");
    $('#menu_carousel_next').html("&rsaquo;");
