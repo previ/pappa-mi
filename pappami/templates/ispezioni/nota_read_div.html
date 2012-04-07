@@ -8,9 +8,9 @@
    <div class="controls">
     <div class="scroll" {% if preview %}style="height:{% if nota.get_allegati() %}160{% else %}240{% endif %}px; overflow:auto"{% endif %}>{{nota.note}}</div>
    </div>
-{% if nota.get_allegati() %}
+{% if nota.has_allegati %}
    <div for="e_attach"><i class="icon-file"></i> Allegati</div>
-   <ul class="thumbnails">{%for allegato in nota.get_allegati()%}
+   <ul class="thumbnails">{%for allegato in nota.get_allegati%}
     <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{%if allegato.isImage()%}<img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/>{%else%}{{allegato.nome}}{%endif%}</a>&nbsp;{{allegato.descrizione}}</li>{%endfor%}
    </ul>
 {% endif %}  

@@ -43,7 +43,9 @@ function opennewmsg() {
   if($('#new-msg').is(':visible') ) {
     $('#new-msg').slideUp();
   } else {
-
+    
+    //$('#e_message').remove();
+    $('#e_message_container').html('<textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>');
     $('#e_message').tinymce({
      // Location of TinyMCE script
      script_url : '/js/tiny_mce/tiny_mce.js',     
@@ -62,8 +64,7 @@ function opennewmsg() {
      theme_advanced_resizing : false     
     });
   
-  
-    $('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
+    $('#new-msg').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
     $("#new-msg-form").validate({errorClass: "error",
 	  errorPlacement: function(error, element) {
 	  var item = $(element).parents(".control-group");
@@ -83,7 +84,6 @@ function opennewmsg() {
     $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	    
       $('#activity_list').prepend(data);
       $("#e_submit").button("reset");
-      //$('#new-msg-form').find('#act_last').val($('ul.activity_list > li').attr('id').substring('activity_'.length));
     }, beforeSubmit: function(arr,$form) {
       $("#e_submit").button("loading");
       $('#new-msg').slideUp();
@@ -168,7 +168,7 @@ function opennewwiz(url) {
 	    $('#new-data-preview').show();
 	    // on preview form submit
 	    $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
-	    $('#form1').ajaxForm( {beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {
+	    $('#form1').ajaxForm( {beforeSubmit: function() {$("#e_submit").button("loading");}, success: function(data) {
 	      $('#new-data').dialog('close');
 	      $('#new-data-form').html('');
 	      $('#new-data-preview').html('');
@@ -202,10 +202,12 @@ function opennewwiz(url) {
 	number: "Inserire in numero",
 	required: "Inserire o selezionare un valore",
 	range: "Inserire un valore compreso tra {0} e {1}" };
+
     $("#form0").bind("step_shown", function(event, data){
-      $("#formwiz-progress-" + data.previousStep).toggleClass("active");
-      $("#formwiz-progress-" + data.currentStep).toggleClass("active");
+      $("#formwiz-progress-" + data.previousStep).removeClass("active");
+      $("#formwiz-progress-" + data.currentStep).addClass("active");
     });
+
     $('#new-data').show();
     $('#new-data-form').show();
     $("#formwiz-progress-step1").toggleClass("active");
@@ -253,7 +255,7 @@ function opennewitem(url) {
 	$('#new-data-form').hide();  
 	$('#new-data-preview').show();
 	$('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
-	$('#form1').ajaxForm( { beforeSubmit: function() {$("e_submit").button("loading");}, success: function(data) {      	
+	$('#form1').ajaxForm( { beforeSubmit: function() {$("#e_submit").button("loading");}, success: function(data) {      	
 	  $('#new-data').dialog('close');	
 	  $('#new-data-form').html('');
 	  $('#new-data-preview').html('');

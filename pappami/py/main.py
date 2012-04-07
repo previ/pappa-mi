@@ -136,6 +136,8 @@ class ActivityHandler(BasePage):
     template_values["tags"] = self.getTopTags()
    
     self.getBase(template_values)
+  def post(self):
+    return self.get()
         
 class CMSupportoHandler(BasePage):
   
