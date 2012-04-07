@@ -540,6 +540,9 @@ font-weight: bold;
     height: 30px;
 }
 
+.carousel-control {
+  top:50%;
+}
 .carousel-control.left{
   left: -26px;
 }
@@ -552,6 +555,7 @@ font-weight: bold;
   background-image: url('/img/ajax-loader.gif');
   background-repeat:no-repeat;
   background-position:center;
+  background-color: transparent;
 }
 
 .loading > a {

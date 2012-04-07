@@ -9,8 +9,14 @@ $(document).ready(function() {
     $('#e_act_more').bind( "click", function(){moreactivities();} );
     $('#act_loading').hide();      
     $("#nav-sec").children().removeClass("active");
-    $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
+    $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");    
   });        
+  $('#allegato_file_1').change(function(){
+   $('#allegato_file_2').show(); 
+  });
+  $('#allegato_file_2').change(function(){
+   $('#allegato_file_3').show();
+  });
   $('#citta').change( oncitychanged);
   oncitychanged();    
 }); 
@@ -95,8 +101,14 @@ $(document).ready(function() {
 	 <input type="text" class="span8 required" name="titolo">
 	</div>
 	<label class="control-label">Testo:</label>
-	<div class="control-group">
+	<div class="control-group" id="e_message_container">
 	 <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>
+	</div>
+	<div class="control-group">       
+	 <label class="control-label" for="e_attach">Allegati</label>
+	 <input type="file" name="allegato_file_1" id="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 <input type="file" name="allegato_file_2" id="allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 <input type="file" name="allegato_file_3" id="allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
 	</div>
 	<label class="control-label">Categorie:</label>	 
 	<div class="control-group">  	  

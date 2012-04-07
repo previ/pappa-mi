@@ -856,11 +856,19 @@ class Nota(model.Model):
   def sommario(self):
     return self.titolo
   
+  @cached_property
   def get_allegati(self): 
     if self.key:
       return Allegato.query().filter(Allegato.obj == self.key)
     else:
       return self.allegati
+
+  @cached_property
+  def has_allegati(self):
+    if self.get_allegati and self.get_allegati.count() > 0:
+      return True
+    else:
+      return False
 
   @classmethod
   def get_by_cm(cls, cm):

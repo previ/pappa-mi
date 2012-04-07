@@ -8,7 +8,7 @@ import logging
 import threading
 import fpformat
 from common import cached_property
-from py.model import Commissario, Commissione
+from py.model import Commissario, Commissione, Allegato
 from common import Const, Parser
 from engineauth import models
 
@@ -18,6 +18,7 @@ from google.appengine.api import memcache
 
 class Messaggio(model.Model):
   def __init__(self, *args, **kwargs):
+    self.allegati = list()
     #self._commissario = None
     #self._tags = None
     #self._votes = None
@@ -220,16 +221,7 @@ class Messaggio(model.Model):
     for voto in Voto.get_by_msg(self.key):
       voti.append(voto)
     return voti
-  
-  #def get_votes(self):
-    #voti = self._votes
-    #if voti is None:
-      #voti = list()
-      #for voto in Voto.get_by_msg(self.key):
-        #voti.append(voto)
-      #self._votes = voti
-    #return voti
-  
+   
   def vote(self, vote, user):
     if vote == 0:
       for p_voto in self.votes:
@@ -285,6 +277,7 @@ class Messaggio(model.Model):
       pass
     return title
 
+  @cached_property
   def body(self):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
       return self.root.get()
@@ -314,14 +307,28 @@ class Messaggio(model.Model):
     if self.tipo == 101 or self.tipo == 102 or self.tipo == 103 or self.tipo == 104:
       return True
     elif self.tipo == 201 or self.tipo == 202:
-      return len(self.testo) > 80
-        
+      return len(self.testo) > 80 or self.has_allegati
+
+  @cached_property
+  def has_allegati(self):
+    if self.get_allegati and self.get_allegati.count() > 0:
+      return True
+    else:
+      return False
+    
   def comments(self):
     if self.commenti is None:
       return 0
     else:
       return self.commenti
-  
+
+  @cached_property    
+  def get_allegati(self): 
+    if self.key:
+      return Allegato.query().filter(Allegato.obj == self.key)
+    else:
+      return None
+
   def tipodesc(self):
     return Messaggio._tipi[int(self.tipo)]
 

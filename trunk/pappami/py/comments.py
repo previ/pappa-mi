@@ -16,6 +16,7 @@ from google.appengine.api import mail
 from py.gviz_api import *
 from py.model import *
 from py.site import *
+from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.stats import CMStatsHandler
 from py.gcalendar import *
@@ -104,6 +105,21 @@ class CMCommentHandler(BasePage):
 
     logging.info("testo: " + self.request.get("testo"))
     logging.info("last: " + self.request.get("last"))
+    
+    for i in range(1,10):
+      if self.request.get('allegato_file_' + str(i)):
+        if len(self.request.get('allegato_file' + str(i))) < 10000000 :
+          allegato = Allegato()
+          allegato.descrizione = self.request.get('allegato_desc_' + str(i))
+          allegato.nome = self.request.POST['allegato_file_' + str(i)].filename
+          blob = Blob()
+          blob.create(allegato.nome)
+          allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
+          allegato.obj = messaggio.key
+          allegato.put()
+        else:
+          logging.info("attachment is too big.")
+    
     
     if messaggio.livello > 0 and par_key:
       par = par_key.get()
