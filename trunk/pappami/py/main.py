@@ -125,6 +125,7 @@ class ActivityHandler(BasePage):
       offset = int(self.request.get("offset"))
    
     template_values = dict()
+    template_values["citta"] = Citta.get_all()    
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"    
     template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT

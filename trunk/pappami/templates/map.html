@@ -14,21 +14,24 @@ $(document).ready(function () {
  </a>
  <ul class="dropdown-menu dropdown-large">
   {#<form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">#}
-    <label for="citta">Citt&agrave;</label>
+    <label class="control-label" for="citta">Citt&agrave;</label>
     <select class="large required" id="e_citta" name="citta" value="{{ctx.citta_key}}">
     <option value=""></option>
     {%for cit in cittas%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
+    <label class="control-label" for="citta">Centri cucina</label>
     <select class="large required" id="e_cc" name="centroCucina" value="">
     <option value="">Tutti</option>{%for cc in centriCucina%}
     <option value="{{cc.key.string_id()}}">{{cc.nome}}</option>{%endfor%}    
     </select>
+    <label class="control-label" for="citta">Grado Scuole</label>
     <select name="tipoScuola" id="e_tipo">
     <option value="">Tutte</option>
     <option value="Materna"{% if tipoScuola == "Materna" %} selected{% endif %}>Materna</option>
     <option value="Primaria"{% if tipoScuola == "Primaria" %} selected{% endif %}>Primaria</option>
     <option value="Secondaria"{% if tipoScuola == "Secondaria" %} selected{% endif %}>Secondaria</option>
     </select>
+    <label class="control-label" for="citta">Stato</label>
     <select name="numcm" id="e_numcm">
     <option value="0">Tutte</option>
     <option value="1" selected>Attive</option>

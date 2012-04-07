@@ -24,7 +24,7 @@ __author__ = 'kyle.finley@gmail.com (Kyle Finley)'
 class PasswordStrategy(BaseStrategy):
 
     def user_info(self, req):
-        email = req.POST['email']
+        email = req.POST['email'].lower()
         user_info = req.POST.get('user_info', {})
         user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True, 'verified': False}]
         auth_id = models.User.generate_auth_id(req.provider, email)

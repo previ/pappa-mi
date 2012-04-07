@@ -24,14 +24,14 @@ function oncitychanged() {
       lastXhr = $.getJSON( "/profilo/getcm", query, function( data, status, xhr ) {
 	city = $("#citta").val()
 	cache[city] = data
-	$('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/><input type="hidden" id="cm" name="cm" value=""/>');
+	$('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel"/><input type="hidden" id="cm" name="cm" value=""/>');
 	$('#commissione_sel').ajaxComboBox(data, combo_config).bind("selected", function(event, ui) { 
 	  $("#cm").val($("#commissione_sel_hidden").val()); 
 	}); 	
       });    
     } else {
       city = $("#citta").val()
-      $('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/><input type="hidden" id="cm" name="cm" value=""/>');
+      $('#commissione_sel').parent().html('<input class="" id="commissione_sel" name="commissione_sel"/><input type="hidden" id="cm" name="cm" value=""/>');
       $('#commissione_sel').ajaxComboBox(cache[city], combo_config).bind("selected", function(event, ui) { 
 	  $("#cm").val($("#commissione_sel_hidden").val()); 
 	});
