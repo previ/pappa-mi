@@ -1,11 +1,11 @@
 {%for comment in comments %}
 <li class="comment_item">
 <div class="comment_box" id="comment_{{comment.key.id()}}">
- <div class="comment_avatar">
+ <div class="comment_avatar" onclick="filteractivities('user={{comment.c_ua.id()}}&type=&tag=&cm=')">
   <img class="avatar" src="{{comment.author_avatar(cmsro)}}" title="{{comment.author(cmsro)}}">
  </div>
  <div class="comment_body">
-  <div class="comment_author">{{comment.author(cmsro)}}</div>
+  <div class="comment_author" onclick="filteractivities('user={{comment.c_ua.id()}}&type=&tag=&cm=')">{{comment.author(cmsro)}}</div>
   <div class="comment_author_title">{{comment.author_title(cmsro)}}</div>
   <div class="comment_date"> - {{comment.data()}}</div>
   <!--div>Titolo: {{comment.titolo}}</div-->

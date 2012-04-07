@@ -8,14 +8,14 @@ padding-left: 0px;
 padding-right: 0px;
 padding-top: 0px;
 list-style-type: none;
-font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
 /*font-size: 11px;*/
 }
 
 .comment_root {
 padding-bottom: 10px;
 padding-top: 10px;
-font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+#font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
 /*font-size: 14px;*/
 }
 
@@ -55,13 +55,13 @@ display: block;
 }
 
 .comment_author_title, .comment_date {
-color: rgb(128, 128, 128);
+#color: rgb(128, 128, 128);
 display: inline;
 }
 
 .comment_feedback, .comment_vote, .comment_vote_button {
 cursor: pointer;
-color: rgb(128, 128, 128);
+color: rgb(59, 89, 152);
 display: inline;
 }
 
@@ -113,7 +113,7 @@ font-weight: bold;
 }
 
 .voter_author_title, .voter_date {
-color: rgb(128, 128, 128);
+#color: rgb(128, 128, 128);
 display: inline;
 }
 

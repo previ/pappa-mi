@@ -81,7 +81,7 @@ class Messaggio(model.Model):
       activities = cls._activities.get("msg-user-" + str(user_id) + "-" + str(offset))    
       if activities == None:
         activities = list()
-        for msg in Messaggio.query().filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
+        for msg in Messaggio.query().filter(Messaggio.livello==0).filter(Messaggio.c_ua == model.Key("User", user_id)).order(-Messaggio.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT):
           activities.append(msg)
         #memcache.add("msg-user-" + str(user_id) + "-" + str(offset), activities, Const.ACTIVITY_CACHE_EXP)
         cls._activities["msg-user-" + str(user_id) + "-" + str(offset)] = activities

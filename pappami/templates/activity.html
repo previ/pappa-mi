@@ -20,13 +20,13 @@
 </script> 
 <li class="activity_item" id="activity_{{activity.key.id()}}">
 <div class="activity_box">
- <div class="activity_avatar">
+ <div class="activity_avatar" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">
   <img class="avatar" src="{{activity.author_avatar(cmsro)}}" title="{{activity.author(cmsro)}}">
  </div>
  <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-original-title="apri in un'altra finestra"></span>
  {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-original-title="mostra / nascondi dettagli"></span>{%endif%}  
  <div class="activity_body">
-  <div class="activity_author">{{activity.author(cmsro)}}</div>  
+  <div class="activity_author" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">{{activity.author(cmsro)}}</div>  
   <div class="activity_author_title">{{activity.author_title(cmsro)}}</div>
   <div class="activity_date"> - {{activity.data()}}</div>{%if activity.tags%}
   <div class="activity_tags"><i class="icon-tags"></i> {%for tag in activity.tags%}{%if user%}<a class="activity_tag" onclick="filteractivities('tag={{tag.nome}}');">{%endif%}{{tag.nome}}{%if user%}</a>{%endif%} {%endfor%}</div>{%endif%}
