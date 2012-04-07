@@ -1,66 +1,57 @@
 {%for m in menu%}
-   <li> 
-    <div class="row">
-     <div class="span9">
-      <h3>{{m.getData()}} {{m.data}}</h3>
+   <!-- Carousel items -->
+    <div class="item" id="{{loop.index}}">
+     <div class="row">
+      <div class="span9">
+       <h3>{{m.getData()}} {{m.data}}</h3>
+      </div>
+     </div>
+     <div class="row">
+      <div class="span5 well">
+       <small>Primo Piatto</small>
+       <h3>{{m.primo.nome}}</h3>
+       <div class="row">
+        <div class="span4">
+         <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
+         <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
+        </div>
+       </div>
+      </div>
+      <div class="span5 well">
+       <small>Secondo Piatto</small>
+       <h3>{{m.secondo.nome}}</h3>
+       <div class="row">
+        <div class="span4">
+         <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
+         <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="row">
+      <div class="span5 well">
+      <small>Contorno</small>
+       <h3>{{m.contorno.nome}}</h3>
+       <div class="row">
+        <div class="span4">
+         <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
+         <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
+        </div>
+       </div>
+      </div>
+      <div class="span5 well">
+       <small>Dessert</small>
+       <h3>{{m.dessert.nome}}</h3>
+       <div class="row">
+        <div class="span4">
+         <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
+         <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
+        </div>
+       </div>
+      </div>
      </div>
     </div>
-    <div class="row">
-     <div class="span5 well">
-      <small>Primo Piatto</small>
-      <h3>{{m.primo.nome}}</h3>
-      <div class="row">
-       <div class="span4">
-        <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
-        <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
-       </div>
-      </div>
-     </div>
-     <div class="span5 well">
-      <small>Secondo Piatto</small>
-      <h3>{{m.secondo.nome}}</h3>
-      <div class="row">
-       <div class="span4">
-        <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
-        <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
-       </div>
-      </div>
-     </div>
-    </div>
-    <div class="row">
-     <div class="span5 well">
-     <small>Contorno</small>
-      <h3>{{m.contorno.nome}}</h3>
-      <div class="row">
-       <div class="span4">
-        <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
-        <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
-       </div>
-      </div>
-     </div>
-     <div class="span5 well">
-      <small>Dessert</small>
-      <h3>{{m.dessert.nome}}</h3>
-      <div class="row">
-       <div class="span4">
-        <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
-        <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
-       </div>
-      </div>
-     </div>
-     {#<div class="span11 well">
-      <small>Suggerimenti per la sera</small>
-      <h3>Pappardelle alla lepre</h3>
-      <div class="row">
-       <div class="span4">
-        <button class="btn" data-original-title="Ingredienti" data-content="<ul><li>Farina</li><li>Pomodoro</li><li>Mozzarella</li></ul>">Ingredienti</button>
-        <button class="btn" data-original-title="Nutrizione" data-content="<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>">Nutrizione</button>
-       </div>
-      </div>
-     </div>#}
-    </div>
-   </li>
-{%endfor%}
+ {%endfor%}
 <script>
 $(function(){
  $("button.btn").popover({});

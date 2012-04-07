@@ -549,7 +549,14 @@ font-weight: bold;
 }
 
 .carousel-control.loading {
-  background-image: url('/img/loading.gif');
+  background-image: url('/img/ajax-loader.gif');
   background-repeat:no-repeat;
   background-position:center;
 }
+
+.loading > a {
+  background-image: url('/img/ajax-loader-small.gif');
+  background-repeat:no-repeat;
+  background-position:right;
+  background-color: transparent;
+}  

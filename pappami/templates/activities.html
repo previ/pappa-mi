@@ -5,12 +5,14 @@ var offset = 1;
 
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
-    $('#activity_list').load('/comments/load', function(){
-      $('#e_act_more').bind( "click", function(){moreactivities();} );
-      $('#act_loading').hide();      
-      $("#nav-sec").children().removeClass("active");
-      $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
-    });        
+  $('#activity_list').load('/comments/load', function(){
+    $('#e_act_more').bind( "click", function(){moreactivities();} );
+    $('#act_loading').hide();      
+    $("#nav-sec").children().removeClass("active");
+    $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");      
+  });        
+  $('#citta').change( oncitychanged);
+  oncitychanged();    
 }); 
 </script> 
 {%set tab_activity="active"%}
@@ -26,8 +28,27 @@ $(document).ready(function() {
   <div class="span3">
    <ul class="nav nav-list well" id="nav-sec">
     <li class="nav-header"><i class="icon-home"></i>Scuole</li>
-    {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<li id="cm{{cm.key.id()}}typeusertag"><a href="#" onclick="filteractivities('cm={{cm.key.id()}}&type=&user=&tag=')">{{cm.desc()}}</a></li>
+    {%if commissario or genitore%}{%for cm in cmsro.commissioni() %}<li id="cm{{cm.key.id()}}typeusertag"><a href="#" onclick="filteractivities('cm={{cm.key.id()}}&type=&user=&tag=');">{{cm.desc()}}</a></li>
     {%endfor%}{%endif%}
+    <li class="dropdown">
+     <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
+      Scegli...<b class="caret"></b>
+     </a>
+     <ul class="dropdown-menu dropdown-large">
+	<label for="citta">Citt&agrave;</label>
+	<select class="large required" id="citta" name="citta">
+	{%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+	</select>
+	<label for="commissione_sel">Scuola (Commissione Mensa)</label>
+	<div class="input"><input class="" id="commissione_sel" name="commissione_sel"/>
+	<input type="hidden" id="cm" name="cm"/>
+	</div>
+	<div class="controls">
+	  <button type="submit" class="btn primary" onclick="filtercm();">Ok</button>
+	  <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
+	</div>
+     </ul>
+    </li>
     <li class="nav-header"><i class="icon-file"></i>Tipo dati</li>
     <li id="cmtypeusertag"><a href="#" onclick="filteractivities('cm=&type&user=&tag=')">Tutto</a></li>
     <li class="divider"></li>{%if commissario or genitore%}

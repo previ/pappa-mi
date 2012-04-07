@@ -160,7 +160,7 @@ function opennewwiz(url) {
 	  if($('#form-error').html()) {	    
 	    $('#form-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	      { text: "Ok",
-		click: function() { $('#form-error').detach(); $(this).dialog("close"); $("e_submit").button("reset"); } } ] });
+		click: function() { $('#form-error').detach(); $(this).dialog("close"); $("#e_submit").button("reset"); } } ] });
 	    $('#form-error').dialog('open');
 	    $('#new-data-preview').html('');
 	  } else {
@@ -187,7 +187,7 @@ function opennewwiz(url) {
 	},
 	resetForm: false,
 	beforeSubmit: function(arr,$form) {
-	  $("e_submit").button("loading");
+	  $("#e_submit").button("loading");
 	},
 	beforeSerialize: function($form, options) {
 	  $("[name='tags']").attr('value','');
@@ -247,7 +247,7 @@ function opennewitem(url) {
 	var err = $('#new-data-preview').find('#form-error');
 	err.dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
 	  { text: "Ok",
-	    click: function() { $(this).dialog("close"); $('#new-data-preview').find('#form-error').detach(); $("e_submit").button("reset"); } } ] });
+	    click: function() { $(this).dialog("close"); $('#new-data-preview').find('#form-error').detach(); $("#e_submit").button("reset"); } } ] });
 	err.dialog('open');      
       } else {
 	$('#new-data-form').hide();  
@@ -333,12 +333,16 @@ function filteractivities(q) {
     query = q;
   }
   offset=0;
+  $("#nav-sec").children().removeClass("loading");
+  var item = $("#"+query.replace(/&/gi, "").replace(/=/gi, ""))
+  item.addClass("loading");
   $.ajax({url:'/comments/load?'+query+'&offset='+offset, success: function(data){
     $('#activity_list').html('');
     $('#activity_list').append(data);    
     offset += 1;
     $("#nav-sec").children().removeClass("active");
-    $("#"+query.replace(/&/gi, "").replace(/=/gi, "")).addClass("active");
+    item.removeClass("loading");
+    item.addClass("active");
   }}); 
 }
 
@@ -349,4 +353,11 @@ function moreactivities() {
     offset += 1;
     $('#e_act_more').button('reset');
   }}); 
+}
+
+function filtercm() {
+  $('#dropdown').click(); 
+  $('#dropdown').html('<b>'+$('#commissione_sel').val()+'</b><b class="caret"></b>'); 
+  $('#dropdown').parent().attr("id", "cm" + $('#cm').val() + "typeusertag");
+  filteractivities('cm='+$('#cm').val()+'&type=&user=&tag=');
 }
