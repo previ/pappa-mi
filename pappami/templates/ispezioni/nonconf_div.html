@@ -105,5 +105,12 @@
 <script type="text/javascript">
 $(document).ready(function() {
  $( "#e_dataNonconfViz" ).datepicker({ altField: '#e_dataNonconf', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '+0d' }); 
+ 
+ $('#allegato_file_1').change(function(){
+  $('#allegato_file_2').show(); 
+ });
+ $('#allegato_file_2').change(function(){
+  $('#allegato_file_3').show();
+ }); 
 });
 </script>

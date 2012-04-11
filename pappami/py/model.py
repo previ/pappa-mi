@@ -753,6 +753,11 @@ class Nonconformita(model.Model):
     return self._tipi[self.tipo]
 
 class Dieta(model.Model):
+  def __init__(self, language='en', *args, **kwargs):
+    self.allegati = None
+    self.tags = list()
+    super(Dieta, self).__init__(*args, **kwargs)  
+
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
  

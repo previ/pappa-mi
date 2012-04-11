@@ -223,6 +223,14 @@
      <textarea name="note" rows="8" cols="120" class="ss-q-long" id="entry_13" style="margin-top: 1px; margin-bottom: 1px; margin-left: 0px; margin-right: 0px; width:100%;">{{form.data.note}}</textarea>
     </div>
    </div>
+   <div class="control-group">       
+    <label class="control-label" for="e_attach">Allegati</label>
+    <div class="controls">
+     <input type="file" name="allegato_file_1" id="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+     <input type="file" name="allegato_file_2" id="allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+     <input type="file" name="allegato_file_3" id="allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>      
+    </div>
+   </div>
    <div class="control-group">
     <label class="">Categorie</label>
     <div class="controls">
@@ -246,5 +254,12 @@
 <script type="text/javascript">
 $(function() {
  $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
+ 
+ $('#allegato_file_1').change(function(){
+  $('#allegato_file_2').show(); 
+ });
+ $('#allegato_file_2').change(function(){
+  $('#allegato_file_3').show();
+ }); 
 });
 </script>
