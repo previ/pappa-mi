@@ -73,6 +73,60 @@ class ReferencePropertyField(fields.SelectFieldBase):
             else:
                 raise ValueError(self.gettext(u'Not a valid choice'))
 
+class KeyPropertyField(fields.SelectFieldBase):
+    """
+    A field for ``ndb.KeyProperty``. The list items are rendered in a
+    select.
+
+    :param reference_class:
+        A model.Model class which will be used to generate the default query
+        to make the list of items. If this is not specified, The `query`
+        property must be overridden before validation.
+    :param label_attr:
+        If specified, use this attribute on the model class as the label
+        associated with each option. Otherwise, the model object's
+        `__str__` or `__unicode__` will be used.
+    :param allow_blank:
+        If set to true, a blank choice will be added to the top of the list
+        to allow `None` to be chosen.
+    :param blank_text:
+        Use this to override the default blank option's label.
+    """
+    widget = widgets.Select()
+
+    def __init__(self, label=None, validators=None, reference_class=None,
+                 label_attr=None, allow_blank=False, blank_text=u'', **kwargs):
+        super(KeyPropertyField, self).__init__(label, validators,
+                                                     **kwargs)
+        self.label_attr = label_attr
+        self.allow_blank = allow_blank
+        self.blank_text = blank_text
+        self._set_data(None)
+        #if reference_class is not None:
+            #self.query = reference_class.query()
+
+    def _get_data(self):
+        if self._formdata is not None:
+            self._set_data(model.Key(urlsafe=self._formdata))
+        return self._data
+
+    def _set_data(self, data):
+        self._data = data
+        self._formdata = None
+
+    data = property(_get_data, _set_data)
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            if valuelist[0] == '__None':
+                self.data = None
+            else:
+                self._data = None
+                self._formdata = valuelist[0]
+
+    def pre_validate(self, form):
+        return
+            
 
 class StringListPropertyField(fields.TextAreaField):
     """

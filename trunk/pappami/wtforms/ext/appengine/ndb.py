@@ -92,7 +92,7 @@ class:
 
 """
 from wtforms import Form, validators, widgets, fields as f
-from wtforms.ext.appengine.fields import GeoPtPropertyField, ReferencePropertyField, StringListPropertyField
+from wtforms.ext.appengine.fields import GeoPtPropertyField, KeyPropertyField, StringListPropertyField
 
 
 def get_TextField(kwargs):
@@ -114,18 +114,20 @@ def get_IntegerField(kwargs):
     return f.IntegerField(**kwargs)
 
 
+def get_KeyField(kwargs):
+    """
+    Returns a ``TextField``, applying the ``db.StringProperty`` length limit
+    of 500 bytes.
+    """
+    return KeyPropertyField(**kwargs)
+
 def convert_StringProperty(model, prop, kwargs):
     """Returns a form field for a ``db.StringProperty``."""
-    if prop.multiline:
-        kwargs['validators'].append(validators.length(max=500))
-        return f.TextAreaField(**kwargs)
+    if prop._repeated:
+        return StringListPropertyField(**kwargs)
     else:
+        kwargs['validators'].append(validators.length(max=500))
         return get_TextField(kwargs)
-
-
-def convert_ByteStringProperty(model, prop, kwargs):
-    """Returns a form field for a ``db.ByteStringProperty``."""
-    return get_TextField(kwargs)
 
 
 def convert_BooleanProperty(model, prop, kwargs):
@@ -145,7 +147,7 @@ def convert_FloatProperty(model, prop, kwargs):
 
 def convert_DateTimeProperty(model, prop, kwargs):
     """Returns a form field for a ``db.DateTimeProperty``."""
-    if prop.auto_now or prop.auto_now_add:
+    if prop._auto_now or prop._auto_now_add:
         return None
 
     return f.DateTimeField(format='%Y-%m-%d %H:%M:%S', **kwargs)
@@ -153,7 +155,7 @@ def convert_DateTimeProperty(model, prop, kwargs):
 
 def convert_DateProperty(model, prop, kwargs):
     """Returns a form field for a ``db.DateProperty``."""
-    if prop.auto_now or prop.auto_now_add:
+    if prop._auto_now or prop._auto_now_add:
         return None
 
     return f.DateField(format='%Y-%m-%d', **kwargs)
@@ -161,7 +163,7 @@ def convert_DateProperty(model, prop, kwargs):
 
 def convert_TimeProperty(model, prop, kwargs):
     """Returns a form field for a ``db.TimeProperty``."""
-    if prop.auto_now or prop.auto_now_add:
+    if prop._auto_now or prop._auto_now_add:
         return None
 
     return f.DateTimeField(format='%H:%M:%S', **kwargs)
@@ -172,20 +174,10 @@ def convert_ListProperty(model, prop, kwargs):
     return None
 
 
-def convert_StringListProperty(model, prop, kwargs):
-    """Returns a form field for a ``db.StringListProperty``."""
-    return StringListPropertyField(**kwargs)
-
-
-def convert_ReferenceProperty(model, prop, kwargs):
+def convert_KeyProperty(model, prop, kwargs):
     """Returns a form field for a ``db.ReferenceProperty``."""
-    kwargs['reference_class'] = prop.reference_class
-    return ReferencePropertyField(**kwargs)
-
-
-def convert_SelfReferenceProperty(model, prop, kwargs):
-    """Returns a form field for a ``db.SelfReferenceProperty``."""
-    return None
+    #kwargs['reference_class'] = prop._reference_class
+    return get_KeyField(kwargs)
 
 
 def convert_UserProperty(model, prop, kwargs):
@@ -309,33 +301,23 @@ class ModelConverter(object):
     +====================+===================+==============+==================+
     """
     default_converters = {
-        'StringProperty':        convert_StringProperty,
-        'ByteStringProperty':    convert_ByteStringProperty,
-        'BooleanProperty':       convert_BooleanProperty,
+        'TextProperty':        convert_TextProperty,
+        'StringProperty':    convert_StringProperty,
+        'BlobProperty':       convert_BlobProperty,
         'IntegerProperty':       convert_IntegerProperty,
         'FloatProperty':         convert_FloatProperty,
-        'DateTimeProperty':      convert_DateTimeProperty,
+        'BooleanProperty':       convert_BooleanProperty,
+        'DateTimeProperty':          convert_DateTimeProperty,
         'DateProperty':          convert_DateProperty,
         'TimeProperty':          convert_TimeProperty,
-        'ListProperty':          convert_ListProperty,
-        'StringListProperty':    convert_StringListProperty,
-        'ReferenceProperty':     convert_ReferenceProperty,
-        'SelfReferenceProperty': convert_SelfReferenceProperty,
-        'UserProperty':          convert_UserProperty,
-        'BlobProperty':          convert_BlobProperty,
-        'TextProperty':          convert_TextProperty,
-        'CategoryProperty':      convert_CategoryProperty,
-        'LinkProperty':          convert_LinkProperty,
-        'EmailProperty':         convert_EmailProperty,
-        'GeoPtProperty':         convert_GeoPtProperty,
-        'IMProperty':            convert_IMProperty,
-        'PhoneNumberProperty':   convert_PhoneNumberProperty,
-        'PostalAddressProperty': convert_PostalAddressProperty,
-        'RatingProperty':        convert_RatingProperty,
+        'GeoPtProperty':    convert_StringProperty,
+        'KeyProperty':     convert_KeyProperty,
+        'UserProperty': convert_UserProperty,
+        'StructuredProperty':          convert_StringProperty,
+        'LocalStructuredProperty':          convert_StringProperty,
+        'ComputedProperty':          convert_StringProperty,
+        'GenericProperty':      convert_StringProperty
     }
-
-    # Don't automatically add a required validator for these properties
-    NO_AUTO_REQUIRED = frozenset(['ListProperty', 'StringListProperty', 'BooleanProperty'])
 
     def __init__(self, converters=None):
         """
@@ -358,24 +340,38 @@ class ModelConverter(object):
         :param field_args:
             Optional keyword arguments to construct the field.
         """
-        prop_type_name = type(prop).__name__
+
+        name = prop._code_name
+        #if prop.verbose_name:
+        #    name = prop.verbose_name
         kwargs = {
-            'label': prop.name.replace('_', ' ').title(),
-            'default': prop.default_value(),
+            'label': name.replace('_', ' ').title(),
+            'default': prop._default,
             'validators': [],
         }
+        choices = None
+        #default = None
         if field_args:
+            choices = field_args.get("choices", None)
+            if choices:
+                del field_args["choices"]
             kwargs.update(field_args)
 
-        if prop.required and prop_type_name not in self.NO_AUTO_REQUIRED:
+        if prop._required:
             kwargs['validators'].append(validators.required())
 
-        if prop.choices:
+        if prop._choices:
             # Use choices in a select field.
-            kwargs['choices'] = [(v, v) for v in prop.choices]
+            kwargs['choices'] = [(v, v) for v in prop._choices]
             return f.SelectField(**kwargs)
+
+        if choices:
+            kwargs['choices'] = [(v, v) for v in choices]
+            field = f.SelectField(**kwargs)
+            #field.process_data(default)
+            return field
         else:
-            converter = self.converters.get(prop_type_name, None)
+            converter = self.converters.get(type(prop).__name__, None)
             if converter is not None:
                 return converter(model, prop, kwargs)
 
@@ -406,10 +402,8 @@ def model_fields(model, only=None, exclude=None, field_args=None,
 
     # Get the field names we want to include or exclude, starting with the
     # full list of model properties.
-    props = model.properties()
-    sorted_props = sorted(props.iteritems(), key=lambda prop: prop[1].creation_counter)
-    field_names = list(x[0] for x in sorted_props)
-
+    props = model._properties
+    field_names = props.keys()
     if only:
         field_names = list(f for f in only if f in field_names)
     elif exclude:
@@ -423,7 +417,6 @@ def model_fields(model, only=None, exclude=None, field_args=None,
             field_dict[name] = field
 
     return field_dict
-
 
 def model_form(model, base_class=Form, only=None, exclude=None, field_args=None,
                converter=None):
@@ -455,4 +448,4 @@ def model_form(model, base_class=Form, only=None, exclude=None, field_args=None,
 
     # Return a dynamically created form class, extending from base_class and
     # including the created fields as properties.
-    return type(model.kind() + 'Form', (base_class,), field_dict)
+    return type(model._get_kind() + 'Form', (base_class,), field_dict)
