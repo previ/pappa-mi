@@ -23,9 +23,19 @@
  </div>
  <div class="row">
   <div class="span8">
-  <div{% if preview %} class="scroll" style="height:240px; overflow:auto;"{% endif %}>{{nc.note|replace("\n","<br/>")}}</div>
+  <div{% if preview %} class="scroll" style="height:120px; overflow:auto;"{% endif %}>{{nc.note|replace("\n","<br/>")}}</div>
   </div>
  </div>
+{% if nc.has_allegati %}
+ <div class="row">
+  <div class="span8">
+   <div for="e_attach"><i class="icon-file"></i> Allegati</div>
+   <ul class="thumbnails">{%for allegato in nc.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{%if allegato.isImage()%}<img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/>{%else%}{{allegato.nome}}{%endif%}</a>&nbsp;{{allegato.descrizione}}</li>{%endfor%}
+   </ul>
+  </div>
+ </div>
+{% endif %}  
 {% if preview %}
  <div class="row">
   <div class="span2">

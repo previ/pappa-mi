@@ -18,7 +18,7 @@ from google.appengine.api import memcache
 
 class Messaggio(model.Model):
   def __init__(self, *args, **kwargs):
-    self.allegati = list()
+    self.allegati = None
     #self._commissario = None
     #self._tags = None
     #self._votes = None
@@ -310,24 +310,23 @@ class Messaggio(model.Model):
       return len(self.testo) > 80 or self.has_allegati
 
   @cached_property
+  def get_allegati(self): 
+    if not self.allegati:
+      self.allegati = list()
+      if self.key:
+        for allegato in Allegato.query().filter(Allegato.obj == self.key):
+          self.allegati.append(allegato)
+    return self.allegati
+
+  @cached_property
   def has_allegati(self):
-    if self.get_allegati and self.get_allegati.count() > 0:
-      return True
-    else:
-      return False
+    return len(self.get_allegati) > 0
     
   def comments(self):
     if self.commenti is None:
       return 0
     else:
       return self.commenti
-
-  @cached_property    
-  def get_allegati(self): 
-    if self.key:
-      return Allegato.query().filter(Allegato.obj == self.key)
-    else:
-      return None
 
   def tipodesc(self):
     return Messaggio._tipi[int(self.tipo)]

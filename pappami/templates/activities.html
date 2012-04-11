@@ -11,11 +11,11 @@ $(document).ready(function() {
     $("#nav-sec").children().removeClass("active");
     $("#cm{{ctx.cm}}type{{ctx.type}}user{{ctx.user}}tag{{ctx.tag}}").addClass("active");    
   });        
-  $('#allegato_file_1').change(function(){
-   $('#allegato_file_2').show(); 
+  $('#m_allegato_file_1').change(function(){
+   $('#m_allegato_file_2').show(); 
   });
-  $('#allegato_file_2').change(function(){
-   $('#allegato_file_3').show();
+  $('#m_allegato_file_2').change(function(){
+   $('#m_allegato_file_3').show();
   });
   $('#citta').change( oncitychanged);
   oncitychanged();    
@@ -84,7 +84,7 @@ $(document).ready(function() {
     </div>
    </div>
    <div id="new-msg" style="display:none;">
-    <form id="new-msg-form" action="/comments/message" method="post" class="form-stacked" novalidate="true"> 
+    <form id="new-msg-form" action="/comments/message" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true"> 
      <input type="hidden" id="act_last" name="last" value="" />  
      <input type="hidden" name="livello" value="0" />  
      <input type="hidden" name="tipo" value="201" /> 
@@ -106,9 +106,9 @@ $(document).ready(function() {
 	</div>
 	<div class="control-group">       
 	 <label class="control-label" for="e_attach">Allegati</label>
-	 <input type="file" name="allegato_file_1" id="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	 <input type="file" name="allegato_file_2" id="allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	 <input type="file" name="allegato_file_3" id="allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 <input type="file" name="allegato_file_1" id="m_allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 <input type="file" name="allegato_file_2" id="m_allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 <input type="file" name="allegato_file_3" id="m_allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
 	</div>
 	<label class="control-label">Categorie:</label>	 
 	<div class="control-group">  	  

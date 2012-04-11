@@ -531,7 +531,7 @@ font-weight: bold;
 }
 
 .provider-btn {
-    display: inline-block;
+    display: inline;
     list-style: none;
     padding: 5px;
 }

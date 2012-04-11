@@ -514,7 +514,7 @@ class ZonaOffset(model.Model):
   
 class Ispezione(model.Model):
   def __init__(self, language='en', *args, **kwargs):
-    self.allegati = list()
+    self.allegati = None
     self.tags = list()
     super(Ispezione, self).__init__(*args, **kwargs)  
       
@@ -653,10 +653,23 @@ class Ispezione(model.Model):
   @classmethod
   def get_by_cm(cls, cm):
     return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione)
-   
+
+  @cached_property
+  def get_allegati(self): 
+    if not self.allegati:
+      self.allegati = list()
+      if self.key:
+        for allegato in Allegato.query().filter(Allegato.obj == self.key):
+          self.allegati.append(allegato)
+    return self.allegati
+
+  @cached_property
+  def has_allegati(self):
+    return len(self.get_allegati) > 0
+  
 class Nonconformita(model.Model):
   def __init__(self, language='en', *args, **kwargs):
-    self.allegati = list()
+    self.allegati = None
     self.tags = list()
     super(Nonconformita, self).__init__(*args, **kwargs)  
   
@@ -692,6 +705,19 @@ class Nonconformita(model.Model):
 
   def sommario(self):
     return self.tipoNome()
+
+  @cached_property
+  def get_allegati(self): 
+    if not self.allegati:
+      self.allegati = list()
+      if self.key:
+        for allegato in Allegato.query().filter(Allegato.obj == self.key):
+          self.allegati.append(allegato)
+    return self.allegati
+
+  @cached_property
+  def has_allegati(self):
+    return len(self.get_allegati) > 0
   
   _tipi_n = {1:0,
            2:1,
@@ -771,6 +797,19 @@ class Dieta(model.Model):
   @classmethod
   def get_by_cm(cls, cm):
     return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione)
+
+  @cached_property
+  def get_allegati(self): 
+    if not self.allegati:
+      self.allegati = list()
+      if self.key:
+        for allegato in Allegato.query().filter(Allegato.obj == self.key):
+          self.allegati.append(allegato)
+    return self.allegati
+
+  @cached_property
+  def has_allegati(self):
+    return len(self.get_allegati) > 0
   
   _tipi_n = {1:0,
            2:1,
@@ -832,7 +871,7 @@ class Dieta(model.Model):
 class Nota(model.Model):
   def __init__(self, *args, **kwargs):
     #logging.info("__init__")
-    self.allegati = list()
+    self.allegati = None
     self.tags = list()
     super(Nota, self).__init__(*args, **kwargs)  
       
@@ -858,17 +897,16 @@ class Nota(model.Model):
   
   @cached_property
   def get_allegati(self): 
-    if self.key:
-      return Allegato.query().filter(Allegato.obj == self.key)
-    else:
-      return self.allegati
+    if not self.allegati:
+      self.allegati = list()
+      if self.key:
+        for allegato in Allegato.query().filter(Allegato.obj == self.key):
+          self.allegati.append(allegato)
+    return self.allegati
 
   @cached_property
   def has_allegati(self):
-    if self.get_allegati and self.get_allegati.count() > 0:
-      return True
-    else:
-      return False
+    return len(self.get_allegati) > 0
 
   @classmethod
   def get_by_cm(cls, cm):

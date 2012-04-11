@@ -105,9 +105,17 @@ function opennewmsg() {
 
 var auto_open_nc = false;
 
+jQuery.validator.addMethod("numpastibambini", function(value, element) { 
+ return parseInt(value) <= $("#e_numeroPastiTotale").val(); 
+} );
+jQuery.validator.addMethod("numpastispeciali", function(value, element) { 
+ return value <= $("#e_numeroPastiBambini").val(); 
+} );
+
 function opennewwiz(url) {
   $('#new-data-form').load(url, function(){
-    initForm();
+    initForm();    
+
     $("#form0").formwizard({ 
       formPluginEnabled: true,
       validationEnabled: true,
@@ -201,7 +209,9 @@ function opennewwiz(url) {
     $.validator.messages = {
 	number: "Inserire in numero",
 	required: "Inserire o selezionare un valore",
-	range: "Inserire un valore compreso tra {0} e {1}" };
+	range: "Inserire un valore compreso tra {0} e {1}",
+	numpastibambini: "Il numero di pasti serviti ai bambini deve essere inferiore al numero di pasti totali.",
+	numpastispeciali: "Il numero di pasti speciali deve essere inferiore al numero di pasti serviti ai bambini."};
 
     $("#form0").bind("step_shown", function(event, data){
       $("#formwiz-progress-" + data.previousStep).removeClass("active");
