@@ -65,9 +65,12 @@ function onMenuChanged() {
 	      $('#step3next').val('step4');
       }
       $('#s_contorno').text($('#e_contornoEffettivo').val());
+      $("#form0").find("#e_submit").removeAttr("disabled"); 
+
 }
 
 function getPrevIspData() {
+  $("#form0").find("#e_submit").attr("disabled", true); 
   getMenu();
   var commissione = $("#e_commissione").attr("value");
 

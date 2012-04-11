@@ -63,8 +63,32 @@
 <td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
 </tr>
 <tr>
-<td>Note</td><td colspan="6"><div class="scroll" {% if preview %}style="height:100px; overflow:auto;"{% endif %}>{{isp.note|replace("\n","<br/>")}}</div></td>
+<td>Note</td><td colspan="6"><div class="scroll" {% if preview %}style="height:40px; overflow:auto;"{% endif %}>{{isp.note|replace("\n","<br/>")}}</div></td>
 </tr>
+{% if isp.has_allegati %}
+<tr>
+ <td><i class="icon-file"></i> Allegati</td>
+ <td colspan="6">{%if preview%}
+  <div class="scroll" style="height:16px; overflow:none;">
+   <ul class="thumbnails">{%for allegato in isp.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{{allegato.nome}}</a></li>{%endfor%}
+   </ul>
+  </div>{%else%}
+  <div class="scroll">
+   <ul class="thumbnails">{%for allegato in isp.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{%if allegato.isImage()%}<img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/>{%else%}{{allegato.nome}}{%endif%}</a></li>{%endfor%}
+   </ul>
+  </div>  
+  {%endif%}
+ </td>
+</tr>
+{%endif%}
+{% if preview %}
+<tr>
+ <td><i class="icon-tags"></i>Categorie&nbsp;{%for tag in isp.tags%}<span class="tagItem">{{tag}}&nbsp;</span>{%endfor%}
+ </td>
+</tr>
+{%endif%}
 </tbody>
 </table>
 {% if preview %}

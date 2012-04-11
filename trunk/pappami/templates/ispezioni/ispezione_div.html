@@ -535,6 +535,7 @@
        <select name="fruttaServita" class="required" value="{{form.data.fruttaServita}}" id="e_fruttaServita">
        <option value=""></option>
        <option value="A met&agrave mattina">A met&agrave mattina</option>
+       <option value="Prima del pasto">Prima del pasto</option>
        <option value="A fine pasto">A fine pasto</option>
        </select>
       </div>
@@ -620,7 +621,7 @@
      <div class="control-group">
       <label class="control-label" for="e_numeroPastiBambini">Pasti serviti ai bambini</label>
       <div class="controls">
-       <input type="text" name="numeroPastiBambini" value="" class="span1 required" id="e_numeroPastiBambini"/>    
+       <input type="text" name="numeroPastiBambini" value="" class="span1 numpastibambini" id="e_numeroPastiBambini"/>    
       </div>
      </div>
     </div>
@@ -628,13 +629,13 @@
      <div class="control-group" >
       <label class="control-label" for="e_numeroPastiSpeciali">Pasti speciali serviti <i class="icon-info-sign" data-content="Indicare la somma dei bambini che assumono diete etico-religiose e sanitarie."></i></label>
       <div class="controls">
-       <input type="text" name="numeroPastiSpeciali" value="" class="span1 required" id="e_numeroPastiSpeciali"/>    
+       <input type="text" name="numeroPastiSpeciali" value="" class="span1 numpastispeciali" id="e_numeroPastiSpeciali"/>    
       </div>
      </div>
     </div>
-    <div class="span3">
+    <div class="span2">
      <div class="control-group">
-      <label class="control-label" for="e_numeroAddetti">Addetti alla distribuzione</label>
+      <label class="control-label" for="e_numeroAddetti">Addetti alla distrib.</label>
       <div class="controls">
        <input type="text" name="numeroAddetti" value="" class="span1 required" id="e_numeroAddetti"/>    
       </div>
@@ -696,6 +697,14 @@
        </div>
       </div>
      </div>
+     <div class="control-group">       
+      <label class="control-label" for="e_attach">Allegati</label>
+      <div class="controls">
+       <input type="file" name="allegato_file_1" id="allegato_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+       <input type="file" name="allegato_file_2" id="allegato_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+       <input type="file" name="allegato_file_3" id="allegato_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>      
+      </div>
+     </div>
     </div>
    </div>
   </div>
@@ -709,8 +718,15 @@
 var piattounico = false;
 $(document).ready(function() {
  $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
- //$( "[type='radio']" ).button(); 
- //onMenuChanged();
- $("#e_fruttaTipo").autocomplete({source:["Albicocche","Arance","Mele","Pere","Mandarini","Pesche","Banane","Uva","Fragole","Ciliegie"]}); 
+
+ $("#e_fruttaTipo").autocomplete({source:["Albicocche","Arance","Mele","Pere","Mandarini","Pesche","Banane","Uva","Fragole","Ciliegie","Gelato"]}); 
+ 
+ $('#allegato_file_1').change(function(){
+  $('#allegato_file_2').show(); 
+ });
+ $('#allegato_file_2').change(function(){
+  $('#allegato_file_3').show();
+ });
+ 
 });
 </script>

@@ -169,7 +169,7 @@ class IspezioneHandler(BasePage):
       isp.put()
 
       for allegato in isp.allegati:
-        allegato.obj = isp
+        allegato.obj = isp.key
         allegato.put()
       
       memcache.delete("stats")
@@ -303,7 +303,7 @@ class NonconfHandler(BasePage):
       nc.put()
 
       for allegato in nc.allegati:
-        allegato.obj = nc
+        allegato.obj = nc.key
         allegato.put()
 
       memcache.delete("stats")
@@ -432,7 +432,7 @@ class DietaHandler(BasePage):
       dieta.put()
 
       for allegato in dieta.allegati:
-        allegato.obj = dieta
+        allegato.obj = dieta.key
         allegato.put()
       
       memcache.delete("stats")

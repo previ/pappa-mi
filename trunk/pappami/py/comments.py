@@ -106,6 +106,7 @@ class CMCommentHandler(BasePage):
     logging.info("testo: " + self.request.get("testo"))
     logging.info("last: " + self.request.get("last"))
     
+    messaggio.allegati = list()
     for i in range(1,10):
       if self.request.get('allegato_file_' + str(i)):
         if len(self.request.get('allegato_file' + str(i))) < 10000000 :
@@ -117,9 +118,9 @@ class CMCommentHandler(BasePage):
           allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
           allegato.obj = messaggio.key
           allegato.put()
+          messaggio.allegati.append(allegato)
         else:
           logging.info("attachment is too big.")
-    
     
     if messaggio.livello > 0 and par_key:
       par = par_key.get()
