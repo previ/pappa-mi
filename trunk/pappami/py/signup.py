@@ -38,7 +38,7 @@ class SignupPreHandler(BasePage):
     user = self.request.user
     if len(user.auth_ids) == 1: #ensure this is for first registration only
       user_info = models.UserProfile.get_by_id(user.auth_ids[0]).user_info.get("info")
-      logging.info("userinfo: " + str(user_info))
+      #logging.info("userinfo: " + str(user_info))
       if user_info.get("name"):
         if user_info.get("name").get("givenName"):
           form.nome.data=user_info.get("name").get("givenName")
@@ -50,6 +50,7 @@ class SignupPreHandler(BasePage):
       form.avatar_url.data = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
       
     form.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
+    form.notify = [1,2,0]
     if user.email:
       form.email = user.email
     else:
@@ -67,11 +68,11 @@ class SignupPreHandler(BasePage):
     return self.get()
 
 class SignupHandler(BasePage):
-  
-    
+      
   @user_required
   def post(self):
     user = self.request.user
+    #logging.info(user)
     form = CommissarioForm(self.request.POST)
 
     if not user.email:
@@ -84,13 +85,28 @@ class SignupHandler(BasePage):
     commissario.usera = user.key
     commissario.citta = model.Key("Citta", int(self.request.get("citta")))
     commissario.user_email_lower = user.email.lower()
+    
+    privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+    for what in range(0,len(privacy)):
+      for who in range(0,len(privacy[0])):
+        if self.request.get("p_"+str(what)+"_"+str(who)):
+          privacy[what][who] = int(self.request.get("p_"+str(what)+"_"+str(who)))
+
+    notify = [0,0,0]
+    for what in range(0,len(notify)):
+      if self.request.get("n_"+str(what)):
+        notify[what] = int(self.request.get("n_"+str(what)))
+        
+    commissario.privacy = privacy
+    commissario.notify = notify
+    
     commissario.put()
 
 
     new = list()
     for c_key in self.request.get_all("commissione"):
       new.append(int(c_key))
-      logging.info("new " + c_key)
+      #logging.info("new " + c_key)
     new = set(new)
       
     for cm in new:
@@ -103,6 +119,7 @@ class SignupHandler(BasePage):
         #calendario.share(commissario.usera.get().email)
 
     commissario.setCMDefault()
+    #logging.info(commissario.usera)
     commissario.set_cache()
 
     self.sendRegistrationRequestMail(commissario)

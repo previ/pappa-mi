@@ -16,7 +16,10 @@
 #
 import os
 import sys
+import logging
+from google.appengine.api.app_identity import *
 ON_DEV = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
+ON_TEST = "test" in get_application_id()
 import fixpath
 
 #########################################
@@ -34,6 +37,8 @@ remoteapi_CUSTOM_ENVIRONMENT_AUTHENTICATION = (
     #app = recording.appstats_wsgi_middleware(app)
     #return app
 	
+logging.info(get_application_id())
+logging.info(ON_TEST)
 
 engineauth = {
     # Login uri. The user will be returned here if an error occures.
@@ -47,11 +52,18 @@ engineauth = {
     'user_model': 'engineauth.models.User',
 }
 
-engineauth['provider.google'] = {
-    'client_id': '610506648671.apps.googleusercontent.com',
-    'client_secret': '_oIxbi9__8RR8mG8bl40dByM',
-    'api_key': 'AIzaSyDK9TuhnLfxxE1h16ar_B6Gztb0bkmBSuQ',
-    }
+if ON_TEST:
+    engineauth['provider.google'] = {
+        'client_id': '485876442157.apps.googleusercontent.com',
+        'client_secret': 'UQXzPTqM7VI2dtrl7g4dMmxu',
+        'api_key': 'AIzaSyCsKTyyDrbvwFLwaopx_uTWMlywHLm_hlw',
+        }
+else:
+    engineauth['provider.google'] = {
+        'client_id': '610506648671.apps.googleusercontent.com',
+        'client_secret': '_oIxbi9__8RR8mG8bl40dByM',
+        'api_key': 'AIzaSyDK9TuhnLfxxE1h16ar_B6Gztb0bkmBSuQ',
+        }
 
 engineauth['provider.linkedin'] = {
     'client_id': 't1cwngi8jvu3',
@@ -62,12 +74,18 @@ engineauth['provider.twitter'] = {
     'client_id': 'sZNyh2yNBksgOGnaXzNng',
     'client_secret': '6TmVX9Zv4orEQBJ371tVK1AhRIj9klMDHHBhKkHus',
     }
-
-engineauth['provider.facebook'] = {
-    'client_id': '103254759720309',
-    'client_secret': 'e57edc34abb15fece9abcc7b00d39735',
-    'scope': 'email',
-    }
+if ON_TEST:
+    engineauth['provider.facebook'] = {
+        'client_id': '107351225976615',
+        'client_secret': '4eb5ead5aea491cde2922af03e856aea',
+        'scope': 'email',
+        }
+else:
+    engineauth['provider.facebook'] = {
+        'client_id': '103254759720309',
+        'client_secret': 'e57edc34abb15fece9abcc7b00d39735',
+        'scope': 'email',
+        }
 
 engineauth['provider.windowslive'] = {
     'client_id': '0000000044089B00',

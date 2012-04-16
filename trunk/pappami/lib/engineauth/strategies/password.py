@@ -64,8 +64,7 @@ class PasswordStrategy(BaseStrategy):
         email = req.POST['email'].lower()
         password = req.POST['password']
         if not password or not email:
-            return self.raise_error('Please provide a valid email '
-                                    'and a password.')
+            return self.raise_error('Inserire una email e password validi.')
         user_info = self.user_info(req)
         profile = self.get_or_create_profile(
             auth_id=user_info['auth_id'],

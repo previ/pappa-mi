@@ -167,6 +167,7 @@ class Commissario(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissioni = list()
     self._privacy = None
+    self._notify = None
     super(Commissario, self).__init__(*args, **kwargs)  
 
   user = model.UserProperty()
@@ -180,6 +181,7 @@ class Commissario(model.Model):
   emailComunicazioni = model.StringProperty()
 
   privacy = model.PickleProperty()
+  notify = model.PickleProperty()
 
   user_email_lower = model.StringProperty()
   
@@ -320,6 +322,13 @@ class Commissario(model.Model):
         self.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
       self._privacy = self.privacy
     return self._privacy[what][whom]
+
+  def get_notify(self, what):
+    if self._notify == None:
+      if self.notify == None or len(self.notify) < 3:
+        self.notify = [1,2,0]
+      self._notify = self.notify
+    return self._notify[what]
   
   privacy_objects = {0: "email",
                      1: "name",
@@ -958,6 +967,7 @@ class Statistiche:
   note = int(0)  
 
 class StatisticheIspezioni(model.Model):
+  citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)
   centroCucina = model.KeyProperty(kind=CentroCucina)
 
@@ -1022,8 +1032,8 @@ class StatisticheIspezioni(model.Model):
   fruttaGradimento = model.IntegerProperty(repeated=True,indexed=False)
 
   @classmethod
-  def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
-    q = StatisticheIspezioni.query().filter(StatisticheIspezioni.commissione==cm).filter(StatisticheIspezioni.centroCucina==cc)
+  def get_cy_cc_cm_time(cls, cy = None, cc = None, cm = None, timeId=None):
+    q = StatisticheIspezioni.query().filter(StatisticheIspezioni.citta==cy).filter(StatisticheIspezioni.commissione==cm).filter(StatisticheIspezioni.centroCucina==cc)
     if timeId:
       q = q.filter(StatisticheIspezioni.timeId == timeId)
     return q
@@ -1144,15 +1154,21 @@ class StatisticheIspezioni(model.Model):
     else:
       return "Tutte"
     
-  def incVal(self, attrname, isp):
+  def incVal(self, attrname, attrbase, isp):
     attr_stat = getattr(self,attrname)
     attr_isp = getattr(isp,attrname)
-    attr_stat[attr_isp-1] += attr_isp
+    #logging.info("attr_name: " + attrname + " attr_isp: " + str(attr_isp))
+    if attr_isp:
+      attr_stat[attr_isp-attrbase] += attr_isp
 
   def incValSub(self, attrname, subattr, isp):
     attr_stat = getattr(self,attrname)
     attr_index = getattr(self,attrname+"_names")[subattr]
     attr_isp = getattr(isp,subattr)
+
+    while len(attr_stat) <= (attr_index):
+      attr_stat.append(0)
+
     attr_stat[attr_index] += attr_isp
     
   def getVals(self, attrname):
@@ -1161,7 +1177,11 @@ class StatisticheIspezioni(model.Model):
 
   def getVal(self, attrname, voto):
     attr = getattr(self,attrname)
-    return attr[voto-1]
+    base = self._attrs[attrname][0]
+    if len(attr) <= voto-base:
+      return 0
+    else:
+      return attr[voto-base]
 
   def getNormVal(self, attrname, voto):
     attr = getattr(self,attrname)
@@ -1174,46 +1194,52 @@ class StatisticheIspezioni(model.Model):
       val += v 
     return val * 100 / len(attr)
 
-  _attrs = ["puliziaCentroCottura",
-             "puliziaRefettorio",
-             "arrivoDist",
-             "primoDist",
-             "primoCondito",
-             "primoCottura",
-             "primoTemperatura",
-             "primoQuantita",
-             "primoAssaggio",
-             "primoGradimento",
-             "secondoDist",
-             "secondoCottura",
-             "secondoTemperatura",
-             "secondoQuantita",
-             "secondoAssaggio",
-             "secondoGradimento",
-             "contornoCondito",
-             "contornoCottura",
-             "contornoTemperatura",
-             "contornoQuantita",
-             "contornoAssaggio",
-             "contornoGradimento",
-             "paneServito",
-             "paneQuantita",
-             "paneAssaggio",
-             "paneGradimento",
-             "fruttaQuantita",
-             "fruttaAssaggio",
-             "fruttaGradimento",
-             "fruttaMaturazione",
-             "durataPasto",
-             "smaltimentoRifiuti",
-             "giudizioGlobale"]
+  _attrs = {"puliziaCentroCottura": [1,4],
+             "puliziaRefettorio": [1,4],
+             "arrivoDist": [1,3],
+             "primoDist": [1,3],
+             "primoCondito": [0,2],
+             "primoCottura": [1,3],
+             "primoTemperatura": [1,3],
+             "primoQuantita": [1,3],
+             "primoAssaggio": [1,3],
+             "primoGradimento": [1,4],
+             "secondoDist": [1,3],
+             "secondoCottura": [1,3],
+             "secondoTemperatura": [1,3],
+             "secondoQuantita": [1,3],
+             "secondoAssaggio": [1,3],
+             "secondoGradimento": [1,4],
+             "contornoCondito": [0,2],
+             "contornoCottura": [1,3],
+             "contornoTemperatura": [1,3],
+             "contornoQuantita": [1,3],
+             "contornoAssaggio": [1,3],
+             "contornoGradimento": [1,4],
+             "paneServito": [0,2],
+             "paneQuantita": [1,3],
+             "paneAssaggio": [1,3],
+             "paneGradimento": [1,4],
+             "fruttaQuantita": [1,3],
+             "fruttaAssaggio": [1,3],
+             "fruttaGradimento": [1,4],
+             "fruttaMaturazione": [1,3],
+             "durataPasto": [1,3],
+             "smaltimentoRifiuti": [1,4],
+             "giudizioGlobale": [1,3]}
   _attrs_sub = ["ambiente"]
   
+  def init(self):
+    for attr, base_size in self._attrs.iteritems():
+      attr_stat = getattr(self,attr)
+      while len(attr_stat) < base_size[1]:
+        attr_stat.append(0)              
+    
   def calc(self, isp):  
-    for attr in self._attrs:
-      self.incVal(attr,isp)
+    for attr, base_size in self._attrs.iteritems():
+      self.incVal(attr, base_size[0], isp)
     for attr in self._attrs_sub:
-      for attr_sub in getattr(self,attr+"_names"):
+      for attr_sub in getattr(self, attr+"_names"):
         self.incValSub(attr, attr_sub, isp)
   
 
@@ -1249,11 +1275,15 @@ class StatisticheNonconf(model.Model):
            99:12}  
 
   @classmethod
-  def get_cc_cm_time(cls, cm = None, cc = None, timeId=None):
-    q = StatisticheNonconf.query().filter(StatisticheNonconf.commissione==cm).filter(StatisticheNonconf.centroCucina==cc)
+  def get_cy_cc_cm_time(cls, cy = None, cc = None, cm = None, timeId=None):
+    q = StatisticheNonconf.query().filter(StatisticheNonconf.citta==cy).filter(StatisticheNonconf.commissione==cm).filter(StatisticheNonconf.centroCucina==cc)
     if timeId:
       q = q.filter(StatisticheNonconf.timeId == timeId)
     return q
+
+  @classmethod
+  def get_from_date(cls, data):
+    return StatisticheNonconf.query().filter(StatisticheNonconf.dataInizio >= data)
   
   def getData(self, tipo):
     return self.data[self._tipiPos[tipo]]
