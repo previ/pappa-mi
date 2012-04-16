@@ -24,7 +24,7 @@ import wsgiref.handlers
 import random
 
 from google.appengine.ext.ndb import model
-from engineauth import models
+from engineauth import models, middleware
 from google.appengine.api import users
 import webapp2 as webapp
 from webapp2_extras import security
@@ -39,10 +39,8 @@ class LoginPage(BasePage):
   def get(self):
     user = self.request.user if self.request.user else None
     profiles = None
-    if user:
-      logging.info(user.to_dict())
+
     if not self.getCommissario(self.request.user):
-      logging.info("called")
       template_values = dict()
       template_values["main"] = 'eauth/main.html'
       template_values["content"] = 'eauth/login.html'
@@ -106,7 +104,7 @@ class SignupPage(BasePage):
       
     template_values["cap_a"] = self.session["a"]
     template_values["cap_b"] = self.session["b"]
-    logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
+    #logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
       
     self.getBase(template_values)
     
@@ -117,7 +115,7 @@ class SignupPage(BasePage):
     password2 = self.request.get("password2")
     c1 = self.session.get("c")
     c2 = self.request.get("c")
-    logging.info("c1: " + c1 + " c2 " + c2)
+    #logging.info("c1: " + str(c1) + " c2 " + str(c2))
 
     self.session["a"] = None
     self.session["b"] = None
@@ -141,33 +139,33 @@ class SignupPage(BasePage):
               }
       }
       
-      models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
+      profile = models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
+
+      self.request = middleware.EngineAuthRequest(self.request.environ)
+      self.request.load_user_by_profile(profile)
+      return self.redirect("/signup")
     
     if error:
-      template_values = dict()
-      template_values["main"] = '/eauth/main.html'
-      template_values["content"] = '/eauth/signup.html'
-      a = random.randint(1, 10)
-      b = random.randint(1, 10)
-            
-      if not self.session.get("c"):
-        self.session["a"] = str(a)
-        self.session["b"] = str(b)
-        self.session["c"] = str(a + b)
+      self.handle_error(error)
 
-      template_values["cap_a"] = self.session["a"]
-      template_values["cap_b"] = self.session["b"]
-      logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
+  def handle_error(self, error):
+    template_values = dict()
+    template_values["main"] = '/eauth/main.html'
+    template_values["content"] = '/eauth/signup.html'
+    a = random.randint(1, 10)
+    b = random.randint(1, 10)
+          
+    if not self.session.get("c"):
+      self.session["a"] = str(a)
+      self.session["b"] = str(b)
+      self.session["c"] = str(a + b)
 
-      template_values["messages"] = [{'message': error}]
-      self.getBase(template_values)
-    else:
-      self.redirect("/auth/password?next=/signup", code=307)
+    template_values["cap_a"] = self.session["a"]
+    template_values["cap_b"] = self.session["b"]
+    #logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
 
-      #template_values = dict()
-      #template_values["main"] = '/eauth/main.html'
-      #template_values["content"] = '/eauth/emailwait.html'
-      #self.getBase(template_values)
+    template_values["messages"] = [{'message': error}]
+    self.getBase(template_values)
       
     
         
@@ -194,12 +192,12 @@ class PwdRecoverRequestPage(BasePage):
     password = None
     c1 = self.session.get("c")
     c2 = self.request.get("c")
-    logging.info("c1: " + c1 + " c2 " + c2)
+    #logging.info("c1: " + c1 + " c2 " + c2)
     if c1 != c2:
       error = "La risposta alla domanda di controllo è sbagliata, riprova"
     else:
       email = self.request.get("email")
-      logging.info(email)
+      #logging.info(email)
       user = models.UserEmail.get_by_emails([email])
       if user is None:
         error = "Email non presente in archivio"
@@ -238,7 +236,7 @@ class PwdRecoverRequestPage(BasePage):
     message.send()
 
     
-    logging.info("url: " + url)
+    #logging.info("url: " + url)
     
 class PwdRecoverChangePage(BasePage):
   

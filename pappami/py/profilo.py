@@ -51,8 +51,14 @@ class CMProfiloHandler(BasePage):
         for who in range(0,len(privacy[0])):
           if self.request.get("p_"+str(what)+"_"+str(who)):
             privacy[what][who] = int(self.request.get("p_"+str(what)+"_"+str(who)))
+
+      notify = [0,0,0]
+      for what in range(0,len(notify)):
+        if self.request.get("n_"+str(what)):
+          notify[what] = int(self.request.get("n_"+str(what)))
           
       commissario.privacy = privacy
+      commissario.notify = notify
       commissario.put()
       commissario.set_cache()
           
@@ -96,14 +102,12 @@ class CMAvatarHandler(BasePage):
       
   def post(self):
     cmd = self.request.get("cmd")
-    logging.info("cmd:" + cmd)
+    #logging.info("cmd:" + cmd)
     if cmd == "upload":
       commissario = self.getCommissario()
       avatar_file = self.request.get("avatar_file")
-      logging.info("1")
       if avatar_file:
         if len(avatar_file) < 1000000 :
-          logging.info("2")
           avatar = images.resize(self.request.get("avatar_file"), 128,128)
           #logging.info(commissario.avatar_data)
           commissario.avatar_data = avatar

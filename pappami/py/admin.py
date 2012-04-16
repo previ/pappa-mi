@@ -46,8 +46,8 @@ class CMAdminMenuHandler(BasePage):
   def get(self):    
 
     template_values = {
-      'content_left': 'admin/leftbar.html',
-      'content': 'admin/menu.html'
+      #'content_left': '/admin/leftbar.html',
+      #'content': '/admin/menu.html'
     }
 
     if( self.request.get("data") ):
@@ -571,6 +571,14 @@ class CMAdminHandler(BasePage):
       self.response.out.write("initAuth Ok")
       return
 
+    if self.request.get("cmd") == "resetEmailPrivacy":
+      for c in Commissario.query():
+        c.privacy = [[0,0,0],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
+        c.put()
+        
+      self.response.out.write("Ok")
+      return
+    
       
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)
@@ -628,8 +636,7 @@ class CMAdminHandler(BasePage):
         
       self.response.out.write(buff)
       return
-      
-    
+          
     if self.request.get("cmd") == "flush":
       memcache.flush_query()
       self.response.out.write("flush Ok")
@@ -659,8 +666,7 @@ class CMAdminHandler(BasePage):
           cc.put()
       
     template_values = {
-      'content_left': 'admin/leftbar.html',
-      'content': ''
+      'content': 'admin/leftbar.html',
     }
     self.getBase(template_values)
 

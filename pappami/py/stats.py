@@ -79,7 +79,6 @@ class CMStatsHandler(BasePage):
     now = datetime.datetime.now().date()
 
     anno = int(self.get_context().get("anno"))
-
     if self.request.get("anno"):
       anno = int(self.request.get("anno"))
 
@@ -89,25 +88,30 @@ class CMStatsHandler(BasePage):
         anno = anno - 1
 
     anni = list()
-    sts = StatisticheIspezioni.get_cc_cm_time()
+    sts = StatisticheIspezioni.get_cy_cc_cm_time()
     for st in sts:
+      logging.info(st.timeId)
       anni.append(st.timeId)
       
 
-    stat = StatisticheIspezioni.get_cc_cm_time(timeId=anno).get()
+    cy_key = model.Key("Citta", self.get_context().get("citta_key"))
+    if self.request.get("citta"):
+      cy_key = model.Key("Citta", int(self.request.get("citta")))
+    
+    statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=cy_key, timeId=anno).get()
       
     #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
     #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
     cm_key = self.get_context().get("cm_key")
     if cm_key:
       cm = model.Key("Commissione", cm_key).get()
-    if self.request.get("cm_hidden"):
-      cm = model.Key("Commissione", int(self.request.get("cm_hidden"))).get()
+    if self.request.get("cm"):
+      cm = model.Key("Commissione", int(self.request.get("cm"))).get()
     if cm:
       cc = cm.getCentroCucina(now)
-      statCC = StatisticheIspezioni.get_cc_cm_time(cc=cc.key, timeId=anno).get()
-      statCM = StatisticheIspezioni.get_cc_cm_time(cm=cm.key, timeId=anno).get()
-    stats = [stat,statCC,statCM]
+      statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
+      statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
+    stats = [statCY,statCC,statCM]
     
     z_desc = {"group": ("string", "Gruppo"), 
                "1": ("number", "Scarso"),
@@ -189,7 +193,7 @@ class CMStatsHandler(BasePage):
     a_desc = {"tipo": ("string", "Descrizione"), 
                "count": ("number", "Numero")}
 
-    a_stat = stat
+    a_stat = statCY
     if statCC:
       a_stat = statCC
     if statCM:
@@ -204,9 +208,9 @@ class CMStatsHandler(BasePage):
                "count": ("number", "Occorrenze")}
     
     if cm:
-      ncstat = StatisticheNonconf.get_cc_cm_time(cm=cm.key, timeId=anno).get()
+      ncstat = StatisticheNonconf.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
     else:
-      ncstat = StatisticheNonconf.get_cc_cm_time(timeId=anno).get()
+      ncstat = StatisticheNonconf.get_cy_cc_cm_time(cy=statCY.citta, timeId=anno).get()
 
     nc_table = DataTable(nc_desc)
     if ncstat is not None:      
@@ -273,7 +277,7 @@ class CMStatsHandler(BasePage):
     template_values["fa_table"] = fa_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["fm_table"] = fm_table.ToJSon(columns_order=("group", "1", "2", "3"))
     template_values["fq_table"] = fq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["stat"] = stat
+    template_values["statCY"] = statCY
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
     template_values['action'] = self.request.path
@@ -319,11 +323,13 @@ class CMStatCalcHandler(BasePage):
 class CMStatNCCalcHandler(CMStatCalcHandler):
   def get(self):
     
-    stats = None
+    statAll = None
     statCM = None
     statCC = None
+    statCY = None
     statsCM = dict()
     statsCC = dict()
+    statsCY = dict()
 
     limit = 50
     #logging.info("limit: %s", limit)
@@ -343,93 +349,122 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
-
+    dataUltimoCalcolo = datetime.datetime(dataInizio.year, dataInizio.month, dataInizio.day) #default dataUltimoCalcolo = data inizio anno
     timeId=year
     timePeriod = "Y"
     wtot = (dataFine - dataInizio).days / 7
 
+    #load stat for cache
     for s in StatisticheNonconf.get_from_date(dataInizio):
-      if s.commissione is None and s.centroCucina is None:
-        stats = s
-      elif s.commissione is None and s.centroCucina is not None:
-        statsCC[s.centroCucina.key()]=s        
+      if s.citta:
+        statsCY[s.citta] = s
+      elif s.centroCucina:
+        statsCC[s.centroCucina] = s        
+      elif s.commissione:
+        statsCM[s.commissione] = s
       else:
-        statsCM[s.commissione.key()]=s
+        statAll = s
+        dataUltimoCalcolo = statAll.dataCalcolo
+        
       s.dataFine = dataFine
       self.initWeek(s, wtot)
+      
+    if not statAll:
+      statAll = StatisticheNonconf()
+      statAll.creato_da = self.get_current_user()
+      statAll.dataInizio = dataInizio
+      statAll.dataFine = dataFine
+      statAll.timeId = timeId
+      statAll.timePeriod = timePeriod
+      self.initWeek(statAll, wtot)      
     
-    if stats is None:
-      stats = StatisticheNonconf()
-      stats.dataInizio = dataInizio
-      stats.dataFine = dataFine
-      stats.timeId=timeId
-      stats.timePeriod = timePeriod
-      self.initWeek(stats, wtot)
-      stats.dataCalcolo = datetime.datetime(stats.dataInizio.year, stats.dataInizio.month, stats.dataInizio.day)
+    count = 0 
       
-    count = 0
-   
-      
-    for nc in Nonconformita.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+    for nc in Nonconformita.query().filter(Nonconformita.creato_il > dataUltimoCalcolo).order(Nonconformita.creato_il).fetch(limit=limit+1, offset=offset):
       if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine :
-        if( nc.commissione.key() not in statsCM ):          
+        if nc.commissione not in statsCM:          
           statCM = StatisticheNonconf()
-          statCM.dataInizio = stats.dataInizio
-          statCM.dataFine = stats.dataFine
+          #statCM.creato_da = self.get_current_user()
+          statCM.dataInizio = dataInizio
+          statCM.dataFine = dataFine
           statCM.commissione = nc.commissione
-          statCM.timeId=timeId
-          statCM.timePeriod = statCM.timePeriod
-          statsCM[statCM.commissione.key()] = statCM
+          statCM.timeId = timeId
+          statCM.timePeriod = timePeriod
+          statsCM[statCM.commissione] = statCM
           self.initWeek(statCM, wtot)
         else:
-          statCM = statsCM[nc.commissione.key()]
+          statCM = statsCM[nc.commissione]
           
-        if( nc.commissione.getCentroCucina(now).key() not in statsCC ):
+        if nc.commissione.get().getCentroCucina(now).key not in statsCC:
           statCC = StatisticheNonconf()
-          statCC.dataInizio = stats.dataInizio
-          statCC.dataFine = stats.dataFine
-          statCC.centroCucina = nc.commissione.getCentroCucina(now)
-          statCC.timeId=timeId
-          statCC.timePeriod = statCM.timePeriod
-          statsCC[statCC.centroCucina.key()] = statCC
+          #statCC.creato_da = self.get_current_user()
+          statCC.dataInizio = dataInizio
+          statCC.dataFine = dataFine
+          statCC.centroCucina = nc.commissione.get().getCentroCucina(now).key
+          statCC.timeId = timeId
+          statCC.timePeriod = timePeriod
+          statsCC[statCC.centroCucina] = statCC
           self.initWeek(statCC, wtot)
         else:
-          statCC = statsCC[nc.commissione.getCentroCucina(now).key()]
-  
+          statCC = statsCC[nc.commissione.get().getCentroCucina(now).key]
+
+        if( nc.commissione.get().citta not in statsCY ):
+          statCY = StatisticheNonconf()
+          #statCY.creato_da = self.get_current_user()
+          statCY.citta = nc.commissione.get().citta
+          statCY.dataInizio = dataInizio
+          statCY.dataFine = dataFine
+          statCY.timeId = timeId
+          statCY.timePeriod = timePeriod
+          statsCY[statCY.citta] = statCY
+          self.initWeek(statCY, wtot)
+        else:
+          statCY = statsCY[nc.commissione.get().citta]
+          
         self.calcNC(nc,statCM)
         self.calcNC(nc,statCC)
-        self.calcNC(nc,stats)
+        self.calcNC(nc,statCY)
+        self.calcNC(nc,statAll)
         count += 1
-        if count == limit : break
-      
-    if stats.numeroNonconf > 0 :
-      if count < limit :  
-        stats.dataCalcolo = dataCalcolo
-      stats.creato_da = self.get_current_user()
-      stats.put()
-      
+        if count == limit : break           
+    
     for stat in statsCM.values() :
+      #when no more data to process, update dataCalcolo
       if count < limit :  
+        logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.commissione.get().nome)
         stat.dataCalcolo = dataCalcolo
-      stat.creato_da = self.get_current_user()
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
+        logging.info("when no more data to process, update statsCC.dataCalcolo for " + stat.centroCucina.get().nome)
         stat.dataCalcolo = dataCalcolo
-      stat.creato_da = self.get_current_user()        
       stat.put()
-    
+
+    for stat in statsCY.values() :
+      if count < limit :  
+        logging.info("when no more data to process, update statsCY.dataCalcolo for " + stat.citta.get().nome)
+        stat.dataCalcolo = dataCalcolo
+      stat.put()
+
+    if count < limit :  
+      logging.info("when no more data to process, update statAll.dataCalcolo")
+      statAll.dataCalcolo = dataCalcolo
+    statAll.put()
+      
     finish = count < limit    
     logging.info("finish: " + str(finish))  
     if not finish:
       self.putTask("/admin/stats/calcnc", offset + limit)
 
   def initWeek(self, stat, wtot):
+    for nc in range(0,len(stat._tipiPos.keys())):
+      stat.data.append(0)
     for ns in range(len(stat.numeroNonconfSettimana),wtot + 1):
       stat.numeroNonconfSettimana.append(0)
 
   def calcNC(self, nc, stats):
+    #logging.info(stats)
     stats.incData(nc.tipo)
     stats.numeroNonconf += 1
     settimana = (nc.dataNonconf - stats.dataInizio).days / 7
@@ -438,11 +473,13 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
 class CMStatIspCalcHandler(CMStatCalcHandler):
   def get(self):
     
-    stats = None
+    statAll = None
     statCM = None
     statCC = None
+    statCY = None
     statsCM = dict()
     statsCC = dict()
+    statsCY = dict()
 
     limit = 50
     #logging.info("limit: %s", limit)
@@ -464,6 +501,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
+    dataUltimoCalcolo = datetime.datetime(dataInizio.year, dataInizio.month, dataInizio.day) #default dataUltimoCalcolo = data inizio anno
 
     timeId=year
     timePeriod = "Y"
@@ -475,78 +513,106 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     
     # carica gli elementi creati successivamente all'ultimo calcolo
     for s in StatisticheIspezioni.get_from_date(dataInizio):
-      if s.commissione is None and s.centroCucina is None:
-        stats = s
-      elif s.commissione is None and s.centroCucina is not None:
-        statsCC[s.centroCucina.key()]=s        
+      if s.citta:
+        statsCY[s.citta] = s
+      elif s.centroCucina:
+        statsCC[s.centroCucina] = s        
+      elif s.commissione:
+        statsCM[s.commissione] = s
       else:
-        statsCM[s.commissione.key()]=s
+        statAll = s
+        dataUltimoCalcolo = s.dataCalcolo
       s.dataFine = dataFine
       self.initWeek(s, wtot)
 
-    
-    if stats is None:
-      stats = StatisticheIspezioni()
-      stats.dataInizio = dataInizio
-      stats.dataFine = dataFine
-      stats.timeId=timeId
-      stats.timePeriod = timePeriod
-      self.initWeek(stats, wtot)
-      stats.dataCalcolo = datetime.datetime(stats.dataInizio.year, stats.dataInizio.month, stats.dataInizio.day)
+    if not statAll:
+      statAll = StatisticheIspezioni()
+      #statAll.creato_da = self.get_current_user()
+      statAll.dataInizio = dataInizio
+      statAll.dataFine = dataFine
+      statAll.timeId = timeId
+      statAll.timePeriod = timePeriod
+      self.initWeek(statAll, wtot)      
+      statAll.init()
 
+      
     count = 0
 
       
-    for isp in Ispezione.all().filter("creato_il >", stats.dataCalcolo).order("creato_il").fetch(limit+1, offset):
+    for isp in Ispezione.query().filter(Ispezione.creato_il > dataUltimoCalcolo).order(Ispezione.creato_il).fetch(limit=limit+1, offset=offset):
       if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
-        if( isp.commissione.key() not in statsCM ):          
+        if( isp.commissione not in statsCM ):          
           statCM = StatisticheIspezioni()
-          statCM.dataInizio = stats.dataInizio
-          statCM.dataFine = stats.dataFine
-          statCM.timeId=timeId
-          statCM.timePeriod = statCM.timePeriod
+          #statCM.creato_da = self.get_current_user()
+          statCM.dataInizio = dataInizio
+          statCM.dataFine = dataFine
+          statCM.timeId = timeId
+          statCM.timePeriod = timePeriod
           statCM.commissione = isp.commissione
-          statsCM[statCM.commissione.key()] = statCM
+          statsCM[statCM.commissione] = statCM
           self.initWeek(statCM, wtot)
+          statCM.init()
         else:
-          statCM = statsCM[isp.commissione.key()]
+          statCM = statsCM[isp.commissione]
   
-        if( isp.commissione.getCentroCucina(now).key() not in statsCC ):
+        if( isp.commissione.get().getCentroCucina(now).key not in statsCC ):
           statCC = StatisticheIspezioni()
-          statCC.dataInizio = stats.dataInizio
-          statCC.dataFine = stats.dataFine
-          statCC.timeId=timeId
-          statCC.timePeriod = statCM.timePeriod
-          statCC.centroCucina = isp.commissione.getCentroCucina(now)
-          statsCC[statCC.centroCucina.key()] = statCC
+          #statCC.creato_da = self.get_current_user()
+          statCC.dataInizio = dataInizio
+          statCC.dataFine = dataFine
+          statCC.timeId = timeId
+          statCC.timePeriod = timePeriod
+          statCC.centroCucina = isp.commissione.get().getCentroCucina(now).key
+          statsCC[statCC.centroCucina] = statCC
           self.initWeek(statCC, wtot)
+          statCC.init()
         else:
-          statCC = statsCC[isp.commissione.getCentroCucina(now).key()]
+          statCC = statsCC[isp.commissione.get().getCentroCucina(now).key]
+          
+        if( isp.commissione.get().citta not in statsCY ):          
+          statCY = StatisticheIspezioni()
+          #statCY.creato_da = self.get_current_user()
+          statCY.dataInizio = dataInizio
+          statCY.dataFine = dataFine
+          statCY.timeId = timeId
+          statCY.timePeriod = timePeriod
+          statCY.citta = isp.commissione.get().citta
+          statsCY[statCY.citta] = statCY
+          self.initWeek(statCY, wtot)
+          statCY.init()
+        else:
+          statCY = statsCY[isp.commissione.get().citta]
           
         self.calcIsp(isp,statCM)
         self.calcIsp(isp,statCC)
-        self.calcIsp(isp,stats)
+        self.calcIsp(isp,statCY)
+        self.calcIsp(isp,statAll)
         count += 1
         if count == limit : break
         
-    if stats.numeroSchede > 0 :
-      if count < limit :  
-        stats.dataCalcolo = dataCalcolo
-      stats.creato_da = self.get_current_user()
-      stats.put()
-      
     for stat in statsCM.values() :
       if count < limit :  
+        logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.commissione.get().nome)
         stat.dataCalcolo = dataCalcolo
-      stat.creato_da = self.get_current_user()
       stat.put()
 
     for stat in statsCC.values() :
       if count < limit :  
+        logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.centroCucina.get().nome)
         stat.dataCalcolo = dataCalcolo
-      stat.creato_da = self.get_current_user()
       stat.put()
-    
+
+    for stat in statsCY.values() :
+      if count < limit :  
+        logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.citta.get().nome)
+        stat.dataCalcolo = dataCalcolo
+      stat.put()
+
+    if count < limit :  
+      logging.info("when no more data to process, update statAll.dataCalcolo")
+      statAll.dataCalcolo = dataCalcolo
+    statAll.put()
+      
     finish = count < limit    
     logging.info("finish: " + str(finish))  
     if not finish:
@@ -623,7 +689,7 @@ class CMStatCalcHandlerOld(BasePage):
         stat.valoreSomma4 = stat.valoreSomma4 + 1 if getattr(isp, attr) == 4 else 0
         stat.valoreSomma5 = stat.valoreSomma5 + 1 if getattr(isp, attr) == 5 else 0
     for attr, stat in attrs.iteritems():
-      stat.creato_da = self.get_current_user()
+      #stat.creato_da = self.get_current_user()
       stat.put()
 
       

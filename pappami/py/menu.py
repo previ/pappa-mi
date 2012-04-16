@@ -20,6 +20,8 @@ import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
+from google.appengine.api import urlfetch
+from HTMLParser import HTMLParser
 
 from google.appengine.ext.ndb import model
 from google.appengine.api import users
@@ -80,9 +82,51 @@ class CMMenuSlideHandler(CMMenuHandler):
     template_values['main'] = 'menu_slides.html'    
     self.getBase(template_values)
 
+class MenuScraper(BasePage):
+  
+  def get(self): 
+    template_values = dict()
+    
+    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=01&x2=05&x3=2012', deadline=60)
+    p = MenuParser()
+    p.text = ""
+    p.feed(response.content)
+    
+    self.response.out.write(p.text)
+
+
+# create a subclass and override the handler methods
+class MenuParser(HTMLParser):    
+  
+
+  piatti = set()
+  settimane = list()
+  
+  curr_id = ""
+  def handle_starttag(self, tag, attrs):
+    for attrid, attrvalue in attrs:
+      if attrid == "id":
+        self.curr_id=attrvalue
+    
+  def handle_endtag(self, tag):
+    pass     
+
+  def handle_data(self, data):
+    #logging.info(data)
+    if self.curr_id == "divmleftletter":
+      logging.info(data)
+      self.text += "\n" + data + "|"
+      self.curr_id=""
+    if self.curr_id == "divplatedesc":
+      logging.info(data)
+      self.text += data + "|"
+      self.curr_id=""
+    
+  
 app = webapp.WSGIApplication([
   ('/menu', CMMenuDataHandler),
-  ('/menuslide', CMMenuSlideHandler)
+  ('/menuslide', CMMenuSlideHandler),
+  ('/menu/scrape', MenuScraper),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 def main():
