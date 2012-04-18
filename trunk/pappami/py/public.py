@@ -37,7 +37,7 @@ from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
 from py.form import IspezioneForm, NonconformitaForm
-from py.base import BasePage, CMCommissioniDataHandler, config
+from py.base import BasePage, CMCommissioniDataHandler, config, handle_404, handle_500
 from py.stats import CMStatsHandler
 from py.comments import CMCommentHandler
 
@@ -210,7 +210,10 @@ app = webapp.WSGIApplication([
     ('/public/getcm', CMCommissioniDataHandler),
     ('/public/getcity', CMCittaHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
-    
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
+
 def main():
   app.run();
 

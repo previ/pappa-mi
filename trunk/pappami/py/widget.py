@@ -18,6 +18,7 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
 from py.model import *
+from py.base import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -241,7 +242,10 @@ app = webapp.WSGIApplication([
   ('/widget/gadget', CMGadgetHandler),
   ('/widget/getcm', CMCommissioniDataHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
-    
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
+
 def main():
   app.run();
 

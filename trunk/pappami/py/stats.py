@@ -34,7 +34,7 @@ from google.appengine.api.taskqueue import Task, Queue
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
-from py.base import BasePage, config
+from py.base import BasePage, config, handle_404, handle_500
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -698,6 +698,9 @@ app = webapp.WSGIApplication([
   ('/admin/stats/calc', CMStatCalcHandler),
   ('/admin/stats/calcisp', CMStatIspCalcHandler),
   ('/admin/stats/calcnc', CMStatNCCalcHandler)], config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

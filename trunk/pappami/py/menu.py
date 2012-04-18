@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, config
+from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, config, handle_404, handle_500
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -128,6 +128,9 @@ app = webapp.WSGIApplication([
   ('/menuslide', CMMenuSlideHandler),
   ('/menu/scrape', MenuScraper),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();
