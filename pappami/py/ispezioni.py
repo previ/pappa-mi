@@ -23,7 +23,7 @@ from py.model import *
 from py.site import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
-from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config
+from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
 from py.modelMsg import *
 from py.comments import CMCommentHandler
          
@@ -622,7 +622,10 @@ app = webapp.WSGIApplication([
     ('/isp/dieta', DietaHandler),
     ('/isp/nota', NotaHandler),
     ('/isp/getispdata', CMGetIspDataHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
- 
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
+
 def main():
   app.run();
 

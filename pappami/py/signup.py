@@ -22,7 +22,7 @@ from engineauth import models
 
 from gviz_api import *
 from model import *
-from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required, config
+from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required, config, handle_404, handle_500
 from gcalendar import *
 from form import CommissarioForm
 
@@ -214,6 +214,9 @@ app = webapp.WSGIApplication([
   ('/signup2', SignupHandler),
   ('/profilo/getcm', CMCommissioniDataHandler)], 
   debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

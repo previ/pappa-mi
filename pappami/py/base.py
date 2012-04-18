@@ -24,6 +24,7 @@ import fixpath
 from google.appengine.ext.ndb import model, toplevel
 from google.appengine.api import users
 import webapp2 as webapp
+import traceback
 #from webapp2_extras import jinja2
 import jinja2
 from webapp2_extras import sessions
@@ -31,6 +32,7 @@ from google.appengine.api import memcache
 from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
+from google.appengine.api import mail
 
 import py.feedparser
 
@@ -457,6 +459,40 @@ class CMCittaHandler(webapp.RequestHandler):
       
     self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
 
+    
+def handle_404(request, response, exception):
+  c = {'exception': exception.status}
+  jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
+  template = jinja_environment.get_template('404.html')
+  t = template.render(c)
+  response.write(t)
+  response.set_status(exception.status_int)
+
+def handle_500(request, response, exception):
+  c = {'exception': traceback.format_exc(20)}
+  sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+  message = mail.EmailMessage()
+  message.sender = sender
+  message.to = sender
+  message.subject = "Pappa-Mi - Exception"
+  message.body = """Exception in Pappa-Mi.
+  
+  Exception: """ + str(exception) + """
+  
+  <Stacktrace>:
+  """ + traceback.format_exc(20) + """
+  
+  <Stacktrace/> 
+  """
+    
+  message.send()
+  
+  jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
+  template = jinja_environment.get_template('500.html')
+  t = template.render(c)
+  response.write(t)
+  response.set_status(500)
+    
 def user_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None

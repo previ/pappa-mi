@@ -12,6 +12,7 @@ from google.appengine.ext.ndb import model
 from py.facebook import *
 from py.base import BasePage
 from py.model import Commissario
+from py.base import *
 
 class MainHandler(webapp.RequestHandler):
   def get(self):
@@ -51,6 +52,9 @@ app = webapp.WSGIApplication([
     ('/fb/login', LoginHandler),
     ('/fb/save', SaveUserInfoHandler)
     ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

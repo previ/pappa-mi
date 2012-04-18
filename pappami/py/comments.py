@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import Const, BasePage, commissario_required, reguser_required, config
+from py.base import Const, BasePage, commissario_required, reguser_required, config, handle_404, handle_500
 
 import os, cgi, logging, urllib, json
 from datetime import date, datetime, time, timedelta
@@ -293,6 +293,9 @@ app = webapp.WSGIApplication([
     ('/comments/gettags', CMTagHandler), 
     ('/comments/updatetags', CMTagHandler)    
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

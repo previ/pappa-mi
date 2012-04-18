@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required, config
+from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required, config, handle_404, handle_500
 from commissioni import ContattiHandler
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import fixpath
+import jinja2
 
 from google.appengine.ext.ndb import model
 from google.appengine.api import users
@@ -296,7 +297,7 @@ class ContactusHandler(BasePage):
  
   def get(self):
     self.redirect("https://docs.google.com/spreadsheet/viewform?formkey=dE82eHdyRVJ0VVpNUVBCLXIwNDMwN1E6MQ#gid=0")
-
+  
 app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/a', ActivityHandler),
@@ -309,6 +310,9 @@ app = webapp.WSGIApplication([
   ('/citta', AddCityHandler),
   ('/contattaci', ContactusHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

@@ -33,7 +33,7 @@ from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from py.model import *
-from py.base import BasePage
+from py.base import BasePage, handle_404, handle_500
 import py.PyRSS2Gen
 
 TIME_FORMAT = "%H:%M"
@@ -293,6 +293,9 @@ app = webapp.WSGIApplication([
   ('/feed/nota', CMFeedNotaHandler),
   ('/feed', CMFeedHandler)  
 ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();

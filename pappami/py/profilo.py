@@ -20,7 +20,7 @@ from google.appengine.api import mail
 from gviz_api import *
 from model import *
 from form import CommissarioForm
-from base import BasePage, CMCommissioniDataHandler, user_required, config
+from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
 from gcalendar import *
 
 class CMProfiloHandler(BasePage):
@@ -137,6 +137,9 @@ app = webapp.WSGIApplication([
     ('/profilo/avatar', CMAvatarHandler),
     ('/profilo/getcm', CMCommissioniDataHandler)],
     debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[500] = handle_500
 
 def main():
   app.run();
