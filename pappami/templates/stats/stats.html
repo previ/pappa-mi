@@ -6,8 +6,10 @@
 google.load('visualization', '1.1', {'packages' : ['corechart']});
 
 $(function(){
+{%if statCY%}
   init1();
   init2();
+{%endif%}
 
  init_value = "{{ctx.cm_key}}";
   
@@ -138,6 +140,7 @@ function init1() {
 </li>
 </ul>
 <div id="d_loading" style="opacity:0.9; text-align: center; border-style:solid; border-width:1px; background-color: white; width: 20%; height: 60px; position:absolute; top: 30%; left: 40%;"><br><img src="/img/loading.gif" style = "margin:auto;" alt="loading"/></div>
+{%if statCY%}
 <div id="statContainer" style="margin:0;visibility:visible;">
  <ul class="nav nav-tabs" id="stat-tabs">
   <li class="active"><a href="#stat_dati" data-toggle="tab">Dati inseriti</a></li>
@@ -218,3 +221,6 @@ function init1() {
   </div>
  </div>
 </div>
+{%else%}
+<div class="alert alert-info">Non esistono dati per la Citt&agrave; selezionata.</div>
+{%endif%}

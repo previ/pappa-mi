@@ -199,8 +199,9 @@ class CMStatsHandler(BasePage):
     if statCM:
       a_stat = statCM
     aa_data = list()
-    for a_idx in range(0, len(a_stat.ambiente)):
-      aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
+    if a_stat:
+      for a_idx in range(0, len(a_stat.ambiente)):
+        aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
     aa_table = DataTable(a_desc)
     aa_table.LoadData(aa_data)    
     
@@ -225,11 +226,12 @@ class CMStatsHandler(BasePage):
                "nonconf": ("number", "Non Conformita")}
     di_data = list()
 
-    for w in range(len(a_stat.numeroSchedeSettimana)):
-      if ncstat is not None:
-        di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
-      else:
-        di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": 0})
+    if a_stat:
+      for w in range(len(a_stat.numeroSchedeSettimana)):
+        if ncstat is not None:
+          di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
+        else:
+          di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": 0})
     di_table = DataTable(di_desc)
     di_table.LoadData(di_data)
 
