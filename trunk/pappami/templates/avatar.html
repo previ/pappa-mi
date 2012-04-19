@@ -5,8 +5,8 @@
   ('linkedin', '/auth/linkedin'),
   ('windowslive', '/auth/windowslive')
 ] -%}
-
 <div id="avatar_dialog" class="row span4" style="display:none;">
+{%if cmsro%}
   <img id="avatar_edit" src="{%if cmsro%}{{cmsro.avatar(cmsro,myself=True, size='big')}}{%else%}{{form.avatar_url.data}}{%endif%}" class="avatar-big"/>
   <form id="avatar_form" action="/profilo/avatar" method="post">
     <input type="hidden" name="cmd" value="upload"/>
@@ -25,5 +25,8 @@
         {% endfor %}
       </div>
     </div>
-  </form>  
+  </form> 
+  {% else %}
+  <div class="alert alert-info">Per poter modificare l'immagine &egrave; necessario completare prima la registrazione.</div>
+  {% endif %}
 </div>
