@@ -325,7 +325,14 @@ class RemoveAuthPage(BasePage):
     error = "Ok"
     
     self.response.out.write(error)
+
+class OpenIdLoginHandler(webapp.RequestHandler):
+    def get(self):
+      login_url = users.create_login_url(self.request.get('continue'), None, "https://www.google.com/accounts/o8/id")
+      self.redirect(login_url)
     
+    def post(self):
+      self.get()
   
 app = webapp.WSGIApplication([
   ('/eauth/login', LoginPage),
@@ -336,6 +343,7 @@ app = webapp.WSGIApplication([
   ('/eauth/priv', ProtectedPage),
   ('/eauth/signup', SignupPage),
   ('/eauth/rmauth', RemoveAuthPage),
+  ('/_ah/login_required', OpenIdLoginHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404

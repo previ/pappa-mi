@@ -35,6 +35,7 @@ from google.appengine.api import images
 from google.appengine.api import mail
 
 import py.feedparser
+import httpagentparser
 
 from py.gviz_api import *
 from py.model import *
@@ -42,6 +43,8 @@ from py.modelMsg import *
 from common import Const
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
+
+unsupported_browsers = {"Microsoft Internet Explorer": ["5.0", "6.0"]}
 
 class ActivityFilter():
   def __init__(self, tagnames = list(), msgtypes = list(), users = list(), groups = list()):
@@ -116,12 +119,12 @@ class BasePage(webapp.RequestHandler):
 
   def get_current_user(self):
     return self.request.user
-  
+    
   def getBase(self, template_values):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
-      self.redirect("http://www.pappa-mi.it")
-        
+      self.redirect("http://www.pappa-mi.it")      
+            
     user = self.get_current_user()
     url = None
     if user:
@@ -134,6 +137,18 @@ class BasePage(webapp.RequestHandler):
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
+      
+    user_agent = httpagentparser.detect(self.request.headers["User-Agent"])
+    if user_agent.get("browser"):
+      if user_agent.get("browser").get("name"):
+        browser_name = user_agent.get("browser").get("name")
+        browser_ver = user_agent.get("browser").get("version")
+        logging.info("Browser: " + browser_name + " version: " + browser_ver )
+
+        if unsupported_browsers.get(browser_name):
+          u_b = unsupported_browsers.get(browser_name)
+          if browser_ver in u_b:
+            template_values["main"] = 'unsupported.html'
       
     commissario = self.getCommissario(user)
     if( commissario is not None ) :
@@ -160,7 +175,7 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.0.0 - 2012.03.01"
+    template_values["version"] = "2.0.0.0 - 2012.03.31"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
@@ -470,13 +485,14 @@ def handle_404(request, response, exception):
 
 def handle_500(request, response, exception):
   c = {'exception': traceback.format_exc(20)}
+  logging.info(c["exception"])
   sender = "Pappa-Mi <aiuto@pappa-mi.it>"
   message = mail.EmailMessage()
   message.sender = sender
   message.to = sender
   message.subject = "Pappa-Mi - Exception"
   message.body = """Exception in Pappa-Mi.
-  
+  Request: """ + str(request.url) + """
   Exception: """ + str(exception) + """
   
   <Stacktrace>:
