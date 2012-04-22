@@ -24,30 +24,35 @@ $(document).ready(function() {
   </div>
   <div class="span12">
     <legend>Oppure inserisci la tua email e password</legend>
-    <div class="password-form well">
-      <form id="form0" method="POST" action="/auth/password" class="horizontal-form" novalidate>
-        <fieldset class="control-group">
-          <label for="email" class="control-label">Email</label>
-          <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
-        </fieldset>
-        <fieldset class="control-group">
-          <label for="password" class="control-label">Password</label>
-          <div class="controls"><input type="password" name="password" class="span3 required password" /></div><a href="/eauth/pwdrecrq">Ho dimenticato la password</a>
-        </fieldset>
-        <fieldset class="form-actions">
-          <button type="submit" class="btn">Login</button>
-        </fieldset>
-        {% if messages %}
-          <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">
-            <a href="#" class="close">&times;</a>
-            <ul>
-              {% for message in messages %}
-                <li>{{ message['message']|safe }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-      </form>
+    <div class="password-form">
+      <div class="span4 well">
+        <form id="form0" method="POST" action="/auth/password" class="horizontal-form" novalidate>
+          <fieldset class="control-group">
+            <label for="email" class="control-label">Email</label>
+            <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
+          </fieldset>
+          <fieldset class="control-group">
+            <label for="password" class="control-label">Password</label>
+            <div class="controls"><input type="password" name="password" class="span3 required password" /></div><a href="/eauth/pwdrecrq">Ho dimenticato la password</a>
+          </fieldset>
+          <fieldset class="">
+            <button type="submit" class="btn">Login</button>
+          </fieldset>
+          {% if messages %}
+            <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">
+              <a href="#" class="close">&times;</a>
+              <ul>
+                {% for message in messages %}
+                  <li>{{ message['message']|safe }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </form>
+      </div>
+      <div class="span6">
+        <div class="alert alert-info"><strong>Importante:</strong> Chi era gi&agrave; iscritto a Pappa-Mi deve accedere utilizzando "Google"</div>
+      </div>        
     </div>
   </div>
 </div>

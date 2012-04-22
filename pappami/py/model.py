@@ -910,6 +910,13 @@ class Nota(model.Model):
     return self.titolo
   
   @cached_property
+  def notefmt(self):
+    if "<p>" in self.note:
+      return self.note
+    else:
+      return self.note.replace("\n","<br/>")
+  
+  @cached_property
   def get_allegati(self): 
     if not self.allegati:
       self.allegati = list()

@@ -12,13 +12,28 @@ indexes:
 
 - kind: CentroCucina
   properties:
+  - name: __key__
+    direction: desc
+
+- kind: CentroCucina
+  properties:
   - name: citta
   - name: nome
 
 - kind: CentroCucinaZona
   properties:
+  - name: __key__
+    direction: desc
+
+- kind: CentroCucinaZona
+  properties:
   - name: centroCucina
   - name: validitaDa
+    direction: desc
+
+- kind: Commissione
+  properties:
+  - name: __key__
     direction: desc
 
 - kind: Commissione
@@ -30,6 +45,11 @@ indexes:
   properties:
   - name: tipoScuola
   - name: numCommissari
+
+- kind: CommissioneCentroCucina
+  properties:
+  - name: __key__
+    direction: desc
 
 - kind: CommissioneCentroCucina
   properties:

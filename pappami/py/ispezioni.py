@@ -20,7 +20,6 @@ from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
-from py.site import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
