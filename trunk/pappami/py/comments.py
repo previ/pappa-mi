@@ -64,12 +64,13 @@ class CMCommentHandler(BasePage):
     
     buff = ""
 
-    activities = Messaggio.get_all_from_item(last)
-
     template_values = {
       'main': 'activity.html',
       'ease': True
     }
+
+    activities = Messaggio.get_all_from_item(last)
+  
     template_values['activities'] = activities       
 
     return template_values
@@ -79,7 +80,7 @@ class CMCommentHandler(BasePage):
   """
   @classmethod
   def getRoot(cls, msg_rif):
-    return Message.get_parent(msg_rif)
+    return Messaggio.get_parent(msg_rif)
   
   """
   http post handler

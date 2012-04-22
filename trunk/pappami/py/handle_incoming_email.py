@@ -4,48 +4,47 @@
 import os
 import logging
 
-from py.model import *
-from py.site import *
-
 from email.utils import parseaddr
 from email.header import decode_header
 from datetime import date, datetime, time, timedelta
+
 from google.appengine.ext import webapp
 from google.appengine.api import users
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
+from google.appengine.api.app_identity import *
+
+from py.blob import *
+from py.model import *
+from py.comments import CMCommentHandler
 
 class MailHandler(InboundMailHandler):
-  #site = None
-  host = "www.pappa-mi.it"
-  #path = None
 
-  #def __init__(self):
-    #super(InboundMailHandler, self).__init__()
-    #username = Configurazione.get_value_by_name("attach_user")
-    #password = Configurazione.get_value_by_name("attach_password")
-    #site = Configurazione.get_value_by_name("attach_site")
-    #self.path = Configurazione.get_value_by_name("attach_path")
-    #self.site = Site(username, password, site)    
+  @property
+  def host(self):
+    if "test" in get_application_id():
+      host = "test.pappa-mi.it"
+    else:
+      host = "beta.pappa-mi.it"
 
   def receive(self, message):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
     logging.info("subject: " + self.decode(message.subject))
     text_bodies = message.bodies('text/plain')
-    for body in text_bodies:
-      logging.info("body: " + body[1].decode())
+    
+    #for body in text_bodies:
+    #  logging.info("body: " + body[1].decode())
     commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
     if commissario:
       feedback = list()
       logging.info("found commissario")      
       nota = Nota()
-      nota.creato_da = commissario.user
+      nota.creato_da = commissario.usera
       nota.titolo = self.decode(message.subject)
       
       commissione = None
       cms = commissario.commissioni()
-      logging.info("commissioni: " + str(len(cms)))
       if len(cms) == 0:
         feedback.append( """Non è stato possibile ricavare la Commissione a cui la segnalazione si riferisce perché non sei registrato su nessuna scuola.
         
@@ -55,7 +54,8 @@ Se specifichi piu' di una Scuola, ricorda di specificare nell'oggetto della mail
         
       if len(cms) > 1:
         subupper = nota.titolo.upper()
-        for cm in cms:
+        for cm in cms:          
+          #logging.info(cm.nome.upper() + " " + cm.tipoScuola.upper() + " subject: " + subupper)    
           if cm.nome.upper() in subupper and cm.tipoScuola.upper() in subupper:
             commissione = cm
       else:
@@ -66,14 +66,11 @@ Se specifichi piu' di una Scuola, ricorda di specificare nell'oggetto della mail
 
 Per favore specifica nell'oggetto della mail il nome della commissione e il livello della scuola, ad esempio 'materna muzio'.\r\n""")
       else:
-        nota.commissario = commissario
-        nota.commissione = commissione
+        nota.commissario = commissario.key
+        nota.commissione = commissione.key
         self.parseMessage( nota, message, feedback)
           
           
-      if len(feedback) > 0:
-        self.sendFeedbackMail(parseaddr(message.sender)[1], nota, feedback)
-
   def parseMessage(self, nota, message, feedback):
     
     tags = list()
@@ -95,27 +92,28 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
 
-    nota.put()
-      
     # tags
-    s = nota.note.find("#")
-    while s >= 0:
-      e = nota.note.find(" ",s+1)
-      if e < 0:
-        e = len(nota.note)
-      tag = Tag()
-      tag.tag = nota.note[s+1:e]
-      tag.obj = nota
-      tag.put()
-      s = nota.note.find("#",e)
+    #tags = list()
+    #s = nota.note.find("#")
+    #while s >= 0:
+      #e = nota.note.find(" ",s+1)
+      #if e < 0:
+        #e = len(nota.note)
+      #tag = nota.note[s+1:e]
+      #tags.append(tag)
+      
+    nota.put()
 
-    logging.info('uploading')        
+    #logging.info('before initActivity')
+    msg = CMCommentHandler.init(nota.key, nota.commissione, 104, nota.tags, user=nota.creato_da.get())
+        
+    #logging.info('parsing attachments')
          
     #allegati
     if hasattr(message, 'attachments'):
       for attach in message.attachments :
         allegato = Allegato()
-        allegato.obj = nota
+        allegato.obj = nota.key
         allegato.nome = self.decode(attach[0])
         logging.info("allegato: " + allegato.nome)
         allegato_decode = attach[1].decode()
@@ -125,28 +123,26 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         elif len(allegato_decode) < 5000: 
           logging.info("attachment too small")
         else:
-          #allegato.path = self.site.uploadDoc(allegato_decode, str(nota.key().id()) + "_" + allegato.nome, allegato.contentType(), self.path)
+          logging.info('uploading attachment')        
           blob = Blob()
           blob.create(allegato.nome)
-          allegato.blob_key = blob.write(self.request.get('allegato_file_' + str(i)))
+          allegato.blob_key = blob.write(allegato_decode)
           allegato.put()
          
-    linkpath="genitore"
-    if nota.commissario.isCommissario():
-      linkpath="commissario"
-    
-    feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile ai seguenti link:
-      
-Link per utenti registrati:
-""" + "http://" + self.host + "/"+linkpath+"/nota?cmd=open&key="+str(nota.key()) + """
-    
+   
+    feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
+         
 Link pubblico:
-""" + "http://" + self.host + "/public/nota?cmd=open&key="+str(nota.key()) + """
+""" + "http://" + self.host + "/public/act?key="+str(msg.key.id()) + """
     
 ---
 Pappa-Mi staff """)
-                  
-  def sendFeedbackMail(self, dest, nota, feedback) :
+
+    
+    if len(feedback) > 0:
+      self.sendFeedbackMail(parseaddr(message.sender)[1], msg, feedback)
+
+  def sendFeedbackMail(self, dest, msg, feedback) :
   
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
 
@@ -157,7 +153,7 @@ Pappa-Mi staff """)
     message = mail.EmailMessage()
     message.sender = sender
     message.to = dest
-    message.subject = nota.titolo
+    message.subject = msg.root.get().titolo
     body = ""
     for f in feedback:
       body = body + f

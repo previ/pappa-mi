@@ -89,8 +89,8 @@ class CMNotePublicHandler(BasePage):
   def get(self): 
     nota = model.Key("Nota", int(self.request.get("key"))).get()
     allegati = None
-    if nota.allegati().count() > 0:
-      allegati = nota.allegati()
+    if nota.has_allegati:
+      allegati = nota.get_allegati
     
     template_values = dict()
     template_values["nota"] = nota

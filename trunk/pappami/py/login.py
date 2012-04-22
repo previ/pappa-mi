@@ -201,9 +201,11 @@ class PwdRecoverRequestPage(BasePage):
       user = models.UserEmail.get_by_emails([email])
       if user is None:
         error = "Email non presente in archivio"
-      else:
+      elif user.has_auth_strategy("password"):
         self.sendPwdRecEmail(email)
         error = "Ok"
+      else:
+        error = "A questa email non corrisponde una password Pappa-Mi, per recuperare la password devi contattare il gestore dell'account di email."
     
     self.response.out.write(error)
 
