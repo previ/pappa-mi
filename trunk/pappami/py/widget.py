@@ -103,7 +103,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     stats = memcache.get("statAll")
     if not stats:
       logging.info("statAll miss")
-      stats = StatisticheIspezioni.get_cc_cm_time(timeId=year).get()
+      stats = StatisticheIspezioni.get_cy_cc_cm_time(timeId=year).get()
       memcache.set("statAll", stats, 3600)
 
     statCC = None
@@ -112,12 +112,12 @@ class CMStatWidgetHandler(webapp.RequestHandler):
       statCC = memcache.get("statCC" + str(c.centroCucina))
       if not statCC:
         logging.info("statCC miss")
-        statCC = StatisticheIspezioni.get_cc_cm_time(cc=c.centroCucina, timeId=year).get()
+        statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=c.centroCucina, timeId=year).get()
         memcache.set("statCC" + str(c.centroCucina), statCC, 3600)
       statCM = memcache.get("statCM" + str(c.key))
       if not statCM:
         logging.info("statCM miss")
-        statCM = StatisticheIspezioni.get_cc_cm_time(cm=c.key, timeId=year).get()
+        statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=c.key, timeId=year).get()
         memcache.set("statCM" + str(c.key), statCM, 3600)
       
     template_values["stats"] = stats
