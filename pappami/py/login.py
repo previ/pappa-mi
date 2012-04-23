@@ -94,7 +94,7 @@ class SignupPage(BasePage):
     template_values["main"] = '/eauth/main.html'
     template_values["content"] = '/eauth/signup.html'
 
-    if not self.session.get("c"):
+    if not self.session.get("a") or not self.session.get("b") or not self.session.get("c"):
       a = random.randint(1, 10)
       b = random.randint(1, 10)
       
@@ -155,7 +155,7 @@ class SignupPage(BasePage):
     a = random.randint(1, 10)
     b = random.randint(1, 10)
           
-    if not self.session.get("c"):
+    if not self.session.get("a") or not self.session.get("b") or not self.session.get("c"):
       self.session["a"] = str(a)
       self.session["b"] = str(b)
       self.session["c"] = str(a + b)

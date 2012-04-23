@@ -109,6 +109,21 @@ indexes:
   - name: creato_il
     direction: desc
 
+- kind: Piatto
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: PiattoGiorno
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: ZonaOffset
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: ZonaOffset
   properties:
   - name: zona
