@@ -60,7 +60,7 @@ class CMCommentHandler(BasePage):
   @classmethod
   def initActivity(self, msg_rif, msg_grp, tipo, last, tags, user):
 
-    CMCommentHandler.init(msg_rif, msg_grp, tipo, tags, user)
+    new_msg = CMCommentHandler.init(msg_rif, msg_grp, tipo, tags, user)
     
     buff = ""
 
@@ -69,6 +69,8 @@ class CMCommentHandler(BasePage):
       'ease': True
     }
 
+    if not last:
+      last = new_msg.key
     activities = Messaggio.get_all_from_item(last)
   
     template_values['activities'] = activities       

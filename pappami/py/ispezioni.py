@@ -174,7 +174,11 @@ class IspezioneHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
       
-      template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, model.Key("Messaggio",int(self.request.get("last"))), tags=isp.tags, user=self.request.user)
+      if self.request.get("last"):
+        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
+      else:
+        last_msg_key = None
+      template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -308,7 +312,11 @@ class NonconfHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, model.Key("Messaggio",int(self.request.get("last"))), nc.tags, user=self.request.user)
+      if self.request.get("last"):
+        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
+      else:
+        last_msg_key = None
+      template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -437,7 +445,11 @@ class DietaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, model.Key("Messaggio", int(self.request.get("last"))), tags=dieta.tags, user=self.request.user)
+      if self.request.get("last"):
+        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
+      else:
+        last_msg_key = None
+      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
 
       self.getBase(template_values) 
       
@@ -568,7 +580,11 @@ class NotaHandler(BasePage):
       memcache.delete("stats")
       memcache.delete("statsMese")
 
-      template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, model.Key("Messaggio",int(self.request.get("last"))), nota.tags, user=self.request.user)
+      if self.request.get("last"):
+        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
+      else:
+        last_msg_key = None
+      template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
       
     else:
       key = self.request.get("key")
