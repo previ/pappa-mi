@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
@@ -127,6 +127,9 @@ class SignupPage(BasePage):
       error = "Controllo password non corretto"
     elif email is None or email == "":
       error = "Email non valida"
+    elif models.UserEmail.get_by_emails([email]):
+      error = "Questa email risulta gi&agrave; assegnata a un profilo Pappa-Mi, accedere tramite il link 'Entra'."
+      logging.info(error)
     else:
       user_info = {}
       user_info['emails'] = [{'value': email, 'type': 'home', 'primary': True, 'verified': False}]
