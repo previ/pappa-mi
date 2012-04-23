@@ -3,6 +3,7 @@
 
 import logging
 
+import fixpath
 from wtforms.ext.appengine.ndb import model_form
 from wtforms.validators import ValidationError
 from py.model import *
