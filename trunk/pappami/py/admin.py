@@ -198,7 +198,7 @@ class CMAdminCommissioneHandler(BasePage):
       
       if form.is_valid():
         commissione = form.save(commit=False)
-        commissione.geo = db.GeoPt(float(self.request.get("lat")), float(self.request.get("lon")))
+        commissione.geo = model.GeoPt(float(self.request.get("lat")), float(self.request.get("lon")))
         commissione.put()
 
       self.redirect("/admin/commissione?offset=" + self.request.get("offset") + "&tipoScuola=" + self.request.get("q_tipoScuola") + "&centroCucina=" + self.request.get("q_centroCucina") + "&zona="+ self.request.get("q_zona") + "&distretto=" + self.request.get("q_distretto") )
@@ -298,7 +298,7 @@ class CMAdminCommissioneDataHandler(BasePage):
       try:
         for commissione in commissioni.order(orderby).fetch(limit, offset):
           data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipoScuola": commissione.tipoScuola, "strada": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta.nome, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
-      except db.Timeout:
+      except model.Timeout:
         errmsg = "Timeout"
         
       # Loading it into gviz_api.DataTable
@@ -436,7 +436,7 @@ class CMAdminHandler(BasePage):
         c.nome = "Milano"
         c.codice = "F205"
         c.provincia = "MI"
-        c.geo = db.GeoPt(45.463681,9.188171)
+        c.geo = model.GeoPt(45.463681,9.188171)
         c.put()
       for cm in Commissione.query().filter(Commissione.citta==None):
         cm.citta = c.key
