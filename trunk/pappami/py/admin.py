@@ -36,7 +36,7 @@ from modelMsg import *
 from form import CommissioneForm
 from gviz_api import *
 from base import BasePage, config
-from gcalendar import *
+#from gcalendar import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"

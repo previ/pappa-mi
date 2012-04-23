@@ -23,7 +23,7 @@ from engineauth import models
 from gviz_api import *
 from model import *
 from base import BasePage, CMCommissioniDataHandler, commissario_required, user_required, reguser_required, config, handle_404, handle_500
-from gcalendar import *
+#from gcalendar import *
 from form import CommissarioForm
 
 class SignupPreHandler(BasePage):
@@ -113,7 +113,8 @@ class SignupHandler(BasePage):
       commissione = model.Key("Commissione", cm).get()
       commissario.register(commissione)
       if commissione.calendario :
-        calendario = Calendario();        
+        pass
+        #calendario = Calendario();        
         #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
         #calendario.load(commissione.calendario)
         #calendario.share(commissario.usera.get().email)

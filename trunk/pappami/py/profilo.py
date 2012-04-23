@@ -21,7 +21,6 @@ from gviz_api import *
 from model import *
 from form import CommissarioForm
 from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
-from gcalendar import *
 
 class CMProfiloHandler(BasePage):
   
@@ -80,7 +79,8 @@ class CMProfiloHandler(BasePage):
         commissione = cm_key.get()
         commissario.unregister(commissione)
         if commissione.calendario :
-          calendario = Calendario();        
+          pass
+          #calendario = Calendario();        
           #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
           #calendario.load(commissione.calendario)
           #calendario.unShare(commissario.user.email())
@@ -89,7 +89,8 @@ class CMProfiloHandler(BasePage):
         commissione = cm_key.get()
         commissario.register(commissione)
         if commissione.calendario :
-          calendario = Calendario();        
+          pass
+          #calendario = Calendario();        
           #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
           #calendario.load(cc.commissione.calendario)
           #calendario.share(commissario.user.email())
