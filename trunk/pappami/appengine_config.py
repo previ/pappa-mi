@@ -18,8 +18,13 @@ import os
 import sys
 import logging
 from google.appengine.api.app_identity import *
-ON_DEV = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
-ON_TEST = "test" in get_application_id()
+ON_DEV = False
+ON_TEST = False
+try:
+  ON_DEV = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
+  ON_TEST = "test" in get_application_id()
+except:
+  pass
 import fixpath
 
 #########################################
@@ -37,8 +42,8 @@ remoteapi_CUSTOM_ENVIRONMENT_AUTHENTICATION = (
     #app = recording.appstats_wsgi_middleware(app)
     #return app
 	
-logging.info(get_application_id())
-logging.info(ON_TEST)
+logging.info("Dev: " + str(ON_DEV))
+logging.info("Test: " + str(ON_TEST))
 
 engineauth = {
     # Login uri. The user will be returned here if an error occures.
