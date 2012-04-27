@@ -8,4 +8,9 @@ In order to properly setup the local development server, do the following steps:
 = Details =
 
   # Download and install the Google App Engine Python runtime
-  # Download the 
+  # Download the Pappa-Mi source here: http://pappa-mi.googlecode.com/files/pappami-2.0.0.0.rar and expand the archive in a directory called "pappami"
+  # Run the App Engine Launcher and add the Pappa-Mi application selecting the previuosly created dir.
+  # Run the application
+  # Run a command prompt and run the following command: 
+
+  
