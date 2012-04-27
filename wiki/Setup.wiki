@@ -1,0 +1,11 @@
+#summary How to setup the local development server
+
+= Introduction =
+
+In order to properly setup the local development server, do the following steps:
+
+
+= Details =
+
+  # Download and install the Google App Engine Python runtime
+  # Download the 
