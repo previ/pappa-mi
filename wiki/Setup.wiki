@@ -5,12 +5,27 @@
 In order to properly setup the local development server, do the following steps:
 
 
-= Details =
+= Pass 1: Install the Application =
 
   # Download and install the Google App Engine Python runtime
   # Download the Pappa-Mi source here: http://pappa-mi.googlecode.com/files/pappami-2.0.0.0.rar and expand the archive in a directory called "pappami"
   # Run the App Engine Launcher and add the Pappa-Mi application selecting the previuosly created dir.
   # Run the application
-  # Run a command prompt and run the following command: 
+
+= Pass 2: Upload configuration data =
+  # Download the configuration data here: http://pappa-mi.googlecode.com/files/cfg.rar and expand it in a dir NOT under the previously created pappami dir
+  # Run a command prompt and run the following command: set PYTHONPATH=<path to pappami dir>
+  # Run the following commands:
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/cy.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/cc.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/cm.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/ccc.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/zo.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/ccz.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/mn.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/pt.dat
+    # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/pg.dat
+  # The application is configured
+
 
   
