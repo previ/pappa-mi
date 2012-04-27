@@ -27,5 +27,10 @@ In order to properly setup the local development server, do the following steps:
     # appcfg.py upload_data --num_threads=1 --url=http://localhost:8080/_ah/remote_api --filename=<cfg dir>/pg.dat
   # The application is configured
 
-
+= Pass 3: Run the app =
+  # Open the app at http://localhost:8080
+  # Register as a new User
+  # The "Città" list should be populated with "Milano" and "Torino"
+  # Selecting "Milano", the "Scuola" combo should contain about 440 items.
+  # Complete registration and use the app.
   
