@@ -52,9 +52,9 @@ class CMIspezionePublicHandler(BasePage):
     template_values["isp"] = isp
     template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key=" + str(isp.key.id())
     template_values["main"] = "public/main.html"
-    template_values["content"] = "../public/ispezione_read.html"
+    template_values["content"] = "public/ispezione_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(isp.key.id())
+    template_values["comment_root"] = CMCommentHandler.getRoot(isp.key)
     
     self.getBase(template_values)
  
@@ -66,9 +66,9 @@ class CMNonconfPublicHandler(BasePage):
     template_values["nc"] = nc
     template_values["public_url"] = "http://" + self.getHost() + "/public/nc?key=" + str(nc.key.id())
     template_values["main"] = "public/main.html"
-    template_values["content"] = "../public/nonconf_read.html"
+    template_values["content"] = "public/nonconf_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(nc.key.id())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nc.key)
     self.getBase(template_values)
 
 class CMDietePublicHandler(BasePage):
@@ -79,9 +79,9 @@ class CMDietePublicHandler(BasePage):
     template_values["dieta"] = dieta
     template_values["public_url"] = "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key.id())
     template_values["main"] = "public/main.html"
-    template_values["content"] = "../public/dieta_read.html"
+    template_values["content"] = "public/dieta_read.html"
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key.id())
+    template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key)
     self.getBase(template_values)
 
 class CMNotePublicHandler(BasePage):
@@ -96,10 +96,10 @@ class CMNotePublicHandler(BasePage):
     template_values["nota"] = nota
     template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key.id())
     template_values["main"] = "public/main.html"
-    template_values["content"] = "../public/nota_read.html"
+    template_values["content"] = "public/nota_read.html"
     template_values["allegati"] = allegati
     template_values["comments"] = True
-    template_values["comment_root"] = CMCommentHandler.getRoot(nota.key.id())
+    template_values["comment_root"] = CMCommentHandler.getRoot(nota.key)
     
     self.getBase(template_values)
 

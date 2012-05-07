@@ -74,8 +74,8 @@ class CentroCucina(model.Model):
   def getZona(self, data=datetime.now().date()):
     with CentroCucina._lock:
       if not(CentroCucina._ce_cu_zo_cache and CentroCucina._ce_cu_zo_cache.validitaDa <= data and CentroCucina._ce_cu_zo_cache.validitaA >= data):
-        CentroCucina._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get().zona
-    return CentroCucina._ce_cu_zo_cache
+        CentroCucina._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get()
+    return CentroCucina._ce_cu_zo_cache.zona
   
   def getMenuOffset(self, data=datetime.now().date()):
     with CentroCucina._lock:

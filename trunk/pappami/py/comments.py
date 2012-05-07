@@ -82,7 +82,7 @@ class CMCommentHandler(BasePage):
   """
   @classmethod
   def getRoot(cls, msg_rif):
-    return Messaggio.get_parent(msg_rif)
+    return Messaggio.get_root(msg_rif)
   
   """
   http post handler
