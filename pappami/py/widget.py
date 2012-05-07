@@ -13,7 +13,6 @@ import wsgiref.handlers
 from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
@@ -46,17 +45,20 @@ class CMMenuWidgetHandler(CMMenuHandler):
         c = model.Key("Commissione", int(self.request.get("cm"))).get()
       else:
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+        self.request.GET["cm"] = c.key.id()
     
     self.createMenu(self.request,c,template_values)
 
     if self.request.get("i") == "n":
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/menu.html')
+      template_values["main"] = 'widget/menu.html'      
     else:
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/wmenu.html')
-    self.response.out.write(template.render(path, template_values))
+      template_values["main"] = 'widget/wmenu.html'      
+    
+    template_values["main"] = 'widget/wmenu.html'      
+    self.getBase(template_values)
 
     
-class CMStatWidgetHandler(webapp.RequestHandler):
+class CMStatWidgetHandler(BasePage):
   
   def get(self): 
 
@@ -78,6 +80,7 @@ class CMStatWidgetHandler(webapp.RequestHandler):
         c = model.Key("Commissione", int(self.request.get("cm"))).get()
       else:
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+        self.request.GET["cm"] = c.key.id()
     
     self.createStat(self.request,c,template_values)
     
@@ -85,13 +88,14 @@ class CMStatWidgetHandler(webapp.RequestHandler):
     if self.request.get("t") == "c":
       t = "_" + self.request.get("t")
 
-    template_values["wcontent"] = "stat" + t + ".html"
+    template_values["wcontent"] = "widget/stat" + t + ".html"
     
     if self.request.get("i") == "n":
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/' + template_values["wcontent"])
+      template_values["main"] = 'widget/' + template_values["wcontent"]  
     else:
-      path = os.path.join(os.path.dirname(__file__), '../templates/widget/wstat.html')
-    self.response.out.write(template.render(path, template_values))
+      template_values["main"] = 'widget/wstat.html'
+
+    self.getBase(template_values)
 
   def createStat(self,request,c,template_values):
 
@@ -130,13 +134,15 @@ class WidgetListitem:
   def __init__(self,item,date):
     self.item=item
     self.date=date
+
   def scuola(self):
     return self.item.commissione.tipoScuola + " " + self.item.commissione.nome
+  
   def tipo(self):
     if isinstance(self.item, Ispezione):
       return "Ispezione"
     if isinstance(self.item, Nonconformita):
-      return "Non Conformità"
+      return "Non Conformit&agrave;"
     if isinstance(self.item, Dieta):
       return "Ispezione Diete speciali"
     if isinstance(self.item, Nota):
@@ -153,16 +159,11 @@ class WidgetListitem:
       return self.item.dataNota
     
   def url(self):
-    u = "../public/"
-    if isinstance(self.item, Ispezione):
-      u += "isp?key="
-    if isinstance(self.item, Nonconformita):
-      u += "nc?key="
-    if isinstance(self.item, Dieta):
-      u += "dieta?key="
-    if isinstance(self.item, Nota):
-      u += "nota?key="
-    u += str(self.item.key())
+    u = "#"
+    msgs = Messaggio.get_by_parent(self.item.key)
+    if len(msgs) > 0:
+      msg = msgs[0]
+      u = "/public/act?key="+str(msg.key.id())
     return u
 
   
@@ -212,16 +213,17 @@ class CMListWidgetHandler(BasePage):
     template_values["items"] = items
     template_values["scuola"] = c.desc()
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/widget/list.html')
-    self.response.out.write(template.render(path, template_values))
+    template_values["main"] = 'widget/list.html'
+
+    self.getBase(template_values)
 
 class CMGadgetHandler(BasePage):
   
   def get(self): 
     template_values = dict()
-    template_values["main"] = "../templates/widget/gadget.xml"
+    template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
-    template_values["cms"] = Commissione.all().order("nome")
+    template_values["cms"] = Commissione.query().order(Commissione.nome)
     self.getBase(template_values)
     
         

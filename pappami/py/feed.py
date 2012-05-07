@@ -45,23 +45,30 @@ class CMFeedIspHandler(BasePage):
     buff = memcache.get("feed_isp")
     
     if(buff is None):
-      isps = Ispezione.all().order("-dataIspezione").fetch(limit=10)
+      isps = Ispezione.query().order(-Ispezione.dataIspezione).fetch(limit=10)
       isp_items = list()
 
       for isp in isps:
         note = "nessuna"
         if isp.note is not None:
           note = isp.note
-        isp_items.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
+
+        u = "#"
+        msgs = Messaggio.get_by_parent(self.item.key)
+        if len(msgs) > 0:
+          msg = msgs[0]
+          u = "/public/act?key="+str(msg.key.id())
+          
+        isp_items.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola,
                           description = "Ispezione - note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/ispezione?key="+str(isp.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + u,
                           pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
       rss = py.PyRSS2Gen.RSS2(
         title = "Pappa-Mi - Ispezioni",
         link = "http://"+ self.getHost() + "/feed/ispezioni",
-        description = "Le ultime Ispezioni inserite dalle Commissioni Mensa di Milano",
+        description = "Le ultime Ispezioni inserite dquerye Commissioni Mensa di Milano",
         items = isp_items)
       buff = rss.to_xml()
       memcache.add("feed_isp", buff)
@@ -86,9 +93,9 @@ class CMFeedIspNCHandler(BasePage):
       
     if (buff is None) or (cm is not None):
       if cm is not None:
-        isps = Ispezione.all().filter("commissione", cm).order("-dataIspezione")
+        isps = Ispezione.query().filter(Ispezione.commissione.get()==cm).order(-Ispezione.dataIspezione)
       else:
-        isps = Ispezione.all().order("-dataIspezione").fetch(limit=5)
+        isps = Ispezione.query().order(-Ispezione.dataIspezione).fetch(limit=5)
       items = list()
 
       for isp in isps:
@@ -96,25 +103,25 @@ class CMFeedIspNCHandler(BasePage):
         items.append((isp.dataIspezione, isp, None, None, None))
       
       if cm:
-        ncs = Nonconformita.all().filter("commissione", cm).order("-dataNonconf")
+        ncs = Nonconformita.query().filter(Nonconformita.commissione.get()==cm).order(-Nonconformita.dataNonconf)
       else:
-        ncs = Nonconformita.all().order("-dataNonconf").fetch(limit=5)
+        ncs = Nonconformita.query().order(-Nonconformita.dataNonconf).fetch(limit=5)
       
       for nc in ncs:
         items.append((nc.dataNonconf, None, nc, None, None))
 
       if cm:
-        diete = Dieta.all().filter("commissione", cm).order("-dataIspezione")
+        diete = Dieta.query().filter(Dieta.commissione.get()==cm).order(-Dieta.dataIspezione)
       else:
-        diete = Dieta.all().order("-dataIspezione").fetch(limit=5)
+        diete = Dieta.query().order(-Dieta.dataIspezione).fetch(limit=5)
 
       for dieta in diete:
         items.append((dieta.dataIspezione, None, None, dieta))
 
       if cm:
-        note = Nota.all().filter("commissione", cm).order("-dataNota")
+        note = Nota.query().filter(Nota.commissione.get()==cm).order(-Nota.dataNota)
       else:
-        note = Nota.all().order("-dataNota").fetch(limit=5)
+        note = Nota.query().order(-Nota.dataNota).fetch(limit=5)
         
       for nota in note:
         items.append((nota.dataNota, None, None, None, nota))
@@ -127,18 +134,18 @@ class CMFeedIspNCHandler(BasePage):
           note = "nessuna"
           if isp.note is not None:
             note = isp.note
-          feeditems.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.nome + " - " + isp.commissione.tipoScuola,
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola,
                             description = "Ispezione - note:" + note,
-                            guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "ispezione?key="+str(isp.key())),
+                            guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "ispezione?key="+str(isp.key)),
                             pubDate = isp.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
         elif i[2]:
           nc = i[2]
           note = "nessuna"
           if nc.note is not None:
             note = nc.note
-          feeditems.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola,
                           description = "Non Conformita': " + nc.tipoNome() + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "nonconf?key="+str(nc.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "nonconf?key="+str(nc.key)),
                           pubDate = nc.dataNonconf.strftime("%a, %d %b %Y %H:%M:%S +0100")))
 
         elif i[3]:
@@ -146,9 +153,9 @@ class CMFeedIspNCHandler(BasePage):
           note = "nessuna"
           if dieta.note is not None:
             note = dieta.note
-          feeditems.append(py.PyRSS2Gen.RSSItem(title = dieta.commissione.nome + " - " + dieta.commissione.tipoScuola,
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = dieta.commissione.get().nome + " - " + dieta.commissione.get().tipoScuola,
                           description = "Ispezione Diete speciali: " + dieta.tipoNome() + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "dieta?key="+str(dieta.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "dieta?key="+str(dieta.key)),
                           pubDate = dieta.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
           
         else:
@@ -156,9 +163,9 @@ class CMFeedIspNCHandler(BasePage):
           note = "nessuna"
           if nota.note is not None:
             note = nota.note
-          feeditems.append(py.PyRSS2Gen.RSSItem(title = nota.commissione.nome + " - " + nota.commissione.tipoScuola,
+          feeditems.append(py.PyRSS2Gen.RSSItem(title = nota.commissione.get().nome + " - " + nota.commissione.get().tipoScuola,
                           description = "Nota': " + nota.titolo + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "nota?key="+str(nota.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + path + "nota?key="+str(nota.key)),
                           pubDate = nota.dataNota.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
@@ -187,23 +194,23 @@ class CMFeedNCHandler(BasePage):
     buff = memcache.get("feed_nc")
     
     if(buff is None):
-      ncs = Nonconformita.all().order("-dataNonconf").fetch(limit=10)
+      ncs = Nonconformita.query().order(-Nonconformita.dataNonconf).fetch(limit=10)
       nc_items = list()
 
       for nc in ncs:
         note = "nessuna"
         if nc.note is not None:
           note = nc.note
-        nc_items.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.nome + " - " + nc.commissione.tipoScuola,
+        nc_items.append(py.PyRSS2Gen.RSSItem(title = nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola,
                           description = "Non Conformita': " + nc.tipoNome() + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nonconf?key="+str(nc.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nonconf?key="+str(nc.key)),
                           pubDate = nc.dataNonconf.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
       rss = py.PyRSS2Gen.RSS2(
         title = "Pappa-Mi - Non Conformita'",
         link = "http://"+ self.getHost() +"/feed/nc",
-        description = "Le ultime Non Conformita' inserite dalle Commissioni Mensa di Milano",
+        description = "Le ultime Non Conformita' inserite dquerye Commissioni Mensa di Milano",
         items = nc_items)
       buff = rss.to_xml()
       memcache.add("feed_nc", buff)
@@ -219,23 +226,23 @@ class CMFeedDietaHandler(BasePage):
     buff = memcache.get("feed_diete")
     
     if(buff is None):
-      diete = Dieta.all().order("-dataIspezione").fetch(limit=10)
+      diete = Dieta.query().order(-Dieta.dataIspezione).fetch(limit=10)
       diete_items = list()
 
       for dieta in diete:
         note = "nessuna"
         if dieta.note is not None:
           note = dieta.note
-        diete_items.append(py.PyRSS2Gen.RSSItem(title = dieta.commissione.nome + " - " + dieta.commissione.tipoScuola,
+        diete_items.append(py.PyRSS2Gen.RSSItem(title = dieta.commissione.get().nome + " - " + dieta.commissione.get().tipoScuola,
                           description = "Ispezione Dieta: " + dieta.tipoNome() + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/dieta?key="+str(dieta.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/dieta?key="+str(dieta.key)),
                           pubDate = dieta.dataIspezione.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
       rss = py.PyRSS2Gen.RSS2(
         title = "Pappa-Mi - Ispezione Diete speciali",
         link = "http://"+ self.getHost() +"/feed/dieta",
-        description = "Le ultime Ispezioni Diete speciali inserite dalle Commissioni Mensa di Milano",
+        description = "Le ultime Ispezioni Diete speciali inserite dquerye Commissioni Mensa di Milano",
         items = diete_items)
       buff = rss.to_xml()
       memcache.add("feed_diete", buff)
@@ -251,23 +258,23 @@ class CMFeedNotaHandler(BasePage):
     buff = memcache.get("feed_note")
     
     if(buff is None):
-      notes = Nota.all().order("-dataNota").fetch(limit=10)
+      notes = Nota.query().order(-Nota.dataNota).fetch(limit=10)
       nota_items = list()
 
       for nota in notes:
         note = "nessuna"
         if nota.note is not None:
           note = nota.note
-        nota_items.append(py.PyRSS2Gen.RSSItem(title = nota.commissione.nome + " - " + nota.commissione.tipoScuola,
+        nota_items.append(py.PyRSS2Gen.RSSItem(title = nota.commissione.get().nome + " - " + nota.commissione.get().tipoScuola,
                           description = "Nota: " + nota.titolo + " note:" + note,
-                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nota?key="+str(nota.key())),
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/genitore/nota?key="+str(nota.key)),
                           pubDate = nota.dataNota.strftime("%a, %d %b %Y %H:%M:%S +0100")))
       
 
       rss = py.PyRSS2Gen.RSS2(
         title = "Pappa-Mi - Note",
         link = "http://"+ self.getHost() +"/feed/nota",
-        description = "Le ultime Note inserite dalle Commissioni Mensa di Milano",
+        description = "Le ultime Note inserite dquerye Commissioni Mensa di Milano",
         items = nota_items)
       buff = rss.to_xml()
       memcache.add("feed_note", buff)

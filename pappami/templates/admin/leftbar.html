@@ -6,3 +6,22 @@
 <a href="/admin?cmd=flush" class="btn" style="width:120px;">Flush All</a><br/>
 <a href="/admin?cmd=flushnews" class="btn" style="width:120px;">Flush news</a><br/>
 </div>
+<div class="row">
+ <form action="/admin" method="get">
+  <div class="control-group">
+   <div class="controls">
+    <label class="control-label">Comando</label>
+    <input type="text" name="cmd"/>
+    <label class="control-label">Limit</label>
+    <input type="text" name="limit"/>
+    <label class="control-label">Offset</label>
+    <input type="text" name="offset"/>
+    <label class="control-label">Kind</label>
+    <input type="text" name="kind"/>
+   </div>
+   <div class="form-actions">
+    <input type="submit" class="btn btn-button"/>
+   </div>
+  </div>
+ </form>
+</div>

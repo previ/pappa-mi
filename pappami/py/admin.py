@@ -22,6 +22,7 @@ import urllib
 from google.appengine.api import urlfetch
 from datetime import datetime, date, time
 import wsgiref.handlers
+import random
 
 from google.appengine.ext.ndb import model
 from google.appengine.api import users
@@ -331,7 +332,8 @@ class CMAdminHandler(BasePage):
      
     if self.request.get("cmd") == "initMenu":
       citta = Citta.query().get()
-      for menu in Menu.query().filter(Menu.tipoScuola=="Materna"):
+      for menu in Menu.query().filter(Menu.tipoScuola=="Materna").filter(Menu.validitaA==datetime.datetime.strptime(self.request.get("offset"), "%Y-%m-%d")):
+        logging.info("menu: " + str(menu.validitaA))
         nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
         if not nm:
           nm = MenuNew()
@@ -349,6 +351,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
+          logging.info("piatto.primo.put")
         piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
@@ -358,6 +361,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
+          logging.info("piattogiorno.primo.put")
         piatto = Piatto.query().filter(Piatto.nome==menu.secondo).get()
         if not piatto:
           piatto = Piatto()
@@ -368,6 +372,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
+          logging.info("piatto.secondo.put")
         piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
@@ -377,6 +382,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
+          logging.info("piattogiorno.secondo.put")
         piatto = Piatto.query().filter(Piatto.nome==menu.contorno).get()
         if not piatto:
           piatto = Piatto()
@@ -387,6 +393,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
+          logging.info("piatto.contorno.put")
         piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
@@ -396,6 +403,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
+          logging.info("piattogiorno.contorno.put")
         piatto = Piatto.query().filter(Piatto.nome == menu.dessert).get()
         if not piatto:
           piatto = Piatto()
@@ -406,6 +414,7 @@ class CMAdminHandler(BasePage):
           piatto.grassi = 30
           piatto.gi = 10
           piatto.put()
+          logging.info("piatto.dessert.put")
         piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
         if not piattoGiorno:
           piattoGiorno = PiattoGiorno()
@@ -415,6 +424,7 @@ class CMAdminHandler(BasePage):
           piattoGiorno.giorno = menu.giorno
           piattoGiorno.settimana = menu.settimana
           piattoGiorno.put()
+          logging.info("piattogiorno.dessert.put")
       self.response.out.write("initMenu Ok")
       return      
                 

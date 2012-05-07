@@ -124,7 +124,10 @@ class BasePage(webapp.RequestHandler):
     
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
       self.redirect("http://www.pappa-mi.it")      
-            
+
+    if self.request.url.find("beta") != -1:
+      self.redirect("http://www.pappa-mi.it")      
+      
     user = self.get_current_user()
     url = None
     if user:
@@ -175,7 +178,7 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.0.0 - 2012.03.31"
+    template_values["version"] = "2.0.0.1 - 2012.05.06"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
@@ -354,7 +357,7 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
               
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu, 60)
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu)
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):    
@@ -365,7 +368,7 @@ class CMMenuHandler(BasePage):
       if offset > 0:
         piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
         mh = MenuHelper()
-        mh.data = data + timedelta(data.isoweekday()-1)      
+        mh.data = data# + timedelta(data.isoweekday()-1)      
         mh.giorno = data.isoweekday()
         mh.primo = piatti["p"]
         mh.secondo = piatti["s"]
@@ -378,7 +381,7 @@ class CMMenuHandler(BasePage):
         for i in range(1,5):
           piatti = settimane[i]
           mh = MenuHelper()
-          mh.data = data + timedelta(data.isoweekday()-1)      
+          mh.data = data# + timedelta(data.isoweekday()-1)      
           mh.giorno = data.isoweekday()
           mh.settimana = i
           mh.primo = piatti["p"]
