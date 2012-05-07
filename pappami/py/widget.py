@@ -104,27 +104,29 @@ class CMStatWidgetHandler(BasePage):
     if now.month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
 
-    stats = memcache.get("statAll")
-    if not stats:
-      logging.info("statAll miss")
-      stats = StatisticheIspezioni.get_cy_cc_cm_time(timeId=year).get()
-      memcache.set("statAll", stats, 3600)
-
+    statCY = None
     statCC = None
     statCM = None
     if c:
-      statCC = memcache.get("statCC" + str(c.centroCucina))
+      statCY = memcache.get("statCY" + str(c.citta.id))
+      if not statCC:
+        logging.info("statCY miss")
+        statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=c.citta, timeId=year).get()
+        memcache.set("statCY" + str(c.citta.id), statCY, 86400)
+     
+      statCC = memcache.get("statCC" + str(c.centroCucina.id))
       if not statCC:
         logging.info("statCC miss")
         statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=c.centroCucina, timeId=year).get()
-        memcache.set("statCC" + str(c.centroCucina), statCC, 3600)
-      statCM = memcache.get("statCM" + str(c.key))
+        memcache.set("statCC" + str(c.centroCucina.id), statCC, 86400)
+
+      statCM = memcache.get("statCM" + str(c.key.id))
       if not statCM:
         logging.info("statCM miss")
         statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=c.key, timeId=year).get()
-        memcache.set("statCM" + str(c.key), statCM, 3600)
+        memcache.set("statCM" + str(c.key.id), statCM, 86400)
       
-    template_values["stats"] = stats
+    template_values["statCY"] = statCY
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
 
