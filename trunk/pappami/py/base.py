@@ -435,7 +435,7 @@ class CMMenuHandler(BasePage):
       cm = commissario.commissione()
     else:
       if commissario and commissario.citta:
-        cm = Commissione.get_by_citta(commissario.citta).get()
+        cm = Commissione.get_by_citta(commissario.citta)[0]
       else:
         cm = Commissione.get_by_citta(Citta.get_first().key)[0]
       
