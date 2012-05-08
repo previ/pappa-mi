@@ -154,31 +154,43 @@ class IspezioneHandler(BasePage):
       self.getBase(template_values) 
 
     elif( preview ):
-      isp = self.session.get("pw_obj")
-      isp.allegati = self.session.get("pw_att")
-      isp.tags = self.session.get("pw_tags")
-
-      if isp.dataIspezione.month >= 9:
-        isp.anno = isp.dataIspezione.year
-      else:
-        isp.anno = isp.dataIspezione.year - 1
-        
-      isp.creato_da = self.get_current_user().key
-      isp.modificato_da = self.get_current_user().key
-      isp.put()
-
-      for allegato in isp.allegati:
-        allegato.obj = isp.key
-        allegato.put()
-      
-      memcache.delete("stats")
-      memcache.delete("statsMese")
       
       if self.request.get("last"):
         last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
       else:
         last_msg_key = None
-      template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+            
+      isp = self.session.get("pw_obj")
+      isp.allegati = self.session.get("pw_att")
+      isp.tags = self.session.get("pw_tags")
+
+      if isp:
+        del self.session["pw_obj"]
+        del self.session["pw_att"]
+        del self.session["pw_tags"]
+        self.set_context()
+      
+        if isp.dataIspezione.month >= 9:
+          isp.anno = isp.dataIspezione.year
+        else:
+          isp.anno = isp.dataIspezione.year - 1
+          
+        isp.creato_da = self.get_current_user().key
+        isp.modificato_da = self.get_current_user().key
+        isp.put()
+  
+        for allegato in isp.allegati:
+          allegato.obj = isp.key
+          allegato.put()
+        
+        memcache.delete("stats")
+        memcache.delete("statsMese")
+        
+        template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+
+      else:
+        template_values = CMCommentHandler.loadActivity(last_msg_key)
+      
 
       self.getBase(template_values) 
       
@@ -292,32 +304,42 @@ class NonconfHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      nc = self.session.get("pw_obj")
-      nc.allegati = self.session.get("pw_att")
-      nc.tags = self.session.get("pw_tags")
-      
-      if nc.dataNonconf.month >= 9:
-        nc.anno = nc.dataNonconf.year
-      else:
-        nc.anno = nc.dataNonconf.year - 1
-
-      nc.creato_da = self.get_current_user().key
-      nc.modificato_da = self.get_current_user().key
-      nc.put()
-
-      for allegato in nc.allegati:
-        allegato.obj = nc.key
-        allegato.put()
-
-      memcache.delete("stats")
-      memcache.delete("statsMese")
-
       if self.request.get("last"):
         last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
       else:
         last_msg_key = None
-      template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
+      
+      nc = self.session.get("pw_obj")
+      nc.allegati = self.session.get("pw_att")
+      nc.tags = self.session.get("pw_tags")
+      if nc:
+        del self.session["pw_obj"]
+        del self.session["pw_att"]
+        del self.session["pw_tags"]
+        self.set_context()
+        
+      
+        if nc.dataNonconf.month >= 9:
+          nc.anno = nc.dataNonconf.year
+        else:
+          nc.anno = nc.dataNonconf.year - 1
+  
+        nc.creato_da = self.get_current_user().key
+        nc.modificato_da = self.get_current_user().key
+        nc.put()
+  
+        for allegato in nc.allegati:
+          allegato.obj = nc.key
+          allegato.put()
+  
+        memcache.delete("stats")
+        memcache.delete("statsMese")
+  
+        template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
 
+      else:
+        template_values = CMCommentHandler.loadActivity(last_msg_key)
+      
       self.getBase(template_values) 
       
     else:
@@ -425,31 +447,41 @@ class DietaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      dieta = self.session.get("pw_obj")
-      dieta.allegati = self.session.get("pw_att")
-      dieta.tags = self.session.get("pw_tags")
-
-      if dieta.dataIspezione.month >= 9:
-        dieta.anno = dieta.dataIspezione.year
-      else:
-        dieta.anno = dieta.dataIspezione.year - 1
-
-      dieta.creato_da = self.get_current_user().key
-      dieta.modificato_da = self.get_current_user().key
-      dieta.put()
-
-      for allegato in dieta.allegati:
-        allegato.obj = dieta.key
-        allegato.put()
-      
-      memcache.delete("stats")
-      memcache.delete("statsMese")
-
       if self.request.get("last"):
         last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
       else:
         last_msg_key = None
-      template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
+
+      dieta = self.session.get("pw_obj")
+      dieta.allegati = self.session.get("pw_att")
+      dieta.tags = self.session.get("pw_tags")
+      if dieta:
+        del self.session["pw_obj"]
+        del self.session["pw_att"]
+        del self.session["pw_tags"]
+        self.set_context()
+        
+
+        if dieta.dataIspezione.month >= 9:
+          dieta.anno = dieta.dataIspezione.year
+        else:
+          dieta.anno = dieta.dataIspezione.year - 1
+  
+        dieta.creato_da = self.get_current_user().key
+        dieta.modificato_da = self.get_current_user().key
+        dieta.put()
+  
+        for allegato in dieta.allegati:
+          allegato.obj = dieta.key
+          allegato.put()
+        
+        memcache.delete("stats")
+        memcache.delete("statsMese")
+  
+        template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
+
+      else:
+        template_values = CMCommentHandler.loadActivity(last_msg_key)
 
       self.getBase(template_values) 
       
@@ -558,33 +590,43 @@ class NotaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      nota = self.session.get("pw_obj")
-      nota.allegati = self.session.get("pw_att")
-      nota.tags = self.session.get("pw_tags")
-
-      if nota.dataNota.month >= 9:
-        nota.anno = nota.dataNota.year
-      else:
-        nota.anno = nota.dataNota.year - 1
-     
-      nota.creato_da = self.get_current_user().key
-      nota.modificato_da = self.get_current_user().key
-      nota.put()
-      
-      #logging.info(nota.allegati)
-            
-      for allegato in nota.allegati:
-        allegato.obj = nota.key
-        allegato.put()
-
-      memcache.delete("stats")
-      memcache.delete("statsMese")
-
       if self.request.get("last"):
         last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
       else:
         last_msg_key = None
-      template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+
+      nota = self.session.get("pw_obj")
+      nota.allegati = self.session.get("pw_att")
+      nota.tags = self.session.get("pw_tags")
+      if nota:
+        del self.session["pw_obj"]
+        del self.session["pw_att"]
+        del self.session["pw_tags"]
+        self.set_context()        
+
+        if nota.dataNota.month >= 9:
+          nota.anno = nota.dataNota.year
+        else:
+          nota.anno = nota.dataNota.year - 1
+       
+        nota.creato_da = self.get_current_user().key
+        nota.modificato_da = self.get_current_user().key
+        nota.put()
+        
+        #logging.info(nota.allegati)
+              
+        for allegato in nota.allegati:
+          allegato.obj = nota.key
+          allegato.put()
+  
+        memcache.delete("stats")
+        memcache.delete("statsMese")
+  
+        template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+
+      else:
+        template_values = CMCommentHandler.loadActivity(last_msg_key)
+        
       
     else:
       key = self.request.get("key")

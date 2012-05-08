@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -26,7 +26,8 @@ class MailHandler(InboundMailHandler):
     if "test" in get_application_id():
       host = "test.pappa-mi.it"
     else:
-      host = "beta.pappa-mi.it"
+      host = "www.pappa-mi.it"
+    return host
 
   def receive(self, message):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
@@ -91,16 +92,6 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
-
-    # tags
-    #tags = list()
-    #s = nota.note.find("#")
-    #while s >= 0:
-      #e = nota.note.find(" ",s+1)
-      #if e < 0:
-        #e = len(nota.note)
-      #tag = nota.note[s+1:e]
-      #tags.append(tag)
       
     nota.put()
 

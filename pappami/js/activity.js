@@ -145,8 +145,6 @@ function opennewwiz(url) {
       remoteAjax : {"step1" : { // add a remote ajax call when moving next from the second step
 	url : url + "val", 
 	dataType : 'text',
-	//beforeSend : function(){alert("pippo");$("e_submit").attr('disabled', 'disabled');},
-	//complete : function(){alert("pippo");$("e_submit").attr('disabled', '');},
 	success : function(data){
 	  if(data != "Ok") {	    
 	    $("#formwiz-container").html('<div id="formwiz-error" class="alert alert-error fade in" style="display:none;"><a class="close" data-dismiss="alert" href="#">&times;</a>'+data+'</div>');
@@ -180,7 +178,7 @@ function opennewwiz(url) {
 	    if( $('#activity_list li:first-child').attr('id') ) {	    
 	      $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	    }
-	    $('#form1').ajaxForm( {beforeSubmit: function() {$("#e_submit").button("loading");}, success: function(data) {
+	    $('#form1').ajaxForm( {beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {
 	      $('#new-data').dialog('close');
 	      $('#new-data-form').html('');
 	      $('#new-data-preview').html('');
@@ -199,7 +197,7 @@ function opennewwiz(url) {
 	},
 	resetForm: false,
 	beforeSubmit: function(arr,$form) {
-	  $("#e_submit").button("loading");
+	  $('#form0').find("#e_submit").button("loading");;
 	},
 	beforeSerialize: function($form, options) {
 	  $("[name='tags']").attr('value','');
@@ -271,7 +269,7 @@ function opennewitem(url) {
 	if( $('#activity_list li:first-child').attr('id') ) {
   	  $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	}
-	$('#form1').ajaxForm( { beforeSubmit: function() {$("#e_submit").button("loading");}, success: function(data) {      	
+	$('#form1').ajaxForm( { beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {      	
 	  $('#new-data').dialog('close');	
 	  $('#new-data-form').html('');
 	  $('#new-data-preview').html('');
@@ -291,7 +289,7 @@ function opennewitem(url) {
       }
 	
     }, beforeSubmit: function(arr,$form) {
-      $("#e_submit").button("loading");
+      $('#form0').find("#e_submit").button("loading");
     }, beforeSerialize: function($form, options) {
       $("[name='tags']").attr('value','');
       var tags = $("#item_tags_handler").tagHandler("getTags")
