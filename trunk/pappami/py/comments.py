@@ -58,10 +58,17 @@ class CMCommentHandler(BasePage):
   and return the delta activity stream html
   """
   @classmethod
-  def initActivity(self, msg_rif, msg_grp, tipo, last, tags, user):
+  def initActivity(cls, msg_rif, msg_grp, tipo, last, tags, user):
 
     new_msg = CMCommentHandler.init(msg_rif, msg_grp, tipo, tags, user)
     
+    return cls.loadActivity(last)
+
+  """
+  """
+  @classmethod
+  def loadActivity(cls, last):
+
     buff = ""
 
     template_values = {
@@ -76,7 +83,7 @@ class CMCommentHandler(BasePage):
     template_values['activities'] = activities       
 
     return template_values
-
+  
   """
   return the root object of a given message (comment)
   """

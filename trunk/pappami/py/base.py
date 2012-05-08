@@ -90,8 +90,9 @@ class BasePage(webapp.RequestHandler):
       commissario = self.getCommissario()
       if commissario:
         ctx["citta_key"] = commissario.citta.id()
-        ctx["cm_key"] = commissario.commissione().key.id()
-        ctx["cm_name"] = str(commissario.commissione().desc())
+        if commissario.commissione():
+          ctx["cm_key"] = commissario.commissione().key.id()
+          ctx["cm_name"] = str(commissario.commissione().desc())
       else:
         ctx["citta_key"] = Citta.get_first().key.id()
       anno = datetime.now().date().year
@@ -357,7 +358,8 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
               
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu)
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu)    
+    logging.info(str(menu))
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):    
@@ -365,17 +367,18 @@ class CMMenuHandler(BasePage):
     
     if mn:
       piatti = dict()
-      if offset > 0:
+      if offset >= 0:
         piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
         mh = MenuHelper()
         mh.data = data# + timedelta(data.isoweekday()-1)      
         mh.giorno = data.isoweekday()
-        mh.primo = piatti["p"]
-        mh.secondo = piatti["s"]
-        mh.contorno = piatti["c"]
-        mh.dessert = piatti["d"]
+        mh.primo = piatti.get("p", Piatto())
+        mh.secondo = piatti.get("s", Piatto())
+        mh.contorno = piatti.get("c", Piatto())
+        mh.dessert = piatti.get("d", Piatto())
         menu.append(mh)
       else:
+        
         settimane = Piatto.get_by_date(data)
       
         for i in range(1,5):
@@ -384,10 +387,10 @@ class CMMenuHandler(BasePage):
           mh.data = data# + timedelta(data.isoweekday()-1)      
           mh.giorno = data.isoweekday()
           mh.settimana = i
-          mh.primo = piatti["p"]
-          mh.secondo = piatti["s"]
-          mh.contorno = piatti["c"]
-          mh.dessert = piatti["d"]
+          mh.primo = piatti.get("p", Piatto())
+          mh.secondo = piatti.get("s", Piatto())
+          mh.contorno = piatti.get("c", Piatto())
+          mh.dessert = piatti.get("d", Piatto())
           menu.append(mh)      
     
 
@@ -405,7 +408,7 @@ class CMMenuHandler(BasePage):
 
     mlist = list()
     if menu:
-      giorni = Piatto.get_by_settimana((((((data-menu.validitaDa).days) / 7)+offset)%4 + 1))
+      giorni = Piatto.get_by_menu_settimana(menu, (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) )
       #for pg in PiattoGiorno.all().filter("settimana", (((((data-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
         #if not pg.giorno in giorni:
           #giorni[pg.giorno] = dict()
@@ -418,47 +421,14 @@ class CMMenuHandler(BasePage):
         mh = MenuHelper()
         mh.data = data + timedelta(i - 1) 
         mh.giorno = i
-        mh.primo = piatti["p"]
-        mh.secondo = piatti["s"]
-        mh.contorno = piatti["c"]
-        mh.dessert = piatti["d"]
+        mh.primo = piatti.get("p", Piatto())
+        mh.secondo = piatti.get("s", Piatto())
+        mh.contorno = piatti.get("c", Piatto())
+        mh.dessert = piatti.get("d", Piatto())
         mlist.append(mh)
       
     return mlist
       
-  def getBase(self,template_values):
-    cm = None
-    commissario = self.getCommissario(self.get_current_user())
-    if self.request.get("cm") != "":
-      cm = model.Key("Commissione",int(self.request.get("cm"))).get()
-    elif commissario and commissario.commissione() :
-      cm = commissario.commissione()
-    else:
-      if commissario and commissario.citta:
-        cm = Commissione.get_by_citta(commissario.citta)[0]
-      else:
-        cm = Commissione.get_by_citta(Citta.get_first().key)[0]
-      
-    date = self.request.get("data")
-    if date:
-      date = datetime.strptime(date,Const.DATE_FORMAT).date()
-    else:
-      date = datetime.now().date()
-    
-    date = self.get_next_working_day(date)
-    
-    date1 = date - timedelta(date.isoweekday() - 1)
-    datep = date1 - timedelta(7)
-    daten = date1 + timedelta(7)
-
-    template_values['menu'] = self.getMenuWeek(date1, cm)
-    template_values['data'] = date
-    template_values['data1'] = date1
-    template_values['datap'] = datep
-    template_values['datan'] = daten
-    template_values['cm'] = cm
-    template_values['action'] = self.request.path
-    super(CMMenuHandler,self).getBase(template_values)
     
 
   def get_next_working_day(self, date):

@@ -398,11 +398,11 @@ class Piatto(model.Model):
     
   _pi_gi_cache = dict()
   @classmethod
-  def get_by_settimana(cls, settimana):
+  def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None
     if settimana not in cls._pi_gi_cache:
       pi_gi = dict()
-      for pg in PiattoGiorno.query().filter(PiattoGiorno.settimana == settimana ):
+      for pg in PiattoGiorno.query().filter(PiattoGiorno.menu == menu.key).filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto.get()
@@ -414,7 +414,7 @@ class Piatto(model.Model):
   @classmethod
   def get_by_menu_date_offset(cls, menu, date, offset):
     piatti = dict()
-    for pg in PiattoGiorno.query().filter(PiattoGiorno.giorno == date.isoweekday()).filter(PiattoGiorno.settimana == (((((date-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
+    for pg in PiattoGiorno.query().filter(PiattoGiorno.menu == menu.key).filter(PiattoGiorno.giorno == date.isoweekday()).filter(PiattoGiorno.settimana == (((((date-menu.validitaDa).days) / 7)+offset)%4 + 1) ):
       piatti[pg.tipo] = pg.piatto.get()
     return piatti
 

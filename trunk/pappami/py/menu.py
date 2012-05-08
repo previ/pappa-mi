@@ -50,7 +50,8 @@ class CMMenuDataHandler(CMMenuHandler):
       template_values['content'] = 'menu.html'      
       template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
       template_values["citta"] = Citta.get_all()
-      self.getBase(template_values)
+  
+      self.getBase(template_values)      
 
   def post(self):
     cm_key = self.get_context().get("cm_key")
@@ -81,6 +82,41 @@ class CMMenuSlideHandler(CMMenuHandler):
     template_values = dict()
     template_values['main'] = 'menu_slides.html'    
     self.getBase(template_values)
+    
+  def getBase(self,template_values):
+    cm = None
+    commissario = self.getCommissario(self.get_current_user())
+    if self.request.get("cm") != "":
+      cm = model.Key("Commissione",int(self.request.get("cm"))).get()
+    elif commissario and commissario.commissione() :
+      cm = commissario.commissione()
+    else:
+      if commissario and commissario.citta:
+        cm = Commissione.get_by_citta(commissario.citta)[0]
+      else:
+        cm = Commissione.get_by_citta(Citta.get_first().key)[0]
+      
+    date = self.request.get("data")
+    if date:
+      date = datetime.strptime(date,Const.DATE_FORMAT).date()
+    else:
+      date = datetime.now().date()
+    
+    date = self.get_next_working_day(date)
+    
+    date1 = date - timedelta(date.isoweekday() - 1)
+    datep = date1 - timedelta(7)
+    daten = date1 + timedelta(7)
+
+    template_values['menu'] = self.getMenuWeek(date1, cm)
+    template_values['data'] = date
+    template_values['data1'] = date1
+    template_values['datap'] = datep
+    template_values['datan'] = daten
+    template_values['cm'] = cm
+    template_values['action'] = self.request.path
+    super(CMMenuHandler,self).getBase(template_values)
+    
 
 class MenuScraper(BasePage):
   
