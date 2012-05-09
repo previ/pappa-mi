@@ -381,7 +381,8 @@ class MenuNew(model.Model):
     with MenuNew._lock:
       if citta_key in MenuNew._menu_cache:
         menu = MenuNew._menu_cache[citta_key]
-        if not(menu and menu.validitaDa <= data and menu.validitaDa >= data):
+        if not(menu.validitaDa <= data and menu.validitaDa >= data):
+          menu = MenuNew.query().filter(MenuNew.citta == citta_key).filter(MenuNew.validitaDa <= data).order(-MenuNew.validitaDa).get()
           MenuNew._menu_cache[citta_key] = menu
       else:
         menu = MenuNew.query().filter(MenuNew.citta == citta_key).filter(MenuNew.validitaDa <= data).order(-MenuNew.validitaDa).get()
