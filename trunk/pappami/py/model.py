@@ -45,6 +45,11 @@ class Configurazione(model.Model):
     return Configurazione.query(Configurazione.nome == name).get().valore
   
 class CentroCucina(model.Model):  
+  def __init__(self, *args, **kwargs):
+    self._ce_cu_zo_cache = None
+    self._zo_of_cache = None
+    super(CentroCucina, self).__init__(*args, **kwargs)  
+
   nome = model.StringProperty()
   codice = model.StringProperty()
   strada = model.StringProperty()
@@ -63,25 +68,23 @@ class CentroCucina(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
 
-  _lock = threading.RLock()
-  _ce_cu_zo_cache = None
-  _zo_of_cache = None  
+  #_lock = threading.RLock()
+  #_ce_cu_zo_cache = None
+  #_zo_of_cache = None  
   
   @classmethod
   def get_by_citta(cls, citta_key):
     CentroCucina.query().filter(CentroCucina.citta == citta_key).order(CentroCucina.nome)
 
   def getZona(self, data=datetime.now().date()):
-    with CentroCucina._lock:
-      if not(CentroCucina._ce_cu_zo_cache and CentroCucina._ce_cu_zo_cache.validitaDa <= data and CentroCucina._ce_cu_zo_cache.validitaA >= data):
-        CentroCucina._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get()
-    return CentroCucina._ce_cu_zo_cache.zona
+    if not(self._ce_cu_zo_cache and self._ce_cu_zo_cache.validitaDa <= data and self._ce_cu_zo_cache.validitaA >= data):
+      self._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get()
+    return self._ce_cu_zo_cache.zona
   
   def getMenuOffset(self, data=datetime.now().date()):
-    with CentroCucina._lock:
-      if not(CentroCucina._zo_of_cache and CentroCucina._zo_of_cache.validitaDa <= data and CentroCucina._zo_of_cache.validitaA >= data):
-        CentroCucina._zo_of_cache = ZonaOffset.query().filter(ZonaOffset.zona == self.getZona(data)).filter(ZonaOffset.validitaDa <=data).order(-ZonaOffset.validitaDa).get()
-    return CentroCucina._zo_of_cache.offset
+    if not(self._zo_of_cache and self._zo_of_cache.validitaDa <= data and self._zo_of_cache.validitaA >= data):
+      self._zo_of_cache = ZonaOffset.query().filter(ZonaOffset.zona == self.getZona(data)).filter(ZonaOffset.validitaDa <=data).order(-ZonaOffset.validitaDa).get()
+    return self._zo_of_cache.offset
   
 class Commissione(model.Model):
   def __init__(self, *args, **kwargs):

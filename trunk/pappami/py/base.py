@@ -350,6 +350,7 @@ class CMMenuHandler(BasePage):
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
       
+    logging.info("offset: " + str(offset))
     menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
       menu = list()
@@ -402,7 +403,9 @@ class CMMenuHandler(BasePage):
 
     if offset == None:
       offset = 0
-      
+
+    logging.info("offset: " + str(offset))
+    
     # settimana corrente
     menu = MenuNew.get_by(cm.citta, data)
 
