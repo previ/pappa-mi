@@ -48,8 +48,7 @@
     <ul class="comment_list" id="comment_list_{{activity.key.id()}}"></ul>
    </div>   
    <div id="comment_new_exp_{{activity.key.id()}}" class="expcommentnew" tabindex="0" role="button" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</div>
-   <div class="activity_comment_new" id="comment_new_container_{{activity.key.id()}}">
-    {%if user%}
+   <div class="activity_comment_new" id="comment_new_container_{{activity.key.id()}}">    
     <div class="comment_form">
     <form id="comment_{{activity.key.id()}}" action="/comments/comment" method="post"> 
     <input type="hidden" name="tipo" value="202" /> 
@@ -68,11 +67,10 @@
      </div>
     </form>
     </div>
-    {%else%}
-    <div onclick="location.href='{{login_url}}'">Accedi per aggiungere un commento</div>
-    {%endif%}
    </div>
-   </div>{%endif%}  
+   </div>{%else%} {%if detail %} 
+   <div><a class="btn btn-primary" href="{{url}}">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a> per inserire un commento.</div>
+   {%endif%} {%endif%}
  </div>
 </div>
 </li>

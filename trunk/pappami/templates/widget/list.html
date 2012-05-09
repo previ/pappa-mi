@@ -43,7 +43,7 @@ padding-bottom: 10px;
 <div class="wlist_header"><a href="/" target="_new">Pappa-Mi</a> - Dati della Scuola {{scuola}}</div>
 <ul class="widget_list">
 {%for item in items%}
-<li><a href="{{item.url()}}" target="_new">{{item.date.strftime("%d/%m/%Y")}} - {{item.tipo()}}</a></li>
+<li><a href="{{item.url()}}" target="_new">{{item.date.strftime("%d/%m/%Y")}} - {{item.tipo()}} - {{item.sommario()}}</a></li>
 {%endfor%}
 </ul>
 {%include "footer.inc"%}
