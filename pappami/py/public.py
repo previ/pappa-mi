@@ -57,6 +57,9 @@ class CMIspezionePublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(isp.key)
     
     self.getBase(template_values)
+
+  def post(self): 
+    return self.get()
  
 class CMNonconfPublicHandler(BasePage):
   
@@ -71,6 +74,9 @@ class CMNonconfPublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(nc.key)
     self.getBase(template_values)
 
+  def post(self): 
+    return self.get()
+    
 class CMDietePublicHandler(BasePage):
   
   def get(self): 
@@ -84,6 +90,9 @@ class CMDietePublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key)
     self.getBase(template_values)
 
+  def post(self): 
+    return self.get()
+    
 class CMNotePublicHandler(BasePage):
   
   def get(self): 
@@ -102,6 +111,9 @@ class CMNotePublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(nota.key)
     
     self.getBase(template_values)
+
+  def post(self): 
+    return self.get()
 
 class ActivityPublicHandler(BasePage):
   
@@ -130,6 +142,9 @@ class ActivityPublicHandler(BasePage):
     template_values["activities"] = [message]
     
     self.getBase(template_values)
+
+  def post(self): 
+    return self.get()
     
 class CMAllegatoPublicHandler(BasePage):
   

@@ -150,6 +150,7 @@ class WidgetListitem:
     if isinstance(self.item, Nota):
       return "Note"
     return ""
+
   def date(self):
     if isinstance(self.item, Ispezione):
       return self.item.dataIspezione
@@ -159,6 +160,9 @@ class WidgetListitem:
       return self.item.dataIspezione
     if isinstance(self.item, Nota):
       return self.item.dataNota
+
+  def sommario(self):
+      return self.item.sommario()
     
   def url(self):
     u = "#"
