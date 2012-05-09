@@ -85,16 +85,21 @@ class CMMenuSlideHandler(CMMenuHandler):
     
   def getBase(self,template_values):
     cm = None
-    commissario = self.getCommissario(self.get_current_user())
-    if self.request.get("cm") != "":
-      cm = model.Key("Commissione",int(self.request.get("cm"))).get()
-    elif commissario and commissario.commissione() :
-      cm = commissario.commissione()
-    else:
-      if commissario and commissario.citta:
-        cm = Commissione.get_by_citta(commissario.citta)[0]
+
+    if self.get_context().get("cm_key"):
+      cm = model.Key("Commissione", self.get_context()["cm_key"]).get()
+     
+    if not cm:
+      commissario = self.getCommissario(self.get_current_user())
+      if self.request.get("cm") != "":
+        cm = model.Key("Commissione",int(self.request.get("cm"))).get()
+      elif commissario and commissario.commissione() :
+        cm = commissario.commissione()
       else:
-        cm = Commissione.get_by_citta(Citta.get_first().key)[0]
+        if commissario and commissario.citta:
+          cm = Commissione.get_by_citta(commissario.citta)[0]
+        else:
+          cm = Commissione.get_by_citta(Citta.get_first().key)[0]
       
     date = self.request.get("data")
     if date:
