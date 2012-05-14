@@ -24,7 +24,6 @@ import wsgiref.handlers
 import fixpath
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
@@ -284,7 +283,7 @@ class CMStatsHandler(BasePage):
     template_values["statCM"] = statCM
     template_values['action'] = self.request.path
     template_values["content"] = "stats/stats.html"
-    template_values["cmsro"] = self.getCommissario(users.get_current_user())
+    template_values["cmsro"] = self.getCommissario()
     template_values["citta"] = Citta.get_all()
     template_values["anno"] = anno
     self.get_context()["anno"] = anno    
@@ -305,12 +304,21 @@ class CMStatsDataHandler(BasePage):
 
 class CMStatCalcHandler(BasePage):
   def get(self):
+    now = datetime.datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+
     limit = 50
     if self.request.get("limit"):
       limit = int(self.request.get("limit"))
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
+
+    if self.request.get("year"):
+      year = int(self.request.get("year"))      
+      
     #logging.info("limit: %d", limit)
     #logging.info("offset: %d", offset)
 
@@ -318,7 +326,7 @@ class CMStatCalcHandler(BasePage):
     self.putTask('/admin/stats/calcnc',limit=limit,offset=offset)
     
   def putTask(self, aurl, offset=0, limit=50):
-    task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
+    task = Task(url=aurl, params={"year": str(year), "limit": str(limit), "offset":str(offset)}, method="GET")
     queue = Queue()
     queue.add(task)
     
@@ -344,10 +352,9 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     #logging.info("limit: %d", limit)
     #logging.info("offset: %d", offset)
     
-    now = datetime.datetime.now().date()
-    year = now.year
-    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
-      year = year - 1
+    if self.request.get("year"):
+      year = int(self.request.get("year"))      
+
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()

@@ -124,7 +124,10 @@ class ActivityHandler(BasePage):
     offset = 0
     if self.request.get("offset") != "":
       offset = int(self.request.get("offset"))
-   
+
+    self.get_or_set_ctx("tag", self.request.get("tag", None))
+    self.get_or_set_ctx("cm", self.request.get("cm", None))
+      
     template_values = dict()
     template_values["citta"] = Citta.get_all()    
     template_values["bgcolor"] = "eeeeff"

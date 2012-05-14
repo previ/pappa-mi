@@ -13,7 +13,9 @@
 		<meta name="description" content="Raccolta dati Commissioni mensa Milano"/>
 </head>
 <body id="homepage">
-{%for isp in isps%}
-<a href="./isp?key={{isp.key}}">{{isp.commissione.nome}} - {{isp.commissione.tipoScuola}} - Ispezione del {{isp.dataIspezione|date:"d/m/Y"}} - Turno {{isp.turno}}</a>
+<ul>
+{%for activity in activities%}
+<li><a href="./act?key={{activity.key.id()}}">{{activity.title}}</a>{{activity.body}}</li>
 {%endfor%}
+</ul>
 </body></html>

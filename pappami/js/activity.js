@@ -83,7 +83,7 @@ function opennewmsg() {
 	  item.tooltip('hide');
 	}
     });
-    $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 	    
+    $('#new-msg-form').ajaxForm({clearForm: true, success: function(data) { 
       $('#activity_list').prepend(data);
       $("#e_submit").button("reset");
     }, beforeSubmit: function(arr,$form) {

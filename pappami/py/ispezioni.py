@@ -189,7 +189,7 @@ class IspezioneHandler(BasePage):
         template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key)
+        template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
       
 
       self.getBase(template_values) 
@@ -338,7 +338,7 @@ class NonconfHandler(BasePage):
         template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key)
+        template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
       
       self.getBase(template_values) 
       
@@ -481,7 +481,7 @@ class DietaHandler(BasePage):
         template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key)
+        template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
 
       self.getBase(template_values) 
       
@@ -625,7 +625,7 @@ class NotaHandler(BasePage):
         template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key)
+        template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
         
       
     else:
