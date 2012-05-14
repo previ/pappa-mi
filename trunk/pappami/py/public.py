@@ -28,7 +28,6 @@ import webapp2 as webapp
 
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.api import mail
@@ -161,9 +160,9 @@ class CMRobotPublicHandler(BasePage):
   def get(self): 
     if "Googlebot" in self.request.headers["User-Agent"]:
       template_values = dict()
-      isps = Ispezione.all()
-      template_values["isps"] = isps
-      template_values["public_url"] = "http://" + self.getHost() + "/public/isp?key="
+      msgs = self.get_activities()
+      template_values["activities"] = msgs
+      template_values["public_url"] = "http://" + self.getHost() + "/public/act?key="
       template_values["main"] = "public/robot.html"
       self.getBase(template_values)
     else:
@@ -206,18 +205,16 @@ class CMAvatarRenderHandler(BasePage):
     commissario = self.getCommissario(user)
     self.response.headers['Content-Type'] = "image/png"
     img = commissario.avatar_data
-    #logging.info("len: " + str(len(img)))
-    #logging.info("size: " + self.request.get("size"))
     if self.request.get("size") != "big":
       img = images.resize(img, 48,48)
     self.response.out.write(img)
     
 app = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
-    ('/public/isp', CMIspezionePublicHandler),
-    ('/public/nc', CMNonconfPublicHandler),
-    ('/public/dieta', CMDietePublicHandler),
-    ('/public/nota', CMNotePublicHandler),
+    #('/public/isp', CMIspezionePublicHandler),
+    #('/public/nc', CMNonconfPublicHandler),
+    #('/public/dieta', CMDietePublicHandler),
+    #('/public/nota', CMNotePublicHandler),
     ('/public/allegato', CMAllegatoPublicHandler),
     ('/public/avatar', CMAvatarRenderHandler),
     ('/public/detail', CMDetailHandler),
