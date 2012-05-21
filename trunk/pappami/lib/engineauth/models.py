@@ -454,6 +454,8 @@ class Session(ndb.Model):
     updated = ndb.DateTimeProperty(auto_now=True)
     data = ndb.PickleProperty(compressed=True, default={})
 
+    _use_datastore = False
+    
     @staticmethod
     def _generate_sid():
         return security.generate_random_string(entropy=128)
