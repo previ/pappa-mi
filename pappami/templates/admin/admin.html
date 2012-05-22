@@ -1,16 +1,12 @@
-<div class="row">
-<h1 class="ss-form-title">Gestione Sistema</h1>
-<br><br><br>
-<span class="goog-ws-half-width">
-<A id="test-list-page-add-button" href="/admin/commissione" class="btn"><B><B><B><B style="font-weight:bold !important;">Gestione Commissioni</B></B></B></B></A>
-</span>
-<span class="goog-ws-half-width">
-<A id="test-list-page-add-button" href="/admin/commissario" class="btn"><B><B><B><B style="font-weight:bold !important;">Gestione Commissari</B></B></B></B></A>
-</span>
-<span class="goog-ws-half-width">
-<A id="test-list-page-add-button" href="/admin/menu" class="btn"><B><B><B><B style="font-weight:bold !important;">Gestione Menu</B></B></B></B></A>
-</span>
-<br><br><br><br><br><br><br>
+<div id="content-nav" class="row">
+<h1>Gestione Sistema</h1>
+<a href="/admin/commissione" class="btn">Commissioni</a><br/>
+<a href="/admin/commissario" class="btn">Commissari</a>
+<a href="/admin/menu" class="btn">Men&ugrave;</a>
+<a href="/admin?cmd=flush" class="btn">Flush All</a><br/>
+<a href="/admin?cmd=flushnews" class="btn">Flush news</a><br/>
+<a href="/admin?cmd=getCommissari" class="btn">Get Commissari</a><br/>
+<a href="/admin?cmd=getGenitori" class="btn">Get Genitori</a><br/>
 </div>
 <div class="row">
  <form action="/admin" method="get">
@@ -24,6 +20,8 @@
     <input type="text" name="offset"/>
     <label class="control-label">Kind</label>
     <input type="text" name="kind"/>
+    <label class="control-label">Year</label>
+    <input type="text" name="year"/>
    </div>
    <div class="form-actions">
     <input type="submit" class="btn btn-button"/>

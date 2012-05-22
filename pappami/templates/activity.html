@@ -7,12 +7,13 @@
         // bind 'myForm' and provide a simple callback function 
         $('#comment_{{activity.key.id()}}').ajaxForm({clearForm: true, success:function(data) { 
            $('#comment_list_{{activity.key.id()}}').append(data);
-           //last = $('#comment_list_{{activity.key.id()}}').children().last().children().first().attr('id').substring("comment_".length);
-           last = $(data).find(".comment_box:last").attr("id").substring("comment_".length);
+           var last = "";
+           if($(data).find(".comment_box:last").attr("id")) {
+             last = $(data).find(".comment_box:last").attr("id").substring("comment_".length);  
+           }           
            $('#comment_last_{{activity.key.id()}}').val(last);
            $('#comments_num_{{activity.key.id()}}').text($('#comment_list_{{activity.key.id()}}').children().length);
            $('#comments_header_{{activity.key.id()}}').show();
-           //$('#comments_{{activity.key.id()}}').load('/comments/comment?par={{activity.key.id()}}')
            $("#e_comment_{{activity.key.id()}}_submit").button("reset");
         }}); 
         {%if detail is defined%}onexpcomments('{{activity.key.id()}}');{%endif%}
@@ -75,16 +76,18 @@
  </div>
 </div>
 </li>
-{%endif%}  
+{%endif%}
 {%endfor%}
 {%if ease%}
 <script type="text/javascript"> 
 $(function() {
 {%for activity in activities %}
+{%if not limit or loop.index < limit%}
 $( "#activity_{{activity.key.id()}}" ).css("opacity", "0");
 $( "#activity_{{activity.key.id()}}" ).animate({ opacity: 1}, 2000 );
+{%endif%}
 {%endfor%}
-location.href="#";
+//location.href="#";
 });
 </script>
 {%endif%}
