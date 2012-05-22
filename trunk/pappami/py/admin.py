@@ -47,7 +47,6 @@ class CMAdminMenuHandler(BasePage):
   def get(self):    
 
     template_values = {
-      #'content_left': '/admin/leftbar.html',
       #'content': '/admin/menu.html'
     }
 
@@ -67,7 +66,6 @@ class CMAdminMenuHandler(BasePage):
       user = users.get_current_user()
 
       template_values = {
-        'content_left': 'admin/leftbar.html',
         'content': 'admin/menu.html'
       }
 
@@ -99,7 +97,6 @@ class CMAdminCommissioneHandler(BasePage):
         key = commissione.key()
               
       template_values = {
-        'content_left': 'admin/leftbar.html',
         'content': 'admin/commissione.html',
         'commissione': commissione,
         'key': key,
@@ -121,7 +118,6 @@ class CMAdminCommissioneHandler(BasePage):
       centriCucina = CentroCucina.query().order("nome")
 
       template_values = {
-        'content_left': 'admin/leftbar.html',
         'content': 'admin/commissioni.html',
         'centriCucina': centriCucina,
       }
@@ -174,7 +170,6 @@ class CMAdminCommissioneHandler(BasePage):
       #centriCucina = CentroCucina.query().order("nome")
 
       #template_values = {
-        #'content_left': 'admin/leftbar.html',
         #'content': 'admin/commissioni.html',
         #'centriCucina': centriCucina,
         #'gvizdata': gvizdata,
@@ -222,7 +217,6 @@ class CMAdminCommissioneHandler(BasePage):
         commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
 
       template_values = {
-        'content_left': 'admin/leftbar.html',
         'content': 'admin/commissioni.html',
         'commissioni': commissioni,
         'centriCucina': centriCucina,
@@ -684,7 +678,7 @@ class CMAdminHandler(BasePage):
           cc.put()
       
     template_values = {
-      'content': 'admin/leftbar.html',
+      'content': 'admin/admin.html',
     }
     self.getBase(template_values)
 
@@ -812,7 +806,6 @@ class CMAdminCommissarioHandler(BasePage):
 
  
       template_values = {
-        'content_left': 'admin/leftbar.html',
         'content': 'admin/commissari.html',
         'json': json
       }

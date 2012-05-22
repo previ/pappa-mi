@@ -148,21 +148,23 @@ class CMCommentHandler(BasePage):
     }
     messaggio.invalidate_cache();
     last_key = None
-    if self.request.get("last") != "":
-      last_key = model.Key("Messaggio", int(self.request.get("last")))
-    activities = Messaggio.get_all_from_item_parent(last_key, messaggio)
-
-    template_values['main'] = 'comments/comment.html'
           
     if messaggio.livello == 0: #posting root message      
-      template_values['main'] = 'activity.html'
-      comment_root = messaggio
+      last_key = messaggio.key
+      if self.request.get("last") != "":
+        last_key = model.Key("Messaggio", int(self.request.get("last")))
+      template_values = self.loadActivity(last_key, None)
     else:
+      if self.request.get("last") != "":
+        last_key = model.Key("Messaggio", int(self.request.get("last")))
+      activities = Messaggio.get_all_from_item_parent(last_key, messaggio)
+  
+      template_values['main'] = 'comments/comment.html'
       comment_root = model.Key("Messaggio",int(self.request.get("root"))).get()
   
-    template_values['activities'] = activities
-    template_values['comments'] = activities
-    template_values['comment_root'] = comment_root
+      template_values['activities'] = activities
+      template_values['comments'] = activities
+      template_values['comment_root'] = comment_root
 
     return self.getBase(template_values)
     
@@ -172,11 +174,12 @@ class CMCommentHandler(BasePage):
   def get(self):
     root = self.request.get("par")
     commento_root = model.Key("Messaggio", int(root)).get()
-    commenti = Messaggio.get_by_parent(commento_root.key)
-
+    
     comments = list()
-    for msg in commenti:
-      comments.append(msg)
+    if commento_root:      
+      commenti = Messaggio.get_by_parent(commento_root.key)
+      for msg in commenti:
+        comments.append(msg)
       
     comment_last = None
     if len(comments):

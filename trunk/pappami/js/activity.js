@@ -43,7 +43,6 @@ function opennewmsg() {
   if($('#new-msg').is(':visible') ) {
     $('#new-msg').slideUp();
   } else {
-    
     //$('#e_message').remove();
     $('#e_message_container').html('<textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="e_message"></textarea>');
     $('#e_message').tinymce({
@@ -63,7 +62,6 @@ function opennewmsg() {
      theme_advanced_toolbar_align : "left",
      theme_advanced_resizing : false     
     });
-  
     if( $('#activity_list li:first-child').attr('id') ) {
       $('#new-msg').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length));  
     }

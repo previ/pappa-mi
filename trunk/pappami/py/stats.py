@@ -315,17 +315,17 @@ class CMStatCalcHandler(BasePage):
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
-
     if self.request.get("year"):
       year = int(self.request.get("year"))      
       
-    #logging.info("limit: %d", limit)
-    #logging.info("offset: %d", offset)
+    logging.info("year: %d", year)
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
 
-    self.putTask('/admin/stats/calcisp',limit=limit,offset=offset)
-    self.putTask('/admin/stats/calcnc',limit=limit,offset=offset)
+    self.putTask('/admin/stats/calcisp', year, limit=limit, offset=offset)
+    self.putTask('/admin/stats/calcnc', year, limit=limit, offset=offset)
     
-  def putTask(self, aurl, offset=0, limit=50):
+  def putTask(self, aurl, year, offset=0, limit=50):
     task = Task(url=aurl, params={"year": str(year), "limit": str(limit), "offset":str(offset)}, method="GET")
     queue = Queue()
     queue.add(task)
@@ -341,6 +341,11 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     statsCC = dict()
     statsCY = dict()
 
+    now = datetime.datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+    
     limit = 50
     #logging.info("limit: %s", limit)
     if self.request.get("limit"):
@@ -349,12 +354,14 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
-    #logging.info("limit: %d", limit)
-    #logging.info("offset: %d", offset)
     
     if self.request.get("year"):
       year = int(self.request.get("year"))      
 
+    logging.info("year: %d", year)
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
+      
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
     dataCalcolo = datetime.datetime.now()
@@ -380,7 +387,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       
     if not statAll:
       statAll = StatisticheNonconf()
-      statAll.creato_da = self.get_current_user()
+      #statAll.creato_da = self.get_current_user()
       statAll.dataInizio = dataInizio
       statAll.dataFine = dataFine
       statAll.timeId = timeId
@@ -464,7 +471,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     finish = count < limit    
     logging.info("finish: " + str(finish))  
     if not finish:
-      self.putTask("/admin/stats/calcnc", offset + limit)
+      self.putTask("/admin/stats/calcnc", year, offset + limit)
 
   def initWeek(self, stat, wtot):
     for nc in range(0,len(stat._tipiPos.keys())):
@@ -490,6 +497,11 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     statsCC = dict()
     statsCY = dict()
 
+    now = datetime.datetime.now().date()
+    year = now.year
+    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
+      year = year - 1
+    
     limit = 50
     #logging.info("limit: %s", limit)
     if self.request.get("limit"):
@@ -499,13 +511,13 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
 
-    #logging.info("limit: %d", limit)
-    #logging.info("offset: %d", offset)
+    if self.request.get("year"):
+      year = int(self.request.get("year"))      
+      
+    logging.info("year: %d", year)
+    logging.info("limit: %d", limit)
+    logging.info("offset: %d", offset)
 
-    now = datetime.datetime.now().date()
-    year = now.year
-    if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
-      year = year - 1
     
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
@@ -625,7 +637,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     finish = count < limit    
     logging.info("finish: " + str(finish))  
     if not finish:
-      self.putTask("/admin/stats/calcisp", offset + limit)
+      self.putTask("/admin/stats/calcisp", year, offset + limit)
 
   def initWeek(self, stat, wtot):
     for ns in range(len(stat.numeroSchedeSettimana),wtot + 1):
