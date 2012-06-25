@@ -1,0 +1,89 @@
+<script type="text/javascript">
+$(function(){
+ $('#citta').change(oncitychanged());
+});
+ 
+function genWidget() {
+    type = $("#e_type").val();
+    cm = $("#cm").val();
+    width = $("#e_width").val();
+    height = $("#e_height").val();
+    fc = $("#e_fgcolor").val();
+    bc = $("#e_bgcolor").val();
+    t = "";
+    if(type == "stat_c") {
+      type = "stat";
+      t = "c";
+    }
+    
+    text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
+    $("#e_text").val(text);
+    $("#e_widget").html(text);
+}
+</script>
+<div class="row">
+ <div class="span12">
+  <h2>Widget di Pappa-Mi</h2>
+  <p>Le informazioni conmtenute in Pappa-Mi possono essere mostrate direttamente nel tuo sito o blog tramite "widget"</p>
+  <p>In questo momento esistono i seguenti tipi di widget:</p>
+  <ul>
+   <li>Cosa si Mangia: Il menu del giorno</li>
+   <li>Come si mangia: I valori medi delle misure di qualit&agrave; dei pasti e del servizio</li>
+  </ul>
+  <p>I widget possono riportare il valore comuni a tutte le scuole oppure specifici per una scuola.</p>
+  <p></p>
+ </div>
+</div>
+<div class="row">
+ <div class="span4 form-vertical">
+  <legend>Personalizza il tuo widget</legend>
+  <div class="control-group">
+   <div class="controls">
+    <select id="e_type">
+     <option value="menu">Menu del giorno</option>
+     <option value="stat_c">Qualit&agrave; dei pasti - riepilogo</option>
+     <option value="stat">Qualit&agrave; dei pasti - completo</option>
+     <option value="list">Lista ispezioni</option>
+    </select>
+   </div>
+   <div class="controls">
+    <label for="citta">Citt&agrave;</label>
+    <select class="large required" id="citta" name="citta">
+     <option value=""></option>
+     {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+    </select>   
+   </div>
+   <div class="controls">
+    <label for="e_width">Scuola</label>   
+    <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+    <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/></div>
+   </div>
+   <div class="controls">
+    <label for="e_width">Larghezza:</label>
+    <input type="text" id="e_width" value="200">
+   </div>
+   <div class="controls">
+    <label for="e_height">Altezza:</label>
+    <input type="text" id="e_height" value="260">
+   </div>
+   <div class="controls">
+    <label for="e_fgcolor">Colore primo piano:</label>
+    <input type="text" id="e_fgcolor" value="00000">
+   </div>
+   <div class="controls">
+    <label for="e_bgcolor">Colore sfondo:</label>
+    <input type="text" id="e_bgcolor" value="ffffff">
+   </div>
+   <div class="controls">
+    <button class="btn btn-primary" onclick="genWidget()">Genera Widget</button>
+   </div>
+   <div class="controls">
+    <textarea id="e_text" cols="60" rows="10"></textarea>
+   </div>
+  </div>
+ </div>
+ <div class="span8">
+  <legend>Anteprima</legend>
+  <div id="e_widget"></div> 
+ </div>
+</div>

@@ -1,0 +1,98 @@
+<script type="text/javascript">
+dojo.require("dijit.form.Form");
+dojo.require("dijit.form.NumberTextBox");
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.Dialog");
+</script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script src="/js/gviz.js" type="text/javascript"></script>
+<script>
+    google.load('visualization', '1', {'packages' : ['table']});
+    google.setOnLoadCallback(init);
+
+    var dataSourceUrl = '/admin/commissione/getdata';
+    var query, options, container, whereClause;
+
+    function init() {
+      query = new google.visualization.Query(dataSourceUrl);
+      container = document.getElementById("table_div");
+      options = {'pageSize': 10};
+      sendAndDraw();
+    }
+
+    function sendAndDraw() {
+      query.abort();
+      var tableQueryWrapper = new TableQueryWrapper(query, container, options);
+      tableQueryWrapper.setWhereQueryClause(whereClause);
+      tableQueryWrapper.sendAndDraw();
+    } 
+
+    function setQuery() {
+        var ts = dojo.byId("e_tipoScuola");
+        var cc = dojo.byId("e_centroCucina");
+        whereClause = "tipoScuola " + ts.value;
+        whereClause = whereClause + " centroCucina " + cc.value;        
+        sendAndDraw();        
+    } 
+</script>
+<h1>Pagina Gestione Commissioni</h1>
+<div dojoType="dijit.form.DropDownButton">
+  <span>Filtra dati</span>
+  <div dojoType="dijit.TooltipDialog" id="tooltipDlg" title="Filtra"
+    execute="setQuery();">
+<!--form dojoType="dijit.form.Form" action="/admin/commissione" method="get" id="form_0"-->
+<table>
+<!--tr>
+<td>
+<LABEL class="ss-q-title" for="entry_1">Nome</LABEL>
+<INPUT type="text" size="10" name="nome" value="{{nome}}" class="ss-q-short" id="entry_1">
+</td>
+</tr-->
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_tipoScuola">Tipo</LABEL>
+<SELECT name="tipoScuola" id="e_tipoScuola">
+<OPTION value=""></OPTION>
+<OPTION value="Materna"{% ifequal tipoScuola "Materna" %} selected{% endifequal %}>Materna</OPTION>
+<OPTION value="Primaria"{% ifequal tipoScuola "Primaria" %} selected{% endifequal %}>Primaria</OPTION>
+<OPTION value="Secondaria"{% ifequal tipoScuola "Secondaria" %} selected{% endifequal %}>Secondaria</OPTION>
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="e_centroCucina">C.Cucina</LABEL>
+<SELECT name="centroCucina" id="e_centroCucina">
+<OPTION value=""></OPTION>{%for cc in centriCucina%}
+<OPTION value="{{cc.key}}"{% ifequal centroCucina cc.key %} selected{% endifequal %}>{{cc.nome}}</OPTION>{%endfor%}
+</select>
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_5">Zona</LABEL>
+<INPUT type="text" size="2" name="zona" value="{{zona}}" class="ss-q-short" id="entry_5">
+</td>
+</tr>
+<tr>
+<td>
+<LABEL class="ss-q-title" for="entry_6">Distretto</LABEL>
+<INPUT type="text" size="2" name="distretto" value="{{distretto}}" class="ss-q-short" id="entry_6">
+</td>
+</tr>
+<tr>
+<td>
+<button type="submit" dojoType="dijit.form.Button">Applica</button>
+<!--input type="button" value="Cerca" onclick="setQuery();"-->
+</td>
+</tr>
+</table>
+<!--/form-->
+</div>
+</div>
+<div id="table_div"></div>
+<br/>
+<DIV class="goog-ws-half-width goog-ws-left">
+<A href="/admin/commissione?cmd=open" class="btn"><B><B><B><B style="font-weight:bold !important;">Aggiungi Commissione</B></B></B></B></A>
+</DIV>
