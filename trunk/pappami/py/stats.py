@@ -363,7 +363,8 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     logging.info("offset: %d", offset)
       
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
-    dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
+    dataFine = min(datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday()), dataInizio + timedelta(365))
+    
     dataCalcolo = datetime.datetime.now()
     dataUltimoCalcolo = datetime.datetime(dataInizio.year, dataInizio.month, dataInizio.day) #default dataUltimoCalcolo = data inizio anno
     timeId=year
@@ -380,7 +381,8 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
         statsCM[s.commissione] = s
       else:
         statAll = s
-        dataUltimoCalcolo = statAll.dataCalcolo
+        if not self.request.get("year"):
+          dataUltimoCalcolo = statAll.dataCalcolo
         
       s.dataFine = dataFine
       self.initWeek(s, wtot)
@@ -520,7 +522,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
 
     
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
-    dataFine = datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday())
+    dataFine = min(datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday()), dataInizio + timedelta(365))
     dataCalcolo = datetime.datetime.now()
     dataUltimoCalcolo = datetime.datetime(dataInizio.year, dataInizio.month, dataInizio.day) #default dataUltimoCalcolo = data inizio anno
 
@@ -542,7 +544,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         statsCM[s.commissione] = s
       else:
         statAll = s
-        dataUltimoCalcolo = s.dataCalcolo
+        if not self.request.get("year"):
+          dataUltimoCalcolo = s.dataCalcolo
       s.dataFine = dataFine
       self.initWeek(s, wtot)
 

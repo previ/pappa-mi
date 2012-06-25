@@ -85,7 +85,7 @@ class CMFeedIspNCHandler(BasePage):
     buff = memcache.get("feed_ispnc")
     cm = None
     if self.request.get("key"):
-      cm = Commissione.get(self.request.get("key"))
+      cm = model.Key(urlsafe=self.request.get("key"))
     
     path = "/genitore/"
     if self.request.get('public'):
@@ -93,7 +93,7 @@ class CMFeedIspNCHandler(BasePage):
       
     if (buff is None) or (cm is not None):
       if cm is not None:
-        isps = Ispezione.query().filter(Ispezione.commissione.get()==cm).order(-Ispezione.dataIspezione)
+        isps = Ispezione.query().filter(Ispezione.commissione==cm).order(-Ispezione.dataIspezione)
       else:
         isps = Ispezione.query().order(-Ispezione.dataIspezione).fetch(limit=5)
       items = list()
@@ -103,7 +103,7 @@ class CMFeedIspNCHandler(BasePage):
         items.append((isp.dataIspezione, isp, None, None, None))
       
       if cm:
-        ncs = Nonconformita.query().filter(Nonconformita.commissione.get()==cm).order(-Nonconformita.dataNonconf)
+        ncs = Nonconformita.query().filter(Nonconformita.commissione==cm).order(-Nonconformita.dataNonconf)
       else:
         ncs = Nonconformita.query().order(-Nonconformita.dataNonconf).fetch(limit=5)
       
@@ -111,7 +111,7 @@ class CMFeedIspNCHandler(BasePage):
         items.append((nc.dataNonconf, None, nc, None, None))
 
       if cm:
-        diete = Dieta.query().filter(Dieta.commissione.get()==cm).order(-Dieta.dataIspezione)
+        diete = Dieta.query().filter(Dieta.commissione==cm).order(-Dieta.dataIspezione)
       else:
         diete = Dieta.query().order(-Dieta.dataIspezione).fetch(limit=5)
 
@@ -119,7 +119,7 @@ class CMFeedIspNCHandler(BasePage):
         items.append((dieta.dataIspezione, None, None, dieta))
 
       if cm:
-        note = Nota.query().filter(Nota.commissione.get()==cm).order(-Nota.dataNota)
+        note = Nota.query().filter(Nota.commissione==cm).order(-Nota.dataNota)
       else:
         note = Nota.query().order(-Nota.dataNota).fetch(limit=5)
         
@@ -199,7 +199,7 @@ class CMFeedIspNCHandler(BasePage):
 
       titolo = "Pappa-Mi - Ispezioni, Non conformita' e Note"
       if cm:
-        titolo += " " + cm.tipoScuola + " " + cm.nome
+        titolo += " " + cm.get().tipoScuola + " " + cm.get().nome
 
       rss = py.PyRSS2Gen.RSS2(
         title = titolo,      
