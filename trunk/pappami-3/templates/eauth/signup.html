@@ -1,0 +1,83 @@
+<script type="text/javascript">
+$(document).ready(function() { 
+  $("#form0").validate({
+    rules: {
+      email: {
+        required: true,
+        email: true
+      },
+      password: {
+        required: true,
+        minlength: 6
+      },
+      password2: {
+        required: true,
+        minlength: 6
+      },
+      c: {
+        required: true,
+        number: true
+      }
+    }
+  });
+});
+</script>
+{% set providers = [
+  ('google', '/auth/google'),
+  ('facebook', '/auth/facebook'),
+  ('twitter', '/auth/twitter'),
+  ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
+  ('linkedin', '/auth/linkedin'),
+  ('windowslive', '/auth/windowslive'),  
+] -%}
+<div class="row">
+  <div class="span12">
+    <legend>Scegli uno dei seguenti account per registrarti</legend>
+    <div class="well">
+    <ul>
+      {% for p, u in providers %}
+        <li class="provider-btn"><a href="{{ u }}" class="btn"><img src="/img/eauth/{{ p }}.png" /></a></li>
+      {% endfor %}
+    </ul>
+    </div>
+  </div>
+  <div class="span12">
+    <legend>Oppure inserisci la tua email e password</legend>
+    <div class="password-form">
+      <div class="span4 well">
+        <form id="form0" method="POST" action="/eauth/signup" class="horizontal-form">
+          <fieldset class="control-group">
+            <label for="email" class="control-label">Email</label>
+            <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
+          </fieldset>
+          <fieldset class="control-group">
+            <label for="password" class="control-label">Password</label>
+            <div class="controls"><input type="password" name="password" class="span3 required" /></div>
+            <label for="password2" class="control-label">Verifica Password</label>
+            <div class="controls"><input type="password" name="password2" class="span3 required" /></div>
+          </fieldset>
+          <fieldset class="control-group">
+            <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}}</label>
+            <div class="controls"><input type="input" name="c" class="span1 required" /></div>
+          </fieldset>
+          <fieldset class="">
+            <button type="submit" class="btn btn-primary">Registrati</button>
+          </fieldset>
+          {% if messages %}
+            <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">
+              <a href="#" class="close">&times;</a>
+              <ul>
+                {% for message in messages %}
+                  <li>{{ message['message']|safe }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </form>
+      </div>
+      <div class="span6">
+        <div class="alert alert-info"><strong>Importante:</strong> Chi era gi&agrave; iscritto a Pappa-Mi deve accedere utilizzando "Google"</div>
+      </div>        
+    </div>
+  </div>
+</div>

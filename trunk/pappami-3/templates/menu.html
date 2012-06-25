@@ -1,0 +1,86 @@
+<script> 
+var date = new Date(); //("{{data1}}");
+$(function(){
+ // Initialize Slides
+ // DOM Ready
+
+ 
+ init_value = "{{ctx.cm_key}}";
+ $('#citta').change( oncitychanged);
+ oncitychanged();
+
+ $('#menu_carousel_inner').load("/menuslide", function() {
+  $('#menu_carousel').carousel({interval:600000});
+  $('#menu_carousel').find("#{{todayofweek}}").addClass("active");
+ });
+});
+
+function slideprev() {
+ if($('#menu_carousel').find(".active").attr("id") == "1") {
+  date.setDate(date.getDate() - 7);
+  $('#menu_carousel_prev').html("");
+  $('#menu_carousel_prev').addClass("loading");
+  $('#menu_carousel_inner').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+   //$('#menu_carousel').carousel({interval:600000});
+   $('#menu_carousel').find("#5").addClass("active");
+   $('#menu_carousel_prev').removeClass("loading");
+   $('#menu_carousel_prev').html("&lsaquo;");
+  });   
+ } else {
+   $('#menu_carousel').carousel("prev");
+ }
+}
+function slidenext() {
+ if($('#menu_carousel').find(".active").attr("id") == "5") {
+  date.setDate(date.getDate() + 7);
+  $('#menu_carousel_next').html("");
+  $('#menu_carousel_next').addClass("loading");
+  $('#menu_carousel_inner').load("/menuslide?data="+date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), function() {
+   //$('#menu_carousel').carousel({interval:600000});
+   $('#menu_carousel').find("#1").addClass("active");
+   $('#menu_carousel_next').removeClass("loading");
+   $('#menu_carousel_next').html("&rsaquo;");
+  });   
+ } else {
+   $('#menu_carousel').carousel("next");
+ }
+}
+</script>
+{%set tab_menu="active"%}
+{%include "navigation.html"%}
+<ul class="nav nav-tabs">
+<li class="dropdown">
+ <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
+  Menu per la Scuola <b>{{ctx.cm_name}}</b><b class="caret"></b>
+ </a>
+ <ul class="dropdown-menu dropdown-large">
+  <form class="form-vertical" id="f_chgscope" action="/menu" method="post">
+    <label for="citta">Citt&agrave;</label>
+    <select class="large required" id="citta" name="citta">
+    {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+    </select>
+    <label for="commissione_sel">Scuola (Commissione Mensa)</label>
+    <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+    <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
+    </div>
+    <div class="controls">
+      <button type="submit" class="btn primary">Ok</button>
+      <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
+    </div>
+  </form>
+ </ul>
+</li>
+</ul>
+<div class="row">
+ <div class="span12" style="height:450px;">
+  <div id="menu_carousel" class="carousel slide">
+   <div id="menu_carousel_inner" class="carousel-inner">
+   </div>
+   <!-- Carousel nav -->
+   <a id="menu_carousel_prev" class="carousel-control left" href="#" onclick="slideprev();">&lsaquo;</a>
+   <a id="menu_carousel_next" class="carousel-control right" href="#" onclick="slidenext();">&rsaquo;</a>
+  </div>
+ </div> 
+</div> 
+<div id="d_chgscope" style="display:none;">
+</div>

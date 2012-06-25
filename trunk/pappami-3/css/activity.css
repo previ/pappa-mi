@@ -1,0 +1,147 @@
+.activity_container, .activity_list, .activity_root {
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+margin-top: 0px;
+padding-bottom: 0px;
+padding-left: 0px;
+padding-right: 0px;
+padding-top: 0px;
+list-style-type: none;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
+/*font-size: 11px;*/
+}
+
+.activity_root {
+padding-bottom: 10px;
+padding-top: 10px;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
+/*font-size: 14px;*/
+}
+
+.activity_box {
+width: 100%;
+}
+
+.activity_item {
+padding-bottom: 10px;
+min-height:50px;
+}
+
+.activity_avatar {
+float: left;
+padding-left: 5px;
+padding-right: 5px;
+cursor: pointer;
+}
+
+.activity_body {
+display: table-cell;
+width: auto;
+padding-left: 5px;
+padding-right: 5px;
+}
+
+.activity_author {
+display: inline;
+color: rgb(59, 89, 152);
+font-weight: bold;
+cursor: pointer;
+}
+
+.activity_summary {
+display: inline;
+}
+
+.activity_detail {
+display: none;
+}
+
+.activity_textarea, .activity_text {
+display: block;
+width: 500px;
+}
+
+.activity_footer {
+}
+
+.activity_author_title, .activity_date {
+#color: rgb(128, 128, 128);
+display: inline;
+}
+
+.activity_tags {
+display: block;
+}
+
+.activity_tag {
+color: rgb(59, 89, 152);
+text-decoration: none;
+cursor: pointer;
+}
+
+.activity_feedback, .activity_vote, .activity_vote_button, .activity_comments {
+display: inline;
+cursor: pointer;
+color: rgb(59, 89, 152);
+}
+
+.activity_comment_new {
+display: none;
+}
+
+.activity_vote_button {
+cursor: pointer;
+color: rgb(59, 89, 152);
+}
+
+.voter_list {
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+margin-top: 0px;
+padding-bottom: 0px;
+padding-left: 0px;
+padding-right: 0px;
+padding-top: 0px;
+list-style-type: none;
+/*font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;*/
+/*font-size: 11px;*/
+}
+
+.voter_box {
+}
+
+.voter_item {
+padding-bottom: 10px;
+height:50px;
+min-height:50px;
+}
+
+.voter_avatar {
+float: left;
+padding-left: 5px;
+padding-right: 5px;
+}
+
+.voter_body {
+display: table-cell;
+padding-left: 5px;
+padding-right: 5px;
+}
+
+.voter_author {
+display: inline;
+color: rgb(59, 89, 152);
+cursor: pointer;
+font-weight: bold;
+}
+
+.voter_author_title, .voter_date {
+/*color: rgb(128, 128, 128);*/
+display: inline;
+}
+
+#voters { width: 320px; padding: 0.4em; position: relative; display:none;}
+#voters h3 { margin: 0; padding: 0.4em; text-align: center; }
+
