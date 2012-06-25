@@ -1,0 +1,7 @@
+<div>{{msg.testo}}</div>
+{% if msg.has_allegati %}
+   <div for="e_attach"><i class="icon-file"></i> Allegati</div>
+   <ul class="thumbnails">{%for allegato in msg.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{%if allegato.isImage()%}<img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/>{%else%}{{allegato.nome}}{%endif%}</a>&nbsp;{{allegato.descrizione}}</li>{%endfor%}
+   </ul>
+{% endif %}  
