@@ -492,7 +492,7 @@ class CMAdminHandler(BasePage):
           msg.put_async()
       self.response.out.write("initStream 2 Ok")
       return
-
+  
     if self.request.get("cmd") == "initStream3":
       for msg in Messaggio().query():
         if msg.c_ua is None:
@@ -528,7 +528,28 @@ class CMAdminHandler(BasePage):
       self.response.out.write("initStream 4 Ok")
       return
     
+    if self.request.get("cmd") == "fixStream":
+      for isp in Ispezione().query():
+        msgs = Messaggio.query().filter(Messaggio.par==isp.key).filter(Messaggio.tipo==101)
+        if msgs.count() == 0:
+          logging.info("Missing: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+          messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
+          messaggio.put()
+        elif msgs.count() == 2:
+          logging.info("Duplicate: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+          msgs.get().key.delete()
+        elif msgs.count() > 2:
+          logging.info("Multiple: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+      self.response.out.write("fixStream 2 Ok")
+      return
 
+    if self.request.get("cmd") == "fixIsp":
+      for isp in Ispezione().query().filter(Ispezione.creato_il==None):
+        isp.creato_il = isp.modificato_il
+        isp.put()
+      self.response.out.write("fixIsp Ok")
+      return
+    
     if self.request.get("cmd") == "initAuthR":
       logging.info("initAuth")
       offset = int(self.request.get("offset"))
