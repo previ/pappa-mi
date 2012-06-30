@@ -316,7 +316,7 @@ class CMStatCalcHandler(BasePage):
     if self.request.get("year"):
       year = int(self.request.get("year"))      
       
-    logging.info("year: %d", year)
+    logging.info("year: " + str(year))
     logging.info("limit: %d", limit)
     logging.info("offset: %d", offset)
 
@@ -324,7 +324,9 @@ class CMStatCalcHandler(BasePage):
     self.putTask('/admin/stats/calcnc', year=year, limit=limit, offset=offset)
     
   def putTask(self, aurl, year, offset=0, limit=50):
-    task = Task(url=aurl, params={"year": str(year), "limit": str(limit), "offset":str(offset)}, method="GET")
+    task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
+    if year:
+      task.params["year"] = str(year)
     queue = Queue()
     queue.add(task)
     
@@ -474,7 +476,10 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       
     finish = count < limit    
     logging.info("finish: " + str(finish))  
+
     if not finish:
+      if not self.request.get("year"):
+        year = None        
       self.putTask("/admin/stats/calcnc", year, offset + limit)
 
   def initWeek(self, stat, wtot):
@@ -520,7 +525,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
 
-    if self.request.get("year"):
+    if self.request.get("year") and self.request.get("year") != "None":
       year = int(self.request.get("year"))      
       
     logging.info("year: %d", year)
@@ -649,6 +654,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     finish = count < limit    
     logging.info("finish: " + str(finish))  
     if not finish:
+      if not self.request.get("year"):
+        year = None        
       self.putTask("/admin/stats/calcisp", year, offset + limit)
 
   def initWeek(self, stat, wtot):
