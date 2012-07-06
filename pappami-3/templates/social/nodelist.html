@@ -1,0 +1,12 @@
+
+
+{%for node in nodelist%}
+
+<div class="node">
+	<div class="node_name"><a href="/social/node/{{node.key.id()}}">{{ node.name }}</a></div>
+	<div class="node_description">{{node.description}}</div>
+</div>
+
+
+
+{% endfor %}
