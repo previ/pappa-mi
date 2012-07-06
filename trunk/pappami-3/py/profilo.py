@@ -26,6 +26,7 @@ class CMProfiloHandler(BasePage):
   
   @user_required
   def get(self):
+   
     commissario = self.getCommissario()
     form = CommissarioForm(obj=commissario)
     form.email = commissario.usera.get().email
@@ -39,6 +40,7 @@ class CMProfiloHandler(BasePage):
     
   @user_required
   def post(self):
+   
     commissario = self.getCommissario()
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)

@@ -173,7 +173,10 @@ handlers:
 
 - url: /menuslide/*
   script: py.menu.app
-  
+
+- url: /social/.*
+  script: py.social.app
+
 - url: .*
   script: py.main.app
 

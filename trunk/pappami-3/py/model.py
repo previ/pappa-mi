@@ -44,6 +44,8 @@ class Configurazione(model.Model):
   def get_value_by_name(cls, name):
     return Configurazione.query(Configurazione.nome == name).get().valore
   
+  
+  
 class CentroCucina(model.Model):  
   def __init__(self, *args, **kwargs):
     self._ce_cu_zo_cache = None
@@ -1252,8 +1254,46 @@ class StatisticheIspezioni(model.Model):
     for attr in self._attrs_sub:
       for attr_sub in getattr(self, attr+"_names"):
         self.incValSub(attr, attr_sub, isp)
-  
+        
+class SocialNode(model.Model):
+    name=model.StringProperty(default="")
+    description=model.StringProperty(default="")
+    def __init__(self, *args, **kwargs):
+        super(SocialNode, self).__init__(*args, **kwargs) 
 
+    def create_post(self,content,author,node):
+        new_post= SocialPost(parent=self.key())
+        new_post.author=author
+        new_post.content=content
+        
+        new_post.public_reference="aaa"
+    
+    def subscribe_current_user(self):
+        user1 = SocialNodeSubscription(parent=self)
+        user1.subscribed = True
+        user1.user = users.get_current_user()
+        user1.put()
+       
+    def is_user_subscribed(self,user):
+        logging.debug(self.get(user))
+        
+         
+class SocialPost(model.Model):
+    node=model.KeyProperty(SocialNode)
+    author=model.KeyProperty(models.User)
+    content=model.StringProperty(default="")
+    public_reference=model.StringProperty(default="")
+    
+    def get_all_by_author(author_t):
+        SocialPost.query().filter(author==author_t)    
+    def get_by_node_and_author(author_t,node_t):
+        SocialPost.query().filter(SocialNode.author==author_t,SocialNode.node==node_t)    
+    
+
+class SocialNodeSubscription(model.Model):
+  node = model.BooleanProperty()
+  user = model.UserProperty()
+  
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)
