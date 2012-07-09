@@ -14,34 +14,39 @@ from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import mail
 
 from gviz_api import *
-from model import *
+from py.model import *
 from form import CommissarioForm
 from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
-
-
 class PermissionHandler(BasePage):
     pass
 
 class NodeHandler(BasePage):
-  @user_required
+  
   def get(self,node_id):
     
     node=model.Key("SocialNode",int(node_id))
     template_values = {
       'content': 'social/node.html',
       "node":node.get(),
-      "is_subscribed": node.is_user_subscribed(users.get_current_user()), 
-      'citta': Citta.get_all()}
+      "is_sub":node.get().is_user_subscribed(self.get_current_user()),
+      "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
+      "citta": Citta.get_all(),
+      "latest_posts":node.get().get_latest_posts()}
+    
+    disc=model.Key("SocialNode", 1310019,"SocialPost",1310040).get().get_discussion()
     self.getBase(template_values)
     
     
 class SocialTest(BasePage):
     def get(self):
+    
      template_values = {
       'content': 'social/test.html',
-      'citta': Citta.get_all()}
+      
+      'citta': Citta.get_all()}  
      
-
+     nodo= model.Key("SocialNode",int(1310019)).get()
+     
      self.getBase(template_values)
     
         
@@ -52,7 +57,7 @@ class NodeListHandler(BasePage):
       'nodelist': SocialNode.query(),
       'citta': Citta.get_all()}
      
-
+    
     self.getBase(template_values)
     
     
