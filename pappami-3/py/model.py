@@ -1260,39 +1260,85 @@ class SocialNode(model.Model):
     description=model.StringProperty(default="")
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
+        
 
-    def create_post(self,content,author,node):
-        new_post= SocialPost(parent=self.key())
-        new_post.author=author
+    def create_open_post(self,content,author):
+        new_post= SocialPost(parent=self.key)
+        new_post.author=author.key
         new_post.content=content
-        
-        new_post.public_reference="aaa"
+        new_post.put()
     
-    def subscribe_current_user(self):
-        user1 = SocialNodeSubscription(parent=self)
-        user1.subscribed = True
-        user1.user = users.get_current_user()
-        user1.put()
-       
-    def is_user_subscribed(self,user):
-        logging.debug(self.get(user))
         
-         
+    def create_reply_post(self,content,author,post):
+        new_post= SocialPost(parent=post)
+        new_post.author=author.key
+        new_post.content=content
+        new_post.put()
+        
+    def get_latest_posts(self):
+        
+        posts= SocialPost.query(ancestor=self.key).fetch(10)
+        return posts    
+        
+    def subscribe_user(self,current_user):
+        #user has already subscribed to this node
+        if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).fetch().__len__()>0:
+            return
+        
+        user1 = SocialNodeSubscription(parent=self.key)
+        
+        if current_user:
+            user1.user=current_user.key
+        else:
+            raise users.UserNotFoundError
+        
+        user1.put()
+    
+    def unsubscribe_user(self, current_user):
+         subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
+         if subscription is not None:
+            subscription.key.delete()
+       
+    def is_user_subscribed(self,user_t):
+        if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).fetch().__len__()>0:
+            return True
+        else:
+            return False
+        
+        
+        
+    def subscription_list(self):
+       q=SocialNodeSubscription.query(ancestor=self.key).fetch(10)
+       q=[i.user.get() for i in q if (i.user is not None)]
+       return q
+    
+             
 class SocialPost(model.Model):
     node=model.KeyProperty(SocialNode)
-    author=model.KeyProperty(models.User)
+    author=model.KeyProperty()
     content=model.StringProperty(default="")
     public_reference=model.StringProperty(default="")
+    creation_date=model.DateTimeProperty(auto_now=True)
     
+    def get_discussion(self):
+        op=self.key
+        discussion=SocialPost.query(ancestor=op).order(-SocialPost.creation_date).fetch()
+        logging.info(discussion)
+        return discussion
     def get_all_by_author(author_t):
-        SocialPost.query().filter(author==author_t)    
+        pass
     def get_by_node_and_author(author_t,node_t):
-        SocialPost.query().filter(SocialNode.author==author_t,SocialNode.node==node_t)    
-    
+        pass
 
 class SocialNodeSubscription(model.Model):
-  node = model.BooleanProperty()
-  user = model.UserProperty()
+    starting_date=model.DateProperty(auto_now=True)
+    user = model.KeyProperty()
+    
+    @classmethod
+    def get_nodes_by_user(self,user_t):
+        subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).fetch()
+        node_list=[i.key.parent().get() for i in subscriptions_list]
+        return node_list
   
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
