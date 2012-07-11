@@ -25,14 +25,15 @@ class NodeHandler(BasePage):
   def get(self,node_id):
     
     node=model.Key("SocialNode",int(node_id))
+    current_user=self.get_current_user()
     template_values = {
       'content': 'social/node.html',
       "node":node.get(),
-      "is_sub":node.get().is_user_subscribed(self.get_current_user()),
+      "is_sub":False if self.get_current_user() is None else node.get().is_user_subscribed(current_user),
       "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
       "citta": Citta.get_all(),
       "latest_posts":node.get().get_latest_posts()}
-    
+ 
     disc=model.Key("SocialNode", 1310019,"SocialPost",1310040).get().get_discussion()
     self.getBase(template_values)
     
@@ -45,7 +46,10 @@ class SocialTest(BasePage):
       
       'citta': Citta.get_all()}  
      
-     nodo= model.Key("SocialNode",int(1310019)).get()
+     nodo= SocialNode()
+     nodo.name="aegfisong"
+     nodo.put()
+     nodo.create_open_post("agfsngoisn",self.get_current_user())
      
      self.getBase(template_values)
     

@@ -1258,6 +1258,7 @@ class StatisticheIspezioni(model.Model):
 class SocialNode(model.Model):
     name=model.StringProperty(default="")
     description=model.StringProperty(default="")
+    active=model.BooleanProperty(default=True)
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
         
@@ -1312,9 +1313,12 @@ class SocialNode(model.Model):
        q=[i.user.get() for i in q if (i.user is not None)]
        return q
     
-             
+    def delete_subscription(self,user_t):
+        SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
+    def delete_post(self,post):
+        SocialPost.query(SocialPost)
+   
 class SocialPost(model.Model):
-    node=model.KeyProperty(SocialNode)
     author=model.KeyProperty()
     content=model.StringProperty(default="")
     public_reference=model.StringProperty(default="")
