@@ -1,4 +1,11 @@
+<script type="text/javascript">
 
+$(document).ready(function () {
+  loadSocialMap( {{geo.lat}} , {{geo.lon}} );
+});      
+</script>
+
+<div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div>
 
 {%for node in nodelist%}
 

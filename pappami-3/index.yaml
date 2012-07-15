@@ -137,6 +137,11 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: SocialNode
+  properties:
+  - name: active
+  - name: name
+
 - kind: SocialPost
   ancestor: yes
   properties:
