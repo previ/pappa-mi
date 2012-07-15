@@ -4,4 +4,11 @@
 
 <div id="subscribed_users">Utenti iscritti{% for i in subscriptions %}{% if i!=[] %}<div>aa{{i.0.nome}}</div>{% endif %}{% endfor %}</div>
 
-<div id="node_posts"> {% for post in latest_posts %}<div class="social_post"> <div class="post_content">{{post.content}}</div> <div class="post_author">{{post.author.get()}}--------------------------</div></div>{% endfor%}
+<div id="node_posts"> 
+	{% for post in latest_posts %}
+		<div class="social_post" style="margin:10px;border:2px solid;"> 
+			<div class="post_content">{{post.content}}</div> 
+			<div class="post_author">{{post.commissario.nome}}</div>
+			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
+		</div>
+	{% endfor%}

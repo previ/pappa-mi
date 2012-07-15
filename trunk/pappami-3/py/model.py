@@ -1259,6 +1259,13 @@ class SocialNode(model.Model):
     name=model.StringProperty(default="")
     description=model.StringProperty(default="")
     active=model.BooleanProperty(default=True)
+    geo = model.GeoPtProperty()
+    @classmethod
+    def active_nodes(cls):
+           return cls.query().filter(cls.active==True)
+    
+    
+              
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
         
@@ -1276,6 +1283,10 @@ class SocialNode(model.Model):
         new_post.content=content
         new_post.put()
         
+    def set_position(self,lat,lon):
+        self.geo=model.GeoPt(lat,lon)
+        self.put()
+    
     def get_latest_posts(self):
         
         posts= SocialPost.query(ancestor=self.key).fetch(10)
@@ -1317,6 +1328,20 @@ class SocialNode(model.Model):
         SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
     def delete_post(self,post):
         SocialPost.query(SocialPost)
+     
+    @classmethod    
+    def get_all_cursor(cls, cursor):
+        if cursor and cursor != "":
+          return SocialNode.active_nodes().order(SocialNode.name).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
+        else:
+          return SocialNode.active_nodes().order(SocialNode.name).iter(produce_cursors=True)
+
+    @classmethod    
+    def get_active_cursor(cls, cursor):
+        if cursor and cursor != "":
+          return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
+        else:
+          return SocialNode.active_nodes().filter().iter(produce_cursors=True)
    
 class SocialPost(model.Model):
     author=model.KeyProperty()
