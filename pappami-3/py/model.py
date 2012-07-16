@@ -1309,8 +1309,10 @@ class SocialNode(model.Model):
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
          if subscription is not None:
+            logging.info("Deleto")
             subscription.key.delete()
-       
+         else:
+                raise UserNotFoundException
     def is_user_subscribed(self,user_t):
         if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).fetch().__len__()>0:
             return True

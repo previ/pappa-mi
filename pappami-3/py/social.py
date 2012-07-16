@@ -47,10 +47,13 @@ class NodeHandler(BasePage):
         
         
     current_user=self.get_current_user()
+    is_sub= node.get().is_user_subscribed(current_user)
     template_values = {
       'content': 'social/node.html',
+      "user":current_user,
       "node":node_i,
-      "is_sub":False if self.get_current_user() is None else node.get().is_user_subscribed(current_user),
+      "is_sub":is_sub,
+      "show_sub_button": True if self.get_current_user() is None or not is_sub else False,
       "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
       "citta": Citta.get_all(),
       "latest_posts":latest_post}
@@ -165,14 +168,34 @@ class SocialMapHandler(webapp.RequestHandler):
       #logging.info(markers)
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
-    
-    
+     
+class SocialSubscribeHandler(webapp.RequestHandler):
+       def get(self):
+           
+          cmd = self.request.get('cmd')
+          if cmd == "subscribe":
+                 user = model.Key("User", int(self.request.get('user'))).get()
+                 node = model.Key("SocialNode", int(self.request.get('node'))).get()
+                 node.subscribe_user(user)
+                 
+                 self.response.out.write("Success")
+        
+          if cmd == "unsubscribe":
+                 user = model.Key("User", int(self.request.get('user'))).get()
+                 node = model.Key("SocialNode", int(self.request.get('node'))).get()
+                 logging.info(node)
+                 logging.info(user)
+                 node.unsubscribe_user(user)
+                 self.response.out.write("Success")
+             
+                
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
     ('/social/post', PostHandler),
     ('/social/test',SocialTest),
-    ('/social/socialmap',SocialMapHandler)
+    ('/social/socialmap',SocialMapHandler),
+    ('/social/subscribe', SocialSubscribeHandler)
     ],
                              
     debug = True, config=config)
