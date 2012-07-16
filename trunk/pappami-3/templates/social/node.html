@@ -1,6 +1,7 @@
-{{node.name}}
-{% if show_subscription %}<div id="subscribe" class="button"> Iscriviti</div>{% endif%}
-{{is_sub}}
+<div id="node_name">{{node.name}}</div>
+<div id="subscribe_btn" style="{% if not show_sub_button %}display:none {% endif%}" class="btn" onclick="onSubscription({{user.key.id()}},{{node.key.id()}})">Iscriviti</div>
+<div id="unsubscribe_btn" style="{% if not is_sub %}display:none {% endif%}" class="btn" onclick="onUnsubscription({{user.key.id()}},{{node.key.id()}})">Discriviti</div>
+
 
 <div id="subscribed_users">Utenti iscritti{% for i in subscriptions %}{% if i!=[] %}<div>aa{{i.0.nome}}</div>{% endif %}{% endfor %}</div>
 
@@ -11,4 +12,7 @@
 			<div class="post_author">{{post.commissario.nome}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
 		</div>
-	{% endfor%}
+	
+		{% endfor%}
+</div>
+	

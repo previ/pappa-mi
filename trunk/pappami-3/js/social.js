@@ -168,6 +168,8 @@ function drawSmallMap(data) {
   }
 }    
 
+
+
 function loadSmallMap(lat,lon) {
   var myOptions = {
     zoom: 4,
@@ -195,3 +197,25 @@ function loadSmallMap(lat,lon) {
   
   jQuery.get("/social/socialmap", {}, drawSmallMap );
 }  
+
+function onSubscription(user_key,node_key)
+{
+	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=subscribe', success:function(data){
+		  $('#subscribe_btn').hide();
+		  $('#unsubscribe_btn').show();
+		 
+		}
+	 });
+	 
+}
+
+function onUnsubscription(user_key,node_key)
+{
+	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=unsubscribe', success:function(data){
+		  $('#unsubscribe_btn').hide();
+		  $('#subscribe_btn').show();
+		 
+		}
+	 });
+	 
+}
