@@ -1,0 +1,27 @@
+<div class="social_post" style="margin:10px;border:2px solid;"> 
+
+			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title|e}}</a></div> 
+			<div class="post_content">{{post.content|e}}</div> 
+			<div class="post_author">{{post.commissario.nome|e}} {{post.commissario.cognome|e}}</div>
+			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
+</div>
+
+<div id="replies">
+{%for reply in replies%}
+	<div class="reply" style="border:2px solid; margin-left:30px">
+			<div class="reply_content">{{reply.content|e}}</div> 
+			<div class="reply_author">{{reply.commissario.nome|e}} {{reply.commissario.cognome|e}}</div>
+			<div class="reply_date">{{reply.creation_date.strftime('%d %m %Y')}}</div>
+	</div>
+{%endfor%}
+
+</div>
+
+{%if user and can_reply%}	
+<div class="control-group" id="reply_message_container">
+	 <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="reply_message"></textarea>
+
+  <div id="reply_submit" class="btn btn-primary" type="submit" onclick="onReplySubmitted({{user.key.id()}},{{post.key.id()}},{{node.key.id()}})" data-loading-text="Invio risposta in corso..."/>Invia Risposta</div>
+
+</div>
+	{%endif%}

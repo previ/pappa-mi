@@ -1260,6 +1260,13 @@ class SocialNode(model.Model):
     description=model.StringProperty(default="")
     active=model.BooleanProperty(default=True)
     geo = model.GeoPtProperty()
+    default_post=model.BooleanProperty(default=True)
+    default_reply=model.BooleanProperty(default=True)
+    default_admin=model.BooleanProperty(default=False)
+    is_public=model.BooleanProperty(default=True)
+    
+    
+    
     @classmethod
     def active_nodes(cls):
            return cls.query().filter(cls.active==True)
@@ -1269,19 +1276,19 @@ class SocialNode(model.Model):
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
         
-
-    def create_open_post(self,content,author):
+   
+    
+    
+    def create_open_post(self,content,title,author):
         new_post= SocialPost(parent=self.key)
         new_post.author=author.key
         new_post.content=content
+        new_post.title=title
         new_post.put()
+        
     
         
-    def create_reply_post(self,content,author,post):
-        new_post= SocialPost(parent=post)
-        new_post.author=author.key
-        new_post.content=content
-        new_post.put()
+    
         
     def set_position(self,lat,lon):
         self.geo=model.GeoPt(lat,lon)
@@ -1298,13 +1305,13 @@ class SocialNode(model.Model):
             return
         
         user1 = SocialNodeSubscription(parent=self.key)
-        
         if current_user:
             user1.user=current_user.key
         else:
             raise users.UserNotFoundError
         
         user1.put()
+        user1.init_perm()
     
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
@@ -1318,7 +1325,8 @@ class SocialNode(model.Model):
             return True
         else:
             return False
-        
+    def get_subscription(self,user):
+        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key),fetch()
         
         
     def subscription_list(self):
@@ -1329,7 +1337,7 @@ class SocialNode(model.Model):
     def delete_subscription(self,user_t):
         SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
     def delete_post(self,post):
-        SocialPost.query(SocialPost)
+        pass
      
     @classmethod    
     def get_all_cursor(cls, cursor):
@@ -1350,12 +1358,19 @@ class SocialPost(model.Model):
     content=model.StringProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
+    title=model.StringProperty(default="")
     
     def get_discussion(self):
         op=self.key
-        discussion=SocialPost.query(ancestor=op).order(-SocialPost.creation_date).fetch()
-        logging.info(discussion)
+        discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
         return discussion
+   
+    def create_reply_comment(self,content,title,author):
+        new_comment= SocialComment(parent=self.key)
+        new_comment.author=author.key
+        new_comment.content=content
+        new_comment.put()
+        
     def get_all_by_author(author_t):
         pass
     def get_by_node_and_author(author_t,node_t):
@@ -1364,13 +1379,34 @@ class SocialPost(model.Model):
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty()
+    can_reply=model.BooleanProperty(default=False)
+    can_post=model.BooleanProperty(default=False)
+    can_admin=model.BooleanProperty(default=False)
+    def __init__(self,*args, **kwargs):
+        
+        super(SocialNodeSubscription, self).__init__(*args, **kwargs)  
+ 
     
+    def init_perm(self):
+        parent=self.key.parent().get()
+        self.can_reply=parent.default_reply
+        self.can_post=parent.default_reply
+        self.can_admin=parent.default_admin
+        self.put()
+        
     @classmethod
     def get_nodes_by_user(self,user_t):
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).fetch()
         node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
   
+  
+class SocialComment(model.Model):
+    author=model.KeyProperty()
+    content=model.StringProperty(default="")
+    public_reference=model.StringProperty(default="")
+    creation_date=model.DateTimeProperty(auto_now=True)
+ 
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)

@@ -103,4 +103,14 @@ class CommissioneForm(model_form(Commissione)):
 class CommissarioForm(model_form(model=Commissario, exclude=['creato_il','creato_da','modificato_il','modificato_da', 'avatar_data', 'citta', 'privacy', 'notify'])):  
   stored = False
     
+class SocialPostForm():
+    class Meta:
+        model= SocialPost
+        
+    def clean(self):
+        super(SocialPostForm,self).clean()
+        cleaned_data = self._cleaned_data()
+        return cleaned_data
+
+
     

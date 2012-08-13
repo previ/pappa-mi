@@ -15,18 +15,19 @@ from google.appengine.api import mail
 from datetime import date, datetime, time, timedelta
 from gviz_api import *
 from py.model import *
-from form import CommissarioForm
+from form import *
 from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
 class PermissionHandler(BasePage):
     pass
 
 class NodeHandler(BasePage):
   
+  def post(self):
+        self.response.out.write("");
+  
   def get(self,node_id):
-    
     node=model.Key("SocialNode",int(node_id))
     node_i=node.get()
-    node_i.set_position(45.1,12.2)
     
     #if node does not exist
     if not node_i or node_i.active==False :
@@ -40,38 +41,60 @@ class NodeHandler(BasePage):
         return
     
     latest_post=node.get().get_latest_posts()
-    logging.info(latest_post)
+
     for x in latest_post: 
     
         x.commissario=Commissario.get_by_user(x.author.get())
         
         
     current_user=self.get_current_user()
-    is_sub= node.get().is_user_subscribed(current_user)
-    template_values = {
-      'content': 'social/node.html',
-      "user":current_user,
-      "node":node_i,
-      "is_sub":is_sub,
-      "show_sub_button": True if self.get_current_user() is None or not is_sub else False,
-      "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
-      "citta": Citta.get_all(),
-      "latest_posts":latest_post}
+    if current_user is None:
+        logged=False
+        is_sub=False
+    else:
+        logged=True
+        is_sub= node.get().is_user_subscribed(current_user)
+     
+    #check permission
+    can_post=False
+    if self.get_current_user():
+          current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==self.get_current_user().key).get()
+         
+          if current_sub is not None:
+                can_post=current_sub.can_post
+    if node_i.is_public:
+        template_values = {
+          'content': 'social/node.html',
+          "user":current_user,
+          "node":node_i,
+          "is_sub":is_sub,
+          "show_sub_button": True if not logged or not is_sub else False,
+          "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
+          "citta": Citta.get_all(),
+          "latest_posts":latest_post,
+          "can_post":can_post,
+          "prova": SocialPostForm()
+          }
+    else:
+        pass
       
     self.getBase(template_values)
+    
+
+       
     
     
 class SocialTest(BasePage):
     def get(self):
     
+    
+     user=self.get_current_user()
+     nodo=model.Key("SocialNode", 1310096,"SocialPost",1310100).get().create_reply_post("isngdsogno soirngsodi sirojnodsn", user)
      template_values = {
       'content': 'social/test.html',
-     
+      'var':nodo,
       'citta': Citta.get_all()}  
      
-     nodo= model.Key("SocialNode",1310060)
-     nodo=nodo.get()
-     nodo.create_open_post("agfsngoisn",self.get_current_user())
      
      self.getBase(template_values)
     
@@ -90,8 +113,43 @@ class NodeListHandler(BasePage):
     
     
        
-class PostHandler(BasePage):
-    pass
+class SocialPostHandler(BasePage):
+    def get(self,id):
+        op=model.Key(urlsafe=id).get()
+        node=op.key.parent()
+        op.commissario=Commissario.query( Commissario.usera==op.author).get()
+        
+        if op is None:
+            self.response.clear() 
+            self.response.set_status(404)
+            template = jinja_environment.get_template('404_custom.html')
+            c={"error": "Il post a cui stai provando ad accedere non esiste"}
+            t = template.render(c)
+            self.response.out.write(t)
+            return
+        replies=[]
+        for x in op.get_discussion():
+              x.commissario=Commissario.query(Commissario.usera==x.author).get()
+              replies.append(x)
+        can_reply=False
+        if self.get_current_user():
+          
+            
+            current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==self.get_current_user().key).get()
+            if current_sub is not None:
+                can_reply=current_sub.can_reply
+            
+            
+        template_values = {
+                           'content': 'social/post.html',
+                           'replies': replies,
+                           'post': op,
+                           'node':node.get(),
+                           'can_reply':can_reply
+                                              }                    
+        
+    
+        self.getBase(template_values)
 
 class SocialMapHandler(webapp.RequestHandler):
       
@@ -177,28 +235,53 @@ class SocialSubscribeHandler(webapp.RequestHandler):
                  user = model.Key("User", int(self.request.get('user'))).get()
                  node = model.Key("SocialNode", int(self.request.get('node'))).get()
                  node.subscribe_user(user)
-                 
+                 self.response.headers["Content-Type"] = "text/xml"
                  self.response.out.write("Success")
         
           if cmd == "unsubscribe":
                  user = model.Key("User", int(self.request.get('user'))).get()
                  node = model.Key("SocialNode", int(self.request.get('node'))).get()
-                 logging.info(node)
-                 logging.info(user)
+             
                  node.unsubscribe_user(user)
+                 self.response.headers["Content-Type"] = "text/xml"
                  self.response.out.write("Success")
              
-                
+class SocialCreatePost(webapp.RequestHandler):
+    def post(self):
+       
+       
+       user=model.Key("User",int(self.request.get('user'))).get()
+    
+       node=model.Key("SocialNode",int(self.request.get('node')))
+       cmd = self.request.get('cmd')
+
+       if cmd == "create_open_post":
+           logging.info(node.get())
+           node.get().create_open_post(self.request.get("content"),self.request.get("title"),user)
+           self.response.headers["Content-Type"] = "text/xml"
+           self.response.out.write("<response>success</response>")
+           
+       if cmd == "create_reply_post":
+           post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+           post.create_reply_comment(self.request.get("content"),self.request.get("title"),user)  
+           self.response.headers["Content-Type"] = "text/xml"
+           self.response.out.write("<response>success</response>")
+
+
+
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
-    ('/social/post', PostHandler),
-    ('/social/test',SocialTest),
+    ('/social/post/(.*)', SocialPostHandler),
+    ('/social/createpost',SocialCreatePost),
+    ('/social/test', SocialTest),
     ('/social/socialmap',SocialMapHandler),
     ('/social/subscribe', SocialSubscribeHandler)
     ],
                              
     debug = True, config=config)
+
+
 
 
 def main():
