@@ -137,10 +137,20 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: SocialComment
+  ancestor: yes
+  properties:
+  - name: creation_date
+
 - kind: SocialNode
   properties:
   - name: active
   - name: name
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: creation_date
 
 - kind: SocialPost
   ancestor: yes
