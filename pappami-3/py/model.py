@@ -1311,6 +1311,8 @@ class SocialNode(model.Model):
             raise users.UserNotFoundError
         
         user1.put()
+        memcache.add("SocialNodeSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()),user1)
+               
         user1.init_perm()
     
     def unsubscribe_user(self, current_user):
@@ -1318,8 +1320,11 @@ class SocialNode(model.Model):
          if subscription is not None:
             logging.info("Deleto")
             subscription.key.delete()
+            memcache.delete("SocialNodeSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()))
+        
          else:
-                raise UserNotFoundException
+             raise users.UserNotFoundError
+            
     def is_user_subscribed(self,user_t):
         if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).fetch().__len__()>0:
             return True
@@ -1375,7 +1380,11 @@ class SocialPost(model.Model):
         pass
     def get_by_node_and_author(author_t,node_t):
         pass
-
+    def delete_reply_comment(self,reply_id):
+        reply=model.Key("SocialComment", reply_id,parent=self.key)
+        reply.delete()
+      
+        
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty()

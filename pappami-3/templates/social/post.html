@@ -9,6 +9,9 @@
 <div id="replies">
 {%for reply in replies%}
 	<div class="reply" style="border:2px solid; margin-left:30px">
+			<div class="reply_buttons">
+				{%if subscription.can_admin%}<div class="reply_button"><span onClick="onReplyDelete({{node.key.id()}},{{post.key.id()}},{{reply.key.id()}})">Bt-Del</span></div>{%endif%}
+			</div>
 			<div class="reply_content">{{reply.content|e}}</div> 
 			<div class="reply_author">{{reply.commissario.nome|e}} {{reply.commissario.cognome|e}}</div>
 			<div class="reply_date">{{reply.creation_date.strftime('%d %m %Y')}}</div>
@@ -17,7 +20,7 @@
 
 </div>
 
-{%if user and can_reply%}	
+{%if user and subscription.can_post%}	
 <div class="control-group" id="reply_message_container">
 	 <textarea cols="80" rows="4" class="span8 comment_textarea required" name="testo" id="reply_message"></textarea>
 
@@ -25,3 +28,5 @@
 
 </div>
 	{%endif%}
+	
+	{{subscription}}

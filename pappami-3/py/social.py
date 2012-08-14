@@ -40,9 +40,9 @@ class NodeHandler(BasePage):
         self.response.out.write(t)
         return
     
-    latest_post=node.get().get_latest_posts()
+    latest_posts=node.get().get_latest_posts()
 
-    for x in latest_post: 
+    for x in latest_posts: 
     
         x.commissario=Commissario.get_by_user(x.author.get())
         
@@ -57,11 +57,15 @@ class NodeHandler(BasePage):
      
     #check permission
     can_post=False
-    if self.get_current_user():
-          current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==self.get_current_user().key).get()
-         
-          if current_sub is not None:
-                can_post=current_sub.can_post
+    current_user=self.get_current_user()
+    if current_user:
+        current_user=current_user.key
+        current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
+        if current_sub is None:
+              current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
+              memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
+              
+                
     if node_i.is_public:
         template_values = {
           'content': 'social/node.html',
@@ -69,11 +73,10 @@ class NodeHandler(BasePage):
           "node":node_i,
           "is_sub":is_sub,
           "show_sub_button": True if not logged or not is_sub else False,
-          "subscriptions": [Commissario.query( Commissario.usera==x.key).fetch() for x in node.get().subscription_list()],
+          "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list()],
           "citta": Citta.get_all(),
-          "latest_posts":latest_post,
-          "can_post":can_post,
-          "prova": SocialPostForm()
+          "latest_posts":latest_posts,
+          "subscription":current_sub
           }
     else:
         pass
@@ -117,7 +120,7 @@ class SocialPostHandler(BasePage):
     def get(self,id):
         op=model.Key(urlsafe=id).get()
         node=op.key.parent()
-        op.commissario=Commissario.query( Commissario.usera==op.author).get()
+        op.commissario=Commissario.get_by_user(op.author.get())
         
         if op is None:
             self.response.clear() 
@@ -127,25 +130,29 @@ class SocialPostHandler(BasePage):
             t = template.render(c)
             self.response.out.write(t)
             return
+        
         replies=[]
         for x in op.get_discussion():
-              x.commissario=Commissario.query(Commissario.usera==x.author).get()
-              replies.append(x)
-        can_reply=False
-        if self.get_current_user():
-          
             
-            current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==self.get_current_user().key).get()
-            if current_sub is not None:
-                can_reply=current_sub.can_reply
-            
-            
+            x.commissario=Commissario.get_by_user(x.author.get())
+            replies.append(x)
+        
+        
+       
+        current_user=self.get_current_user()
+        if current_user:
+            current_user=current_user.key
+            current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
+            if current_sub is None:
+                current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
+                memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
+           
         template_values = {
                            'content': 'social/post.html',
                            'replies': replies,
                            'post': op,
                            'node':node.get(),
-                           'can_reply':can_reply
+                           'subscription':current_sub
                                               }                    
         
     
@@ -236,7 +243,7 @@ class SocialSubscribeHandler(webapp.RequestHandler):
                  node = model.Key("SocialNode", int(self.request.get('node'))).get()
                  node.subscribe_user(user)
                  self.response.headers["Content-Type"] = "text/xml"
-                 self.response.out.write("Success")
+                 self.response.out.write("<response>success</response>")
         
           if cmd == "unsubscribe":
                  user = model.Key("User", int(self.request.get('user'))).get()
@@ -244,36 +251,62 @@ class SocialSubscribeHandler(webapp.RequestHandler):
              
                  node.unsubscribe_user(user)
                  self.response.headers["Content-Type"] = "text/xml"
-                 self.response.out.write("Success")
+                 self.response.out.write("<response>success</response>")
              
 class SocialCreatePost(webapp.RequestHandler):
     def post(self):
        
        
-       user=model.Key("User",int(self.request.get('user'))).get()
-    
+       
        node=model.Key("SocialNode",int(self.request.get('node')))
        cmd = self.request.get('cmd')
 
        if cmd == "create_open_post":
-           logging.info(node.get())
+           user=model.Key("User",int(self.request.get('user'))).get()
            node.get().create_open_post(self.request.get("content"),self.request.get("title"),user)
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
            
+           
        if cmd == "create_reply_post":
-           post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+           user=model.Key("User",int(self.request.get('user'))).get()
+           post=memcache.get("SocialPost-"+str(self.request.get('post')))
+           if post is None:
+              post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+              memcache.add("SocialPost-"+str(self.request.get('post')),post)
+           
            post.create_reply_comment(self.request.get("content"),self.request.get("title"),user)  
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
+           
+           
+       if cmd == "delete_reply_post":
+           post=memcache.get("SocialPost-"+str(self.request.get('post')))
+           if post is None:
+               post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+               memcache.add("SocialPost-"+str(self.request.get('post')),post)
+           post.delete_reply_comment(int(self.request.get('reply')))
+           self.response.headers["Content-Type"] = "text/xml"
+           self.response.out.write("<response>success</response>")
 
+       if cmd == "delete_open_post":
+           post=memcache.get("SocialPost-"+str(self.request.get('post')))
+           if post is None:
+               post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+           
+           post.key.delete()
+           memcache.delete("SocialPost-"+str(self.request.get('post')))
+           self.response.headers["Content-Type"] = "text/xml"
+           self.response.out.write("<response>success</response>")
+               
+           
 
 
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
     ('/social/post/(.*)', SocialPostHandler),
-    ('/social/createpost',SocialCreatePost),
+    ('/social/managepost',SocialCreatePost),
     ('/social/test', SocialTest),
     ('/social/socialmap',SocialMapHandler),
     ('/social/subscribe', SocialSubscribeHandler)

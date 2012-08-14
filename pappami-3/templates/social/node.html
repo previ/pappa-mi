@@ -16,12 +16,14 @@ $("#open_post_button").show()
 {%if user%}
 <div id="subscribe_btn" style="{% if not show_sub_button %}display:none {% endif%}" class="btn" onclick="onSubscription({{user.key.id()}},{{node.key.id()}})">Iscriviti</div>
 <div id="unsubscribe_btn" style="{% if not is_sub %}display:none {% endif%}" class="btn" onclick="onUnsubscription({{user.key.id()}},{{node.key.id()}})">Discriviti</div>
-<div id="subscribed_users">Utenti iscritti{% for i in subscriptions %}{% if i!=[] %}<div>aa{{i.0.nome}}</div>{% endif %}{% endfor %}</div>
+<div id="subscribed_users">Utenti iscritti{% for i in subscriptions %}{% if i!=[] %}<div>aa{{i.nome}}</div>{% endif %}{% endfor %}</div>
 {%endif%}
 <div id="node_posts"> 
 	{% for post in latest_posts %}
-
 		<div class="social_post" style="margin:10px;border:2px solid;"> 
+			<div class="post_buttons">
+				{%if subscription.can_admin%}<div class="post_button"><span onClick="onPostDelete({{node.key.id()}},{{post.key.id()}})">Bt-Del</span></div>{%endif%}
+			</div>
 			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title|e}}</a></div> 
 			<div class="post_author">{{post.commissario.nome|e}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
@@ -30,7 +32,7 @@ $("#open_post_button").show()
 		{% endfor%}
 </div>
 	
-{%if user and can_post%}	
+{%if user and subscription.can_post%}	
 
 	<div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()"/>Inizia Nuova Discussione</div>
   
@@ -50,4 +52,3 @@ $("#open_post_button").show()
   
   
 {%endif%}
-{{prova}}
