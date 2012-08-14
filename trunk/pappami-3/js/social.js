@@ -195,7 +195,7 @@ function onReplySubmitted(user,post,node){
 	
 	$.ajax({
 		 type: 'POST',
-		 url:'/social/createpost?cmd=create_reply_post', 
+		 url:'/social/managepost?cmd=create_reply_post', 
 		 data: data,
 		 success:function(data){
 			 window.location.reload()
@@ -212,7 +212,36 @@ function onOpenPostSubmitted(user,node){
 
 	$.ajax({
 		 type: 'POST',
-		 url:'/social/createpost?cmd=create_open_post', 
+		 url:'/social/managepost?cmd=create_open_post', 
+		 data: data,
+		 success:function(data){
+			 window.location.reload()
+			 }})
+	
+}
+
+function onReplyDelete(node,post,reply){
+	data= {}
+	data['post']=post
+	data['node']=node
+	data['reply']=reply
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/managepost?cmd=delete_reply_post', 
+		 data: data,
+		 success:function(data){
+			 window.location.reload()
+			 }})
+	
+}
+
+function onPostDelete(node,post){
+	data= {}
+	data['post']=post
+	data['node']=node
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/managepost?cmd=delete_open_post', 
 		 data: data,
 		 success:function(data){
 			 window.location.reload()
