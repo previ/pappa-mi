@@ -83,6 +83,13 @@ indexes:
 
 - kind: Messaggio
   properties:
+  - name: c_ua
+  - name: livello
+  - name: creato_il
+    direction: desc
+
+- kind: Messaggio
+  properties:
   - name: grp
   - name: creato_il
     direction: desc
