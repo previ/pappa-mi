@@ -4,6 +4,13 @@
 			<div class="post_content">{{post.content|e}}</div> 
 			<div class="post_author">{{post.commissario.nome|e}} {{post.commissario.cognome|e}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
+			<div class="post_buttons">
+				<div class="reply_button"><span onClick="onPostReshare({{user.key.id()}},{{node.key.id()}},{{post.key.id()}})">Bt-Res</span></div>
+			</div>
+			{% if post.resource%}
+			{{post.resource.get().render()}}
+			{% endif%}
+			
 </div>
 
 <div id="replies">
@@ -29,4 +36,3 @@
 </div>
 	{%endif%}
 	
-	{{subscription}}

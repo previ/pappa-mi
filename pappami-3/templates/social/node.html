@@ -38,12 +38,12 @@ $("#open_post_button").show()
   
   	<div id="new_post_form" style="display:none">
 		<div id="post_title">
-			<div id="post_title_label">Titolo</div>
+			<label id="post_content_label" for="titolo">Titolo</label>
 			<textarea cols="80" rows="4" class="span8 comment_textarea required" name="titolo" id="post_title_text"></textarea>
 		</div>
   		<div id="post_content">
-			<div id="post_content_label">Contenuto</div>
-			<textarea cols="80" rows="4" class="span8 comment_textarea required" name="titolo" id="post_content_text"></textarea>
+			<label id="post_content_label" for="content">Contenuto</label>
+			<textarea cols="80" rows="4" class="span8 comment_textarea required" name="content" id="post_content_text"></textarea>
 		</div>
 	 <div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted({{user.key.id()}},{{node.key.id()}})" data-loading-text="Invio risposta in corso..."/>Apri Discussione</div>
 	

@@ -220,6 +220,24 @@ function onOpenPostSubmitted(user,node){
 	
 }
 
+
+function onPostReshare(user,node,post){
+	data= {}
+	data['user']= user
+	data['node']=node
+	data['post']=post
+	console.log(data)
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/managepost?cmd=reshare_open_post', 
+		 data: data,
+		 success:function(data){
+			 window.location.reload()
+			 }})
+	
+}
+
+
 function onReplyDelete(node,post,reply){
 	data= {}
 	data['post']=post

@@ -17,8 +17,6 @@ from gviz_api import *
 from py.model import *
 from form import *
 from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
-class PermissionHandler(BasePage):
-    pass
 
 class NodeHandler(BasePage):
   
@@ -57,6 +55,7 @@ class NodeHandler(BasePage):
      
     #check permission
     can_post=False
+    current_sub=None
     current_user=self.get_current_user()
     if current_user:
         current_user=current_user.key
@@ -89,13 +88,12 @@ class NodeHandler(BasePage):
     
 class SocialTest(BasePage):
     def get(self):
-    
-    
-     user=self.get_current_user()
-     nodo=model.Key("SocialNode", 1310096,"SocialPost",1310100).get().create_reply_post("isngdsogno soirngsodi sirojnodsn", user)
+     
+     
+     
      template_values = {
       'content': 'social/test.html',
-      'var':nodo,
+      'var':resource,
       'citta': Citta.get_all()}  
      
      
@@ -118,6 +116,7 @@ class NodeListHandler(BasePage):
        
 class SocialPostHandler(BasePage):
     def get(self,id):
+        
         op=model.Key(urlsafe=id).get()
         node=op.key.parent()
         op.commissario=Commissario.get_by_user(op.author.get())
@@ -140,6 +139,7 @@ class SocialPostHandler(BasePage):
         
        
         current_user=self.get_current_user()
+        current_sub=None
         if current_user:
             current_user=current_user.key
             current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
@@ -293,14 +293,45 @@ class SocialCreatePost(webapp.RequestHandler):
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
                post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
-           
+    
+           model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
            post.key.delete()
            memcache.delete("SocialPost-"+str(self.request.get('post')))
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
-               
+       if cmd== "reshare_open_post":
+           user=model.Key("User",int(self.request.get('user'))).get()
            
+           post=memcache.get("SocialPost-"+str(self.request.get('post')))
+           if post is None:
+                 post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+           
+           #completare creazione nuovo post con risorsa
+           post.reshare(model.Key("SocialNode",int(self.request.get('node'))),user,"abc","cde")      
 
+class SocialCreateNodeHandler(BasePage):
+    @user_required
+    def get(self):  
+        template_values = {
+                        'content': 'social/createnode.html',
+                        "citta" : Citta.get_all(),
+                        
+        }
+        self.getBase(template_values)
+        
+    def post(self):
+        
+        node=SocialNode()
+        node.name=self.request.get("name")
+        node.description=self.request.get("description")
+        node.default_reply=bool(self.request.get("default_reply"))
+        node.default_post=bool(self.request.get("default_post"))
+        node.default_admin=bool(self.request.get("default_admin"))
+        node.founder=self.get_current_user().key
+        node.put()
+        
+        self.redirect("/social/node/"+str(node.key.id()))
+                      
 
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
@@ -309,7 +340,8 @@ app = webapp.WSGIApplication([
     ('/social/managepost',SocialCreatePost),
     ('/social/test', SocialTest),
     ('/social/socialmap',SocialMapHandler),
-    ('/social/subscribe', SocialSubscribeHandler)
+    ('/social/subscribe', SocialSubscribeHandler),
+    ('/social/createnode', SocialCreateNodeHandler),
     ],
                              
     debug = True, config=config)

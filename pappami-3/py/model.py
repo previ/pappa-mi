@@ -15,6 +15,9 @@ from google.appengine.api import users
 
 from common import cached_property, Const
 from engineauth import models
+import jinja2
+import os
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -1260,6 +1263,8 @@ class SocialNode(model.Model):
     description=model.StringProperty(default="")
     active=model.BooleanProperty(default=True)
     geo = model.GeoPtProperty()
+    founder=model.KeyProperty()
+    location=model.KeyProperty(default=None)
     default_post=model.BooleanProperty(default=True)
     default_reply=model.BooleanProperty(default=True)
     default_admin=model.BooleanProperty(default=False)
@@ -1279,12 +1284,15 @@ class SocialNode(model.Model):
    
     
     
-    def create_open_post(self,content,title,author):
+    def create_open_post(self,content,title,author,resource=None):
         new_post= SocialPost(parent=self.key)
         new_post.author=author.key
         new_post.content=content
         new_post.title=title
+        new_post.resource=resource
         new_post.put()
+        return new_post.key
+        
         
     
         
@@ -1364,12 +1372,37 @@ class SocialPost(model.Model):
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
     title=model.StringProperty(default="")
-    
+    resource=model.KeyProperty()
     def get_discussion(self):
         op=self.key
         discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
         return discussion
-   
+    def reshare(self,target_node,new_author,new_content, new_title):
+        #reshare of a reshare
+        if self.resource is not None:
+            resource=self.resource
+        #reshare of a post
+        else:
+            #reshare of an already reshared post
+            resource=SocialResource.query(ancestor=self.key).get()
+            #reshare of a never reshared post
+            if resource is None:
+                resource=SocialResource(parent=self.key,
+                                        title=self.title,
+                                        type="post",
+                                        author=self.author,
+                                        content=self.content,
+                                        creation_date=self.creation_date
+                                        
+                                        )
+                resource.put()
+                resource=resource.key
+            else:
+                resource=resource.key
+        
+        new_post=target_node.get().create_open_post(new_content,new_title,new_author,resource)
+        return new_post
+        
     def create_reply_comment(self,content,title,author):
         new_comment= SocialComment(parent=self.key)
         new_comment.author=author.key
@@ -1408,8 +1441,35 @@ class SocialNodeSubscription(model.Model):
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).fetch()
         node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
-  
-  
+    
+class SocialResource(model.Expando):
+    url=model.StringProperty()
+    type=model.StringProperty()
+    @staticmethod
+    def get_resource(key):
+        return SocialResource.query(ancestor=key).get()
+    #rompo l'MVC, possano gli Dei antichi e nuovi perdonare il mio sacrilegio
+    def render(self):
+        render_method = getattr(self,'render_'+self.type)
+        return render_method()
+    
+    def render_post(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/post.html")
+       
+        return template.render(template_values)  
+    
+    def render_ispezione(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/post.html")
+       
+        return template.render(template_values)  
+    
+    
 class SocialComment(model.Model):
     author=model.KeyProperty()
     content=model.StringProperty(default="")
