@@ -43,6 +43,28 @@ var fstyles = {
 	  height: 65
   }
 };
+$(document).ready(function() { 
+	$('#post_content_text,#node_description_text,#reply_message').tinymce({
+	     // Location of TinyMCE script
+	     script_url : '/js/tiny_mce/tiny_mce.js',     
+	     // General options
+	     width : "100%",
+	     height: "300px",
+	     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+	     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+	     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+	     theme : "advanced",
+	     plugins : "autolink, autoresize", 
+	     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+	     theme_advanced_buttons2 : "",
+	     theme_advanced_buttons3 : "",			
+	     theme_advanced_toolbar_location : "top",
+	     theme_advanced_toolbar_align : "left",
+	     theme_advanced_resizing : false     
+	    });
+});
+
+
 
 function drawSocialMap(data) {
   var f_citta = $("#e_citta").val();
@@ -167,26 +189,35 @@ function drawSmallMap(data) {
     fluster.initialize();
   }
 }    
-$('#reply_message').tinymce({
-    // Location of TinyMCE script
-    script_url : '/js/tiny_mce/tiny_mce.js',     
-    // General options
-    width : "100%",
-    content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
-    theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
-    font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
-    theme : "advanced",
-    plugins : "autolink, autoresize", 
-    theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",			
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_resizing : false     
-   });
 
 
 function onReplySubmitted(user,post,node){
+$("form#reply_form").validate({
+		
+		errorClass: "error",
+	      errorPlacement: function(error, element) {
+		var item = $(element);
+		item.tooltip({title:error.text(), trigger:'manual'});
+		item.tooltip('show');
+	      },
+	      highlight: function(element, errorClass, validClass) {
+		var item = $(element).parents("#reply_form");
+		item.addClass(errorClass); 
+	      },
+	      unhighlight: function(element, errorClass, validClass) {
+		var item = $(element).parents("#reply_form");
+		item.removeClass(errorClass); 
+		$(element).tooltip('hide');
+	      },  
+	      rules: {
+		
+	
+	      }
+	
+	});
+	if(!$("#reply_form").valid())
+	return;
+	
 	data= {}
 	data['user']= user
 	data['post']=post
@@ -204,6 +235,30 @@ function onReplySubmitted(user,post,node){
 }
 
 function onOpenPostSubmitted(user,node){
+	$("#new_post_form").validate({
+		
+		errorClass: "error",
+	      errorPlacement: function(error, element) {
+		var item = $(element);
+		item.tooltip({title:error.text(), trigger:'manual'});
+		item.tooltip('show');
+	      },
+	      highlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.addClass(errorClass); 
+	      },
+	      unhighlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.removeClass(errorClass); 
+		$(element).tooltip('hide');
+	      },  
+	      rules: {
+		
+	
+	      }
+	
+	});
+	if($("#new_post_form").valid()){
 	data= {}
 	data['user']= user
 	data['node']=node
@@ -217,7 +272,7 @@ function onOpenPostSubmitted(user,node){
 		 success:function(data){
 			 window.location.reload()
 			 }})
-	
+	}
 }
 
 
@@ -238,8 +293,10 @@ function onPostReshare(user,node,post){
 }
 
 
-function onReplyDelete(node,post,reply){
+function onReplyDelete(user,post,node,reply){
 	data= {}
+	data['user']= user
+	
 	data['post']=post
 	data['node']=node
 	data['reply']=reply
@@ -253,10 +310,12 @@ function onReplyDelete(node,post,reply){
 	
 }
 
-function onPostDelete(node,post){
+function onPostDelete(user,node,post){
 	data= {}
 	data['post']=post
 	data['node']=node
+	data['user']= user
+	
 	$.ajax({
 		 type: 'POST',
 		 url:'/social/managepost?cmd=delete_open_post', 
@@ -299,9 +358,8 @@ function loadSmallMap(lat,lon) {
 function onSubscription(user_key,node_key)
 {
 	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=subscribe', success:function(data){
-		  $('#subscribe_btn').hide();
-		  $('#unsubscribe_btn').show();
-		 
+		  
+		 window.location.reload()
 		}
 	 });
 	 
@@ -310,8 +368,7 @@ function onSubscription(user_key,node_key)
 function onUnsubscription(user_key,node_key)
 {
 	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=unsubscribe', success:function(data){
-		  $('#unsubscribe_btn').hide();
-		  $('#subscribe_btn').show();
+		 window.location.reload()
 		 
 		}
 	 });
