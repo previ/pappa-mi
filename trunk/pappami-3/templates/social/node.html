@@ -1,11 +1,11 @@
 <script type="text/javascript">
 
 function onOpenPostForm(){
-$("#new_post_form").show()
+$("#new_post_form").slideDown()
 $("#open_post_button").hide()
 }
 function onOpenPostFormCancel(){
-$("#new_post_form").hide()
+$("#new_post_form").slideUp()
 $("#open_post_button").show()
 }
 </script>
@@ -22,10 +22,10 @@ $("#open_post_button").show()
 	{% for post in latest_posts %}
 		<div class="social_post" style="margin:10px;border:2px solid;"> 
 			<div class="post_buttons">
-				{%if subscription.can_admin%}<div class="post_button"><span onClick="onPostDelete({{node.key.id()}},{{post.key.id()}})">Bt-Del</span></div>{%endif%}
+				{%if subscription.can_admin%}<div class="post_button"><span onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')">Bt-Del</span></div>{%endif%}
 			</div>
-			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title|e}}</a></div> 
-			<div class="post_author">{{post.commissario.nome|e}}</div>
+			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+			<div class="post_author">{{post.commissario.nome}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
 		</div>
 	
@@ -34,21 +34,21 @@ $("#open_post_button").show()
 	
 {%if user and subscription.can_post%}	
 
-	<div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()"/>Inizia Nuova Discussione</div>
+	<div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Inizia Nuova Discussione</div>
   
-  	<div id="new_post_form" style="display:none">
-		<div id="post_title">
+  	<form id="new_post_form" style="display:none">
+		<div id="post_title" class="form_parent">
 			<label id="post_content_label" for="titolo">Titolo</label>
-			<textarea cols="80" rows="4" class="span8 comment_textarea required" name="titolo" id="post_title_text"></textarea>
+			<input class="span8 comment_textarea required" name="titolo" id="post_title_text"></input>
 		</div>
-  		<div id="post_content">
+  		<div id="post_content" class="form_parent">
 			<label id="post_content_label" for="content">Contenuto</label>
-			<textarea cols="80" rows="4" class="span8 comment_textarea required" name="content" id="post_content_text"></textarea>
+			<input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
 		</div>
-	 <div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted({{user.key.id()}},{{node.key.id()}})" data-loading-text="Invio risposta in corso..."/>Apri Discussione</div>
+	 <div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia</div>
 	
-  	<div id="open_post_cancel_button" class="btn btn-primary" type="submit" onclick="onOpenPostFormCancel()"/>Annulla</div>
-	</div>
+  	<div id="open_post_cancel_button" class="btn btn-primary" type="submit" onclick="onOpenPostFormCancel()">Annulla</div>
+	</form>
   
   
 {%endif%}

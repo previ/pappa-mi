@@ -1,12 +1,12 @@
 from py.base import *
-
+from google.appengine.api import users
 import os
 import cgi
 import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
-
+import feedparser
 from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -254,28 +254,36 @@ class SocialSubscribeHandler(webapp.RequestHandler):
                  self.response.out.write("<response>success</response>")
              
 class SocialCreatePost(webapp.RequestHandler):
-    def post(self):
+   def post(self):
        
-       
-       
-       node=model.Key("SocialNode",int(self.request.get('node')))
+      
+       user=model.Key(urlsafe=self.request.get('user')).get()
+       node=model.Key(urlsafe=self.request.get('node'))
        cmd = self.request.get('cmd')
 
        if cmd == "create_open_post":
-           user=model.Key("User",int(self.request.get('user'))).get()
-           node.get().create_open_post(self.request.get("content"),self.request.get("title"),user)
            self.response.headers["Content-Type"] = "text/xml"
+           node=node.get()
+           if not node.get_subscription(user).can_post:
+               self.response.out.write("<response>error</response>")
+               return
+           
+           node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
+          
            self.response.out.write("<response>success</response>")
            
            
        if cmd == "create_reply_post":
-           user=model.Key("User",int(self.request.get('user'))).get()
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
-              post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+              post=model.Key(urlsafe=self.request.get('post')).get()
               memcache.add("SocialPost-"+str(self.request.get('post')),post)
+           node=node.get()
+           if not node.get_subscription(user).can_reply:
+               self.response.out.write("<response>error</response>")
+               return
            
-           post.create_reply_comment(self.request.get("content"),self.request.get("title"),user)  
+           post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
            
@@ -283,17 +291,26 @@ class SocialCreatePost(webapp.RequestHandler):
        if cmd == "delete_reply_post":
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
-               post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+               post=model.Key(urlsafe=self.request.get('post')).get()
                memcache.add("SocialPost-"+str(self.request.get('post')),post)
-           post.delete_reply_comment(int(self.request.get('reply')))
+               
+           node=node.get()
+           if not node.get_subscription(user).can_admin:
+               self.response.out.write("<response>error</response>")
+               return
+           post.delete_reply_comment(self.request.get('reply'))
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
 
        if cmd == "delete_open_post":
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
-               post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
-    
+              post=model.Key(urlsafe=self.request.get('post')).get()
+              
+           node=node.get()
+           if not node.get_subscription(user).can_admin:
+               self.response.out.write("<response>error</response>")
+               return    
            model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
            post.key.delete()
            memcache.delete("SocialPost-"+str(self.request.get('post')))
@@ -304,7 +321,7 @@ class SocialCreatePost(webapp.RequestHandler):
            
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
-                 post=model.Key("SocialNode",int(self.request.get('node')), "SocialPost", int(self.request.get('post'))).get()
+                 post=model.Key(urlsafe=self.request.get('post')).get()
            
            #completare creazione nuovo post con risorsa
            post.reshare(model.Key("SocialNode",int(self.request.get('node'))),user,"abc","cde")      
@@ -322,8 +339,8 @@ class SocialCreateNodeHandler(BasePage):
     def post(self):
         
         node=SocialNode()
-        node.name=self.request.get("name")
-        node.description=self.request.get("description")
+        node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
+        node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
         node.default_reply=bool(self.request.get("default_reply"))
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))

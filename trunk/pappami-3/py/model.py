@@ -1338,8 +1338,8 @@ class SocialNode(model.Model):
             return True
         else:
             return False
-    def get_subscription(self,user):
-        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key),fetch()
+    def get_subscription(self,user_t):
+        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).get()
         
         
     def subscription_list(self):
@@ -1403,7 +1403,7 @@ class SocialPost(model.Model):
         new_post=target_node.get().create_open_post(new_content,new_title,new_author,resource)
         return new_post
         
-    def create_reply_comment(self,content,title,author):
+    def create_reply_comment(self,content,author):
         new_comment= SocialComment(parent=self.key)
         new_comment.author=author.key
         new_comment.content=content
@@ -1414,7 +1414,7 @@ class SocialPost(model.Model):
     def get_by_node_and_author(author_t,node_t):
         pass
     def delete_reply_comment(self,reply_id):
-        reply=model.Key("SocialComment", reply_id,parent=self.key)
+        reply=model.Key(urlsafe=reply_id)
         reply.delete()
       
         
