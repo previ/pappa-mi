@@ -7,7 +7,7 @@ import logging
 import fpformat
 import google.appengine.api.images
 import threading
-
+import math
 from google.appengine.ext.ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
@@ -1302,9 +1302,9 @@ class SocialNode(model.Model):
         self.geo=model.GeoPt(lat,lon)
         self.put()
     
-    def get_latest_posts(self):
+    def get_latest_posts(self,amount):
         
-        posts= SocialPost.query(ancestor=self.key).fetch(10)
+        posts= SocialPost.query(ancestor=self.key).order(-SocialPost.creation_date).fetch(amount)
         return posts    
         
     def subscribe_user(self,current_user):
@@ -1365,6 +1365,13 @@ class SocialNode(model.Model):
           return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
         else:
           return SocialNode.active_nodes().filter().iter(produce_cursors=True)
+    def get_hot_post(self, amount):
+            
+            recent_posts=self.get_latest_posts(10*log(amount**2)+amount)
+            recent_posts=[setattr(x,'index',x.get_rate()) for x in recent_posts ]
+        
+   
+   
    
 class SocialPost(model.Model):
     author=model.KeyProperty()
@@ -1378,9 +1385,10 @@ class SocialPost(model.Model):
         discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
         return discussion
     def reshare(self,target_node,new_author,new_content, new_title):
+        resource=None
         #reshare of a reshare
         if self.resource is not None:
-            resource=self.resource
+            resource_key=self.resource
         #reshare of a post
         else:
             #reshare of an already reshared post
@@ -1396,12 +1404,17 @@ class SocialPost(model.Model):
                                         
                                         )
                 resource.put()
-                resource=resource.key
+                resource_key=resource.key
             else:
-                resource=resource.key
+                resource_key=resource.key
         
-        new_post=target_node.get().create_open_post(new_content,new_title,new_author,resource)
-        return new_post
+        new_post=target_node.get().create_open_post(new_content,new_title,new_author,resource_key)
+        if new_post:
+            if not resource:
+                resource=resource_key.get()
+            resource.reshare_amt=resource.reshare_amt+1    
+            resource.put()
+            return new_post
         
     def create_reply_comment(self,content,author):
         new_comment= SocialComment(parent=self.key)
@@ -1416,7 +1429,21 @@ class SocialPost(model.Model):
     def delete_reply_comment(self,reply_id):
         reply=model.Key(urlsafe=reply_id)
         reply.delete()
-      
+    #this method calculate the rate for a single post
+    def get_rate(self):
+        time_delta=datetime.now()-self.creation_date
+        x=time_delta.seconds/3600
+        rate=self.get_comment_amt()
+        resource=SocialResource.query(ancestor=self.key).get()
+        if resource:
+            rate=rate+3*resource.reshare_amt
+        
+        rate=rate/((1.07**(x+1))/(x+1))
+        return rate
+    def get_comment_amt(self):
+        
+        return SocialComment.query(ancestor=self.key).count()
+        
         
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
@@ -1445,6 +1472,7 @@ class SocialNodeSubscription(model.Model):
 class SocialResource(model.Expando):
     url=model.StringProperty()
     type=model.StringProperty()
+    reshare_amt=model.IntegerProperty(default=0)
     @staticmethod
     def get_resource(key):
         return SocialResource.query(ancestor=key).get()
