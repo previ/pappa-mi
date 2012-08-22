@@ -38,7 +38,7 @@ class NodeHandler(BasePage):
         self.response.out.write(t)
         return
     
-    latest_posts=node.get().get_latest_posts()
+    latest_posts=node.get().get_latest_posts(10)
 
     for x in latest_posts: 
     
@@ -308,23 +308,30 @@ class SocialCreatePost(webapp.RequestHandler):
               post=model.Key(urlsafe=self.request.get('post')).get()
               
            node=node.get()
+           #check admin permissions
            if not node.get_subscription(user).can_admin:
                self.response.out.write("<response>error</response>")
                return    
+           #delete replies
            model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
            post.key.delete()
            memcache.delete("SocialPost-"+str(self.request.get('post')))
+           
+           if post.resource:
+               resource=post.resource.get()
+               resource.reshare_amt=resource.reshare_amt-1
+               resource.put()
+               
            self.response.headers["Content-Type"] = "text/xml"
            self.response.out.write("<response>success</response>")
        if cmd== "reshare_open_post":
-           user=model.Key("User",int(self.request.get('user'))).get()
-           
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
-                 post=model.Key(urlsafe=self.request.get('post')).get()
-           
+               post=model.Key(urlsafe=self.request.get('post')).get()
+               memcache.add("SocialPost-"+str(self.request.get('post')),post)
+               
            #completare creazione nuovo post con risorsa
-           post.reshare(model.Key("SocialNode",int(self.request.get('node'))),user,"abc","cde")      
+           post.reshare(node,user,"abc","cde")      
 
 class SocialCreateNodeHandler(BasePage):
     @user_required
@@ -349,6 +356,11 @@ class SocialCreateNodeHandler(BasePage):
         
         self.redirect("/social/node/"+str(node.key.id()))
                       
+class SocialStreamHandler(BasePage):
+    def get(self):
+        user=self.get_current_user()
+        
+
 
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
@@ -359,6 +371,7 @@ app = webapp.WSGIApplication([
     ('/social/socialmap',SocialMapHandler),
     ('/social/subscribe', SocialSubscribeHandler),
     ('/social/createnode', SocialCreateNodeHandler),
+    ('/social/stream', SocialStreamHandler),
     ],
                              
     debug = True, config=config)

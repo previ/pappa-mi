@@ -276,7 +276,7 @@ function onOpenPostSubmitted(user,node){
 }
 
 
-function onPostReshare(user,node,post){
+function onPostReshare(user,post,node){
 	data= {}
 	data['user']= user
 	data['node']=node

@@ -5,7 +5,7 @@
 			<div class="post_author">{{post.commissario.nome}} {{post.commissario.cognome}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
 			<div class="post_buttons">
-				<div class="reply_button"><span onClick="onPostReshare({{user.key.id()}},{{node.key.id()}},{{post.key.id()}})">Bt-Res</span></div>
+				<div class="reply_button"><span onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')">Bt-Res</span></div>
 			</div>
 			{% if post.resource%}
 			{{post.resource.get().render()}}
@@ -34,4 +34,5 @@
 
 </form>
 	{%endif%}
-	
+{{post.get_comment_amt()}}
+{{post.get_rate()}}
