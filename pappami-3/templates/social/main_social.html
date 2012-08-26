@@ -1,0 +1,15 @@
+<div id="main_stream">
+	{%for post in hot_post%}
+	
+	<div class="social_post" style="margin:10px;border:2px solid;"> 
+			
+			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+			<div class="post_author">{{post.commissario.nome}}</div>
+			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
+		</div>
+	
+	{%endfor%}
+
+
+
+</div>

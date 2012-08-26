@@ -228,8 +228,20 @@ $("form#reply_form").validate({
 		 type: 'POST',
 		 url:'/social/managepost?cmd=create_reply_post', 
 		 data: data,
+		 dataType:'json',
 		 success:function(data){
-			 window.location.reload()
+			 console.log(data.response)
+			 
+			 if (data.response!="success")
+				 {
+				if(data.response=="flooderror")
+				 {alert("Flood Error")
+					 return
+						
+				 }
+			 	 }
+			 
+				 window.location.reload()
 			 }})
 	
 }

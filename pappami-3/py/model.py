@@ -12,7 +12,7 @@ from google.appengine.ext.ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
-
+import base
 from common import cached_property, Const
 from engineauth import models
 import jinja2
@@ -1285,12 +1285,17 @@ class SocialNode(model.Model):
     
     
     def create_open_post(self,content,title,author,resource=None):
+        floodControl=memcache.get("FloodControl-"+str(author.key))
+        if floodControl:
+            raise base.FloodControlException
+        
         new_post= SocialPost(parent=self.key)
         new_post.author=author.key
         new_post.content=content
         new_post.title=title
         new_post.resource=resource
         new_post.put()
+        memcache.add("FloodControl-"+str(author.key), 1,time=30)
         return new_post.key
         
         
@@ -1326,7 +1331,6 @@ class SocialNode(model.Model):
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
          if subscription is not None:
-            logging.info("Deleto")
             subscription.key.delete()
             memcache.delete("SocialNodeSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()))
         
@@ -1367,9 +1371,12 @@ class SocialNode(model.Model):
           return SocialNode.active_nodes().filter().iter(produce_cursors=True)
     def get_hot_post(self, amount):
             
-            recent_posts=self.get_latest_posts(10*log(amount**2)+amount)
-            recent_posts=[setattr(x,'index',x.get_rate()) for x in recent_posts ]
-        
+            recent_posts=self.get_latest_posts(int(10*math.log(amount**2)+amount))
+            for x in recent_posts:
+                setattr(x,'index',x.get_rate())
+                
+           
+            return recent_posts[0:amount-1]
    
    
    
@@ -1408,19 +1415,25 @@ class SocialPost(model.Model):
             else:
                 resource_key=resource.key
         
-        new_post=target_node.get().create_open_post(new_content,new_title,new_author,resource_key)
+        resource.publish(target_node,new_content,new_title,new_author,resource_key)
         if new_post:
             if not resource:
                 resource=resource_key.get()
-            resource.reshare_amt=resource.reshare_amt+1    
+            
             resource.put()
             return new_post
         
     def create_reply_comment(self,content,author):
+        floodControl=memcache.get("FloodControl-"+str(author.key))
+        if floodControl:
+            raise base.FloodControlException
+        
         new_comment= SocialComment(parent=self.key)
         new_comment.author=author.key
         new_comment.content=content
         new_comment.put()
+        memcache.add("FloodControl-"+str(author.key), 1,time=30)
+        
         
     def get_all_by_author(author_t):
         pass
@@ -1430,16 +1443,9 @@ class SocialPost(model.Model):
         reply=model.Key(urlsafe=reply_id)
         reply.delete()
     #this method calculate the rate for a single post
-    def get_rate(self):
-        time_delta=datetime.now()-self.creation_date
-        x=time_delta.seconds/3600
-        rate=self.get_comment_amt()
-        resource=SocialResource.query(ancestor=self.key).get()
-        if resource:
-            rate=rate+3*resource.reshare_amt
-        
-        rate=rate/((1.07**(x+1))/(x+1))
-        return rate
+    
+    
+    
     def get_comment_amt(self):
         
         return SocialComment.query(ancestor=self.key).count()
@@ -1472,7 +1478,6 @@ class SocialNodeSubscription(model.Model):
 class SocialResource(model.Expando):
     url=model.StringProperty()
     type=model.StringProperty()
-    reshare_amt=model.IntegerProperty(default=0)
     @staticmethod
     def get_resource(key):
         return SocialResource.query(ancestor=key).get()
@@ -1480,6 +1485,7 @@ class SocialResource(model.Expando):
     def render(self):
         render_method = getattr(self,'render_'+self.type)
         return render_method()
+    
     
     def render_post(self):
         template_values = {
@@ -1493,10 +1499,11 @@ class SocialResource(model.Expando):
         template_values = {
                  "resource":self
         }
-        template = jinja_environment.get_template("social/resources/post.html")
+        template = jinja_environment.get_template("social/resources/resource.html")
        
         return template.render(template_values)  
-    
+    def publish(self,target_node,new_author,new_content, new_title):
+        target_node.create_open_post(new_content,new_title,new_author,resource_key)
     
 class SocialComment(model.Model):
     author=model.KeyProperty()
