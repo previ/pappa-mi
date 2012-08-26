@@ -4,9 +4,11 @@
 			<div class="post_content">{{post.content}}</div> 
 			<div class="post_author">{{post.commissario.nome}} {{post.commissario.cognome}}</div>
 			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
+			{%if user%}
 			<div class="post_buttons">
 				<div class="reply_button"><span onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')">Bt-Res</span></div>
 			</div>
+			{%endif%}
 			{% if post.resource%}
 			{{post.resource.get().render()}}
 			{% endif%}
@@ -17,7 +19,7 @@
 {%for reply in replies%}
 	<div class="reply" style="border:2px solid; margin-left:30px">
 			<div class="reply_buttons">
-				{%if subscription.can_admin%}<div class="reply_button"><span onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')">Bt-Del</span></div>{%endif%}
+				{%if user and subscription.can_admin%}<div class="reply_button"><span onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')">Bt-Del</span></div>{%endif%}
 			</div>
 			<div class="reply_content">{{reply.content}}</div> 
 			<div class="reply_author">{{reply.commissario.nome}} {{reply.commissario.cognome}}</div>
@@ -34,5 +36,3 @@
 
 </form>
 	{%endif%}
-{{post.get_comment_amt()}}
-{{post.get_rate()}}

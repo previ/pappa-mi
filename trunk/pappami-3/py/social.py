@@ -253,7 +253,7 @@ class SocialSubscribeHandler(webapp.RequestHandler):
                  self.response.headers["Content-Type"] = "text/xml"
                  self.response.out.write("<response>success</response>")
              
-class SocialCreatePost(webapp.RequestHandler):
+class SocialCreatePost(SocialAjax):
    def post(self):
        
       
@@ -262,14 +262,15 @@ class SocialCreatePost(webapp.RequestHandler):
        cmd = self.request.get('cmd')
 
        if cmd == "create_open_post":
+           raise FloodControlException
            self.response.headers["Content-Type"] = "text/xml"
            node=node.get()
            if not node.get_subscription(user).can_post:
                self.response.out.write("<response>error</response>")
                return
-           
            node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
-          
+           
+           
            self.response.out.write("<response>success</response>")
            
            
@@ -283,9 +284,13 @@ class SocialCreatePost(webapp.RequestHandler):
                self.response.out.write("<response>error</response>")
                return
            
+               
            post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
-           self.response.headers["Content-Type"] = "text/xml"
-           self.response.out.write("<response>success</response>")
+           
+           
+           
+          
+           self.success()
            
            
        if cmd == "delete_reply_post":
@@ -310,7 +315,7 @@ class SocialCreatePost(webapp.RequestHandler):
            node=node.get()
            #check admin permissions
            if not node.get_subscription(user).can_admin:
-               self.response.out.write("<response>error</response>")
+               self.response.out.write("<response>adminerror</response>")
                return    
            #delete replies
            model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
@@ -322,8 +327,7 @@ class SocialCreatePost(webapp.RequestHandler):
                resource.reshare_amt=resource.reshare_amt-1
                resource.put()
                
-           self.response.headers["Content-Type"] = "text/xml"
-           self.response.out.write("<response>success</response>")
+           self.success()
        if cmd== "reshare_open_post":
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
@@ -332,7 +336,7 @@ class SocialCreatePost(webapp.RequestHandler):
                
            #completare creazione nuovo post con risorsa
            post.reshare(node,user,"abc","cde")      
-
+        
 class SocialCreateNodeHandler(BasePage):
     @user_required
     def get(self):  
@@ -355,13 +359,30 @@ class SocialCreateNodeHandler(BasePage):
         node.put()
         
         self.redirect("/social/node/"+str(node.key.id()))
+
+
+
                       
-class SocialStreamHandler(BasePage):
+class SocialMainHandler(BasePage):
+    @user_required
     def get(self):
         user=self.get_current_user()
+        node_list=SocialNodeSubscription.get_nodes_by_user(user)
+        hot_posts=[]
+        temp=[]
+        sort_by_rate=lambda x:x.index
+        temp=[i.get_hot_post(3) for i in node_list if i is not None]
+        logging.info(temp)
+        hot_posts=[sorted(i,key=sort_by_rate) for i in temp ]
+        template_values = {
+                        'content': 'social/main_social.html',
+                        'hot_post':hot_posts,
+                        
+        }
+        self.getBase(template_values)
         
-
-
+        
+        
 app = webapp.WSGIApplication([
     ('/social/node/(\d+)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
@@ -371,11 +392,10 @@ app = webapp.WSGIApplication([
     ('/social/socialmap',SocialMapHandler),
     ('/social/subscribe', SocialSubscribeHandler),
     ('/social/createnode', SocialCreateNodeHandler),
-    ('/social/stream', SocialStreamHandler),
+    ('/social/main', SocialMainHandler),
     ],
                              
     debug = True, config=config)
-
 
 
 

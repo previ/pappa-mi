@@ -33,7 +33,7 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
-
+import simplejson 
 import py.feedparser
 import httpagentparser
 
@@ -56,7 +56,32 @@ class ActivityFilter():
   msgtypes = None
   users = None
   group = None
-  
+
+
+class SocialAjax(webapp.RequestHandler):
+        def dispatch(self):
+        # Get a session store for this request.
+            try:
+                webapp.RequestHandler.dispatch(self)
+            finally:
+                pass
+        
+        def handle_exception(self,exception,debug_mode):
+            
+            if type(exception).__name__== FloodControlException.__name__:
+               response = {'response':'flooderror'}
+               json = simplejson.dumps(response)
+               self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+               self.response.out.write(json)
+               return
+           
+            raise exception
+        
+        def success(self):
+            response = {'response':'success'}
+            json = simplejson.dumps(response)
+            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+            self.response.out.write(json)
 class BasePage(webapp.RequestHandler):  
   
   #@webapp.cached_property
@@ -77,7 +102,9 @@ class BasePage(webapp.RequestHandler):
         #logging.info(self.get_context())
         self.set_context()
         self.session_store.save_sessions(self.response)
+    
 
+  
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
@@ -519,3 +546,9 @@ config = {
         'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
     }
 }
+class FloodControlException(Exception):
+     def __init__(self):
+                pass
+                
+     def __str__(self):
+          return repr("Flood Control Error")
