@@ -1,2 +1,40 @@
 .node_description{float:right}
-.node{width:400px})
+.node{width:400px}
+
+.s_post_avatar {
+display: table-cell;
+padding-left: 5px;
+padding-right: 5px;
+cursor: pointer;
+}
+
+.s_post_content {
+display: table-cell;
+width:100%;
+}
+
+.s_post_header {
+}
+
+.s_post_title {
+display: block;
+}
+
+.s_post_author {
+display: table-cell;
+}
+
+.s_post_date {
+display: table-cell;
+}
+
+.s_post_body {
+}
+
+.s_post_commands {
+float:right;
+}
+
+.s_replies {
+margin-left:20px;
+}
