@@ -49,7 +49,7 @@ $(document).ready(function() {
 	     script_url : '/js/tiny_mce/tiny_mce.js',     
 	     // General options
 	     width : "100%",
-	     height: "300px",
+	     //height: "300px",
 	     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
 	     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
 	     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  

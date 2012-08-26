@@ -1,38 +1,58 @@
-<div class="social_post" style="margin:10px;border:2px solid;"> 
-
-			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
-			<div class="post_content">{{post.content}}</div> 
-			<div class="post_author">{{post.commissario.nome}} {{post.commissario.cognome}}</div>
-			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
-			{%if user%}
-			<div class="post_buttons">
-				<div class="reply_button"><span onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')">Bt-Res</span></div>
+<div class="row">
+	<div class="span12">
+		<div class="social_post thumbnail"> 
+			<div class="s_post_avatar">
+				<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 			</div>
-			{%endif%}
-			{% if post.resource%}
-			{{post.resource.get().render()}}
-			{% endif%}
-			
-</div>
+			<div class="s_post_content">
+				<div class="s_post_header">			
+					<div class="s_post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+					<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
+					<div class="s_post_date">&nbsp;- il {{post.creation_date.strftime('%d %m %Y')}}</div>
+				</div>				
+				<div class="s_post_body">
+				{{post.content}}
+				{% if post.resource%}
+				{{post.resource.get().render()}}
+				{% endif%}				
+				</div>									
+				<div class="s_post_commands">
+					{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
+					<button class="btn btn-primary" onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')"><i class="icon-share-alt"></i>Reshare</button>
+				</div>			
+			</div>			
+		</div>			
 
-<div id="replies">
+		<div class="s_replies span8" id="replies">
+			<ul class="thumbnails">
 {%for reply in replies%}
-	<div class="reply" style="border:2px solid; margin-left:30px">
-			<div class="reply_buttons">
-				{%if user and subscription.can_admin%}<div class="reply_button"><span onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')">Bt-Del</span></div>{%endif%}
-			</div>
-			<div class="reply_content">{{reply.content}}</div> 
-			<div class="reply_author">{{reply.commissario.nome}} {{reply.commissario.cognome}}</div>
-			<div class="reply_date">{{reply.creation_date.strftime('%d %m %Y')}}</div>
-	</div>
+				<li>
+					<div class="s_reply thumbnail"> 
+						<div class="s_post_avatar">
+							<img class="avatar" src="{{reply.commissario.avatar(cmsro)}}" title="{{reply.commissario.nomecompleto(cmsro)}}">
+						</div>
+						<div class="s_post_content">
+							<div class="s_post_header">			
+								<div class="s_post_title"><a href="/social/post/{{reply.key.urlsafe()}}">{{reply.title}}</a></div> 
+								<div class="s_post_author">scritto da {{reply.commissario.nome}}</div>
+								<div class="s_post_date">&nbsp;- il {{reply.creation_date.strftime('%d %m %Y')}}</div>
+							</div>				
+							<div class="s_post_body">{{reply.content}}</div>				
+							<div class="s_post_commands">
+								{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
+							</div>							
+						</div>			
+					</div>
+				</li>	
 {%endfor%}
-
-</div>
-
-{%if user and subscription.can_post%}	
-<form id="reply_form">
-	 <input class="span8 comment_textarea required" id="reply_message">
-	 <div id="reply_submit" class="btn btn-primary" type="submit" onclick="onReplySubmitted('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia Risposta</div>
-
-</form>
+			</ul>
+	{%if user and subscription.can_post%}	
+			<form id="reply_form">
+				 <input class="span8 comment_textarea required" id="reply_message">
+				 <div id="reply_submit" class="btn btn-primary" type="submit" onclick="onReplySubmitted('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia Risposta</div>
+			
+			</form>
 	{%endif%}
+		</div>
+	</div>
+</div>

@@ -4,17 +4,26 @@ $(document).ready(function () {
   loadSocialMap( {{geo.lat}} , {{geo.lon}} );
 });      
 </script>
-
+<h2>Nodi</h2>
 <div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div>
-
-{%for node in nodelist%}
-
-<div class="node">
-	<div class="node_name"><a href="/social/node/{{node.key.id()}}">{{ node.name }}</a></div>
-	<div class="node_description">{{node.description}}</div>
+{%if user%}
+<div class="well" style="padding: 10px;">
+ <div class="btn-toolbar">
+  <a class="btn btn-primary" href="/social/createnode">Aggiungi Nodo</a>
+ </div>
 </div>
-
-
-
+{%endif%}
+<h3>Elenco Nodi</h3>
+<ul class="thumbnails">
+{%for node in nodelist%}
+	<li class="span4">
+		<div class="thumbnail">
+			<div class="node">
+				<div class="s_node_name"><a href="/social/node/{{node.key.id()}}">{{ node.name }}</a></div>
+				<div class="s_node_description">{{node.description}}</div>
+			</div>
+		</div>
+	</li>
 {% endfor %}
+</ul>
 

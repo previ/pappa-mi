@@ -87,17 +87,15 @@ class NodeHandler(BasePage):
     
     
 class SocialTest(BasePage):
-    def get(self):
+  def get(self):
+    geo = model.GeoPt(41.754922,12.502441)
+    template_values = {
+      'content': 'social/nodelist.html',
+      'nodelist': SocialNode.active_nodes(),
+      'citta': Citta.get_all(),
+      'geo':geo}
      
-     
-     
-     template_values = {
-      'content': 'social/test.html',
-      'var':resource,
-      'citta': Citta.get_all()}  
-     
-     
-     self.getBase(template_values)
+    self.getBase(template_values)
     
         
 class NodeListHandler(BasePage):
@@ -107,9 +105,8 @@ class NodeListHandler(BasePage):
       'content': 'social/nodelist.html',
       'nodelist': SocialNode.active_nodes(),
       'citta': Citta.get_all(),
-       'geo':geo}
+      'geo':geo}
         
-    
     self.getBase(template_values)
     
     

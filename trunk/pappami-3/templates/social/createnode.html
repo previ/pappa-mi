@@ -1,4 +1,4 @@
-<script> 
+﻿<script> 
 $(function(){
  // Initialize Slides
  // DOM Ready
@@ -9,53 +9,50 @@ $(function(){
  oncitychanged();
 });
 </script>
-
-	<div id="new_node_form">
-	<form action="/social/createnode" method="POST" id="form0" novalidate class="form-horizontal">
-		<div id="node_title">
-			<div id="node_title_label">Nome</div>
-			<input cols="80" rows="4" class="span8 comment_textarea required" name="name" id="node_title_text"></input>
-		</div>
-  		<div id="node_description">
-			<div id="node_description_label">Descrizione</div>
-			<input cols="80" rows="4" class="span8 comment_textarea required" name="description" id="node_description_text"></input>
-		</div>
-		<div id="node_default_permission">
-		Permessi predefiniti all'iscrizione dell'utente:
-			<div id="node_default_reply">
-			
-       			<div class="permission_label">Commentare un post</div>
-				<select class="large required" id="reply" name="default_reply">
-    				<option value="True">Si</option>
-   					 <option value="False">No</option>
-     			</select>
-			</div>
-       		<div id="node_default_post">
-       			<div class="permission_label">Creare un post</div>
-        		<select class="large required" id="post" name="default_post">
-   					<option value="True">Si</option>
-    				<option value="False">No</option>
-        		</select>
-        	</div>
-        	<div id="node_default_admin">
-        		<div class="permission_label">Amministrare</div>
-        		<select class="large required" id="admin" name="default_admin">
-   					<option value="True">Si</option>
-    				<option value="False">No</option>
-        		</select>
-        	</div>
-		</div>
-		
-	<label for="citta">Citt&agrave;</label>
-    <select class="large required" id="citta" name="citta">
-    	{%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
-  	</select>
-    <label for="commissione_sel">Scuola (Commissione Mensa)</label>
-   	<div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
-    	<input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
+<h2>Crea Nodo</h2>
+<div id="new_node_form">
+ <div class="row">
+  <div class="span8">
+   <form action="/social/createnode" method="POST" id="form0" novalidate class="form-horizontal">
+    <label>Nome</label>
+    <input cols="80" class="span8 required" name="name" id="node_title_text">
+    <label>Descrizione</label>
+    <textarea rows="4" class="span8 required" name="description" id="node_description_text"></textarea>
+    <legend>Permessi predefiniti all'iscrizione dell'utente:</legend>
+    <div class="control-group">
+     <label for="perm_reply">Commentare un post</label>
+     <select class="span1 required" id="perm_reply" name="default_reply">
+      <option value="True">Si</option>
+      <option value="False">No</option>
+     </select>
+     <label for="perm_post">Creare un post</label>
+     <select class="span1 required" id="perm_post" name="default_post">
+      <option value="True">Si</option>
+      <option value="False">No</option>
+     </select>
+     <label for="perm_admin">Amministrare</label>
+     <select class="span1 required" id="perm_admin" name="default_admin">
+      <option value="True">Si</option>
+      <option value="False">No</option>
+     </select>
     </div>
-    
-		
-    	<input type="submit" class="btn btn-primary" value="Salva">&nbsp;<button type="reset" class="btn">Annulla</button>
-  	</form>
-	</div>
+    <legend>Luogo (Scuola)</legend>
+    <div class="control-group">
+     <label for="citta">Città</label>
+     <select class="large required" id="citta" name="citta">
+      {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+     </select>
+     <label for="commissione_sel">Scuola (Commissione Mensa)</label>
+     <div class="input">
+      <input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+      <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
+     </div>
+    </div>
+    <div class="form-actions">
+     <input type="submit" class="btn btn-primary" value="Salva">
+     <button type="reset" class="btn">Annulla</button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
