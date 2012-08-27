@@ -137,6 +137,12 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: TagObj
+  properties:
+  - name: tag
+  - name: creato_il
+    direction: desc
+
 - kind: ZonaOffset
   properties:
   - name: __key__
