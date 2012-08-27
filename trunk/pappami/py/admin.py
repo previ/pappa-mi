@@ -549,6 +549,15 @@ class CMAdminHandler(BasePage):
         isp.put()
       self.response.out.write("fixIsp Ok")
       return
+
+    if self.request.get("cmd") == "fixTagObj":
+      for tagobj in TagObj().query():
+        obj = tagobj.obj.get()
+        if obj:
+          tagobj.creato_il = tagobj.obj.get().creato_il
+          tagobj.put()
+      self.response.out.write("fixTagObj Ok")
+      return
     
     if self.request.get("cmd") == "initAuthR":
       logging.info("initAuth")

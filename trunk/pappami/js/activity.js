@@ -348,7 +348,7 @@ function filteractivities(q) {
   }
   offset=0;
   $("#nav-sec").children().removeClass("loading");
-  var item = $("#"+query.replace(/&/gi, "").replace(/=/gi, ""))
+  var item = $("#"+query.replace(/&/gi, "").replace(/=/gi, "").replace(/ /gi, "__"))
   item.addClass("loading");
   $.ajax({url:'/comments/load?'+query+'&offset='+offset, success: function(data){
     $('#activity_list').html('');
