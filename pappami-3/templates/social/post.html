@@ -48,7 +48,7 @@
 			</ul>
 	{%if user and subscription.can_post%}	
 			<form id="reply_form">
-				 <input class="span8 comment_textarea required" id="reply_message">
+				 <textarea row="3" class="span8 comment_textarea required" id="reply_message"></textarea>
 				 <div id="reply_submit" class="btn btn-primary" type="submit" onclick="onReplySubmitted('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia Risposta</div>
 			
 			</form>
