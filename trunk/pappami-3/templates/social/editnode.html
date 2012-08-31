@@ -13,27 +13,27 @@ $(function(){
 <div id="new_node_form">
  <div class="row">
   <div class="span8">
-   <form action="/social/createnode" method="POST" id="form0" novalidate class="form-horizontal">
+   <form action="/social/editnode/{{node.id}}" method="POST" id="form0" novalidate class="form-horizontal">
+     
     <label>Nome</label>
-    <input cols="80" class="span8 required" name="name" id="node_title_text">
+    <input cols="80" class="span8 required" name="name" id="node_title_text" value="{{node.name}}">
+   	<input type="hidden" name="node_id" value="{{node.key.urlsafe()}}">
+    
     <label>Descrizione</label>
-    <textarea rows="4" class="span8 required" name="description" id="node_description_text"></textarea>
+    <textarea rows="4" class="span8 required" name="description" id="node_description_text" value="{{node.description}}"></textarea>
     <legend>Permessi predefiniti all'iscrizione dell'utente:</legend>
     <div class="control-group">
      <label for="perm_reply">Commentare un post</label>
      <select class="span1 required" id="perm_reply" name="default_reply">
-      <option value="True">Si</option>
-      <option value="False">No</option>
+      {{node.permission_for_edit('reply')}}
      </select>
      <label for="perm_post">Creare un post</label>
-     <select class="span1 required" id="perm_post" name="default_post">
-      <option value="True">Sì</option>
-      <option value="False">No</option>
+     <select class="span1 required" id="perm_post" name="default_post" >
+      {{node.permission_for_edit('post')}}
      </select>
      <label for="perm_admin">Amministrare</label>
      <select class="span1 required" id="perm_admin" name="default_admin">
-      <option value="True">Sì</option>
-      <option value="False">No</option>
+      {{node.permission_for_edit('admin')}}
      </select>
     </div>
         <legend>Luogo (Scuola)</legend>

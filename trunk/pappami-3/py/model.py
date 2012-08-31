@@ -1289,6 +1289,7 @@ class SocialNode(model.Model):
     
     
     def create_open_post(self,content,title,author,resource=None):
+        logging.info(author)
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
             raise base.FloodControlException
@@ -1299,6 +1300,7 @@ class SocialNode(model.Model):
         new_post.title=title
         new_post.resource=resource
         new_post.put()
+        
         memcache.add("FloodControl-"+str(author.key), 1,time=30)
         return new_post.key
         
@@ -1359,7 +1361,16 @@ class SocialNode(model.Model):
         SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
     def delete_post(self,post):
         pass
-     
+    def permission_for_edit(self, permission):
+        perm=getattr(self,"default_"+permission)
+        logging.info(perm)
+        if perm is True: 
+            return "<option selected value='True'>S&igrave;</option>\n<option value='False'>No</option>"
+        
+        else:
+            return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
+    
+    
     @classmethod    
     def get_all_cursor(cls, cursor):
         if cursor and cursor != "":
@@ -1373,14 +1384,7 @@ class SocialNode(model.Model):
           return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
         else:
           return SocialNode.active_nodes().filter().iter(produce_cursors=True)
-    def get_hot_post(self, amount):
-            
-            recent_posts=self.get_latest_posts(int(10*math.log(amount**2)+amount))
-            for x in recent_posts:
-                setattr(x,'index',x.get_rate())
-                
-           
-            return recent_posts[0:amount-1]
+    
    
    
    
@@ -1397,9 +1401,11 @@ class SocialPost(model.Model):
         return discussion
     def reshare(self,target_node,new_author,new_content, new_title):
         resource=None
+    
         #reshare of a reshare
         if self.resource is not None:
             resource_key=self.resource
+            resource=resource_key.get()
         #reshare of a post
         else:
             #reshare of an already reshared post
@@ -1418,13 +1424,10 @@ class SocialPost(model.Model):
                 resource_key=resource.key
             else:
                 resource_key=resource.key
-        
-        resource.publish(target_node,new_content,new_title,new_author,resource_key)
+                
+        new_post=resource.publish(target_node,new_content,new_title,new_author)
         if new_post:
-            if not resource:
-                resource=resource_key.get()
-            
-            resource.put()
+                      
             return new_post
         
     def create_reply_comment(self,content,author):
@@ -1506,8 +1509,9 @@ class SocialResource(model.Expando):
         template = jinja_environment.get_template("social/resources/resource.html")
        
         return template.render(template_values)  
-    def publish(self,target_node,new_author,new_content, new_title):
-        target_node.create_open_post(new_content,new_title,new_author,resource_key)
+    def publish(self,target_node,new_content, new_title,new_author):
+        new_post=target_node.get().create_open_post(new_content,new_title,new_author,self.key)
+        return new_post
     
 class SocialComment(model.Model):
     author=model.KeyProperty()

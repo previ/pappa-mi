@@ -230,7 +230,7 @@ $("form#reply_form").validate({
 		 data: data,
 		 dataType:'json',
 		 success:function(data){
-			 console.log(data.response)
+			
 			 
 			 if (data.response!="success")
 				 {
@@ -270,6 +270,9 @@ function onOpenPostSubmitted(user,node){
 	      }
 	
 	});
+	
+	
+	
 	if($("#new_post_form").valid()){
 	data= {}
 	data['user']= user
@@ -281,11 +284,102 @@ function onOpenPostSubmitted(user,node){
 		 type: 'POST',
 		 url:'/social/managepost?cmd=create_open_post', 
 		 data: data,
+		 dataType:'json',
 		 success:function(data){
+
+			 
+			 if (data.response!="success")
+				 {
+				if(data.response=="flooderror")
+				 {alert("Flood Error")
+					 return
+						
+				 }
+			 	 }
+			 
 			 window.location.reload()
 			 }})
-	}
+	
 }
+}
+
+function onPostEdit(user,node,post){
+	data= {}
+	data['user']= user
+	data['node']=node
+	
+	data['post']=post
+	data['content']=$("#post_content_"+post).html()
+	console.log(data.content)
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/managepost?cmd=content_edit', 
+		 data: data,
+		 success:function(data){
+
+			 $("#edit_hollow_"+post).html(data)
+			  $("#edit_form_"+post).tinymce({
+			     // Location of TinyMCE script
+			     script_url : '/js/tiny_mce/tiny_mce.js',     
+			     // General options
+			     width : "100%",
+			     //height: "300px",
+			     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+			     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+			     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+			     theme : "advanced",
+			     plugins : "autolink, autoresize", 
+			     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+			     theme_advanced_buttons2 : "",
+			     theme_advanced_buttons3 : "",			
+			     theme_advanced_toolbar_location : "top",
+			     theme_advanced_toolbar_align : "left",
+			     theme_advanced_resizing : false     
+			    });
+			 $(".s_post_commands").hide()
+			 $("#post_content_"+post).hide()
+			 
+			 }})
+}
+
+
+function onEditCancel(user,node,post){
+	
+	$("#edit_hollow_"+post).empty()
+	$(".s_post_commands").show()
+	$("#post_content_"+post).show()
+	 
+	
+	}
+function onPostEditSubmit(user,node,post){
+	data= {}
+	data['user']= user
+	data['node']=node
+	data['post']=post
+	data['content']=$("#edit_form_"+post).attr("value")
+
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/managepost?cmd=edit_open_post', 
+		 data: data,
+		 dataType:'json',
+		 success:function(data){
+			 
+			if (data.response!="success")
+				 {
+			if(data.response=="flooderror")
+			{alert("Flood Error")
+					 return
+			}
+			 	 }
+			 $("#post_content_"+post).html(data.content)
+			 $("#edit_hollow_"+post).empty()
+			 $("#post_content_"+post).show()
+			 
+			 $(".s_post_commands").show()
+			 }})
+	}
+	
 
 
 function onPostReshare(user,post,node){
@@ -299,6 +393,18 @@ function onPostReshare(user,post,node){
 		 url:'/social/managepost?cmd=reshare_open_post', 
 		 data: data,
 		 success:function(data){
+
+			 
+			 if (data.response!="success")
+				 {
+				if(data.response=="flooderror")
+				 {alert("Flood Error")
+					 return
+						
+				 }
+			 	 }
+		 
+			 
 			 window.location.reload()
 			 }})
 	
@@ -317,6 +423,8 @@ function onReplyDelete(user,post,node,reply){
 		 url:'/social/managepost?cmd=delete_reply_post', 
 		 data: data,
 		 success:function(data){
+			 
+			 
 			 window.location.reload()
 			 }})
 	
