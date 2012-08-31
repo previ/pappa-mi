@@ -24,10 +24,9 @@ class NodeHandler(BasePage):
         self.response.out.write("");
   
   def get(self,node_id):
-    node=model.Key("SocialNode",int(node_id))
-    node_i=node.get()
-    
-    #if node does not exist
+    node_i=model.Key(urlsafe=node_id).get()
+    node=node_i.key
+       #if node does not exist
     if not node_i or node_i.active==False :
        
         self.response.clear() 
@@ -38,7 +37,7 @@ class NodeHandler(BasePage):
         self.response.out.write(t)
         return
     
-    latest_posts=node.get().get_latest_posts(10)
+    latest_posts=node.get().get_latest_posts(20)
 
     for x in latest_posts: 
     
@@ -115,10 +114,8 @@ class SocialPostHandler(BasePage):
     def get(self,id):
         
         op=model.Key(urlsafe=id).get()
-        node=op.key.parent()
-        op.commissario=Commissario.get_by_user(op.author.get())
-        
-        if op is None:
+                            
+        if op is None or type(op) is not SocialPost:
             self.response.clear() 
             self.response.set_status(404)
             template = jinja_environment.get_template('404_custom.html')
@@ -126,7 +123,8 @@ class SocialPostHandler(BasePage):
             t = template.render(c)
             self.response.out.write(t)
             return
-        
+        node=op.key.parent()
+        op.commissario=Commissario.get_by_user(op.author.get())
         replies=[]
         for x in op.get_discussion():
             
@@ -149,6 +147,7 @@ class SocialPostHandler(BasePage):
                            'replies': replies,
                            'post': op,
                            'node':node.get(),
+                           'user':self.get_current_user(),
                            'subscription':current_sub
                                               }                    
         
@@ -250,7 +249,7 @@ class SocialSubscribeHandler(webapp.RequestHandler):
                  self.response.headers["Content-Type"] = "text/xml"
                  self.response.out.write("<response>success</response>")
              
-class SocialCreatePost(SocialAjax):
+class SocialCreatePost(SocialAjaxHandler):
    def post(self):
        
       
@@ -259,14 +258,12 @@ class SocialCreatePost(SocialAjax):
        cmd = self.request.get('cmd')
 
        if cmd == "create_open_post":
-           raise FloodControlException
            self.response.headers["Content-Type"] = "text/xml"
            node=node.get()
            if not node.get_subscription(user).can_post:
                self.response.out.write("<response>error</response>")
                return
-           node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
-           
+           post=node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
            
            self.response.out.write("<response>success</response>")
            
@@ -332,8 +329,43 @@ class SocialCreatePost(SocialAjax):
                memcache.add("SocialPost-"+str(self.request.get('post')),post)
                
            #completare creazione nuovo post con risorsa
-           post.reshare(node,user,"abc","cde")      
+           post.reshare(node,user,"abc","cde")
         
+       if cmd == "edit_open_post":
+
+          logging.info(self.request.get('content'))
+          post=model.Key(urlsafe=self.request.get('post')).get()
+          post.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
+          post=post.put()
+          
+          memcache.add("SocialPost-"+str(self.request.get('post')),post.get())
+          
+          if post:
+              response = {'response':'success','content':post.get().content}
+              json = simplejson.dumps(response)
+              self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+              self.response.out.write(json)
+             
+          
+               
+       if cmd == "edit_reply_post":
+           pass
+       if cmd == "content_edit":
+           template_values = {
+                           'template': 'social/contentedit.html',
+                           'post':  self.request.get('post'),
+                           'node': self.request.get('node'),
+                           'user': self.request.get('user'),
+                           'content': self.request.get('content'),
+                           
+                                              }                    
+        
+           template = jinja_environment.get_template(template_values["template"])
+   
+           self.response.write(template.render(template_values))
+
+
+       
 class SocialCreateNodeHandler(BasePage):
     @user_required
     def get(self):  
@@ -355,10 +387,44 @@ class SocialCreateNodeHandler(BasePage):
         node.founder=self.get_current_user().key
         node.put()
         
-        self.redirect("/social/node/"+str(node.key.id()))
+        self.redirect("/social/node/"+str(node.key.urlsafe()))
 
 
-
+class SocialEditNodeHandler(BasePage):
+        def get(self,id):  
+            node=model.Key(urlsafe=id).get()
+            if node is None or type(node) is not SocialNode:
+                self.response.clear() 
+                self.response.set_status(404)
+                template = jinja_environment.get_template('404_custom.html')
+                c={"error": "Il post a cui stai provando ad accedere non esiste"}
+                t = template.render(c)
+                self.response.out.write(t)
+                return
+            
+            template_values = {
+                            "content": 'social/editnode.html',
+                            "node":node,
+                           
+                            "citta" : Citta.get_all(),
+                            
+                            }
+            
+            
+            
+            self.getBase(template_values)
+        def post(self,id):
+            logging.info(self.request.get("node_id"))
+            node=model.Key(urlsafe=self.request.get("node_id")).get()
+            node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
+            node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
+            node.default_reply=bool(self.request.get("default_reply"))
+            node.default_post=bool(self.request.get("default_post"))
+            node.default_admin=bool(self.request.get("default_admin"))
+            node.founder=self.get_current_user().key
+            node.put()
+            
+            self.redirect("/social/node/"+str(node.key.id()))
                       
 class SocialMainHandler(BasePage):
     @user_required
@@ -381,7 +447,7 @@ class SocialMainHandler(BasePage):
         
         
 app = webapp.WSGIApplication([
-    ('/social/node/(\d+)', NodeHandler),
+    ('/social/node/(.*)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
     ('/social/post/(.*)', SocialPostHandler),
     ('/social/managepost',SocialCreatePost),
@@ -389,6 +455,8 @@ app = webapp.WSGIApplication([
     ('/social/socialmap',SocialMapHandler),
     ('/social/subscribe', SocialSubscribeHandler),
     ('/social/createnode', SocialCreateNodeHandler),
+    ('/social/editnode/(.*)', SocialEditNodeHandler),
+    
     ('/social/main', SocialMainHandler),
     ],
                              

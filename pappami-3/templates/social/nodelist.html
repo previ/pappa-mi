@@ -19,11 +19,12 @@ $(document).ready(function () {
 	<li class="span4">
 		<div class="thumbnail">
 			<div class="node">
-				<div class="s_node_name"><a href="/social/node/{{node.key.id()}}">{{ node.name }}</a></div>
+				<div class="s_node_name"><a href="/social/node/{{node.key.urlsafe()}}">{{ node.name }}</a></div>
 				<div class="s_node_description">{{node.description}}</div>
 			</div>
 		</div>
 	</li>
 {% endfor %}
 </ul>
+
 

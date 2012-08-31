@@ -58,7 +58,7 @@ class ActivityFilter():
   group = None
 
 
-class SocialAjax(webapp.RequestHandler):
+class SocialAjaxHandler(webapp.RequestHandler):
         def dispatch(self):
         # Get a session store for this request.
             try:
@@ -66,7 +66,7 @@ class SocialAjax(webapp.RequestHandler):
             finally:
                 pass
         
-        def handle_exception(self,exception,debug_mode):
+        def handle_exception(self,exception,debug_mode=False):
             
             if type(exception).__name__== FloodControlException.__name__:
                response = {'response':'flooderror'}
@@ -74,8 +74,8 @@ class SocialAjax(webapp.RequestHandler):
                self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
                self.response.out.write(json)
                return
-           
-            raise exception
+            else:
+                super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
         
         def success(self):
             response = {'response':'success'}
@@ -231,7 +231,7 @@ class BasePage(webapp.RequestHandler):
   
   #def getCommissioni(self):
     #return Commissioni.get_all()
-
+    
   @classmethod
   def getTopTags(cls):
     return Tag.get_top_referenced(40)
