@@ -76,12 +76,20 @@ class SocialAjaxHandler(webapp.RequestHandler):
                return
             else:
                 super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
-        
+        def getCommissario(self, user = None):
+            if user is None:
+              user = self.request.user
+            if user :
+              #logging.info("userid: " + str(user.key.id()))
+              return Commissario.get_by_user(user)
+            else:
+              return None
         def success(self):
             response = {'response':'success'}
             json = simplejson.dumps(response)
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
+            
 class BasePage(webapp.RequestHandler):  
   
   #@webapp.cached_property
@@ -109,7 +117,7 @@ class BasePage(webapp.RequestHandler):
   def session(self):
       # Returns a session using the default cookie key.
     return self.session_store.get_session(backend="memcache")   
-    
+  
   def get_context(self):
     ctx = self.session.get("ctx")
     if ctx == None:
@@ -257,7 +265,7 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
+    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
     tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
     msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
