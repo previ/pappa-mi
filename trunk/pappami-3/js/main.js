@@ -4,20 +4,20 @@ var cache = {},	lastXhr, city = null;
 var combo_config = {
   'navi_simple' : true,
   'lang'        : 'it',
-  'sub_info'    : false,
   'select_only' : true,
   'primary_key' : 'value',
   'bind_to'	: 'selected',
   'field'	: 'label',
   'db_table'    : 'citta',
   'button_img'  : '/img/combobox_button.png',
-  'load_img'    : '/img/ajax-loader.gif'
+  'load_img'    : '/img/ajax-loader.gif',
+  'sub_info'    : false
 }
 
 var init_value = "";
 
 function oncitychanged() {
-  combo_config['init_val'] = init_value;
+  combo_config['init_record'] = init_value;
   if( $("#citta").val() != "" && $("#citta").val() != city) {
     if( !cache[$("#citta").val()] ) {
       var query = { 'city': $("#citta").val() }

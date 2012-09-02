@@ -66,7 +66,7 @@ $(document).ready(function() {
     <li id="cmtype102usertag"><a href="#"  onclick="filteractivities('cm=&type=102&user=&tag=')">Non conformit&agrave;</a></li>
     <li id="cmtype104usertag"><a href="#" onclick="filteractivities('cm=&type=104&user=&tag=')">Note</a></li>    
     <li class="nav-header"><i class="icon-tags"></i>Categorie</li>
-    {%for tag in tags%}<li id="cmtypeusertag{{tag.nome}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>
+    {%for tag in tags%}<li id="cmtypeusertag{{tag.nome|replace(" ","__")}}"><a href="#" onclick="filteractivities('cm=&type=&user=&tag={{tag.nome}}')">{{tag.nome}}</a></li>
     {%endfor%}
    </ul>    
   </div>  
