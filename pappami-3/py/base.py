@@ -257,7 +257,7 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
+    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
     tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
     msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   

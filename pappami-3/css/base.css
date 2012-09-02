@@ -12,6 +12,7 @@ cursor: pointer;
 img.avatar {
 display: inline-block;
 width: 48px;
+max-width: 48px;
 height: 48px;
 vertical-align: top;
 margin-right: 6px;
@@ -206,6 +207,9 @@ cursor: pointer;
     top:-5000px;
     left:-5000px;
 }
+
+/* overrides bootstrap z-index=2*/
+.btn-group>.btn:hover,.btn-group>.btn:focus,.btn-group>.btn:active,.btn-group>.btn.active{z-index:0}
 
 /* because bootstrap "label" selector is too generic we have add another selector to override some properties */
 

@@ -200,8 +200,9 @@ Contents
 */
 		);
 		//ãƒœã‚¿ãƒ³ã�®é«˜ã�•ã€�ã‚¿ã‚¤ãƒˆãƒ«å±žæ€§ã€�ç”»åƒ�ã�®ä½�ç½®
-		$button.height(
-			$(combo_input).innerHeight()
+		
+		$button.height(28
+			/*$(combo_input).innerHeight()
 /* &&& 2012å¹´3æœˆ9æ—¥ rz3005ã�•ã‚“ä¿®æ­£ã€‚å•�é¡Œã�Œã�ªã�‘ã‚Œã�°ã�„ã�šã‚Œå‰Šé™¤ã€‚		
 			$(combo_input).height() +
 			parseInt($(combo_input).css('padding-top'), 10) +

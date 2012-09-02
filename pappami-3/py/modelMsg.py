@@ -50,7 +50,7 @@ class Messaggio(model.Model):
         tag = Tag.get_by_name(tagname)
         if tag:
           count = 0
-          for tagobj in TagObj.get_by_tag(tag):
+          for tagobj in TagObj.get_by_tag(tag, offset):
             count += 1
             if count > Const.ACTIVITY_FETCH_LIMIT:
               break
@@ -379,14 +379,15 @@ class Tag(model.Model):
 class TagObj(model.Model):
   tag = model.KeyProperty(kind=Tag)
   obj = model.KeyProperty()
+  creato_il = model.DateTimeProperty(auto_now_add=True)
   
   @classmethod
   def get_by_obj_key(cls, obj):
     return TagObj.query().filter(TagObj.obj == obj)
   
   @classmethod
-  def get_by_tag(cls, tag):
-    return TagObj.query().filter(TagObj.tag == tag.key)
+  def get_by_tag(cls, tag, offset):
+    return TagObj.query().filter(TagObj.tag == tag.key).order(-TagObj.creato_il).fetch(limit=Const.ACTIVITY_FETCH_LIMIT, offset=offset*Const.ACTIVITY_FETCH_LIMIT)
   
 class Voto(model.Model):
   def __init__(self, *args, **kwargs):
