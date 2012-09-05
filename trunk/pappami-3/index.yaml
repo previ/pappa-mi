@@ -149,11 +149,34 @@ indexes:
   properties:
   - name: creation_date
 
+- kind: SocialComment
+  ancestor: yes
+  properties:
+  - name: creation_date
+    direction: desc
+
 - kind: SocialNode
   properties:
   - name: active
   - name: name
 
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: latest_post_date
+    direction: desc
+
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: starting_date
+
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: starting_date
+    direction: desc
+
 - kind: SocialPost
   ancestor: yes
   properties:
@@ -163,6 +186,18 @@ indexes:
   ancestor: yes
   properties:
   - name: creation_date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: last_comment_date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: latest_comment_date
     direction: desc
 
 - kind: ZonaOffset

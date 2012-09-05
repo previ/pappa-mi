@@ -8,6 +8,34 @@ function onOpenPostFormCancel(){
 $("#new_post_form").slideUp()
 $("#open_post_button").show()
 }
+
+$(document).ready(function () {
+  $("#pagination_errors").hide()
+  loadPosts(undefined)
+});
+
+function loadPosts(current_cursor){
+$.ajax({
+		 type: 'POST',
+		 url:'/social/paginate?cmd=post&node={{node.key.urlsafe()}}&cursor='+current_cursor, 
+		dataType:'json',
+		
+		 success:function(data){
+			if(data.response=="success"){
+			$("#add_posts").unbind("click").click(function(){loadPosts(data.cursor)})
+			 $("#post_list").last().append(data.html)
+			 }
+			 else if(data.response="no_posts"){
+			 	 	$("#add_posts").hide()
+  				$("#pagination_errors").show()
+			 }
+			 
+			 }})
+	
+}
+
+
+
 </script>
 <h2>Dettaglio Nodo</h2>
 <div id="node_name">{{node.name}}</div>
@@ -21,31 +49,7 @@ $("#open_post_button").show()
  </div>
 </div>
 {%endif%}
-<div id="node_posts span8"> 
-	<ul class="thumbnails">
-	{% for post in latest_posts %}
-		<li>
-			<div class="social_post, thumbnail"> 
-				<div class="s_post_avatar">
-					<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
-				</div>
-				<div class="s_post_content">
-					<div class="s_post_header">			
-						<div class="s_post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
-						<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
-						<div class="s_post_date">&nbsp;- il {{post.creation_date.strftime('%d %m %Y')}}</div>
-					</div>				
-					<div class="s_post_body">{{post.content}}</div>									
-					<div class="s_post_commands">
-						{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-					</div>			
-				</div>				
-			</div>
-		</li>	
-	{% endfor%}
-	</ul>
-</div>
-	
+
 {%if user and subscription.can_post%}	
 <div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Inizia Nuova Discussione</div>
 <form id="new_post_form" style="display:none">
@@ -63,3 +67,10 @@ $("#open_post_button").show()
 	</div>
 </form>  
 {%endif%}
+<div id="node_posts span8"> 
+	<ul id="post_list" class="thumbnails">
+	
+	</ul>
+</div>
+	<div id="add_posts" class="btn btn-primary" type="submit">Mostra altri post</div>
+<div id="pagination_errors">Non ci sono altri post</div>

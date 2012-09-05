@@ -1,15 +1,104 @@
-<div id="main_stream">
-	{%for post in hot_post%}
+<script type="text/javascript">
+
+
+$(document).ready(function () {
+$(".pagination_errors").hide()
+  $("div#main_stream").children().hide()
+  init()
+});
+
+function onNodeClick(){
+
+
+$(this).siblings(".node_selected").removeClass("node_selected")
+$(this).addClass("node_selected")
+key=$(this).attr('key')
+
+loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
+
+}
+
+function init(){
+$("ul#node_list li:first-child").addClass("node_selected")
+$("ul#node_list li").click(onNodeClick)
+key=$("li.node_selected").attr('key')
+loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
+
+}
+
+function onMoreClick(key){
+
+loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
+
+
+}
+
+
+function loadPosts(key,current_cursor){
+$("ul#node_list li").unbind('click')
+if(!$("div#node_stream_"+key).hasClass('no_more_posts')){
+$.ajax({
+		 type: 'POST',
+		 url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
+		dataType:'json',
+		
+		 success:function(data){
+		 $("#node_stream_"+key).siblings().hide()
+		 $("div#node_stream_"+key).attr("next_cursor",data.cursor).show()
+		 $("ul#node_list li").click(onNodeClick)
+		 
+			if(data.response=="success"){
+			  $("div#node_stream_"+key+" ul").last().append(data.html)
+			 }
+			 else if(data.response="no_posts"){
+			 	$("div#node_stream_"+key).addClass('no_more_posts')
+			 	if(current_cursor!=undefined){
+			 	$("div#add_posts_"+key).hide()
+			 	$("div#node_stream_"+key+" .pagination_errors").show()
+			 	}
+			 }
+			 
+			 }})
+	}
+ else{
+  	$("ul#node_list li").click(onNodeClick)
+	$("#node_stream_"+key).siblings().hide()
+	$("div#node_stream_"+key).show()
+		 	
+ }
+}
+
+
+
+</script>
+
+<div id="node_selector">
 	
-	<div class="social_post" style="margin:10px;border:2px solid;"> 
+	<ul id="node_list" style="margin:10px;border:2px solid;"> 
+	{%for node in node_list%}
+	
 			
-			<div class="post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
-			<div class="post_author">{{post.commissario.nome}}</div>
-			<div class="post_date">{{post.creation_date.strftime('%d %m %Y')}}</div>
-		</div>
+			<li class="node_list" key="{{node.key.urlsafe()}}">{{node.name}}</li> 
+			
 	
 	{%endfor%}
 
+		</ul>	
+
+
+</div>
+
+
+<div id="main_stream">
+{%for node in node_list%}
+<div id="node_stream_{{node.key.urlsafe()}}">
+	<ul>
+
+	</ul>
+	<div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
+	<div class="pagination_errors" >Non ci sono altri post</div>
+</div>
+{%endfor%}
 
 
 </div>
