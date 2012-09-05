@@ -14,18 +14,21 @@
 				<div  id="post_content_{{post.key.urlsafe()}}">{{post.content}}</div>
 				<div  id="edit_hollow_{{post.key.urlsafe()}}"></div>
 				
-				<div>{% if post.resource%}
+				<div>
+				{% if post.resource%}
 				
 				{{post.resource.get().render()}}
 				{% endif%}	
 				</div>			
 				</div>									
+			{% if user %} 
 				<div class="s_post_commands">
  					{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-					{%if subscription.can_admin%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
+					{%if subscription.can_admin or user.key==post.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
 					
 					<button class="btn btn-primary" onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')"><i class="icon-share-alt"></i>Reshare</button>
-				</div>			
+				</div>
+			{% endif%}			
 			</div>			
 		</div>			
 
@@ -47,11 +50,14 @@
 								<div  id="post_content_{{reply.key.urlsafe()}}">{{reply.content}}</div>
 								<div  id="edit_hollow_{{reply.key.urlsafe()}}"></div>
 							</div>				
+						{% if user %} 
+			
 							<div class="s_post_commands">
 								{%if subscription.can_admin or user==reply.author%}<button class="btn btn-danger" onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-								{%if subscription.can_admin%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
+								{%if subscription.can_admin  or user.key==reply.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
 					
-							</div>							
+							</div>		
+						{% endif%}							
 						</div>			
 					</div>
 				</li>	

@@ -38,3 +38,7 @@ float:right;
 .s_replies {
 margin-left:20px;
 }
+.node_selected{
+	background-color:grey;
+	
+}

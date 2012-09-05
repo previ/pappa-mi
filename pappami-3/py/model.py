@@ -19,6 +19,8 @@ import jinja2
 import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
+SOCIAL_FLOOD_TIME=5
+
 class Citta(model.Model):
   nome = model.StringProperty()
   codice =  model.StringProperty()
@@ -1273,7 +1275,8 @@ class SocialNode(model.Model):
     default_reply=model.BooleanProperty(default=True)
     default_admin=model.BooleanProperty(default=False)
     is_public=model.BooleanProperty(default=True)
-    
+    latest_post_date=model.DateTimeProperty(auto_now="")
+    latest_post=model.KeyProperty()
     
     
     @classmethod
@@ -1289,7 +1292,6 @@ class SocialNode(model.Model):
     
     
     def create_open_post(self,content,title,author,resource=None):
-        logging.info(author)
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
             raise base.FloodControlException
@@ -1300,8 +1302,10 @@ class SocialNode(model.Model):
         new_post.title=title
         new_post.resource=resource
         new_post.put()
-        
-        memcache.add("FloodControl-"+str(author.key), 1,time=30)
+        self.latest_post=new_post.key
+        self.latest_post_date=new_post.creation_date
+        self.put()
+        memcache.add("FloodControl-"+str(author.key), 1,time=SOCIAL_FLOOD_TIME)
         return new_post.key
         
         
@@ -1370,6 +1374,12 @@ class SocialNode(model.Model):
         else:
             return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
     
+    def get_latest_post(self):
+        last_post=memcache.get("last_post_"+str(self.key.id()))
+        if not last_post:
+            last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.creation_date).fetch(1)
+            memcache.add("last_post_"+str(self.key.id()),last_post)
+        return last_post
     
     @classmethod    
     def get_all_cursor(cls, cursor):
@@ -1390,11 +1400,14 @@ class SocialNode(model.Model):
    
 class SocialPost(model.Model):
     author=model.KeyProperty()
-    content=model.StringProperty(default="")
+    
+    content=model.TextProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
     title=model.StringProperty(default="")
     resource=model.KeyProperty()
+    latest_comment_date=model.DateTimeProperty(auto_now=True)
+    latest_comment=model.KeyProperty()
     def get_discussion(self):
         op=self.key
         discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
@@ -1439,7 +1452,11 @@ class SocialPost(model.Model):
         new_comment.author=author.key
         new_comment.content=content
         new_comment.put()
-        memcache.add("FloodControl-"+str(author.key), 1,time=30)
+        self.latest_comment_date=new_comment.creation_date
+        self.latest_comment=new_comment.key
+        self.put()
+        
+        memcache.add("FloodControl-"+str(author.key), 1,time=SOCIAL_FLOOD_TIME)
         
         
     def get_all_by_author(author_t):
@@ -1449,10 +1466,15 @@ class SocialPost(model.Model):
     def delete_reply_comment(self,reply_id):
         reply=model.Key(urlsafe=reply_id)
         reply.delete()
-    #this method calculate the rate for a single post
-    
-    
-    
+        
+    #deprecated
+    def __get_latest_comment(self):
+        latest_last_comment=memcache.get("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()))
+        if not latest_comment:
+            latest_comment=self.latest_comment      
+            memcache.add("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()),latest_comment)
+        return latest_comment
+        
     def get_comment_amt(self):
         
         return SocialComment.query(ancestor=self.key).count()
@@ -1477,9 +1499,9 @@ class SocialNodeSubscription(model.Model):
         self.put()
         
     @classmethod
-    def get_nodes_by_user(self,user_t):
-        subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).fetch()
-        node_list=[i.key.parent().get() for i in subscriptions_list]
+    def get_nodes_by_user(self,user_t, order_method):
+        subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
+        node_list=[i.key.parent().get() for i in subscriptions_list if i.key.parent().get()]
         return node_list
     
 class SocialResource(model.Expando):
@@ -1515,7 +1537,7 @@ class SocialResource(model.Expando):
     
 class SocialComment(model.Model):
     author=model.KeyProperty()
-    content=model.StringProperty(default="")
+    content=model.TextProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
  

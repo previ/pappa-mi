@@ -279,14 +279,13 @@ function onOpenPostSubmitted(user,node){
 	data['node']=node
 	data['content']=$("#post_content_text").attr("value")
 	data['title']=$("#post_title_text").attr("value")
-
 	$.ajax({
 		 type: 'POST',
 		 url:'/social/managepost?cmd=create_open_post', 
 		 data: data,
 		 dataType:'json',
 		 success:function(data){
-
+			 console.log(data)
 			 
 			 if (data.response!="success")
 				 {
@@ -310,7 +309,6 @@ function onPostEdit(user,node,post){
 	
 	data['post']=post
 	data['content']=$("#post_content_"+post).html()
-	console.log(data.content)
 	$.ajax({
 		 type: 'POST',
 		 url:'/social/managepost?cmd=content_edit', 

@@ -1,12 +1,36 @@
 <script type="text/javascript">
 
 $(document).ready(function () {
+  $("#pagination_errors").hide()
   loadSocialMap( {{geo.lat}} , {{geo.lon}} );
-});      
+  loadNodes(undefined)
+});
+
+function loadNodes(current_cursor){
+	
+$.ajax({
+		 type: 'POST',
+		 url:'/social/paginate?cmd=node&cursor='+current_cursor, 
+		dataType:'json',
+		 success:function(data){
+		 	if(data.response=="success"){
+			$("#add_nodes").unbind("click").click(function(){loadNodes(data.cursor)})
+			 $("#node_list").last().append(data.html)
+			 }
+			 else if(data.response="no_nodes"){
+			 	$("#add_nodes").hide()
+  				$(".pagination_errors").show()
+			 }
+			 
+			 }})
+	
+}
+
+    
 </script>
 <h2>Nodi</h2>
 <div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div>
-{%if user%}
+{%if user and debug%}
 <div class="well" style="padding: 10px;">
  <div class="btn-toolbar">
   <a class="btn btn-primary" href="/social/createnode">Aggiungi Nodo</a>
@@ -14,17 +38,10 @@ $(document).ready(function () {
 </div>
 {%endif%}
 <h3>Elenco Nodi</h3>
+
 <ul class="thumbnails">
-{%for node in nodelist%}
-	<li class="span4">
-		<div class="thumbnail">
-			<div class="node">
-				<div class="s_node_name"><a href="/social/node/{{node.key.urlsafe()}}">{{ node.name }}</a></div>
-				<div class="s_node_description">{{node.description}}</div>
-			</div>
-		</div>
-	</li>
-{% endfor %}
+<div id="node_list">
+</div>
 </ul>
-
-
+<div id="add_nodes" class="btn btn-primary" type="submit">Mostra altri nodi</div>
+<div class="pagination_errors">Non ci sono altri nodi </div>
