@@ -258,7 +258,7 @@ class SocialManagePost(SocialAjaxHandler):
    def post(self):
        
       
-       user=model.Key(urlsafe=self.request.get('user')).get()
+       user=self.request.user
        node=model.Key(urlsafe=self.request.get('node'))
        cmd = self.request.get('cmd')
 
@@ -324,13 +324,16 @@ class SocialManagePost(SocialAjaxHandler):
                
            self.success()
        if cmd== "reshare_open_post":
+           
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
                post=model.Key(urlsafe=self.request.get('post')).get()
                memcache.add("SocialPost-"+str(self.request.get('post')),post)
                
-           #completare creazione nuovo post con risorsa
-           post.reshare(node,user,"abc","cde")
+           title=self.request.get('title')
+           content=self.request.get('content')
+           
+           post.reshare(node,user,content,title)
         
        if cmd == "edit_open_post":
 
@@ -406,7 +409,6 @@ class SocialEditNodeHandler(BasePage):
             template_values = {
                             "content": 'social/editnode.html',
                             "node":node,
-                           
                             "citta" : Citta.get_all(),
                             
                             }
@@ -494,7 +496,6 @@ class SocialPaginationHandler(SocialAjaxHandler):
                   
                 if cmd=="post_main":
                         node=model.Key(urlsafe=self.request.get("node"))
-                        logging.info(cursor)
                         if not cursor or cursor == "undefined":
                             postlist, next_curs, more = SocialPost.query(ancestor=node).order(-SocialPost.latest_comment_date).fetch_page(10) 
                         else:
@@ -542,7 +543,29 @@ class SocialMainHandler(BasePage):
         }
         self.getBase(template_values)
         
+class SocialDLoadHandler(SocialAjaxHandler):
+    @user_required
+    def post(self):
+        cmd=self.request.get("cmd")
+        user=self.request.user
         
+        if cmd=="modal_reshare":
+            template_values = {
+                                    "my_nodelist":SocialNodeSubscription.get_nodes_by_user(user) ,
+                                    "post":self.request.get("post")
+        
+                                    }
+            
+            
+            
+            template = jinja_environment.get_template("social/ajax/modal_reshare.html")
+            html=template.render(template_values)
+            response = {'response':'success','html':html}
+            json = simplejson.dumps(response)
+            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+            self.response.out.write(json)
+        
+                
         
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
@@ -556,6 +579,7 @@ app = webapp.WSGIApplication([
     ('/social/editnode/(.*)', SocialEditNodeHandler),
     ('/social/paginate', SocialPaginationHandler),
     ('/social/main', SocialMainHandler),
+    ('/social/dload', SocialDLoadHandler),
     ],
                              
     debug = True, config=config)
