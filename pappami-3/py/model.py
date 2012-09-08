@@ -1499,7 +1499,11 @@ class SocialNodeSubscription(model.Model):
         self.put()
         
     @classmethod
-    def get_nodes_by_user(self,user_t, order_method):
+    def get_nodes_by_user(self,user_t, order_method=None):
+        
+        if not order_method:
+            order_method=SocialNodeSubscription.starting_date
+        
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
         node_list=[i.key.parent().get() for i in subscriptions_list if i.key.parent().get()]
         return node_list

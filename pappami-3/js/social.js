@@ -385,6 +385,28 @@ function onPostReshare(user,post,node){
 	data['user']= user
 	data['node']=node
 	data['post']=post
+	$.ajax({
+		 type: 'POST',
+		 url:'/social/dload?cmd=modal_reshare', 
+		 data: data,
+		 dataType:'json',
+		 success:function(data){
+			 
+			 $("#modal_reshare").html(data.html)
+				$("#example").modal();
+			 }})
+			 
+
+	
+}
+
+
+function onPostReshareSubmit(post){
+	data= {}
+	data['post']=post
+	data['title']=$("#post_title_text_"+post).attr('value')
+	data['content']=$("#post_content_text_"+post).attr('value')
+	data['node']=$("#node_selector_"+post+" option:selected").val()
 	console.log(data)
 	$.ajax({
 		 type: 'POST',
@@ -402,8 +424,8 @@ function onPostReshare(user,post,node){
 				 }
 			 	 }
 		 
-			 
 			 window.location.reload()
+			
 			 }})
 	
 }
