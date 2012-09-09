@@ -11,7 +11,8 @@ var offset = 0;
 var markersArray = [];
 var lat;
 var lon;
-
+var time_left;
+var floodErrorTimer;
 var image = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/school.png',
       new google.maps.Size(32, 37),
       new google.maps.Point(0,0),
@@ -235,7 +236,9 @@ $("form#reply_form").validate({
 			 if (data.response!="success")
 				 {
 				if(data.response=="flooderror")
-				 {alert("Flood Error")
+				 {
+					onFloodError(data)
+					
 					 return
 						
 				 }
@@ -285,8 +288,7 @@ function onOpenPostSubmitted(user,node){
 		 data: data,
 		 dataType:'json',
 		 success:function(data){
-			 console.log(data)
-			 
+			
 			 if (data.response!="success")
 				 {
 				if(data.response=="flooderror")
@@ -393,11 +395,71 @@ function onPostReshare(user,post,node){
 		 success:function(data){
 			 
 			 $("#modal_reshare").html(data.html)
-				$("#example").modal();
+				$("#reshare_"+post).modal();
 			 }})
 			 
 
 	
+}
+
+function onSuccess(data){
+	if(data.response=="success"){
+	
+	if(data.url)
+		{
+		window.location.href=data.url
+		
+		}
+	else
+		window.location.reload()
+		
+	}
+	
+}
+function sleep(milliseconds) {
+	  var start = new Date().getTime();
+	  for (var i = 0; i < 1e7; i++) {
+	    if ((new Date().getTime() - start) > milliseconds){
+	      break;
+	    }
+	  }
+	}
+
+function floodUpdate(){
+	
+	time_left -=1
+	if(time_left==0){
+		
+		$("#flood_error").modal('hide')
+	
+	}
+		
+	
+	message=time_left+" second"
+	if(time_left==1)
+		message=message+"o"
+	else
+		message=message+"i"
+	
+	span.html(message)
+	
+}
+
+
+function onFloodError(data){
+	$(".main").append(data.html)
+	$("#flood_error").modal()
+	$('#flood_error').on('hide', function () {
+		
+		clearInterval( floodErrorTimer)
+		$("#flood_error").remove()
+})
+	i=0
+	time_left=data.time
+	span=$('.seconds_left')
+	time_left
+	floodUpdate()
+	floodErrorTimer=setInterval(function() {floodUpdate() }, 980);
 }
 
 
@@ -407,11 +469,11 @@ function onPostReshareSubmit(post){
 	data['title']=$("#post_title_text_"+post).attr('value')
 	data['content']=$("#post_content_text_"+post).attr('value')
 	data['node']=$("#node_selector_"+post+" option:selected").val()
-	console.log(data)
 	$.ajax({
 		 type: 'POST',
 		 url:'/social/managepost?cmd=reshare_open_post', 
 		 data: data,
+		 dataType:'json',
 		 success:function(data){
 
 			 
@@ -424,7 +486,7 @@ function onPostReshareSubmit(post){
 				 }
 			 	 }
 		 
-			 window.location.reload()
+			 onSuccess(data)
 			
 			 }})
 	
