@@ -69,7 +69,17 @@ class SocialAjaxHandler(webapp.RequestHandler):
         def handle_exception(self,exception,debug_mode=False):
             
             if type(exception).__name__== FloodControlException.__name__:
-               response = {'response':'flooderror'}
+               template = jinja_environment.get_template("social/ajax/flooderror.html")
+               template_values={
+                                'flood_time':SOCIAL_FLOOD_TIME,
+                                
+                                }     
+               html=template.render(template_values) 
+               time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+              
+               time=SOCIAL_FLOOD_TIME-time.seconds
+               response = {'response':'flooderror','time':time,'html':html}
+              
                json = simplejson.dumps(response)
                self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
                self.response.out.write(json)
@@ -84,8 +94,12 @@ class SocialAjaxHandler(webapp.RequestHandler):
               return Commissario.get_by_user(user)
             else:
               return None
-        def success(self):
+        def success(self,url=None):
+            
             response = {'response':'success'}
+            if url:
+                response['url']=url
+            
             json = simplejson.dumps(response)
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)

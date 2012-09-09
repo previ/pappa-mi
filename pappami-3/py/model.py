@@ -19,7 +19,7 @@ import jinja2
 import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
-SOCIAL_FLOOD_TIME=5
+SOCIAL_FLOOD_TIME=30
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -1305,7 +1305,7 @@ class SocialNode(model.Model):
         self.latest_post=new_post.key
         self.latest_post_date=new_post.creation_date
         self.put()
-        memcache.add("FloodControl-"+str(author.key), 1,time=SOCIAL_FLOOD_TIME)
+        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         return new_post.key
         
         
@@ -1456,7 +1456,7 @@ class SocialPost(model.Model):
         self.latest_comment=new_comment.key
         self.put()
         
-        memcache.add("FloodControl-"+str(author.key), 1,time=SOCIAL_FLOOD_TIME)
+        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         
         
     def get_all_by_author(author_t):

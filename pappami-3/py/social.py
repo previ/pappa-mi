@@ -333,7 +333,8 @@ class SocialManagePost(SocialAjaxHandler):
            title=self.request.get('title')
            content=self.request.get('content')
            
-           post.reshare(node,user,content,title)
+           post=post.reshare(node,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
+           self.success("/social/post/"+post.urlsafe())
         
        if cmd == "edit_open_post":
 
