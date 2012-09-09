@@ -8,10 +8,8 @@ $(".pagination_errors").hide()
 });
 
 function onNodeClick(){
-
-
-$(this).siblings(".node_selected").removeClass("node_selected")
-$(this).addClass("node_selected")
+$(this).parent().siblings(".active").removeClass("active")
+$(this).parent().addClass("active")
 key=$(this).attr('key')
 
 loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
@@ -19,11 +17,11 @@ loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
 }
 
 function init(){
-$("ul#node_list li:first-child").addClass("node_selected")
-$("ul#node_list li").click(onNodeClick)
-key=$("li.node_selected").attr('key')
-loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
-
+$("#node_list a").click(onNodeClick);
+$("ul#node_list a").click(onNodeClick);
+$("[key]").first().parent().addClass("active");
+key=$("[key]").attr('key');
+loadPosts(key,$("#node_stream_"+key).attr('next_cursor'));
 }
 
 function onMoreClick(key){
@@ -72,33 +70,23 @@ $.ajax({
 
 </script>
 
-<div id="node_selector">
-	
-	<ul id="node_list" style="margin:10px;border:2px solid;"> 
-	{%for node in node_list%}
-	
-			
-			<li class="node_list" key="{{node.key.urlsafe()}}">{{node.name}}</li> 
-			
-	
-	{%endfor%}
 
-		</ul>	
-
-
-</div>
-
-
-<div id="main_stream">
-{%for node in node_list%}
-<div id="node_stream_{{node.key.urlsafe()}}">
-	<ul>
-
-	</ul>
-	<div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
-	<div class="pagination_errors" >Non ci sono altri post</div>
-</div>
-{%endfor%}
-
-
+<div id="node_selector">	
+ <div class="row">
+  <div class="span3">
+   <ul id="node_list" class="nav nav-list well">
+    <li class="nav-header"><i class="icon-tags"></i>Nodi</li>
+    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}</a></li>
+    {%endfor%}
+   </ul>    
+  </div>	
+  <div class="span9" id="main_stream">{%for node in node_list%}
+   <div id="node_stream_{{node.key.urlsafe()}}">
+    <ul class="unstyled">
+    </ul>
+    <div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
+    <div class="pagination_errors" >Non ci sono altri post</div>
+   </div>{%endfor%}
+  </div>
+ </div>
 </div>
