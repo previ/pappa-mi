@@ -40,6 +40,24 @@ class Citta(model.Model):
   def get_first(cls):
     return cls.query().get()
   
+  def create_resource(self):
+      
+      resource=self.get_resource()
+      if resource:
+              return resource
+      else:    
+        resource=SocialResource(parent=self.key,
+                                        name=self.nome,
+                                        type="city",
+                                        geo=self.geo,
+                                        )
+        resource.put()
+  
+  def get_resource(self):
+      resource=SocialResource.query(ancestor=self.key).get()
+      if resource:
+          assert resource.type=="city"
+      return resource
   
 class Configurazione(model.Model):
   nome = model.StringProperty()
@@ -50,7 +68,9 @@ class Configurazione(model.Model):
     return Configurazione.query(Configurazione.nome == name).get().valore
   
   
+      
   
+      
 class CentroCucina(model.Model):  
   def __init__(self, *args, **kwargs):
     self._ce_cu_zo_cache = None
@@ -155,7 +175,28 @@ class Commissione(model.Model):
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
-    
+  
+  def create_resource(self):
+      
+      resource=self.get_resource()
+      if resource:
+              return resource
+      else:    
+        resource=SocialResource(parent=self.key,
+                                        name=self.nome,
+                                        
+                                        type="commission",
+                                        geo=self.geo,
+                                        )
+        resource.put()
+  
+  def get_resource(self):
+      resource=SocialResource.query(ancestor=self.key).get()
+      if resource:
+          assert resource.type=="commission"
+      return resource
+  
+  
   def commissari(self):
     if not self._commissari:
       self._commissari = list()
@@ -1268,7 +1309,6 @@ class SocialNode(model.Model):
     name=model.StringProperty(default="")
     description=model.StringProperty(default="")
     active=model.BooleanProperty(default=True)
-    geo = model.GeoPtProperty()
     founder=model.KeyProperty()
     location=model.KeyProperty(default=None)
     default_post=model.BooleanProperty(default=True)
@@ -1277,6 +1317,9 @@ class SocialNode(model.Model):
     is_public=model.BooleanProperty(default=True)
     latest_post_date=model.DateTimeProperty(auto_now="")
     latest_post=model.KeyProperty()
+    resource=model.KeyProperty()
+    
+    
     
     
     @classmethod
@@ -1309,8 +1352,7 @@ class SocialNode(model.Model):
         return new_post.key
         
         
-    
-        
+
     
         
     def set_position(self,lat,lon):
@@ -1395,7 +1437,6 @@ class SocialNode(model.Model):
         else:
           return SocialNode.active_nodes().filter().iter(produce_cursors=True)
     
-   
    
    
 class SocialPost(model.Model):
@@ -1511,6 +1552,15 @@ class SocialNodeSubscription(model.Model):
 class SocialResource(model.Expando):
     url=model.StringProperty()
     type=model.StringProperty()
+    
+#    def _post_put_hook(self,future):
+#        assert self.key.parent()
+#        count=SocialResource.query(ancestor=self.key.parent()).count()
+#        logging.info(self.key.parent().get())
+#        assert count==1
+#        assert False
+#        logging.info("aaaaaaaaaaaaaaaaaaaaaaaaa")
+#           
     @staticmethod
     def get_resource(key):
         return SocialResource.query(ancestor=key).get()
@@ -1533,8 +1583,23 @@ class SocialResource(model.Expando):
                  "resource":self
         }
         template = jinja_environment.get_template("social/resources/resource.html")
-       
         return template.render(template_values)  
+    
+    def render_city(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/city.html")
+        return template.render(template_values)  
+    def render_commission(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/commission.html")
+                
+        return template.render(template_values)  
+    
+    
     def publish(self,target_node,new_content, new_title,new_author):
         new_post=target_node.get().create_open_post(new_content,new_title,new_author,self.key)
         return new_post

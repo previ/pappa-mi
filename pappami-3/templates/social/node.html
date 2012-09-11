@@ -50,6 +50,8 @@ $.ajax({
 </div>
 {%endif%}
 
+{{node.resource.get().render()}}
+
 {%if user and subscription.can_post%}	
 <div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Inizia Nuova Discussione</div>
 <form id="new_post_form" style="display:none">
@@ -74,3 +76,5 @@ $.ajax({
 </div>
 	<div id="add_posts" class="btn btn-primary" type="submit">Mostra altri post</div>
 <div id="pagination_errors">Non ci sono altri post</div>
+
+

@@ -191,6 +191,42 @@ function drawSmallMap(data) {
   }
 }    
 
+function onSuccess(data){
+	if(data.response=="success"){
+	
+	if(data.url)
+		{
+		window.location.href=data.url
+		
+		}
+	else
+		window.location.reload()
+		
+	}
+	
+}
+
+function floodUpdate(){
+	
+	time_left -=1
+	if(time_left==0){
+		
+		$("#flood_error").modal('hide')
+	
+	}
+		
+	
+	message=time_left+" second"
+	if(time_left==1)
+		message=message+"o"
+	else
+		message=message+"i"
+	
+	span.html(message)
+	
+}
+
+
 
 function onReplySubmitted(user,post,node){
 $("form#reply_form").validate({
@@ -244,7 +280,7 @@ $("form#reply_form").validate({
 				 }
 			 	 }
 			 
-				 window.location.reload()
+			 onSuccess(data)
 			 }})
 	
 }
@@ -290,15 +326,17 @@ function onOpenPostSubmitted(user,node){
 		 success:function(data){
 			
 			 if (data.response!="success")
-				 {
-				if(data.response=="flooderror")
-				 {alert("Flood Error")
-					 return
-						
-				 }
-			 	 }
+			 {
+			if(data.response=="flooderror")
+			 {
+				onFloodError(data)
+				
+				 return
+					
+			 }
+		 	 }
 			 
-			 window.location.reload()
+			 onSuccess(data)
 			 }})
 	
 }
@@ -365,12 +403,16 @@ function onPostEditSubmit(user,node,post){
 		 dataType:'json',
 		 success:function(data){
 			 
-			if (data.response!="success")
-				 {
+			 if (data.response!="success")
+			 {
 			if(data.response=="flooderror")
-			{alert("Flood Error")
-					 return
-			}
+			 {
+				onFloodError(data)
+				
+				 return
+					
+			 }
+		 	 
 			 	 }
 			 $("#post_content_"+post).html(data.content)
 			 $("#edit_hollow_"+post).empty()
@@ -395,64 +437,23 @@ function onPostReshare(user,post,node){
 		 success:function(data){
 			 
 			 $("#modal_reshare").html(data.html)
-				$("#reshare_"+post).modal();
+			 $("#reshare_"+post).modal();
 			 }})
 			 
 
 	
 }
 
-function onSuccess(data){
-	if(data.response=="success"){
-	
-	if(data.url)
-		{
-		window.location.href=data.url
-		
-		}
-	else
-		window.location.reload()
-		
-	}
-	
-}
-function sleep(milliseconds) {
-	  var start = new Date().getTime();
-	  for (var i = 0; i < 1e7; i++) {
-	    if ((new Date().getTime() - start) > milliseconds){
-	      break;
-	    }
-	  }
-	}
-
-function floodUpdate(){
-	
-	time_left -=1
-	if(time_left==0){
-		
-		$("#flood_error").modal('hide')
-	
-	}
-		
-	
-	message=time_left+" second"
-	if(time_left==1)
-		message=message+"o"
-	else
-		message=message+"i"
-	
-	span.html(message)
-	
-}
 
 
-function onFloodError(data){
+function onFloodError(data,callback){
 	$(".main").append(data.html)
 	$("#flood_error").modal()
 	$('#flood_error').on('hide', function () {
 		
 		clearInterval( floodErrorTimer)
 		$("#flood_error").remove()
+		callback()
 })
 	i=0
 	time_left=data.time
@@ -480,10 +481,19 @@ function onPostReshareSubmit(post){
 			 if (data.response!="success")
 				 {
 				if(data.response=="flooderror")
-				 {alert("Flood Error")
+				 {
+					$("#reshare_"+post).modal('hide');
+					onFloodError(data,
+							function(){
+					 $("#reshare_"+post).modal('show')
+					 
+					});
+					
 					 return
-						
 				 }
+					
+						
+				 
 			 	 }
 		 
 			 onSuccess(data)
@@ -504,10 +514,11 @@ function onReplyDelete(user,post,node,reply){
 		 type: 'POST',
 		 url:'/social/managepost?cmd=delete_reply_post', 
 		 data: data,
+		 dataType:'json',
 		 success:function(data){
 			 
 			 
-			 window.location.reload()
+			 onSuccess(data)
 			 }})
 	
 }
@@ -522,8 +533,9 @@ function onPostDelete(user,node,post){
 		 type: 'POST',
 		 url:'/social/managepost?cmd=delete_open_post', 
 		 data: data,
+		 dataType:'json',
 		 success:function(data){
-			 window.location.reload()
+			 onSuccess(data)
 			 }})
 	
 }
