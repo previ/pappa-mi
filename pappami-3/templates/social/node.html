@@ -49,9 +49,9 @@ $.ajax({
  </div>
 </div>
 {%endif%}
-
+{%if node.resource%}
 {{node.resource.get().render()}}
-
+{%endif%}
 {%if user and subscription.can_post%}	
 <div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Inizia Nuova Discussione</div>
 <form id="new_post_form" style="display:none">
