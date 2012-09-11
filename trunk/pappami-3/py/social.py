@@ -96,11 +96,12 @@ class NodeHandler(BasePage):
     
 class SocialTest(BasePage):
   def get(self):
-    
-     node=model.Key(urlsafe="ag9kZXZ-cGFwcGEtbWktaHJyEgsSClNvY2lhbE5vZGUYsfxPDA").get()
-     for i in range(0,11):
-         node.create_open_post("aaa","aaa",self.get_current_user())
-        
+     citta=Citta.get_all()
+     list=[]
+     for i in citta:
+        i.create_resource()
+     
+     
 class NodeListHandler(BasePage):
   def get(self):
     geo = model.GeoPt(41.754922,12.502441)
@@ -269,7 +270,7 @@ class SocialManagePost(SocialAjaxHandler):
                self.response.out.write("<response>error</response>")
                return
            post=node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
-           self.success()
+           self.success("/social/post/"+post.urlsafe())
            
            
        if cmd == "create_reply_post":
@@ -279,7 +280,7 @@ class SocialManagePost(SocialAjaxHandler):
               memcache.add("SocialPost-"+str(self.request.get('post')),post)
            node=node.get()
            if not node.get_subscription(user).can_reply:
-               self.response.out.write("<response>error</response>")
+               self.success()
                return
            
                
@@ -300,29 +301,25 @@ class SocialManagePost(SocialAjaxHandler):
                return
            post.delete_reply_comment(self.request.get('reply'))
            self.response.headers["Content-Type"] = "text/xml"
-           self.response.out.write("<response>success</response>")
+           self.success()
 
        if cmd == "delete_open_post":
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
+           
            if post is None:
               post=model.Key(urlsafe=self.request.get('post')).get()
               
            node=node.get()
            #check admin permissions
            if not node.get_subscription(user).can_admin:
-               self.response.out.write("<response>adminerror</response>")
                return    
            #delete replies
            model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
            post.key.delete()
            memcache.delete("SocialPost-"+str(self.request.get('post')))
            
-           if post.resource:
-               resource=post.resource.get()
-               resource.reshare_amt=resource.reshare_amt-1
-               resource.put()
-               
-           self.success()
+           
+           self.success("/social/node/"+node.key.urlsafe())
        if cmd== "reshare_open_post":
            
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
@@ -390,6 +387,10 @@ class SocialCreateNodeHandler(BasePage):
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))
         node.founder=self.get_current_user().key
+        logging.info(self.request.get("citta"))
+        #node.resource=model.Key(urlsafe=self.request.get("citta")).get().create_resource().key
+   
+        
         node.put()
         
         self.redirect("/social/node/"+str(node.key.urlsafe()))

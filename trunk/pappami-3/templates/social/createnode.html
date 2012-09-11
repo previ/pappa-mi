@@ -40,12 +40,14 @@ $(function(){
     <div class="control-group">
      <label for="citta">Città</label>
      <select class="large required" id="citta" name="citta">
-      {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+      {%for cit in citta%}<option value="{{cit.key.urlsafe()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
      </select>
      <label for="commissione_sel">Scuola (Commissione Mensa)</label>
      <div class="input">
       <input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
+      
       <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/>
+     
      </div>
     </div>
     <div class="form-actions">
