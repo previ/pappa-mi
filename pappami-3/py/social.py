@@ -574,7 +574,7 @@ class SocialDLoadHandler(SocialAjaxHandler):
 class SocialNewsLetter():
     
       def create_newsletter(self):
-          user_list=Commissario.get_all()
+          user_list=Commissario.get_for_newsletter()
           nodes=SocialNode.query().fetch()
           posts_by_node={}
           newsletter_size=10

@@ -22,6 +22,7 @@
       <li><a href="#auth" data-toggle="tab">Account e Password</a></li>
       <li><a href="#privacy" data-toggle="tab">Privacy</a></li>
       <li><a href="#notifications" data-toggle="tab">Notifiche</a></li>
+      <li><a href="#newsletter" data-toggle="tab">Newsletter</a></li>
     </ul>
     <div class="tab-content">
       <div id="profile" class="tab-pane active">
@@ -167,9 +168,22 @@
     </table>
     </fieldset>
       </div>
+      
+     <div id="newsletter" class="tab-pane">
+    <fieldset>
+    <legend>Vuoi ricevere gli aggiornamenti periodici?</legend>
+    <span>S&igrave;</span>
+	<input id="newsletter_true" name="newsletter" value="True" type="radio"{%if newsletter%} checked{%endif%}/>
+    <span>No</span>
+    <input id="newsletter_false" name="newsletter" value="False" type="radio"{%if not newsletter%} checked{%endif%}/>
+    
+    </fieldset>
+      </div>
     </div>
   </div>
 </div>
+
+
 <div class="row">
   <div class="span12">
     <div class="form-actions">

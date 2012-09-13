@@ -34,7 +34,8 @@ class CMProfiloHandler(BasePage):
       'content': 'profilo.html',
       'cmsro': commissario,
       'form': form,
-      'citta': Citta.get_all()      
+      'citta': Citta.get_all(),
+      'newsletter':commissario.newsletter      
     }
     self.getBase(template_values)
     
@@ -46,7 +47,7 @@ class CMProfiloHandler(BasePage):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
       form.citta = model.Key("Citta", int(self.request.get("citta")))
-
+      
       privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
       for what in range(0,len(privacy)):
         for who in range(0,len(privacy[0])):
@@ -58,6 +59,8 @@ class CMProfiloHandler(BasePage):
         if self.request.get("n_"+str(what)):
           notify[what] = int(self.request.get("n_"+str(what)))
           
+      
+      commissario.newsletter=True if self.request.get("newsletter")=="True" else False    
       commissario.privacy = privacy
       commissario.notify = notify
       commissario.put()

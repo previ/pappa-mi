@@ -230,7 +230,7 @@ class Commissario(model.Model):
   avatar_data = model.BlobProperty()
 
   emailComunicazioni = model.StringProperty()
-
+  newsletter=model.BooleanProperty(default=True)
   privacy = model.PickleProperty()
   notify = model.PickleProperty()
 
@@ -268,7 +268,12 @@ class Commissario(model.Model):
   @classmethod
   def get_all(cls):
     return Commissario.query()
-    
+  
+  @classmethod
+  def get_for_newsletter(cls):
+
+    return Commissario.query().filter(Commissario.newsletter==True)
+
   @classmethod
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
