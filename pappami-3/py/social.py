@@ -17,7 +17,7 @@ from gviz_api import *
 from py.model import *
 from form import *
 from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
-
+import random
 def fix_padding(string):
     lens = len(string)
     lenx = lens - (lens % 4 if lens % 4 else 4)
@@ -96,11 +96,15 @@ class NodeHandler(BasePage):
     
 class SocialTest(BasePage):
   def get(self):
-     citta=Citta.get_all()
-     list=[]
-     for i in citta:
-        i.create_resource()
-     
+      newsletter=SocialNewsLetter()
+      test=newsletter.create_newsletter()
+      template_values = {
+      'content': 'social/test.html',
+      'testa': test
+      }
+        
+      self.getBase(template_values)
+    
      
 class NodeListHandler(BasePage):
   def get(self):
@@ -274,14 +278,13 @@ class SocialManagePost(SocialAjaxHandler):
            
            
        if cmd == "create_reply_post":
-           post=memcache.get("SocialPost-"+str(self.request.get('post')))
-           if post is None:
-              post=model.Key(urlsafe=self.request.get('post')).get()
-              memcache.add("SocialPost-"+str(self.request.get('post')),post)
-           node=node.get()
-           if not node.get_subscription(user).can_reply:
-               self.success()
-               return
+           post=model.Key(urlsafe=self.request.get('post')).get()
+           if post:
+            
+               node=node.get()
+               if not node.get_subscription(user).can_reply:
+                   self.success()
+                   return
            
                
            post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
@@ -567,8 +570,48 @@ class SocialDLoadHandler(SocialAjaxHandler):
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
         
+
+class SocialNewsLetter():
+    
+      def create_newsletter(self):
+          user_list=Commissario.get_all()
+          nodes=SocialNode.query().fetch()
+          posts_by_node={}
+          newsletter_size=10
+          titolo="Newsletter Pappa-mi"
+          #build a 
+          for node in nodes:
+              posts=SocialPost.query(ancestor=node.key).order(-SocialPost.creation_date).filter(SocialPost.creation_date>=(datetime.now()-timedelta(weeks=1))).fetch(newsletter_size/2)
+              if posts:
+                  posts_by_node[''+str(node.key.id())]=posts
+          
+          for user in user_list:
+            
+                all_posts=[]
+                final_posts=[]
+                my_nodes=SocialNodeSubscription.get_nodes_by_user(user.usera.get())
+                for node in my_nodes:
+                    if posts_by_node.has_key(''+str(node.key.id())):
+                    
+                       all_posts= all_posts+posts_by_node[''+str(node.key.id())]
+                if len(all_posts)<=newsletter_size/2:
+                    return
                 
-        
+                       
+                for i in range(newsletter_size):
+                    rand=random.randint(0,len(all_posts)-1)
+                    final_posts.append(all_posts[rand])
+                    
+                    
+                template = jinja_environment.get_template("social/newsletter.html")
+                html=template.render({"posts":final_posts})
+                mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
+                to=user.usera.get().email,
+                subject=titolo,
+                body="",
+                html=html
+                )
+  
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
     ('/social/nodelist/', NodeListHandler),
