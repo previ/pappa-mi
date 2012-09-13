@@ -200,6 +200,11 @@ indexes:
   - name: latest_comment_date
     direction: desc
 
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: latest_post_date
+
 - kind: ZonaOffset
   properties:
   - name: __key__

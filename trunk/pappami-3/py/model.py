@@ -19,7 +19,7 @@ import jinja2
 import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
-SOCIAL_FLOOD_TIME=30
+SOCIAL_FLOOD_TIME=1
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -1441,7 +1441,7 @@ class SocialNode(model.Model):
    
 class SocialPost(model.Model):
     author=model.KeyProperty()
-    
+    total_comments=model.IntegerProperty(default=0)
     content=model.TextProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
@@ -1493,10 +1493,12 @@ class SocialPost(model.Model):
         new_comment.author=author.key
         new_comment.content=content
         new_comment.put()
+        
+        logging.info(self)
         self.latest_comment_date=new_comment.creation_date
         self.latest_comment=new_comment.key
+        self.total_comments=self.total_comments+1
         self.put()
-        
         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         
         
@@ -1507,7 +1509,8 @@ class SocialPost(model.Model):
     def delete_reply_comment(self,reply_id):
         reply=model.Key(urlsafe=reply_id)
         reply.delete()
-        
+        self.total_comments=self.total_comments-1
+        self.put()
     #deprecated
     def __get_latest_comment(self):
         latest_last_comment=memcache.get("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()))
@@ -1515,10 +1518,7 @@ class SocialPost(model.Model):
             latest_comment=self.latest_comment      
             memcache.add("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()),latest_comment)
         return latest_comment
-        
-    def get_comment_amt(self):
-        
-        return SocialComment.query(ancestor=self.key).count()
+
         
         
 class SocialNodeSubscription(model.Model):
