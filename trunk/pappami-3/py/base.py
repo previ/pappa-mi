@@ -547,6 +547,7 @@ def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(basePage.request.user)
+    logging.info(commissario)
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:

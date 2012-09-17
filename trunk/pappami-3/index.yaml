@@ -177,6 +177,37 @@ indexes:
   - name: starting_date
     direction: desc
 
+- kind: SocialNodeSubscription
+  ancestor: yes
+  properties:
+  - name: starting_date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: author_key
+  - name: source_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: author_key
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: author_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: date
+    direction: desc
+
 - kind: SocialPost
   ancestor: yes
   properties:
