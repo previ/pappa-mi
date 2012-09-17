@@ -19,8 +19,8 @@ import jinja2
 import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
-SOCIAL_FLOOD_TIME=1
-
+SOCIAL_FLOOD_TIME=30
+FLOOD_SYSTEM_ACTIVATED=False
 class Citta(model.Model):
   nome = model.StringProperty()
   codice =  model.StringProperty()
@@ -244,7 +244,8 @@ class Commissario(model.Model):
   modificato_da = model.KeyProperty(kind=models.User)
   
   ultimo_accesso_il = model.DateTimeProperty()
-
+  ultimo_accesso_notifiche= model.DateTimeProperty()
+  
   stato = model.IntegerProperty()
   
   cmdefault = None  
@@ -1321,8 +1322,8 @@ class SocialNode(model.Model):
     default_admin=model.BooleanProperty(default=False)
     is_public=model.BooleanProperty(default=True)
     latest_post_date=model.DateTimeProperty(auto_now="")
-    latest_post=model.KeyProperty()
-    resource=model.KeyProperty()
+    latest_post=model.KeyProperty(kind="SocialPost")
+    resource=model.KeyProperty(kind="SocialResource")
     
     
     
@@ -1353,12 +1354,29 @@ class SocialNode(model.Model):
         self.latest_post=new_post.key
         self.latest_post_date=new_post.creation_date
         self.put()
-        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
+        comm=Commissario.get_by_user(author)
+        SocialPostSubscription(parent=self.key,user=author.key).put()
+        
+        SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
+        if FLOOD_SYSTEM_ACTIVATED:
+       
+         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         return new_post.key
         
         
-
-    
+    def delete_post(self,post):
+        sub=SocialPostSubscription.query(ancestor=post.key).get()
+        if sub:
+            sub.delete()
+        #delete reply notifications
+        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key)))
+        #delete post notifications
+        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key.parent()).filter(SocialNotification.source_key==post.key)))
+        #delete comments
+        model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
+        post.key.delete()
+        memcache.delete("SocialPost-"+post.key.urlsafe())
+           
         
     def set_position(self,lat,lon):
         self.geo=model.GeoPt(lat,lon)
@@ -1371,7 +1389,7 @@ class SocialNode(model.Model):
         
     def subscribe_user(self,current_user):
         #user has already subscribed to this node
-        if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).fetch().__len__()>0:
+        if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).count()>0:
             return
         
         user1 = SocialNodeSubscription(parent=self.key)
@@ -1395,7 +1413,7 @@ class SocialNode(model.Model):
              raise users.UserNotFoundError
             
     def is_user_subscribed(self,user_t):
-        if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).fetch().__len__()>0:
+        if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).count()>0:
             return True
         else:
             return False
@@ -1403,18 +1421,17 @@ class SocialNode(model.Model):
         return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).get()
         
         
-    def subscription_list(self):
-       q=SocialNodeSubscription.query(ancestor=self.key).fetch(10)
+    def subscription_list(self,amount):
+       q=SocialNodeSubscription.query(ancestor=self.key).order(-SocialNodeSubscription.starting_date).fetch(amount)
        q=[i.user.get() for i in q if (i.user is not None)]
        return q
     
     def delete_subscription(self,user_t):
         SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
-    def delete_post(self,post):
-        pass
+        
+
     def permission_for_edit(self, permission):
         perm=getattr(self,"default_"+permission)
-        logging.info(perm)
         if perm is True: 
             return "<option selected value='True'>S&igrave;</option>\n<option value='False'>No</option>"
         
@@ -1445,15 +1462,15 @@ class SocialNode(model.Model):
    
    
 class SocialPost(model.Model):
-    author=model.KeyProperty()
+    author=model.KeyProperty(kind=models.User)
     total_comments=model.IntegerProperty(default=0)
     content=model.TextProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
     title=model.StringProperty(default="")
-    resource=model.KeyProperty()
+    resource=model.KeyProperty(kind="SocialResource")
     latest_comment_date=model.DateTimeProperty(auto_now=True)
-    latest_comment=model.KeyProperty()
+    latest_comment=model.KeyProperty(kind="SocialComment")
     def get_discussion(self):
         op=self.key
         discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
@@ -1499,43 +1516,40 @@ class SocialPost(model.Model):
         new_comment.content=content
         new_comment.put()
         
-        logging.info(self)
         self.latest_comment_date=new_comment.creation_date
         self.latest_comment=new_comment.key
         self.total_comments=self.total_comments+1
         self.put()
-        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
+        comm=Commissario.get_by_user(author)
+        SocialPostSubscription(parent=self.key,user=author.key).put()
+        SocialNotification.create(source_key=self.key,author_key=author.key,type="new_reply",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
         
+        if FLOOD_SYSTEM_ACTIVATED:
+            memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         
-    def get_all_by_author(author_t):
-        pass
-    def get_by_node_and_author(author_t,node_t):
-        pass
+
     def delete_reply_comment(self,reply_id):
         reply=model.Key(urlsafe=reply_id)
-        reply.delete()
-        self.total_comments=self.total_comments-1
-        self.put()
-    #deprecated
-    def __get_latest_comment(self):
-        latest_last_comment=memcache.get("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()))
-        if not latest_comment:
-            latest_comment=self.latest_comment      
-            memcache.add("latest_comment_"+str(self.key.parent().id())+"_"+str(self.key.id()),latest_comment)
-        return latest_comment
+        if reply:
+            reply.delete()
+            self.total_comments=self.total_comments-1
+            self.put()
 
-        
+class SocialPostSubscription(model.Model):
+    user = model.KeyProperty(kind=models.User)
+    
+    @classmethod
+    def  get_posts_keys_by_user(cls,user):
+        sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key).fetch(keys_only=True)
+        return [i.parent() for i in sub_list]  
         
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
-    user = model.KeyProperty()
+    user = model.KeyProperty(kind=models.User)
     can_reply=model.BooleanProperty(default=False)
     can_post=model.BooleanProperty(default=False)
     can_admin=model.BooleanProperty(default=False)
-    def __init__(self,*args, **kwargs):
-        
-        super(SocialNodeSubscription, self).__init__(*args, **kwargs)  
- 
+    
     
     def init_perm(self):
         parent=self.key.parent().get()
@@ -1553,6 +1567,15 @@ class SocialNodeSubscription(model.Model):
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
         node_list=[i.key.parent().get() for i in subscriptions_list if i.key.parent().get()]
         return node_list
+    
+    @classmethod
+    def get_nodes_keys_by_user(cls,user, order_method=None):
+         
+        if not order_method:
+            order_method=SocialNodeSubscription.starting_date
+        
+        sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(order_method).fetch(keys_only=True)
+        return [i.parent() for i in sub_list]
     
 class SocialResource(model.Expando):
     url=model.StringProperty()
@@ -1610,11 +1633,93 @@ class SocialResource(model.Expando):
         return new_post
     
 class SocialComment(model.Model):
-    author=model.KeyProperty()
+    author=model.KeyProperty(kind=models.User)
     content=model.TextProperty(default="")
     public_reference=model.StringProperty(default="")
     creation_date=model.DateTimeProperty(auto_now=True)
- 
+    
+    
+class SocialProfile(model.Model):
+      ultimo_accesso_notifiche= model.DateTimeProperty(auto_now=True)
+      
+      @classmethod
+      def create(cls,user):
+          if cls.query(ancestor=user).get():
+              return
+          else:
+             SocialProfile(parent=user).put()
+      
+      @classmethod
+      def retrieve_notifications(self,user_t,cursor):
+        nodes_list=SocialNodeSubscription.get_nodes_keys_by_user(user_t)
+        posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
+        
+        
+        sources_list=nodes_list+posts_list
+        logging.info(sources_list)
+        if not cursor or cursor == "undefined":
+               return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10) 
+        else:
+               return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+                    
+                       
+    
+class SocialNotification(model.Model):
+      target_key=model.KeyProperty()
+      author=model.StringProperty()
+      author_key=model.KeyProperty()
+      date=model.DateTimeProperty(auto_now=True)
+      type=model.StringProperty()
+      source_key=model.KeyProperty()
+      @classmethod
+      def create(cls,source_key,author_key,type,target_key,author):
+        notification=SocialNotification(source_key=source_key,author_key=author_key,type=type,target_key=target_key,author=author)
+        notification.put()
+      def render(self,current_user):
+        render_method = getattr(self,'render_'+self.type)
+        return render_method(current_user)
+      
+      def render_new_post(self,current_user):
+        
+        post=self.target_key.get()
+        
+        
+        
+          
+        template_values = {
+                             "post":post,
+                             "notification":self,
+                             "author":self.author
+        
+        }
+        template = jinja_environment.get_template("social/notifications/new_post.html")
+        return template.render(template_values)  
+      
+      def render_new_reply(self,current_user):
+        
+        reply=self.target_key.get()
+        
+       
+        template_values = {
+                             "reply":reply,
+                             "notification":self,
+                             "author":self.author
+        }
+        
+    
+       
+        template = jinja_environment.get_template("social/notifications/new_reply.html")
+        return template.render(template_values)  
+      def render_multiple_replies(self):
+        post=self.target_key.get()
+          
+        template_values = {
+                             "reply":reply,
+                             "notification":self,
+                             "author":self.author
+        }
+    
+          
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)

@@ -1,0 +1,49 @@
+<script type="text/javascript">
+
+$(document).ready(function () {
+$(".pagination_errors").hide()
+$(".empty_errors").hide()
+mark_visited()
+  loadNotifications(undefined)
+});
+
+function mark_visited(){}
+
+function loadNotifications(current_cursor){
+	
+$.ajax({
+		 type: 'POST',
+		url:"/social/paginate?cmd=notifications&cursor="+current_cursor+"&last_visit={{last_visit}}", 
+		dataType:'json',
+		 success:function(data){
+		 	if(data.response=="success"){
+			$("#add_notifications").unbind("click").click(function(){loadNotifications(data.cursor)})
+			 $("#notifications_list").last().append(data.html)
+			
+			 }
+			 else if(data.response="no_notifications"){
+			 	$("#add_notifications").hide()
+			 	console.log($("#notifications_list").children())
+			 	if($("#notifications_list").children().length>0){
+  					$(".pagination_errors").show()
+  				}
+  				else{
+  					$(".empty_errors").show()
+  				}
+			
+			 }
+			 
+			 }})
+	
+}
+
+    
+</script>
+
+<div id="notifications_list">
+</div>
+
+<div id="add_notifications" class="btn btn-primary" type="submit">Mostra notifiche pi&ugrave; vecchie</div>
+<div class="empty_errors">Non ci sono notifiche </div>
+
+<div class="pagination_errors">Non ci sono altre notifiche </div>

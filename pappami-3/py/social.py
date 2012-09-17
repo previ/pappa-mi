@@ -16,7 +16,9 @@ from datetime import date, datetime, time, timedelta
 from gviz_api import *
 from py.model import *
 from form import *
-from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
+import base64
+import time
+from base import BasePage, CMCommissioniDataHandler, reguser_required, config, handle_404, handle_500
 import random
 def fix_padding(string):
     lens = len(string)
@@ -81,7 +83,7 @@ class NodeHandler(BasePage):
           "node":node_i,
           "is_sub":is_sub,
           "show_sub_button": True if not logged or not is_sub else False,
-          "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list()],
+          "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list(10)],
           "citta": Citta.get_all(),
           "subscription":current_sub
           }
@@ -96,14 +98,12 @@ class NodeHandler(BasePage):
     
 class SocialTest(BasePage):
   def get(self):
-      newsletter=SocialNewsLetter()
-      test=newsletter.create_newsletter()
-      template_values = {
-      'content': 'social/test.html',
-      'testa': test
-      }
+      
+     for i in SocialNotification.query().fetch(keys_only=True):
+         i.delete()
+    #  SocialUtils.generate_random_contents(self.get_current_user())
         
-      self.getBase(template_values)
+     
     
      
 class NodeListHandler(BasePage):
@@ -274,6 +274,7 @@ class SocialManagePost(SocialAjaxHandler):
                self.response.out.write("<response>error</response>")
                return
            post=node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
+           
            self.success("/social/post/"+post.urlsafe())
            
            
@@ -317,10 +318,7 @@ class SocialManagePost(SocialAjaxHandler):
            if not node.get_subscription(user).can_admin:
                return    
            #delete replies
-           model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
-           post.key.delete()
-           memcache.delete("SocialPost-"+str(self.request.get('post')))
-           
+           node.delete_post(post)
            
            self.success("/social/node/"+node.key.urlsafe())
        if cmd== "reshare_open_post":
@@ -372,7 +370,7 @@ class SocialManagePost(SocialAjaxHandler):
 
        
 class SocialCreateNodeHandler(BasePage):
-    @user_required
+    @reguser_required
     def get(self):  
         template_values = {
                         'content': 'social/createnode.html',
@@ -534,9 +532,53 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         json = simplejson.dumps(response)
                         self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
                         self.response.out.write(json)
-        
+                    
+                if cmd=="notifications":
+                    notlist, next_curs, more = SocialProfile.retrieve_notifications(user,cursor)
+                    if not notlist or not next_curs:
+                            
+                            response = {'response':'no_notificationss'}
+                            json = simplejson.dumps(response)
+                            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+                            self.response.out.write(json)
+                            return
+                   
+                    last_visit=datetime.fromtimestamp(int(base64.urlsafe_b64decode(self.request.get("last_visit").encode("utf-8"))))
+                    template = jinja_environment.get_template("social/pagination/notifications.html")
+                    template_values={
+                                     'notifications':notlist,
+                                     'last_visit': last_visit,
+                                     'user':user.key,
+                                     }
+                    html=template.render(template_values)
+                    response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                    json = simplejson.dumps(response)
+                    
+                    
+                    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+                    self.response.out.write(json)
+                        
+                        
+         
+class SocialNotificationsListHandler(BasePage):
+        @reguser_required
+        def get(self):
+            user=self.get_current_user()
+            prof=SocialProfile.query(ancestor=user.key).get()
+            
+            encoded=base64.urlsafe_b64encode("%d" % int(time.mktime(prof.ultimo_accesso_notifiche.timetuple())))
+            template_values = {
+                           'content': 'social/notifications.html',
+                           'user':user,
+                           'last_visit': encoded
+                          }
+                           
+            prof.ultimo_accesso_notifiche=datetime.now()
+            prof.put()
+            self.getBase(template_values)
+            
 class SocialMainHandler(BasePage):
-    @user_required
+    @reguser_required
     def get(self):
         user=self.get_current_user()
         node_list=SocialNodeSubscription.get_nodes_by_user(user,-SocialNodeSubscription.starting_date)
@@ -549,7 +591,7 @@ class SocialMainHandler(BasePage):
         self.getBase(template_values)
         
 class SocialDLoadHandler(SocialAjaxHandler):
-    @user_required
+    @reguser_required
     def post(self):
         cmd=self.request.get("cmd")
         user=self.request.user
@@ -570,7 +612,23 @@ class SocialDLoadHandler(SocialAjaxHandler):
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
         
-
+class SocialUtils:
+    @classmethod
+    def generate_all_social_profiles(cls):
+        users=models.User.query().fetch()
+        for i in users:
+            SocialProfile.create(i.key)
+    @classmethod
+    def generate_random_contents(cls,user):
+        node=SocialNode()
+        node.name="Test Node"
+        node.description="Test node"
+        node.put()
+        for i in range(0,25):
+            post=node.create_open_post("Contenuto di "+str(i),"Discussione "+str(i),user).get()
+            for j in range(0,10):
+                post.create_reply_comment("Commento di "+str(j),user)
+            
 class SocialNewsLetter():
     
       def create_newsletter(self):
@@ -611,6 +669,8 @@ class SocialNewsLetter():
                 body="",
                 html=html
                 )
+
+
   
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
@@ -625,6 +685,7 @@ app = webapp.WSGIApplication([
     ('/social/paginate', SocialPaginationHandler),
     ('/social/main', SocialMainHandler),
     ('/social/dload', SocialDLoadHandler),
+    ('/social/notifications', SocialNotificationsListHandler),
     ],
                              
     debug = True, config=config)
