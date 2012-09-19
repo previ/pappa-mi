@@ -1326,6 +1326,10 @@ class SocialNode(model.Model):
     resource=model.KeyProperty(kind="SocialResource")
     
     
+    @classmethod
+    def get_nodes_by_resource(cls,resource_ref):
+        nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
+        return nodes
     
     
     @classmethod
@@ -1367,7 +1371,7 @@ class SocialNode(model.Model):
     def delete_post(self,post):
         sub=SocialPostSubscription.query(ancestor=post.key).get()
         if sub:
-            sub.delete()
+            sub.key.delete()
         #delete reply notifications
         model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key)))
         #delete post notifications
@@ -1505,7 +1509,35 @@ class SocialPost(model.Model):
         if new_post:
                       
             return new_post
+    
+    def subscribe_user(self,current_user):
+        #user has already subscribed to this post
+        if SocialPostSubscription.query( SocialPostSubscription.user==current_user.key,ancestor=self.key).count()>0:
+            return
         
+        sub = SocialPostSubscription(parent=self.key)
+        logging.info(current_user)
+        logging.info(sub)
+        if current_user:
+            sub.user=current_user.key
+        else:
+            raise users.UserNotFoundError
+        
+        sub.put()
+        memcache.add("SocialPostSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()),sub)
+               
+       
+    
+    def unsubscribe_user(self, current_user):
+         logging.info(current_user)
+         subscription=SocialPostSubscription.query( SocialPostSubscription.user==current_user.key,ancestor=self.key).get()
+         if subscription is not None:
+            subscription.key.delete()
+            memcache.delete("SocialPostSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()))
+        
+         else:
+             raise users.UserNotFoundError
+    
     def create_reply_comment(self,content,author):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:

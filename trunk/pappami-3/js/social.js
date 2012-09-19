@@ -540,6 +540,24 @@ function onPostDelete(user,node,post){
 	
 }
 
+function onPostSubscribe(user,post){
+	 $.ajax({url:'/social/subscribe?user='+user+ '&cmd=subscribepost&post='+post,dataType:"JSON", success:function(data){
+		 
+		 onSuccess(data)
+		}
+	 });
+	
+	
+}
+
+function onPostUnsubscribe(user,post){
+	 $.ajax({url:'/social/subscribe?user='+user+ '&cmd=unsubscribepost&post='+post,dataType:"JSON", success:function(data){
+		  
+		 onSuccess(data)
+		}
+	 });
+	
+}
 
 function loadSmallMap(lat,lon) {
   var myOptions = {
@@ -571,9 +589,9 @@ function loadSmallMap(lat,lon) {
 
 function onSubscription(user_key,node_key)
 {
-	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=subscribe', success:function(data){
+	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=subscribe',dataType:"JSON", success:function(data){
 		  
-		 window.location.reload()
+		 onSuccess(data)
 		}
 	 });
 	 
@@ -581,8 +599,8 @@ function onSubscription(user_key,node_key)
 
 function onUnsubscription(user_key,node_key)
 {
-	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=unsubscribe', success:function(data){
-		 window.location.reload()
+	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=unsubscribe',dataType:"JSON", success:function(data){
+		 onSuccess(data)
 		 
 		}
 	 });

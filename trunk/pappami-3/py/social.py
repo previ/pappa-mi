@@ -98,9 +98,10 @@ class NodeHandler(BasePage):
     
 class SocialTest(BasePage):
   def get(self):
+      SocialUtils.locations_to_nodes()
       
-     for i in SocialNotification.query().fetch(keys_only=True):
-         i.delete()
+     #for i in SocialNotification.query().fetch(keys_only=True):
+      #   i.delete()
     #  SocialUtils.generate_random_contents(self.get_current_user())
         
      
@@ -146,22 +147,32 @@ class SocialPostHandler(BasePage):
         if current_user is not None:
             current_user=current_user.key
             current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
+           
             if current_sub is None:
                 current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
                 memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
+            
+            postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
+           
+            if postsub is None:
+                postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
+                memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
          
+            
         template_values = {
                            'content': 'social/post.html',
                            'replies': replies,
                            'post': op,
                            'node':node.get(),
-                           'user':current_user
+                           'user':current_user,
+                        
                            
                                               }                    
         if current_user:
             template_values['subscription']=current_sub
-            template_values["user"]=current_user
-        
+            template_values['postsub']=postsub
+            
+            
         self.getBase(template_values)
 
 class SocialMapHandler(webapp.RequestHandler):
@@ -240,25 +251,33 @@ class SocialMapHandler(webapp.RequestHandler):
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
      
-class SocialSubscribeHandler(webapp.RequestHandler):
+class SocialSubscribeHandler(SocialAjaxHandler):
        def get(self):
-           
-          cmd = self.request.get('cmd')
-          if cmd == "subscribe":
-                 user = model.Key("User", int(self.request.get('user'))).get()
-                 node = model.Key("SocialNode", int(self.request.get('node'))).get()
-                 node.subscribe_user(user)
-                 self.response.headers["Content-Type"] = "text/xml"
-                 self.response.out.write("<response>success</response>")
+        user = model.Key(urlsafe=self.request.get("user")).get()
         
-          if cmd == "unsubscribe":
-                 user = model.Key("User", int(self.request.get('user'))).get()
-                 node = model.Key("SocialNode", int(self.request.get('node'))).get()
+        cmd = self.request.get('cmd')
+        if cmd == "subscribe":
+                 node = model.Key(urlsafe=self.request.get('node')).get()
+                 node.subscribe_user(user)
+                 self.success()
+        
+        if cmd == "unsubscribe":
+                 node = model.Key(urlsafe=self.request.get('node')).get()
              
                  node.unsubscribe_user(user)
-                 self.response.headers["Content-Type"] = "text/xml"
-                 self.response.out.write("<response>success</response>")
-             
+                 self.success()
+    
+        if cmd == "subscribepost":
+                
+                 post = model.Key(urlsafe=self.request.get('post')).get()
+                 post.subscribe_user(user)
+                 self.success()
+        
+        if cmd == "unsubscribepost":
+                 post = model.Key(urlsafe=self.request.get('post')).get()
+                 post.unsubscribe_user(user)
+                 self.success()
+              
 class SocialManagePost(SocialAjaxHandler):
    def post(self):
        
@@ -628,7 +647,24 @@ class SocialUtils:
             post=node.create_open_post("Contenuto di "+str(i),"Discussione "+str(i),user).get()
             for j in range(0,10):
                 post.create_reply_comment("Commento di "+str(j),user)
-            
+    @classmethod
+    def locations_to_nodes(cls):
+        
+        users=models.User.query().fetch()
+        
+        for user in users:
+            comm=Commissario.get_by_user(user)
+            if comm:
+                citta=comm.citta
+                scuole=comm.commissioni()
+                scuole=[SocialResource.get_resource(x.key) for x in scuole]
+                nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(citta).key or SocialNode.resource.IN(scuole)).fetch()
+                for node in nodes:
+                    
+                    if not node.has_user(user):
+                        node.subscribe_user(user)
+                
+    
 class SocialNewsLetter():
     
       def create_newsletter(self):
