@@ -5,41 +5,40 @@
   <meta property="og:title" content="Pappa-Mi newsletter">
   <title>Pappa-Mi newsletter</title>
   <style type="text/css">
-  {%include "/css/bootstrap.min.css"%}
+  {%include "social/bootstrap.min.css"%}
   </style>
  </head>	
  <body>
-  <div class="row">
-   <div class="span6">
-    <h1>Pappa-Mi: Le novità della settimana</h1>
-   </div>
-  </div>
- {%for post in posts%}<div class="row">
-   <div class="span6">
-    <h3>{{post.title}}</h3>
-    <div>di {{post.author.get().email}} il {{post.creation_date}}</div>
-    <div>{{post.content}}</div>
-    <div><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}/">continua a leggere...</a></div>
-   </div>
-  </div>
-  <div class="row">
-   <div class="span6">
-    <div id="follow">
-     <a href="http://twitter.com/pappa_mi" target="_new"><img src="/img/twitter-icon.png" alt="Twitter" width="32" height="32" data-original-title="Twitter"></a>
-     <a href="//plus.google.com/110770353259380281779?prsrc=3" rel="publisher" style="text-decoration:none;">
-  <img src="//ssl.gstatic.com/images/icons/gplus-32.png" alt="Google+" style="border:0;width:32px;height:32px;" data-original-title=""></a>
-     <a href="/feed"><img src="/img/rss.png" alt="RSS" width="32" height="32" data-original-title="Feed RSS"></a>	    
+  <div class="container">
+   <div class="row">
+    <div class="span6">
+     <h1><img src="http://www.pappa-mi.it/img/logo_72.png"/>Pappa-Mi</h1>
+     <h3>Le novità della settimana</h3>
     </div>
    </div>
-  </div>   
+  {%for post in posts%}<div class="row">
+    <div class="span6">
+     <h4><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}/">{{post.title}}</a></h4>
+     <div class="muted">di {{post.author.get().email}} il {{post.creation_date}}</div>
+     <div>{{post.content}}</div>
+     <div><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}/">continua...</a></div>
+    </div>
+   </div>{%endfor%}
+   <div class="row">
+    <div class="span6">
+     <div id="follow">
+      <a href="http://twitter.com/pappa_mi" target="_new"><img src="/img/twitter-icon.png" alt="Twitter" width="32" height="32" data-original-title="Twitter"></a>
+      <a href="//plus.google.com/110770353259380281779?prsrc=3" rel="publisher" style="text-decoration:none;">
+   <img src="//ssl.gstatic.com/images/icons/gplus-32.png" alt="Google+" style="border:0;width:32px;height:32px;" data-original-title=""></a>
+      <a href="http://www.pappa-mi.it/feed"><img src="/img/rss.png" alt="RSS" width="32" height="32" data-original-title="Feed RSS"></a>	    
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="span6">
+     <a href="http://www.pappa-mi.it/profilo#newsletter">Disattiva</a>
+    </div>
+   </div>
+  </div>
  </body>
 </html>
-   
-   
-
-
-
-{%endfor%}
-
-
-<a href="/profilo#newsletter">Disattiva</a>
