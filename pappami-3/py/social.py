@@ -665,46 +665,59 @@ class SocialUtils:
                         node.subscribe_user(user)
                 
     
-class SocialNewsLetter():
+class SocialNewsLetter(BasePage):
     
-      def create_newsletter(self):
-          user_list=Commissario.get_for_newsletter()
-          nodes=SocialNode.query().fetch()
-          posts_by_node={}
-          newsletter_size=10
-          titolo="Newsletter Pappa-mi"
-          #build a 
-          for node in nodes:
-              posts=SocialPost.query(ancestor=node.key).order(-SocialPost.creation_date).filter(SocialPost.creation_date>=(datetime.now()-timedelta(weeks=1))).fetch(newsletter_size/2)
-              if posts:
-                  posts_by_node[''+str(node.key.id())]=posts
-          
-          for user in user_list:
-            
-                all_posts=[]
-                final_posts=[]
-                my_nodes=SocialNodeSubscription.get_nodes_by_user(user.usera.get())
-                for node in my_nodes:
-                    if posts_by_node.has_key(''+str(node.key.id())):
-                    
-                       all_posts= all_posts+posts_by_node[''+str(node.key.id())]
-                if len(all_posts)<=newsletter_size/2:
-                    return
+    def get(self):
+        return self.create_newsletter()
+    
+    def create_newsletter(self):
+        user_list=Commissario.get_for_newsletter()
+        nodes=SocialNode.query().fetch()
+        posts_by_node={}
+        newsletter_size=10
+        titolo="Newsletter Pappa-mi"
+        #build a 
+        for node in nodes:
+            logging.info("1")
+            posts=SocialPost.query(ancestor=node.key).order(-SocialPost.creation_date).filter(SocialPost.creation_date>=(datetime.now()-timedelta(weeks=1))).fetch(newsletter_size/2)
+            if posts:
+                posts_by_node[''+str(node.key.id())]=posts
+                logging.info("2")          
                 
-                       
-                for i in range(newsletter_size):
-                    rand=random.randint(0,len(all_posts)-1)
-                    final_posts.append(all_posts[rand])
+        logging.info("user_list: " + str(user_list.count()))          
+          
+        for user in user_list:
+            all_posts=[]
+            final_posts=[]
+            my_nodes=SocialNodeSubscription.get_nodes_by_user(user.usera.get())
+            for node in my_nodes:
+                logging.info("3")
+                if posts_by_node.has_key(''+str(node.key.id())):                
+                    all_posts= all_posts+posts_by_node[''+str(node.key.id())]
+            if len(all_posts)<=newsletter_size/2:
+                return
+
+            logging.info("newsletter_size: " + str(newsletter_size))          
+              
+                     
+            for i in range(newsletter_size):
+                rand=random.randint(0,len(all_posts)-1)
+                final_posts.append(all_posts[rand])
                     
                     
-                template = jinja_environment.get_template("social/newsletter.html")
-                html=template.render({"posts":final_posts})
-                mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
-                to=user.usera.get().email,
-                subject=titolo,
-                body="",
-                html=html
-                )
+            template = jinja_environment.get_template("social/newsletter.html")
+            html=template.render({"posts":final_posts})
+            mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
+            to=user.usera.get().email,
+            subject=titolo,
+            body="",
+            html=html
+            )
+            self.response.headers.add_header('content-type', 'text/html', charset='utf-8')
+            self.response.out.write(html)
+            
+            
+
 
 
   
@@ -722,6 +735,7 @@ app = webapp.WSGIApplication([
     ('/social/main', SocialMainHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
+    ('/social/newsletter', SocialNewsLetter),
     ],
                              
     debug = True, config=config)
