@@ -93,8 +93,8 @@ class CMAdminCommissioneHandler(BasePage):
       if(self.request.get("key") == ""):
         commissione = Commissione()       
       else:
-        commissione = Commissione.get(self.request.get("key"))    
-        key = commissione.key()
+        commissione = model.Key("Commissione", self.request.get("key")).get()
+        key = commissione.key
               
       template_values = {
         'content': 'admin/commissione.html',
@@ -105,17 +105,13 @@ class CMAdminCommissioneHandler(BasePage):
         'centroCucina': self.request.get("centroCucina"),
         'zona': self.request.get("zona"),
         'distretto': self.request.get("distretto"),
-        'centriCucina': CentroCucina.query().order("nome")
+        'centriCucina': CentroCucina.query().order(CentroCucina.nome)
       }
     
       self.getBase(template_values)
 
     else:
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-
-      centriCucina = CentroCucina.query().order("nome")
+      centriCucina = CentroCucina.query().order(CentroCucina.nome)
 
       template_values = {
         'content': 'admin/commissioni.html',
@@ -123,70 +119,11 @@ class CMAdminCommissioneHandler(BasePage):
       }
       self.getBase(template_values)
       
-      #if self.request.get("offset"):
-        #offset = int(self.request.get("offset"))
-      #else:
-        #offset = 0
-        
-      #if offset > 0:
-        #prev = offset - 10
-      #else:
-        #prev = None
-      #next = offset + 10
-      
-      ## Creating the data
-      #description = {"nome": ("string", "Commissione"),
-                     #"nomeScuola": ("string", "Scuola"),
-                     #"tipo": ("string", "Tipo"),
-                     #"indirizzo": ("string", "Indirizzo"),
-                     #"distretto": ("string", "Dist."),
-                     #"zona": ("string", "Zona"),
-                     #"geo": ("string", "Geo"),
-                     #"comando": ("string", "")}
-      
-      #commissioni = Commissione.query()
-      #if self.request.get("tipoScuola") :
-        #commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
-      #if self.request.get("centroCucina") :
-        #commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
-      #if self.request.get("nome") :
-        #commissioni = commissioni.filter("nome>=", self.request.get("nome"))
-        #commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
-
-      #data = list()
-      #try:
-        #for commissione in commissioni.order("nome").fetch(10, offset):
-          #data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
-      #except db.Timeout:
-        #errmsg = "Timeout"
-        
-      ## Loading it into gviz_api.DataTable
-      #data_table = DataTable(description)
-      #data_table.LoadData(data)
-
-      ## Creating a JSon string
-      #gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
-
-      #centriCucina = CentroCucina.query().order("nome")
-
-      #template_values = {
-        #'content': 'admin/commissioni.html',
-        #'centriCucina': centriCucina,
-        #'gvizdata': gvizdata,
-        #'prev': prev,
-        #'next': next,
-        #'tipoScuola': self.request.get("tipoScuola"),
-        #'centroCucina': self.request.get("centroCucina"),
-        #'zona': self.request.get("zona"),
-        #'distretto': self.request.get("distretto"),
-        #'nome': self.request.get("nome")
-      #}
-      #self.getBase(template_values)
 
   def post(self):    
     if( self.request.get("cmd") == "save" ):
       if self.request.get("key"):
-        commissione = Commissione.get(self.request.get("key"))
+        commissione = model.Key("Commissione", self.request.get("key")).get()
       else:
         commissione = Commissione()
         
@@ -204,7 +141,7 @@ class CMAdminCommissioneHandler(BasePage):
       url_linktext = 'Logout'
       user = users.get_current_user()
  
-      centriCucina = CentroCucina.query().order("nome")
+      centriCucina = CentroCucina.query().order(CentroCucina.nome)
       
       #if query.is_valid():
       commissioni = Commissione.query()
