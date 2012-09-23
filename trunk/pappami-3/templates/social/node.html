@@ -10,7 +10,9 @@ $("#open_post_button").show()
 }
 
 $(document).ready(function () {
-  $("#pagination_errors").hide()
+  $(".pagination_errors").hide()
+  
+  $(".empty_errors").hide()
   loadPosts(undefined)
 });
 
@@ -27,7 +29,12 @@ $.ajax({
 			 }
 			 else if(data.response="no_posts"){
 			 	 	$("#add_posts").hide()
-  				$("#pagination_errors").show()
+  				if($("#post_list").children().length>0){
+  					$(".pagination_errors").show()
+  				}
+  				else{
+  					$(".empty_errors").show()
+  				}
 			 }
 			 
 			 }})
@@ -37,9 +44,9 @@ $.ajax({
 
 
 </script>
-<h2>Dettaglio Nodo</h2>
-<div id="node_name">{{node.name}}</div>
 
+<div id="node_name"><h2>{{node.name}}</h2></div>
+<div id="node_description"><h4>{{node.description}}</h4></div>
 {%if user%}
 <div class="well" style="padding: 10px;">
  <div class="btn-toolbar">
@@ -75,6 +82,6 @@ $.ajax({
 	</ul>
 </div>
 	<div id="add_posts" class="btn btn-primary" type="submit">Mostra altri post</div>
-<div id="pagination_errors">Non ci sono altri post</div>
-
+<div class="pagination_errors">Non ci sono altri post</div>
+<div class="empty_errors">Non ci sono post in questo gruppo</div>
 

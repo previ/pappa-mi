@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-
+from google.appengine.api import search
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
@@ -20,7 +20,7 @@ import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 SOCIAL_FLOOD_TIME=30
-FLOOD_SYSTEM_ACTIVATED=False
+FLOOD_SYSTEM_ACTIVATED=True
 class Citta(model.Model):
   nome = model.StringProperty()
   codice =  model.StringProperty()
@@ -189,7 +189,9 @@ class Commissione(model.Model):
                                         geo=self.geo,
                                         )
         resource.put()
-  
+        return resource
+        
+        
   def get_resource(self):
       resource=SocialResource.query(ancestor=self.key).get()
       if resource:
@@ -1315,12 +1317,10 @@ class SocialNode(model.Model):
     name=model.StringProperty(default="")
     description=model.StringProperty(default="")
     active=model.BooleanProperty(default=True)
-    founder=model.KeyProperty()
-    location=model.KeyProperty(default=None)
+    founder=model.KeyProperty(default=None)
     default_post=model.BooleanProperty(default=True)
     default_reply=model.BooleanProperty(default=True)
     default_admin=model.BooleanProperty(default=False)
-    is_public=model.BooleanProperty(default=True)
     latest_post_date=model.DateTimeProperty(auto_now="")
     latest_post=model.KeyProperty(kind="SocialPost")
     resource=model.KeyProperty(kind="SocialResource")
@@ -1331,7 +1331,22 @@ class SocialNode(model.Model):
         nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
         return nodes
     
-    
+    def _post_put_hook(self,future):
+        node=future.get_result().get()
+        doc=search.Document(
+                        doc_id='node-'+node.key.urlsafe(),
+                        fields=[search.TextField(name='name', value=node.name),search.HtmlField(name='description', value=node.description)],
+                        language='it')
+        
+       
+        index = search.Index(name='index-nodes',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.add(doc)
+        
+        except search.Error, e:
+            pass
+
     @classmethod
     def active_nodes(cls):
            return cls.query().filter(cls.active==True)
@@ -1516,8 +1531,7 @@ class SocialPost(model.Model):
             return
         
         sub = SocialPostSubscription(parent=self.key)
-        logging.info(current_user)
-        logging.info(sub)
+        
         if current_user:
             sub.user=current_user.key
         else:
@@ -1529,7 +1543,6 @@ class SocialPost(model.Model):
        
     
     def unsubscribe_user(self, current_user):
-         logging.info(current_user)
          subscription=SocialPostSubscription.query( SocialPostSubscription.user==current_user.key,ancestor=self.key).get()
          if subscription is not None:
             subscription.key.delete()

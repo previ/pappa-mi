@@ -3,27 +3,43 @@
 $(document).ready(function () {
 $(".pagination_errors").hide()
 $(".empty_errors").hide()
-mark_visited()
+last_visit=new Date("{{last_visit}}")
   loadNotifications(undefined)
+ 
 });
 
-function mark_visited(){}
+function mark_visited(){
+
+$("div.notification").each(function(){
+date=new Date(this.attr("date"))
+
+
+});
+
+
+}
 
 function loadNotifications(current_cursor){
 	
 $.ajax({
 		 type: 'POST',
-		url:"/social/paginate?cmd=notifications&cursor="+current_cursor+"&last_visit={{last_visit}}", 
+		url:"/social/paginate?cmd=notifications&cursor="+current_cursor, 
 		dataType:'json',
 		 success:function(data){
 		 	if(data.response=="success"){
 			$("#add_notifications").unbind("click").click(function(){loadNotifications(data.cursor)})
 			 $("#notifications_list").last().append(data.html)
+			//mark as visited
+			 $("#notifications_list>div").each(function(){
+			 	date=new Date($(this).attr("date"))
+			 if(date<last_visit){
+			 	$(this).addClass("visited")
+			 	}
+			 });
 			
 			 }
 			 else if(data.response="no_notifications"){
 			 	$("#add_notifications").hide()
-			 	console.log($("#notifications_list").children())
 			 	if($("#notifications_list").children().length>0){
   					$(".pagination_errors").show()
   				}
@@ -34,7 +50,7 @@ $.ajax({
 			 }
 			 
 			 }})
-	
+
 }
 
     
