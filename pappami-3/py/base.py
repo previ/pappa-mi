@@ -103,6 +103,14 @@ class SocialAjaxHandler(webapp.RequestHandler):
             json = simplejson.dumps(response)
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
+        
+        def error(self):
+            
+            response = {'response':'error'}
+            
+            json = simplejson.dumps(response)
+            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+            self.response.out.write(json)
             
 class BasePage(webapp.RequestHandler):  
   

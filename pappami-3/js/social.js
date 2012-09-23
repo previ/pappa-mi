@@ -229,7 +229,7 @@ function floodUpdate(){
 
 
 function onReplySubmitted(user,post,node){
-$("form#reply_form").validate({
+$("#reply_form").validate({
 		
 		errorClass: "error",
 	      errorPlacement: function(error, element) {
@@ -238,11 +238,11 @@ $("form#reply_form").validate({
 		item.tooltip('show');
 	      },
 	      highlight: function(element, errorClass, validClass) {
-		var item = $(element).parents("#reply_form");
+		var item = $(element).parents(".form_parent");
 		item.addClass(errorClass); 
 	      },
 	      unhighlight: function(element, errorClass, validClass) {
-		var item = $(element).parents("#reply_form");
+		var item = $(element).parents(".form_parent");
 		item.removeClass(errorClass); 
 		$(element).tooltip('hide');
 	      },  
@@ -252,9 +252,10 @@ $("form#reply_form").validate({
 	      }
 	
 	});
-	if(!$("#reply_form").valid())
-	return;
 	
+	
+	
+if($("#reply_form").valid()){
 	data= {}
 	data['user']= user
 	data['post']=post
@@ -282,7 +283,7 @@ $("form#reply_form").validate({
 			 
 			 onSuccess(data)
 			 }})
-	
+	}
 }
 
 function onOpenPostSubmitted(user,node){
@@ -390,6 +391,7 @@ function onEditCancel(user,node,post){
 	
 	}
 function onPostEditSubmit(user,node,post){
+
 	data= {}
 	data['user']= user
 	data['node']=node
@@ -420,7 +422,9 @@ function onPostEditSubmit(user,node,post){
 			 
 			 $(".s_post_commands").show()
 			 }})
-	}
+}
+
+
 	
 
 

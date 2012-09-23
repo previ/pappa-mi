@@ -2,9 +2,13 @@
 
 $(document).ready(function () {
   $("#pagination_errors").hide()
-  loadSocialMap( {{geo.lat}} , {{geo.lon}} );
+
   loadNodes(undefined)
 });
+
+
+
+
 
 function loadNodes(current_cursor){
 	
@@ -22,7 +26,9 @@ $.ajax({
   				$(".pagination_errors").show()
 			 }
 			 
-			 }})
+			 }
+			 
+			 })
 	
 }
 

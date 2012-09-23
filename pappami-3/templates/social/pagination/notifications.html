@@ -1,6 +1,6 @@
 
 {%for notification in notifications %}
-
+<div class="notification" date="{{notification.date}}">
 {{notification.render(user)}}
-
+</div>
 {%endfor%}
