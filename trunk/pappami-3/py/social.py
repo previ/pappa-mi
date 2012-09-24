@@ -676,7 +676,6 @@ class SocialNewsLetter(BasePage):
         posts_by_node={}
         newsletter_size=10
         titolo="Newsletter Pappa-mi"
-        #build a 
         for node in nodes:
             logging.info("1")
             posts=SocialPost.query(ancestor=node.key).order(-SocialPost.creation_date).filter(SocialPost.creation_date>=(datetime.now()-timedelta(weeks=1))).fetch(newsletter_size/2)
