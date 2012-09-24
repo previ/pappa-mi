@@ -675,6 +675,7 @@ class SocialNewsLetter(BasePage):
         nodes=SocialNode.query().fetch()
         posts_by_node={}
         newsletter_size=10
+        
         titolo="Newsletter Pappa-mi"
         for node in nodes:
             logging.info("1")
