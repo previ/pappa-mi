@@ -41,17 +41,7 @@ def get_current_sub(current_user,node):
     
 class NodeHandler(BasePage):
   
-  def post(self):
-        self.response.out.write("");
-        
-  def get(self,node_id):
-    
-   
-    node_i=model.Key(urlsafe=node_id).get()
-    node=node_i.key
-       #if node does not exist
-    if not node_i or node_i.active==False :
-       
+  def error(self):
         self.response.clear() 
         self.response.set_status(404)
         template = jinja_environment.get_template('404_custom.html')
@@ -60,6 +50,19 @@ class NodeHandler(BasePage):
         self.response.out.write(t)
         return
     
+  
+  def post(self):
+        self.response.out.write("");
+        
+  def get(self,node_id):
+    
+   try:
+    node_i=model.Key(urlsafe=node_id).get()
+    node=node_i.key
+       #if node does not exist
+    if not node_i or node_i.active==False :
+       
+        self.error()
     
    
         
@@ -76,8 +79,7 @@ class NodeHandler(BasePage):
     current_user=self.get_current_user()
     current_sub=get_current_sub(current_user,node)
                 
-    if node_i.is_public:
-        template_values = {
+    template_values = {
           'content': 'social/node.html',
           "user":current_user,
           "node":node_i,
@@ -87,21 +89,21 @@ class NodeHandler(BasePage):
           "citta": Citta.get_all(),
           "subscription":current_sub
           }
-    else:
-        pass
+    
       
     self.getBase(template_values)
-    
+   except:
+       self.error()
 
        
     
     
 class SocialTest(BasePage):
   def get(self):
-      SocialUtils.locations_to_nodes()
       
-     #for i in SocialNotification.query().fetch(keys_only=True):
-      #   i.delete()
+      SocialUtils.generate_nodes()
+    # for i in SocialComment.query().fetch(keys_only=True):
+     #   i.delete()
     #  SocialUtils.generate_random_contents(self.get_current_user())
         
      
@@ -121,60 +123,67 @@ class NodeListHandler(BasePage):
     
        
 class SocialPostHandler(BasePage):
+   
+    def error(self):
+       self.response.clear() 
+       self.response.set_status(404)
+       template = jinja_environment.get_template('404_custom.html')
+       c={"error": "Il post a cui stai provando ad accedere non esiste"}
+       t = template.render(c)
+       self.response.out.write(t)
+       
+    
     def get(self,id):
+        try:
+            op=model.Key(urlsafe=id).get()
         
-        op=model.Key(urlsafe=id).get()
+            
+            if op is None or type(op) is not SocialPost:
+               self.error()
+            node=op.key.parent()
+            op.commissario=Commissario.get_by_user(op.author.get())
+            replies=[]
+            for x in op.get_discussion():
+                
+                x.commissario=Commissario.get_by_user(x.author.get())
+                replies.append(x)
+            
+            
+            current_user=self.get_current_user()
+            current_sub=None
+            if current_user is not None:
+                current_user=current_user.key
+                current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
+               
+                if current_sub is None:
+                    current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
+                    memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
+                
+                postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
+               
+                if postsub is None:
+                    postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
+                    memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
+             
+                
+            template_values = {
+                               'content': 'social/post.html',
+                               'replies': replies,
+                               'post': op,
+                               'node':node.get(),
+                               'user':current_user,
                             
-        if op is None or type(op) is not SocialPost:
-            self.response.clear() 
-            self.response.set_status(404)
-            template = jinja_environment.get_template('404_custom.html')
-            c={"error": "Il post a cui stai provando ad accedere non esiste"}
-            t = template.render(c)
-            self.response.out.write(t)
-            return
-        node=op.key.parent()
-        op.commissario=Commissario.get_by_user(op.author.get())
-        replies=[]
-        for x in op.get_discussion():
+                               
+                                                  }                    
+            if current_user:
+                template_values['subscription']=current_sub
+                template_values['postsub']=postsub
+                
+                
+            self.getBase(template_values)
+        except:
+            self.error()
             
-            x.commissario=Commissario.get_by_user(x.author.get())
-            replies.append(x)
-        
-        
-        current_user=self.get_current_user()
-        current_sub=None
-        if current_user is not None:
-            current_user=current_user.key
-            current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
-           
-            if current_sub is None:
-                current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
-                memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
-            
-            postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
-           
-            if postsub is None:
-                postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
-                memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
-         
-            
-        template_values = {
-                           'content': 'social/post.html',
-                           'replies': replies,
-                           'post': op,
-                           'node':node.get(),
-                           'user':current_user,
-                        
-                           
-                                              }                    
-        if current_user:
-            template_values['subscription']=current_sub
-            template_values['postsub']=postsub
-            
-            
-        self.getBase(template_values)
-
 class SocialMapHandler(webapp.RequestHandler):
       
   def get(self): 
@@ -258,25 +267,38 @@ class SocialSubscribeHandler(SocialAjaxHandler):
         cmd = self.request.get('cmd')
         if cmd == "subscribe":
                  node = model.Key(urlsafe=self.request.get('node')).get()
-                 node.subscribe_user(user)
-                 self.success()
+                 if node:
+                     node.subscribe_user(user)
+                     self.success()
+                 else:
+                     self.error()
+        
         
         if cmd == "unsubscribe":
                  node = model.Key(urlsafe=self.request.get('node')).get()
-             
-                 node.unsubscribe_user(user)
-                 self.success()
+                 if node:
+                     node.unsubscribe_user(user)
+                     self.success()
+                 else:
+                     self.error()
     
         if cmd == "subscribepost":
                 
                  post = model.Key(urlsafe=self.request.get('post')).get()
-                 post.subscribe_user(user)
-                 self.success()
+                 if post:
+                      post.subscribe_user(user)
+                      self.success()
+                 else:
+                     self.error()
         
         if cmd == "unsubscribepost":
                  post = model.Key(urlsafe=self.request.get('post')).get()
-                 post.unsubscribe_user(user)
-                 self.success()
+                 if post:
+                     post.unsubscribe_user(user)
+                     
+                     self.success()
+                 else:
+                     self.error()
               
 class SocialManagePost(SocialAjaxHandler):
    def post(self):
@@ -439,7 +461,6 @@ class SocialEditNodeHandler(BasePage):
             
             self.getBase(template_values)
         def post(self,id):
-            logging.info(self.request.get("node_id"))
             node=model.Key(urlsafe=self.request.get("node_id")).get()
             node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
             node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
@@ -562,11 +583,12 @@ class SocialPaginationHandler(SocialAjaxHandler):
                             self.response.out.write(json)
                             return
                    
-                    last_visit=datetime.fromtimestamp(int(base64.urlsafe_b64decode(self.request.get("last_visit").encode("utf-8"))))
                     template = jinja_environment.get_template("social/pagination/notifications.html")
+                   
+                    
                     template_values={
                                      'notifications':notlist,
-                                     'last_visit': last_visit,
+                                  
                                      'user':user.key,
                                      }
                     html=template.render(template_values)
@@ -576,7 +598,37 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     
                     self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
                     self.response.out.write(json)
+                if cmd=="search_nodes":
+                    nodes=[]
+                    if not cursor or cursor == "undefined":
+                        try:
+                            results = search.Index(name="index-nodes").search(search.Query(query_string=self.request.get("query")))
                         
+                            for scored_document in results:
+                                nodes.append(model.Key(urlsafe=scored_document.doc_id[5:]).get())
+                                
+                        except search.Error:
+                                logging.exception('Search failed' )
+                    
+                    template_values = {
+                            "nodelist":nodes,
+                             }
+               
+                        
+                    template = jinja_environment.get_template("social/pagination/node.html")
+                    if nodes:
+                        html=template.render(template_values)
+                        response = {'html':html,
+                                
+                                 
+                                  #cursor":next_curs.urlsafe()
+                                  }
+                    else:
+                        response={'html':"",'list':[]}
+                        
+                    json = simplejson.dumps(response)
+                    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+                    self.response.out.write(json)        
                         
          
 class SocialNotificationsListHandler(BasePage):
@@ -585,11 +637,10 @@ class SocialNotificationsListHandler(BasePage):
             user=self.get_current_user()
             prof=SocialProfile.query(ancestor=user.key).get()
             
-            encoded=base64.urlsafe_b64encode("%d" % int(time.mktime(prof.ultimo_accesso_notifiche.timetuple())))
             template_values = {
                            'content': 'social/notifications.html',
                            'user':user,
-                           'last_visit': encoded
+                           'last_visit': prof.ultimo_accesso_notifiche
                           }
                            
             prof.ultimo_accesso_notifiche=datetime.now()
@@ -663,8 +714,19 @@ class SocialUtils:
                     
                     if not node.has_user(user):
                         node.subscribe_user(user)
-                
-    
+    @classmethod
+    def generate_nodes(cls):             
+        citta=Citta.get_all()
+        for i in citta:
+           node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=i.create_resource().key)
+           node.put()
+        commissioni=Commissione.query().fetch()
+        for i in commissioni:
+        
+           c=i.citta.get()
+           node=SocialNode(name=i.nome,description="Gruppo di discussione per la commissione della scuola "+i.nome+" di "+c.nome,resource=i.create_resource().key)
+           node.put()
+
 class SocialNewsLetter(BasePage):
     
     def get(self):
@@ -683,7 +745,6 @@ class SocialNewsLetter(BasePage):
             if posts:
                 posts_by_node[''+str(node.key.id())]=posts
                 logging.info("2")          
-                
         logging.info("user_list: " + str(user_list.count()))          
           
         for user in user_list:
@@ -703,8 +764,6 @@ class SocialNewsLetter(BasePage):
             for i in range(newsletter_size):
                 rand=random.randint(0,len(all_posts)-1)
                 final_posts.append(all_posts[rand])
-                    
-                    
             template = jinja_environment.get_template("social/newsletter.html")
             html=template.render({"posts":final_posts})
             mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
@@ -719,11 +778,10 @@ class SocialNewsLetter(BasePage):
             
 
 
-
   
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
-    ('/social/nodelist/', NodeListHandler),
+   # ('/social/nodelist/', NodeListHandler),
     ('/social/post/(.*)', SocialPostHandler),
     ('/social/managepost',SocialManagePost),
     ('/social/test', SocialTest),
@@ -735,7 +793,6 @@ app = webapp.WSGIApplication([
     ('/social/main', SocialMainHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
-    ('/social/newsletter', SocialNewsLetter),
     ],
                              
     debug = True, config=config)
