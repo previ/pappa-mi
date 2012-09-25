@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -30,8 +30,16 @@ class MailHandler(InboundMailHandler):
     return host
 
   def receive(self, message):
+    subject = None
+    try:
+      subject = message.subject.decode('ascii')
+      self.decode(subject)
+    except UnicodeEncodeError:
+      subject = message.subject.decode('utf-8')
+      
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
-    logging.info("subject: " + self.decode(message.subject))
+    logging.info("subject: " + subject)
+    
     text_bodies = message.bodies('text/plain')
     
     #for body in text_bodies:
@@ -42,7 +50,7 @@ class MailHandler(InboundMailHandler):
       logging.info("found commissario")      
       nota = Nota()
       nota.creato_da = commissario.usera
-      nota.titolo = self.decode(message.subject)
+      nota.titolo = subject
       
       commissione = None
       cms = commissario.commissioni()
