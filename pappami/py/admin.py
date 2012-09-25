@@ -620,6 +620,14 @@ class CMAdminHandler(BasePage):
         
       self.response.out.write("Ok")
       return
+
+    if self.request.get("cmd") == "initNumCommissari":
+      for c in Commissione.query().filter(Commissione.numCommissari==None):
+        c.numCommissari = 0
+        c.put()
+        
+      self.response.out.write("Ok")
+      return
     
       
     if self.request.get("cmd") == "initAnno":
