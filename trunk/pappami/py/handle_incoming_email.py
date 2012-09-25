@@ -30,12 +30,7 @@ class MailHandler(InboundMailHandler):
     return host
 
   def receive(self, message):
-    subject = None
-    try:
-      subject = message.subject.decode('ascii')
-      self.decode(subject)
-    except UnicodeEncodeError:
-      subject = message.subject.decode('utf-8')
+    subject = message.subject
       
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
     logging.info("subject: " + subject)
@@ -161,6 +156,7 @@ Pappa-Mi staff """)
     logging.info("sending mail to: " + message.to)
     message.send()
             
+  #deprecated
   def decode(self, text):
     if len(decode_header(text)) > 0 and len(decode_header(text)[0]) > 1 and decode_header(text)[0][0] is not None and decode_header(text)[0][1] is not None:
       decoded_text = decode_header(text)[0]
