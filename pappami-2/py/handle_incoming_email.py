@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -154,6 +154,7 @@ Pappa-Mi staff """)
     message.send()
             
   def decode(self, text):
+    return text
     if len(decode_header(text)) > 0 and len(decode_header(text)[0]) > 1 and decode_header(text)[0][0] is not None and decode_header(text)[0][1] is not None:
       decoded_text = decode_header(text)[0]
       decoded_text = decoded_text[0].decode(decoded_text[1])
