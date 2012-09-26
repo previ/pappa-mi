@@ -165,9 +165,55 @@ class CMCommentHandler(BasePage):
       template_values['activities'] = activities
       template_values['comments'] = activities
       template_values['comment_root'] = comment_root
+      
+      self.send_notifications(messaggio, comment_root)
 
     return self.getBase(template_values)
     
+  def send_notifications(self, messaggio, comment_root):
+    cmsro_notifications = dict();
+    cmsro_notifications[comment_root.commissario.key] = comment_root.commissario
+    
+    comments = Messaggio.get_all_from_item_parent(None, messaggio)
+    for c in comments:
+      cmsro_notifications[c.commissario.key] = c.commissario
+    
+    #remove self
+    del cmsro_notifications[messaggio.commissario.key]
+    
+    for cmsro in cmsro_notifications.itervalues():
+      self.send_notification_mail(cmsro, messaggio, comment_root)
+      
+
+  def send_notification_mail(self, cmsro, messaggio, comment_root):
+    host = self.getHost()
+    
+    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+    message = mail.EmailMessage()
+    message.sender = sender
+    message.to = cmsro.usera.get().email
+    message.bcc = sender
+    message.subject = "[Pappa-Mi] Notifica nuovo commento"
+    message.body = """ Ciao """ + cmsro.nomecompleto(cmsro) + """, e' stato aggiunto un nuovo commento da """ + messaggio.commissario.nomecompleto(cmsro) + """.
+    
+    """ + messaggio.testo + """
+    
+    Usa questo link per mostrare la discussione e rispondere:
+    http://"""  + host + """/public/act?key=""" + str(comment_root.key.id()) + """
+       
+    Ciao
+    --
+    Pappa-Mi staff
+    
+    """
+      
+    message.send()
+  
+    
+      
+  
+    
+  
   """
   load comments html put under a message
   """
