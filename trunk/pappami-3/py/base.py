@@ -331,9 +331,6 @@ class BasePage(webapp.RequestHandler):
     #logging.info("host: " + host)
     return host
 
-  _news = {"news_pappami":"http://blog.pappa-mi.it/feeds/posts/default",
-          "news_web": "http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast",
-          "news_cal": "http://www.google.com/calendar/feeds/aiuto%40pappa-mi.it/public/basic"}
   
   @classmethod
   def getNews(self,name):

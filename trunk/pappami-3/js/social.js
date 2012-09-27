@@ -286,7 +286,7 @@ if($("#reply_form").valid()){
 	}
 }
 
-function onOpenPostSubmitted(user,node){
+function onOpenPostSubmitted(){
 	$("#new_post_form").validate({
 		
 		errorClass: "error",
@@ -315,8 +315,8 @@ function onOpenPostSubmitted(user,node){
 	
 	if($("#new_post_form").valid()){
 	data= {}
-	data['user']= user
-	data['node']=node
+	data['user']=$("#form_user").attr("value")
+	data['node']=$("#form_node").attr("value")
 	data['content']=$("#post_content_text").attr("value")
 	data['title']=$("#post_title_text").attr("value")
 	$.ajax({
@@ -425,6 +425,14 @@ function onPostEditSubmit(user,node,post){
 }
 
 
+function onOpenPostForm(){
+  $("#new_post_form").slideDown()
+  $("#open_post_button").hide()
+}
+function onOpenPostFormCancel(){
+  $("#new_post_form").slideUp()
+  $("#open_post_button").show()
+}
 	
 
 

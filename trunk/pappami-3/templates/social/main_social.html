@@ -10,12 +10,11 @@ $(document).ready(function () {
 });
 
 function onNodeClick(){
-$(this).parent().siblings(".active").removeClass("active")
-$(this).parent().addClass("active")
-key=$(this).attr('key')
-
-loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
-
+ $(this).parent().siblings(".active").removeClass("active")
+ $(this).parent().addClass("active")
+ key=$(this).attr('key')
+ 
+ loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
 }
 
 function init_search(){
@@ -34,67 +33,54 @@ $('#search_text').typeahead({minLength:2,
 }
 
 function init(){
-$("#node_list a").click(onNodeClick);
-$("ul#node_list a").click(onNodeClick);
-$("[key]").first().parent().addClass("active");
-key=$("[key]").attr('key');
-loadPosts(key,$("#node_stream_"+key).attr('next_cursor'));
-
+ $("#node_list a").click(onNodeClick);
+ $("ul#node_list a").click(onNodeClick);
+ $("[key]").first().parent().addClass("active");
+ key=$("[key]").attr('key');
+ loadPosts(key,$("#node_stream_"+key).attr('next_cursor'));
 }
 
 
 
 
 function onMoreClick(key){
-
-loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
-
-
+ loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
 }
 
 
 function loadPosts(key,current_cursor){
-$("ul#node_list li").unbind('click')
-if(!$("div#node_stream_"+key).hasClass('no_more_posts')){
-$.ajax({
-		 type: 'POST',
-		 url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
-		dataType:'json',
-		
-		 success:function(data){
-		 $("#node_stream_"+key).siblings().hide()
-		 $("div#node_stream_"+key).attr("next_cursor",data.cursor).show()
-		 $("ul#node_list li").click(onNodeClick)
-		 
-			if(data.response=="success"){
-			  $("div#node_stream_"+key+" ul").last().append(data.html)
-			 }
-			 else if(data.response="no_posts"){
-			 	$("div#node_stream_"+key).addClass('no_more_posts')
-			 	if(current_cursor!=undefined){
-			 	$("div#add_posts_"+key).hide()
-			 	
-			 	if($("div#node_stream_"+key+">ul").children().length>0){
-			 	$("div#node_stream_"+key+" .pagination_errors").show()
-			 	}
-			 	else
-			 	{
-			 	$("div#node_stream_"+key+" .empty_errors").show()
-			 	
-			 	}
-			 	
-			 	}
-			 	
-			 	
-			 }
-			 
-			 }})
-	}
- else{
-  	$("ul#node_list li").click(onNodeClick)
-	$("#node_stream_"+key).siblings().hide()
-	$("div#node_stream_"+key).show()
-		 	
+ $("ul#node_list li").unbind('click')
+ if(!$("div#node_stream_"+key).hasClass('no_more_posts')){
+ $.ajax({
+  type: 'POST',
+  url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
+  dataType:'json',
+  success:function(data) { 
+   $("#node_stream_"+key).siblings().hide()
+   $("#node_stream_"+key).show();
+   $("#form_node").attr("value",key);
+   $("#node_stream_"+key).attr("next_cursor",data.cursor)
+   $("ul#node_list li").click(onNodeClick)	 
+   if(data.response=="success"){
+    $("div#node_stream_"+key+" ul").last().append(data.html)
+   } else if(data.response="no_posts"){
+    $("div#node_stream_"+key).addClass('no_more_posts')
+    if(current_cursor!=undefined){
+     $("div#add_posts_"+key).hide()
+     
+     if($("div#node_stream_"+key+">ul").children().length>0){
+      $("div#node_stream_"+key+" .pagination_errors").show()
+     } else {
+      $("div#node_stream_"+key+" .empty_errors").show()  
+     }   
+    }    
+   }
+  }
+ });
+ } else {
+  $("ul#node_list li").click(onNodeClick)
+  $("#node_stream_"+key).siblings().hide()
+  $("div#node_stream_"+key).show()
  }
 }
 
@@ -102,39 +88,66 @@ $.ajax({
 
 </script>
 
+{%set tab_activity="active"%}
+{%include "navigation.html"%}
+
 {%if node_list%}
 <div id="node_selector">	
  <div class="row">
-  
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
     <li class="nav-header"><i class="icon-tags"></i>Nodi</li>
-    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}</a><span><a href="/social/node/{{node.key.urlsafe()}}">Link</a></span></li>
+    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i onclick='location.href="/social/node/{{node.key.urlsafe()}}"' class="pull-right permalink"></i></a></li>
     {%endfor%}
+    <li>
+     <input id="search_text" type="text">
+     <div id="search_result"></div>
+    </li>
    </ul>    
-  <div>
-  
-
   </div>
-  </div>	
-
-  <div class="span9" id="main_stream">{%for node in node_list%}
-   <div id="node_stream_{{node.key.urlsafe()}}">
-    <ul class="unstyled">
-    </ul>
-    <div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
-    <div class="pagination_errors" style="visibility:hidden"  >Non ci sono altri post</div>
-    <div class="empty_errors" style="visibility:hidden"  >Non ci sono post in questo gruppo</div>
-   </div>{%endfor%}
+  <div class="span9">
+{%if user %}	
+   <div class="well" style="padding: 10px;"><h4><small>Aggiungi nuovo</small></h4>
+    <div class="btn-toolbar">
+     <div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Messaggio</div>
+     {%if commissario%}
+     <button class="btn btn-primary" onclick="opennewisp();">Ispezione</button>
+     <button class="btn btn-primary" onclick="opennewdieta();">Ispezione Diete</button>
+     <button class="btn btn-primary" onclick="opennewnc();">Non conformit&agrave;</button>
+    {%endif%}
+     <button class="btn btn-primary" onclick="opennewnota();">Nota</button>
+    </div>
+   </div>
+   {%endif%}  
+<form id="new_post_form" style="display:none">
+<input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}">
+<input type="hidden" id="form_node" name="node" value="">
+	<div id="post_title" class="form_parent">
+		<label id="post_content_label" for="titolo">Titolo</label>
+		<input class="span8 comment_textarea required" name="titolo" id="post_title_text"></input>
+	</div>
+	<div id="post_content" class="form_parent">
+		<label id="post_content_label" for="content">Contenuto</label>
+		<input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
+	</div>
+	<div class="form-actions">
+		<div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted()" data-loading-text="Invio risposta in corso..."/>Invia</div>	
+		<div id="open_post_cancel_button" class="btn btn-primary" type="submit" onclick="onOpenPostFormCancel()">Annulla</div>
+	</div>
+</form>  
+   
+   <div id="main_stream">{%for node in node_list%}
+    <div id="node_stream_{{node.key.urlsafe()}}">
+     <ul class="unstyled">
+     </ul>
+     <div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
+     <div class="pagination_errors" style="visibility:hidden"  >Non ci sono altri post</div>
+     <div class="empty_errors" style="visibility:hidden"  >Non ci sono post in questo gruppo</div>
+    </div>{%endfor%}
+   </div>
   </div>
-  
-
  </div>
-</div>
+</div>	
 {%else%}
-
 <div>Non sei ancora iscritto a nessun gruppo. Usa la nostra funzione di ricerca per trovare gruppi di discussione che ti potrebbero interessare.</div>
-
 {%endif%}
-  <input id="search_text" type="text">
- 	<div id="search_result"></div>
