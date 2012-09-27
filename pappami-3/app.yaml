@@ -176,7 +176,10 @@ handlers:
 
 - url: /social/.*
   script: py.social.app
-  
+
+- url: /social/*
+  script: py.social.app
+
 - url: .*
   script: py.main.app
 

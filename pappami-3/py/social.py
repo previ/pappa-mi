@@ -305,6 +305,7 @@ class SocialManagePost(SocialAjaxHandler):
        
       
        user=self.request.user
+       logging.info(self.request.get('node'))
        node=model.Key(urlsafe=self.request.get('node'))
        cmd = self.request.get('cmd')
 
@@ -655,8 +656,8 @@ class SocialMainHandler(BasePage):
         
         template_values = {
                         'content': 'social/main_social.html',
-                        'node_list':node_list
-                        
+                        'node_list':node_list,
+                        'user':user
         }
         self.getBase(template_values)
         
@@ -790,9 +791,9 @@ app = webapp.WSGIApplication([
     ('/social/createnode', SocialCreateNodeHandler),
     ('/social/editnode/(.*)', SocialEditNodeHandler),
     ('/social/paginate', SocialPaginationHandler),
-    ('/social/main', SocialMainHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
+    ('/social', SocialMainHandler),
     ],
                              
     debug = True, config=config)

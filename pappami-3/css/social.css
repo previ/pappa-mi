@@ -1,6 +1,10 @@
 .node_description{float:right}
 .node{width:400px}
 
+.s_post {
+padding-bottom: 8px;
+}
+
 .s_post_avatar {
 display: table-cell;
 padding-left: 5px;
