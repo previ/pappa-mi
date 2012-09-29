@@ -1,7 +1,39 @@
 <script type="text/javascript">
 
-
 $(document).ready(function () {
+ $("#new_post_form").validate({
+  errorClass: "error",
+  errorPlacement: function(error, element) {
+    var item = $(element);
+    item.tooltip({title:error.text(), trigger:'manual'});
+    item.tooltip('show');
+  },
+  highlight: function(element, errorClass, validClass) {
+    var item = $(element).parents(".form_parent");
+    item.addClass(errorClass); 
+  },
+  unhighlight: function(element, errorClass, validClass) {
+    var item = $(element).parents(".form_parent");
+    item.removeClass(errorClass); 
+    $(element).tooltip('hide');
+  },  
+  rules: {
+  }
+ });
+ $('#new_post_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
+  if (data.response!="success") {
+   if(data.response=="flooderror"){
+    onFloodError(data)
+    return			  
+   }
+  }
+  $("#main_stream_list").prepend(data.html)
+  $("#open_post_submit").button("reset");
+ }, beforeSubmit: function(arr,$form) {
+  $("#open_post_submit").button("loading");
+  $('#new_post').slideUp();
+ }});
+
   $("div#main_stream").children().hide()
  {%if node_list%}
   init()
@@ -15,21 +47,6 @@ function onNodeClick(){
  key=$(this).attr('key')
  
  loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
-}
-
-function init_search(){
-$('#search_text').typeahead({minLength:2,
-
-    source: function (query, process) {
-
-        return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
-        	data=jQuery.parseJSON(data)
-        	if(data.html){
-        	$("#search_result").empty().hide().html(data.html).show(200)
-			}
-        });
-    }
-});
 }
 
 function init(){
@@ -100,8 +117,7 @@ function loadPosts(key,current_cursor){
     {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i onclick='location.href="/social/node/{{node.key.urlsafe()}}"' class="pull-right permalink"></i></a></li>
     {%endfor%}
     <li>
-     <input id="search_text" type="text">
-     <div id="search_result"></div>
+     <a href="/socil/nodelist">Altre scuole e argomenti</a>
     </li>
    </ul>    
   </div>
@@ -109,7 +125,7 @@ function loadPosts(key,current_cursor){
 {%if user %}	
    <div class="well" style="padding: 10px;"><h4><small>Aggiungi nuovo</small></h4>
     <div class="btn-toolbar">
-     <div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Messaggio</div>
+     <div id="open_post_button" class="btn btn-primary" onclick="onOpenPostForm()">Messaggio</div>
      {%if commissario%}
      <button class="btn btn-primary" onclick="opennewisp();">Ispezione</button>
      <button class="btn btn-primary" onclick="opennewdieta();">Ispezione Diete</button>
@@ -119,26 +135,28 @@ function loadPosts(key,current_cursor){
     </div>
    </div>
    {%endif%}  
-<form id="new_post_form" style="display:none">
-<input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}">
-<input type="hidden" id="form_node" name="node" value="">
-	<div id="post_title" class="form_parent">
-		<label id="post_content_label" for="titolo">Titolo</label>
-		<input class="span8 comment_textarea required" name="titolo" id="post_title_text"></input>
-	</div>
-	<div id="post_content" class="form_parent">
-		<label id="post_content_label" for="content">Contenuto</label>
-		<input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
-	</div>
-	<div class="form-actions">
-		<div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted()" data-loading-text="Invio risposta in corso..."/>Invia</div>	
-		<div id="open_post_cancel_button" class="btn btn-primary" type="submit" onclick="onOpenPostFormCancel()">Annulla</div>
-	</div>
-</form>  
-   
+<div id="new_post" style="display:none" class="well">
+ <form id="new_post_form" action="/social/managepost" method="post">
+ <input type="hidden" name="cmd" value="create_open_post"/>
+ <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
+ <input type="hidden" id="form_node" name="node" value=""/>
+	 <div id="post_title" class="form_parent">
+		 <label id="post_content_label" for="titolo">Titolo</label>
+		 <input class="span8 comment_textarea required" name="title" id="post_title_text"></input>
+	 </div>
+	 <div id="post_content" class="form_parent">
+		 <label id="post_content_label" for="content">Contenuto</label>
+		 <input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
+	 </div>
+	 <div class="form-actions">
+		 <input id="open_post_submit" class="btn btn-primary" type="submit" value="Salva" data-loading-text="Invio risposta in corso..."/>	
+		 <input id="open_post_cancel_button" class="btn btn-primary" type="reset" value="Annulla" onclick="onOpenPostFormCancel()"/>
+	 </div>
+ </form> 
+</div>
    <div id="main_stream">{%for node in node_list%}
     <div id="node_stream_{{node.key.urlsafe()}}">
-     <ul class="unstyled">
+     <ul id="main_stream_list" class="unstyled">
      </ul>
      <div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
      <div class="pagination_errors" style="visibility:hidden"  >Non ci sono altri post</div>

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -31,7 +31,7 @@ class MailHandler(InboundMailHandler):
 
   def receive(self, message):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
-    logging.info("subject: " + self.decode(message.subject))
+    logging.info("subject: " + message.subject)
     text_bodies = message.bodies('text/plain')
     
     #for body in text_bodies:
@@ -42,7 +42,7 @@ class MailHandler(InboundMailHandler):
       logging.info("found commissario")      
       nota = Nota()
       nota.creato_da = commissario.usera
-      nota.titolo = self.decode(message.subject)
+      nota.titolo = message.subject
       
       commissione = None
       cms = commissario.commissioni()

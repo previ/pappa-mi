@@ -1572,6 +1572,7 @@ class SocialPost(model.Model):
         if FLOOD_SYSTEM_ACTIVATED:
             memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
         
+        return new_comment
 
     def delete_reply_comment(self,reply_id):
         reply=model.Key(urlsafe=reply_id)
