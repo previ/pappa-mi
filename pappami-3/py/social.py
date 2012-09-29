@@ -114,8 +114,8 @@ class NodeListHandler(BasePage):
     geo = model.GeoPt(41.754922,12.502441)
     template_values = {
       'content': 'social/nodelist.html',
-      'nodelist': SocialNode.active_nodes(),
-      'citta': Citta.get_all(),
+      #'nodelist': SocialNode.active_nodes(),
+      #'citta': Citta.get_all(),
       'geo':geo}
         
     self.getBase(template_values)
@@ -316,8 +316,27 @@ class SocialManagePost(SocialAjaxHandler):
                self.response.out.write("<response>error</response>")
                return
            post=node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
+
+           postlist = list()
+           postlist.append(post.get())
+           for x in postlist: 
+               x.commissario=Commissario.get_by_user(x.author.get())
            
-           self.success("/social/post/"+post.urlsafe())
+           template_values = {
+               "reply":postlist,
+               "cmsro":self.getCommissario(user), 
+               "subscription": get_current_sub(user,node.key),
+               "user": user,
+               "node":node
+            }
+           
+           template = jinja_environment.get_template("social/pagination/post.html")
+
+           html=template.render(template_values)
+           response = {'response':'success','html':html,"cursor":''}
+           json = simplejson.dumps(response)
+           self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+           self.response.out.write(json)
            
            
        if cmd == "create_reply_post":
@@ -330,9 +349,26 @@ class SocialManagePost(SocialAjaxHandler):
                    return
            
                
-           post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
+           reply=post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
+
+           reply.commissario=Commissario.get_by_user(reply.author.get())
            
-           self.success()
+           template_values = {
+               "post":post,
+               "reply":reply,
+               "cmsro":self.getCommissario(user), 
+               "subscription": get_current_sub(user,node.key),
+               "user": user,
+               "node":node
+            }
+           
+           template = jinja_environment.get_template("social/pagination/comment.html")
+
+           html=template.render(template_values)
+           response = {'response':'success','html':html,"cursor":''}
+           json = simplejson.dumps(response)
+           self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+           self.response.out.write(json)
            
            
        if cmd == "delete_reply_post":
@@ -782,7 +818,7 @@ class SocialNewsLetter(BasePage):
   
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
-   # ('/social/nodelist/', NodeListHandler),
+    ('/social/nodelist', NodeListHandler),
     ('/social/post/(.*)', SocialPostHandler),
     ('/social/managepost',SocialManagePost),
     ('/social/test', SocialTest),

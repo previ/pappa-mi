@@ -3,7 +3,8 @@
 $(document).ready(function () {
   $("#pagination_errors").hide()
 
-  loadNodes(undefined)
+  //loadNodes(undefined)
+  init_search()
 });
 
 
@@ -44,7 +45,8 @@ $.ajax({
 </div>
 {%endif%}
 <h3>Elenco Nodi</h3>
-
+     <input id="search_text" type="text">
+     <div id="search_result"></div>
 <ul class="thumbnails">
 <div id="node_list">
 </div>

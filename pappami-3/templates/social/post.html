@@ -1,8 +1,45 @@
+<script type="text/javascript">
+
+$(document).ready(function () {
+	$("#reply_form").validate({
+		errorClass: "error",
+		errorPlacement: function(error, element) {
+		var item = $(element);
+		item.tooltip({title:error.text(), trigger:'manual'});
+		item.tooltip('show');
+	},
+	highlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.addClass(errorClass); 
+	},
+	unhighlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.removeClass(errorClass); 
+		$(element).tooltip('hide');
+	},  
+	rules: {}
+	});
+	
+	$('#new_comment_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
+		if (data.response!="success") {
+			if(data.response=="flooderror"){
+				onFloodError(data)
+				return			  
+			}
+		}
+		$("#comment_list").append(data.html)
+		$("#comment_submit").button("reset");
+	}, beforeSubmit: function(arr,$form) {
+		$("#comment_submit").button("loading");
+		//$('#new_comment').slideUp();
+	}});
+});
+</script>
 <div class="row">
 	<div class="span12">
 		<div class="s_post thumbnail"> 
 			<div class="s_post_avatar">
-				<img class="" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+				<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 			</div>
 			<div class="s_post_content">
 				<div class="s_post_header">			
@@ -15,8 +52,7 @@
 				<div  id="edit_hollow_{{post.key.urlsafe()}}"></div>
 				
 				<div>
-				{% if post.resource%}
-				
+				{% if post.resource%}				
 				{{post.resource.get().render()}}
 				{% endif%}	
 				</div>			
@@ -37,43 +73,21 @@
 		</div>			
 
 		<div class="s_replies span8" id="replies">
-			<ul class="thumbnails">
+			<ul id="comment_list" class="thumbnails">
 {%for reply in replies%}
-				<li>
-					<div class="s_reply thumbnail"> 
-						<div class="s_post_avatar">
-							<img class="avatar" src="{{reply.commissario.avatar(cmsro)}}" title="{{reply.commissario.nomecompleto(cmsro)}}">
-						</div>
-						<div class="s_post_content">
-							<div class="s_post_header">			
-								<div class="s_post_title"><a href="/social/post/{{reply.key.urlsafe()}}">{{reply.title}}</a></div> 
-								<div class="s_post_author">scritto da {{reply.commissario.nome}}</div>
-								<div class="s_post_date">&nbsp;- il {{reply.creation_date.strftime('%d %m %Y')}}</div>
-							</div>				
-							<div class="s_post_body">
-								<div  id="post_content_{{reply.key.urlsafe()}}">{{reply.content}}</div>
-								<div  id="edit_hollow_{{reply.key.urlsafe()}}"></div>
-							</div>				
-						{% if user %} 
-			
-							<div class="s_post_commands">
-								{%if subscription.can_admin or user==reply.author%}<button class="btn btn-danger" onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-								{%if subscription.can_admin  or user.key==reply.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
-					
-							</div>		
-						{% endif%}							
-						</div>			
-					</div>
-				</li>	
+{%include "social/pagination/comment.html"%}
 {%endfor%}
 			</ul>
 	{%if user and subscription.can_post%}	
-			<form id="reply_form">
+			<form id="new_comment_form" action="/social/managepost" method="post">
+				<input type="hidden" name="cmd" value="create_reply_post"/>
+				<input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
+				<input type="hidden" id="form_node" name="node" value="{{node.key.urlsafe()}}"/>				<input type="hidden" id="form_post" name="post" value="{{post.key.urlsafe()}}"/>
+
 				<div id="post_content" class="form_parent">
-	
-				 <input row="3" class="span8 comment_textarea required" id="reply_message"></textarea>
-				 <div id="reply_submit" class="btn btn-primary" type="submit" onclick="onReplySubmitted('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia Risposta</div>
-			</div>
+					<input row="3" class="span8 comment_textarea required" id="reply_message" name="content"></textarea>
+					<input id="reply_submit" class="btn btn-primary" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
+				</div>
 			</form>
 	{%endif%}
 		</div>

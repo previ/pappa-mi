@@ -228,31 +228,7 @@ function floodUpdate(){
 
 
 
-function onReplySubmitted(user,post,node){
-$("#reply_form").validate({
-		
-		errorClass: "error",
-	      errorPlacement: function(error, element) {
-		var item = $(element);
-		item.tooltip({title:error.text(), trigger:'manual'});
-		item.tooltip('show');
-	      },
-	      highlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.addClass(errorClass); 
-	      },
-	      unhighlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.removeClass(errorClass); 
-		$(element).tooltip('hide');
-	      },  
-	      rules: {
-		
-	
-	      }
-	
-	});
-	
+function onReplySubmitted(user,post,node){	
 	
 	
 if($("#reply_form").valid()){
@@ -286,33 +262,9 @@ if($("#reply_form").valid()){
 	}
 }
 
+/*
 function onOpenPostSubmitted(){
-	$("#new_post_form").validate({
 		
-		errorClass: "error",
-	      errorPlacement: function(error, element) {
-		var item = $(element);
-		item.tooltip({title:error.text(), trigger:'manual'});
-		item.tooltip('show');
-	      },
-	      highlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.addClass(errorClass); 
-	      },
-	      unhighlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.removeClass(errorClass); 
-		$(element).tooltip('hide');
-	      },  
-	      rules: {
-		
-	
-	      }
-	
-	});
-	
-	
-	
 	if($("#new_post_form").valid()){
 	data= {}
 	data['user']=$("#form_user").attr("value")
@@ -320,29 +272,24 @@ function onOpenPostSubmitted(){
 	data['content']=$("#post_content_text").attr("value")
 	data['title']=$("#post_title_text").attr("value")
 	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=create_open_post', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-			
-			 if (data.response!="success")
-			 {
-			if(data.response=="flooderror")
-			 {
-				onFloodError(data)
-				
-				 return
-					
-			 }
-		 	 }
-			 
-			 onSuccess(data)
-			 }})
+	  type: 'POST',
+	  url:'/social/managepost?cmd=create_open_post', 
+	  data: data,
+	  dataType:'json',
+	  success:function(data){
+	    if (data.response!="success") {
+	      if(data.response=="flooderror"){
+		  onFloodError(data)
+		  return			  
+	      }
+	    }
+	    $("#main_stream_list").prepend(data.html)
+	   }
+	  })
 	
 }
 }
-
+*/
 function onPostEdit(user,node,post){
 	data= {}
 	data['user']= user
@@ -426,12 +373,14 @@ function onPostEditSubmit(user,node,post){
 
 
 function onOpenPostForm(){
-  $("#new_post_form").slideDown()
-  $("#open_post_button").hide()
+  if(!$('#new_post').is(':visible')){
+    $("#new_post").slideDown()
+  } else {
+    $("#new_post").slideUp()  
+  }
 }
 function onOpenPostFormCancel(){
-  $("#new_post_form").slideUp()
-  $("#open_post_button").show()
+  $("#new_post").slideUp()
 }
 	
 
@@ -617,4 +566,19 @@ function onUnsubscription(user_key,node_key)
 		}
 	 });
 	 
+}
+
+function init_search(){
+$('#search_text').typeahead({minLength:2,
+
+    source: function (query, process) {
+
+        return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
+        	data=jQuery.parseJSON(data)
+        	if(data.html){
+        	$("#search_result").empty().hide().html(data.html).show(200)
+			}
+        });
+    }
+});
 }
