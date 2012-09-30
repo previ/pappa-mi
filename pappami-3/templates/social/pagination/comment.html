@@ -1,0 +1,26 @@
+<li>
+	<div class="s_reply thumbnail"> 
+		<div class="s_post_avatar">
+			<img class="avatar" src="{{reply.commissario.avatar(cmsro)}}" title="{{reply.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_content">
+			<div class="s_post_header">			
+				<div class="s_post_title"><a href="/social/post/{{reply.key.urlsafe()}}">{{reply.title}}</a></div> 
+				<div class="s_post_author">scritto da {{reply.commissario.nome}}</div>
+				<div class="s_post_date">&nbsp;- il {{reply.creation_date.strftime('%d %m %Y')}}</div>
+			</div>				
+			<div class="s_post_body">
+				<div  id="post_content_{{reply.key.urlsafe()}}">{{reply.content}}</div>
+				<div  id="edit_hollow_{{reply.key.urlsafe()}}"></div>
+			</div>				
+		{% if user %} 
+
+			<div class="s_post_commands">
+				{%if subscription.can_admin or user==reply.author%}<button class="btn btn-danger" onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
+				{%if subscription.can_admin  or user.key==reply.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
+	
+			</div>		
+		{% endif%}							
+		</div>			
+	</div>
+</li>	
