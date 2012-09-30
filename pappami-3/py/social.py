@@ -323,7 +323,7 @@ class SocialManagePost(SocialAjaxHandler):
                x.commissario=Commissario.get_by_user(x.author.get())
            
            template_values = {
-               "reply":postlist,
+               "postlist":postlist,
                "cmsro":self.getCommissario(user), 
                "subscription": get_current_sub(user,node.key),
                "user": user,
