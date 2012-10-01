@@ -20,9 +20,10 @@
     {%for tag in nota.tags%}<span class="tagItem">{{tag}}</span>{%endfor%}  
    </div>
    <div class="modal-footer modal-actions">
-    <form action="/isp/nota" method="POST" id="form1">
+    <form action="/isp/nota" method="POST" id="form1">    
      <input type="hidden" name="preview" value="{{preview}}">
      <input type="hidden" id="act_last" name="last" value="">
+     <input type="hidden" id="node" name="node" value="">     
      <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
      <button type="reset" class="btn" onclick="previewback();" style="float:right;">Torna a modifiche</button>
     </form>

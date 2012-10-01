@@ -86,6 +86,7 @@ class SocialAjaxHandler(webapp.RequestHandler):
                return
             else:
                 super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
+
         def getCommissario(self, user = None):
             if user is None:
               user = self.request.user

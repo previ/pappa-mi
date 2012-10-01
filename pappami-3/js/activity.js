@@ -264,6 +264,7 @@ function opennewitem(url) {
       } else {
 	$('#new-data-form').hide();  
 	$('#new-data-preview').show();
+	$('#form1').find('#node').val($('#form_node').val()); 
 	if( $('#activity_list li:first-child').attr('id') ) {
   	  $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	}
