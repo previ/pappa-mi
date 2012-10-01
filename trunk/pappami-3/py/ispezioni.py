@@ -25,6 +25,8 @@ from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
 from py.modelMsg import *
 from py.comments import CMCommentHandler
+from py.social import *
+
          
 class CMGetIspDataHandler(BasePage):
 
@@ -622,10 +624,13 @@ class NotaHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+        node = model.Key(urlsafe=self.request.get("node"))
+        template_values = self.create_resource(node=node, user=self.request.user, url="", type="nota", title="Ispezione", content=nota.note, res_key=nota.key)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
         
       
     else:
@@ -670,6 +675,31 @@ class NotaHandler(BasePage):
         }
       
     self.getBase(template_values) 
+    
+  def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
+      resource = SocialResource(parent=node,
+                               title=title,
+                               type=type,
+                               obj=res_key,                                
+                               )
+      resource.put()
+      post = resource.publish(node,content,title,user)
+      
+      postlist = list()
+      postlist.append(post.get())
+      for x in postlist: 
+          x.commissario=Commissario.get_by_user(x.author.get())
+      
+      template_values = {
+        "main":"social/pagination/post.html",
+        "postlist":postlist,          
+        "cmsro":self.getCommissario(user), 
+        "subscription": py.social.get_current_sub(user,node),
+        "user": user,
+        "node":node.get()
+       }
+      
+      return template_values
     
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),

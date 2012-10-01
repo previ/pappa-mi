@@ -1656,7 +1656,14 @@ class SocialResource(model.Expando):
         template_values = {
                  "resource":self
         }
-        template = jinja_environment.get_template("social/resources/resource.html")
+        template = jinja_environment.get_template("social/resources/ispezione.html")
+        return template.render(template_values)  
+
+    def render_nota(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/nota.html")
         return template.render(template_values)  
     
     def render_city(self):

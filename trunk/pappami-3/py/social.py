@@ -443,8 +443,7 @@ class SocialManagePost(SocialAjaxHandler):
         
            template = jinja_environment.get_template(template_values["template"])
    
-           self.response.write(template.render(template_values))
-
+           self.response.write(template.render(template_values))        
 
        
 class SocialCreateNodeHandler(BasePage):
