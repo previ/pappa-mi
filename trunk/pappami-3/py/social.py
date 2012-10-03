@@ -183,6 +183,31 @@ class SocialPostHandler(BasePage):
             self.getBase(template_values)
         except:
             self.error()
+
+    def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
+        resource = SocialResource(parent=node,
+                                 title=title,
+                                 type=type,
+                                 obj=res_key,                                
+                                 )
+        resource.put()
+        post = resource.publish(node,content,title,user)
+        
+        postlist = list()
+        postlist.append(post.get())
+        for x in postlist: 
+            x.commissario=Commissario.get_by_user(x.author.get())
+        
+        template_values = {
+          "main":"social/pagination/post.html",
+          "postlist":postlist,          
+          "cmsro":self.getCommissario(user), 
+          "subscription": py.social.get_current_sub(user,node),
+          "user": user,
+          "node":node.get()
+         }
+        
+        return template_values
             
 class SocialMapHandler(webapp.RequestHandler):
       
