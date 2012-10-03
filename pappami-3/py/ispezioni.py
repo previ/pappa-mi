@@ -188,10 +188,14 @@ class IspezioneHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
         
-        template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+        node = model.Key(urlsafe=self.request.get("node"))
+        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="ispezione", title="Ispezione", content=isp.note, res_key=isp.key)
+        
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
       
 
       self.getBase(template_values) 
@@ -245,7 +249,6 @@ class IspezioneHandler(BasePage):
 
         self.getBase(template_values)
         
-
 class NonconfHandler(BasePage):
   
   @commissario_required
@@ -337,10 +340,14 @@ class NonconfHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
+        node = model.Key(urlsafe=self.request.get("node"))
+        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="nonconf", title="Non conformità", content=nc.note, res_key=nc.key)
+        
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
       
       self.getBase(template_values) 
       
@@ -480,10 +487,13 @@ class DietaHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
-
+        #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
+        node = model.Key(urlsafe=self.request.get("node"))
+        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="dieta", title="Ispezione Diete speciali", content=dieta.note, res_key=dieta.key)
+        
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
 
       self.getBase(template_values) 
       
@@ -626,7 +636,7 @@ class NotaHandler(BasePage):
   
         #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
         node = model.Key(urlsafe=self.request.get("node"))
-        template_values = self.create_resource(node=node, user=self.request.user, url="", type="nota", title="Ispezione", content=nota.note, res_key=nota.key)
+        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="ispezione", title=nota.titolo, content=nota.note, res_key=nota.key)
 
       else:
         pass
@@ -675,32 +685,7 @@ class NotaHandler(BasePage):
         }
       
     self.getBase(template_values) 
-    
-  def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
-      resource = SocialResource(parent=node,
-                               title=title,
-                               type=type,
-                               obj=res_key,                                
-                               )
-      resource.put()
-      post = resource.publish(node,content,title,user)
-      
-      postlist = list()
-      postlist.append(post.get())
-      for x in postlist: 
-          x.commissario=Commissario.get_by_user(x.author.get())
-      
-      template_values = {
-        "main":"social/pagination/post.html",
-        "postlist":postlist,          
-        "cmsro":self.getCommissario(user), 
-        "subscription": py.social.get_current_sub(user,node),
-        "user": user,
-        "node":node.get()
-       }
-      
-      return template_values
-    
+        
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),
     ('/isp/ispval', IspezioneValidationHandler),

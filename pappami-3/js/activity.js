@@ -39,6 +39,7 @@ function initForm() {
  $('#new-data').find( "[type='radio']" ).button();
 }
 
+/*
 function opennewmsg() {  
   if($('#new-msg').is(':visible') ) {
     $('#new-msg').slideUp();
@@ -102,7 +103,7 @@ function opennewmsg() {
     $('#new-msg').slideDown();  
   }
 }
-
+*/
 var auto_open_nc = false;
 
 jQuery.validator.addMethod("numpastibambini", function(value, element) { 
@@ -172,6 +173,8 @@ function opennewwiz(url) {
 	  } else {
 	    $('#new-data-form').hide();  
 	    $('#new-data-preview').show();
+	    $('#form1').find('#node').val($('#form_node').val()); 
+
 	    // on preview form submit
 	    if( $('#activity_list li:first-child').attr('id') ) {	    
 	      $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
@@ -180,7 +183,13 @@ function opennewwiz(url) {
 	      $('#new-data').dialog('close');
 	      $('#new-data-form').html('');
 	      $('#new-data-preview').html('');
-	      $('#activity_list').prepend(data);
+	      if (data.response!="success") {
+	       if(data.response=="flooderror"){
+		onFloodError(data)
+		return			  
+	       }
+	      }
+	      $("#main_stream_list").prepend(data.html)	      
 	      if(auto_open_nc) {
 		$('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
 		$('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
@@ -272,7 +281,13 @@ function opennewitem(url) {
 	  $('#new-data').dialog('close');	
 	  $('#new-data-form').html('');
 	  $('#new-data-preview').html('');
-	  $('#activity_list').prepend(data);	
+	  if (data.response!="success") {
+	    if(data.response=="flooderror"){
+	      onFloodError(data)
+	      return			  
+	    }
+	  }
+	  $("#main_stream_list").prepend(data.html)	      
 	  if(auto_open_nc) {
 	    $('#new-nc').html("Inserire altra Non conformit&agrave; ?")
 	    $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [

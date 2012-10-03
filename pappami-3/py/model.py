@@ -1659,6 +1659,18 @@ class SocialResource(model.Expando):
         template = jinja_environment.get_template("social/resources/ispezione.html")
         return template.render(template_values)  
 
+    def render_nonconf(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/nonconf.html")
+        return template.render(template_values)  
+    def render_dieta(self):
+        template_values = {
+                 "resource":self
+        }
+        template = jinja_environment.get_template("social/resources/dieta.html")
+        return template.render(template_values)  
     def render_nota(self):
         template_values = {
                  "resource":self
