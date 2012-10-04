@@ -543,10 +543,19 @@ class CMAdminHandler(BasePage):
       self.response.out.write("fixStream 2 Ok")
       return
 
-    if self.request.get("cmd") == "fixIsp":
-      for isp in Ispezione().query().filter(Ispezione.creato_il==None):
+    if self.request.get("cmd") == "fixCreatoIl":
+      for isp in Ispezione.query().filter(Ispezione.creato_il==None):
         isp.creato_il = isp.modificato_il
         isp.put()
+      for nc in Nonconformita.query().filter(Nonconformita.creato_il==None):
+        nc.creato_il = nc.modificato_il
+        nc.put()
+      for dieta in Dieta.query().filter(Dieta.creato_il==None):
+        dieta.creato_il = dieta.modificato_il
+        dieta.put()
+      for nota in Nota.query().filter(Nota.creato_il==None):
+        nota.creato_il = nota.modificato_il
+        nota.put()
       self.response.out.write("fixIsp Ok")
       return
 
