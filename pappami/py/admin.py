@@ -623,7 +623,7 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "initEmailLower":
-      for c in Commissario.query().filter(Commissario.user_email_lower==None):
+      for c in Commissario.query().filter(Commissario.user_email_lower==""):
         c.user_email_lower = c.usera.get().email.lower()
         c.put()
         

@@ -45,7 +45,8 @@ class CMCommentHandler(BasePage):
       messaggio.livello = 0
       messaggio.tipo = tipo
       messaggio.commenti = 0
-      messaggio.c_ua = user.key
+      messaggio.creato_il = datetime.now()
+      messaggio.c_ua = user.key      
       messaggio.put()
       if tags:
         CMTagHandler.saveTags(messaggio, tags)
@@ -110,6 +111,7 @@ class CMCommentHandler(BasePage):
     messaggio.titolo = self.request.get("titolo")
     messaggio.testo = self.request.get("testo")
     messaggio.commenti = 0
+    messaggio.creato_il = datetime.now()
     messaggio.c_ua = self.request.user.key    
     messaggio.put()
 
