@@ -106,10 +106,10 @@ function opennewmsg() {
 var auto_open_nc = false;
 
 jQuery.validator.addMethod("numpastibambini", function(value, element) { 
- return parseInt(value) <= $("#e_numeroPastiTotale").val(); 
+ return parseInt(value) <= parseInt($("#e_numeroPastiTotale").val()); 
 } );
 jQuery.validator.addMethod("numpastispeciali", function(value, element) { 
- return value <= $("#e_numeroPastiBambini").val(); 
+ return parseInt(value) <= parseInt($("#e_numeroPastiBambini").val()); 
 } );
 
 function opennewwiz(url) {
