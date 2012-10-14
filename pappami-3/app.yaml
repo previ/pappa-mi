@@ -180,6 +180,15 @@ handlers:
 - url: /social/*
   script: py.social.app
 
+- url: /api/.*
+  script: py.api.app
+
+- url: /mobile/.*
+  script: py.mobile.app
+
+- url: /mobile/*
+  script: py.mobile.app
+
 - url: .*
   script: py.main.app
 

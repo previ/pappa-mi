@@ -1,5 +1,3 @@
-
-
 var infowindow;
 var locations = {};
 var list;
@@ -44,6 +42,7 @@ var fstyles = {
 	  height: 65
   }
 };
+
 $(document).ready(function() { 
 	$('#post_content_text,#node_description_text,#reply_message').tinymce({
 	     // Location of TinyMCE script
@@ -65,7 +64,40 @@ $(document).ready(function() {
 	    });
 });
 
-
+function initReplyForm() {
+	$("#reply_form").validate({
+		errorClass: "error",
+		errorPlacement: function(error, element) {
+		var item = $(element);
+		item.tooltip({title:error.text(), trigger:'manual'});
+		item.tooltip('show');
+	},
+	highlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.addClass(errorClass); 
+	},
+	unhighlight: function(element, errorClass, validClass) {
+		var item = $(element).parents(".form_parent");
+		item.removeClass(errorClass); 
+		$(element).tooltip('hide');
+	},  
+	rules: {}
+	});
+	
+	$('#new_comment_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
+		if (data.response!="success") {
+			if(data.response=="flooderror"){
+				onFloodError(data)
+				return			  
+			}
+		}
+		$("#comment_list").append(data.html)
+		$("#comment_submit").button("reset");
+	}, beforeSubmit: function(arr,$form) {
+		$("#comment_submit").button("loading");
+		//$('#new_comment').slideUp();
+	}});
+}
 
 function drawSocialMap(data) {
   var f_citta = $("#e_citta").val();
@@ -401,7 +433,6 @@ function onPostReshare(user,post,node){
 			 $("#reshare_"+post).modal();
 			 }})
 			 
-
 	
 }
 

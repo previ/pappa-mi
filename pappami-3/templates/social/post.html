@@ -1,38 +1,7 @@
 <script type="text/javascript">
 
 $(document).ready(function () {
-	$("#reply_form").validate({
-		errorClass: "error",
-		errorPlacement: function(error, element) {
-		var item = $(element);
-		item.tooltip({title:error.text(), trigger:'manual'});
-		item.tooltip('show');
-	},
-	highlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.addClass(errorClass); 
-	},
-	unhighlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.removeClass(errorClass); 
-		$(element).tooltip('hide');
-	},  
-	rules: {}
-	});
-	
-	$('#new_comment_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
-		if (data.response!="success") {
-			if(data.response=="flooderror"){
-				onFloodError(data)
-				return			  
-			}
-		}
-		$("#comment_list").append(data.html)
-		$("#comment_submit").button("reset");
-	}, beforeSubmit: function(arr,$form) {
-		$("#comment_submit").button("loading");
-		//$('#new_comment').slideUp();
-	}});
+	initReplyForm()
 });
 </script>
 <div class="row">
@@ -52,9 +21,10 @@ $(document).ready(function () {
 				<div  id="edit_hollow_{{post.key.urlsafe()}}"></div>
 				
 				<div>
-				{% if post.resource%}				
-				{{post.resource.get().render()}}
-				{% endif%}	
+				{%if post.resource%}
+				{%set resource = post.resource.get()%}
+				{%include "social/resources/"+resource.type+".html"%}
+				{%endif%}	
 				</div>			
 				</div>									
 			{% if user %} 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 #
 # Copyright 2007 Google Inc.
 #
@@ -251,6 +251,11 @@ class BasePage(webapp.RequestHandler):
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
   
+  #response object dump as json string
+  def output_as_json(self, obj):   
+    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')    
+    json.dump(obj, self.response.out)
+    
   def getCommissario(self, user = None):
     if user is None:
       user = self.request.user
