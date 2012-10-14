@@ -1,0 +1,55 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Demo</title> 
+  
+</head>
+
+<style>
+
+body{
+  background-image:url('/img/site/background.png');
+}
+
+#wrapper{
+  margin-left:  200px;
+}
+
+#background{
+  width:  400px;
+}
+
+.center{
+  position: absolute;
+  top:      142px;
+  left:     248px;
+  width:    322px;
+  height:   482px;
+  border:   1px solid black;
+  overflow: hidden;
+}
+
+iframe{
+  width:    320px;
+  height:   480px;
+  overflow: hidden;
+  border:   1px solid black;
+}
+
+
+</style>
+
+<body>
+
+<div id="wrapper">
+	<img id="background" src="/lib/img/iphone.png" />
+	<div class="center">
+	  <iframe name="frame-1" src="index.html"></iframe>
+	</div>  
+</div>
+
+</body>
+
+</html>

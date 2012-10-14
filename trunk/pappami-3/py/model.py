@@ -523,6 +523,7 @@ class MenuHelper():
   giorno = None
   settimana = None
 
+  #_giorni = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì","Sabato", "Domenica"]
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):
     return self._giorni[self.giorno-1]
@@ -530,7 +531,8 @@ class MenuHelper():
     return datetime.now().date() == self.data
   
   def to_dict(self):
-    return {"primo": self.primo.nome, "primo_key": str(self.primo.key),
+    return {"data":str(self.data), "giorno": str(self.giorno), "settimana":self.getData(),
+            "primo": self.primo.nome, "primo_key": str(self.primo.key),
             "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key),
             "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key),
             "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key)}
@@ -1638,59 +1640,60 @@ class SocialResource(model.Expando):
     @staticmethod
     def get_resource(key):
         return SocialResource.query(ancestor=key).get()
-    #rompo l'MVC, possano gli Dei antichi e nuovi perdonare il mio sacrilegio
-    def render(self):
-        render_method = getattr(self,'render_'+self.type)
-        return render_method()
+    #rompo l'MVC, possano gli Dei antichi e nuovi perdonare il mio sacrilegio    
+    #deprecated
+    #def render(self):
+        #render_method = getattr(self,'render_'+self.type)
+        #return render_method()
     
     
-    def render_post(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/post.html")
+    #def render_post(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/post.html")
        
-        return template.render(template_values)  
+        #return template.render(template_values)  
     
-    def render_ispezione(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/ispezione.html")
-        return template.render(template_values)  
+    #def render_ispezione(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/ispezione.html")
+        #return template.render(template_values)  
 
-    def render_nonconf(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/nonconf.html")
-        return template.render(template_values)  
-    def render_dieta(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/dieta.html")
-        return template.render(template_values)  
-    def render_nota(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/nota.html")
-        return template.render(template_values)  
+    #def render_nonconf(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/nonconf.html")
+        #return template.render(template_values)  
+    #def render_dieta(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/dieta.html")
+        #return template.render(template_values)  
+    #def render_nota(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/nota.html")
+        #return template.render(template_values)  
     
-    def render_city(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/city.html")
-        return template.render(template_values)  
-    def render_commission(self):
-        template_values = {
-                 "resource":self
-        }
-        template = jinja_environment.get_template("social/resources/commission.html")
+    #def render_city(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/city.html")
+        #return template.render(template_values)  
+    #def render_commission(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/commission.html")
                 
-        return template.render(template_values)  
+        #return template.render(template_values)  
     
     
     def publish(self,target_node,new_content, new_title,new_author):
