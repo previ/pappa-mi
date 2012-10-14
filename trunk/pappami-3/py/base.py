@@ -33,7 +33,6 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
-import simplejson 
 import py.feedparser
 import httpagentparser
 
@@ -80,7 +79,7 @@ class SocialAjaxHandler(webapp.RequestHandler):
                time=SOCIAL_FLOOD_TIME-time.seconds
                response = {'response':'flooderror','time':time,'html':html}
               
-               json = simplejson.dumps(response)
+               json = son.dumps(response)
                self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
                self.response.out.write(json)
                return
@@ -101,7 +100,7 @@ class SocialAjaxHandler(webapp.RequestHandler):
             if url:
                 response['url']=url
             
-            json = simplejson.dumps(response)
+            json = json.dumps(response)
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
         
@@ -109,7 +108,7 @@ class SocialAjaxHandler(webapp.RequestHandler):
             
             response = {'response':'error'}
             
-            json = simplejson.dumps(response)
+            json = json.dumps(response)
             self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
             self.response.out.write(json)
             
