@@ -179,7 +179,7 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.0.4 - 2012.09.30"
+    template_values["version"] = "2.0.3.5 - 2012.10.09"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])

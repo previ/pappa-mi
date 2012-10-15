@@ -25,13 +25,13 @@ import wsgiref.handlers
 import random
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.api import mail
 from engineauth import models
 
+from common import *
 from model import *
 from modelMsg import *
 from form import CommissioneForm
@@ -42,42 +42,129 @@ from base import BasePage, config
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMAdminMenuHandler(BasePage):
+class AdminMenuHandler(BasePage):
 
-  def get(self):    
-
+  def get(self):
     template_values = {
-      #'content': '/admin/menu.html'
+      'content': '/admin/menu.html'
     }
-
-    if( self.request.get("data") ):
-      data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-      menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
-      template_values['data'] = data
-      template_values['menu'] = menu
-
     self.getBase(template_values)
 
+
   def post(self):    
-    if( self.request.get("cmd") == "list" ):
+    if self.request.get("cmd") == "upload":
+      citta = Citta.query().get()
+      data = self.request.get("data")
+      for line in data.split("\n"):
+        fields = line.split("\t")
+        if len(fields) > 6:
+          menu = Menu()
+          menu.tipo = fields[0]
+          menu.validitaDa = datetime.datetime.strptime(fields[1],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.validitaA = datetime.datetime.strptime(fields[2],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.settimana = int(fields[3])
+          menu.giorno = int(fields[4])
+          menu.primo = fields[5]
+          menu.secondo = fields[6]
+          menu.contorno = fields[7]
+          menu.dessert = fields[8]
+          
+          logging.info("menu: " + str(menu.validitaA))
+          nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
+          if not nm:
+            nm = MenuNew()
+            nm.validitaDa = menu.validitaDa
+            nm.validitaA = menu.validitaA
+            nm.citta = citta.key
+            nm.put()
+          piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.primo
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.primo.put")
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "p"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.primo.put")
+          piatto = Piatto.query().filter(Piatto.nome==menu.secondo).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.secondo
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.secondo.put")
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "s"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.secondo.put")
+          piatto = Piatto.query().filter(Piatto.nome==menu.contorno).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.contorno
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.contorno.put")
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "c"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.contorno.put")
+          piatto = Piatto.query().filter(Piatto.nome == menu.dessert).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.dessert
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.dessert.put")
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "d"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.dessert.put")
+      self.response.out.write("initMenu Ok")
+      return      
 
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-
-      template_values = {
-        'content': 'admin/menu.html'
-      }
-
-      if self.request.get("data") :
-        data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-        menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
-        template_values['data'] = data
-        template_values['menu'] = menu
-
-      self.getBase(template_values)
-
-
+    
 class CMAdminCommissioneHandler(BasePage):
 
   def get(self):    
@@ -857,11 +944,13 @@ class CMAdminCommissarioHandler(BasePage):
         'json': json
       }
       self.getBase(template_values)
+      
+      
         
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
-  ('/admin/menu', CMAdminMenuHandler),
+  ('/adminmenu', AdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
