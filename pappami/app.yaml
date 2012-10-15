@@ -1,4 +1,4 @@
-application: pappa-mi-hr
+application: test-pappa-mi-hr
 version: 1
 runtime: python27
 api_version: 1
@@ -79,10 +79,10 @@ handlers:
   script: py.stats.app
   login: admin
   
-- url: /admin/.*
+- url: /adminmenu
   script: py.admin.app
   login: admin
-
+  
 - url: /admin/*
   script: py.admin.app
   login: admin

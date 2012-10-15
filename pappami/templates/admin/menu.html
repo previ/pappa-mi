@@ -1,63 +1,21 @@
-<script type="text/javascript">
-dojo.require("dijit.form.Form");
-dojo.require("dijit.form.TimeTextBox");
-dojo.require("dijit.form.Textarea");
-dojo.require("dijit.form.NumberTextBox");
-dojo.require("dijit.form.DateTextBox");
-dojo.require("dijit.form.ComboBox");
-dojo.require("dijit.form.RadioButton");
-</script>
-<H1>Pagina Gestione Menu</H1>
-  <p>
-<FORM dojoType="dijit.form.Form" action="/admin/menu" method="POST" id="form_0">
-<input type="hidden" name="cmd" value="list" method="GET"/>
-<script type="dojo/method" event="onSubmit">
-if(this.validate()){
-    return true;
-} else {
-    alert('Il form contiene valori non corretti');
-    return false;
-}
-</script>
-<INPUT type="text" dojoType="dijit.form.DateTextBox" constraints="{datePattern: 'dd/MM/yyyy'}" required="true" name="data" value="{{data|date:"Y-m-d"}}" class="ss-q-short" id="entry_0">
-<INPUT type="submit" value="Elenca Menu"/>
-</form>
-</DIV>
-<DIV class="goog-ws-half-width goog-ws-right goog-ws-text-right">
-<SPAN class="goog-ws-grey">
-                    Visualizzazione di <SPAN xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-rowCount">{{menu.count}}</SPAN> voci
-                  </SPAN>
-</DIV>
-</DIV>
-<TABLE width="100%" class="goog-ws-list-table" cellspacing="0">
-<THEAD class="goog-ws-list-header"><TR>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="20%">Centro Cucina</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="10%">Validita' Da</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="10%">Validita' A</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="5%">Settimana</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="5%">Giorno</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="20%">Primo</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="20%">Secondo</TH>
-<TH xmlns="http://www.w3.org/1999/xhtml" width="20%">Contorno</TH>
-</TR>
-</THEAD>
-<TBODY class="oog-ws-list-table">
-{% for m in menu %}
-<TR xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-tableRow">
-<TD width="20%">{{m.centroCucina}}</TD>
-<TD width="10%">{{m.validitaDa|date:"d/m/Y"}}</TD>
-<TD width="10%">{{m.validitaA|date:"d/m/Y"}}</TD>
-<TD width="5%">{{m.settimana}}</TD>
-<TD width="5%">{{m.giorno}}</TD>
-<TD width="20%">{{m.primo}}</TD>
-<TD width="20%">{{m.secondo}}</TD>
-<TD width="20%">{{m.contorno}}</TD>
-</TR>
-{% endfor %}
-</TBODY>
-</TABLE>
-<DIV class="goog-ws-clear" style="padding-top:5px;">
-<DIV class="goog-ws-half-width goog-ws-right goog-ws-text-right">
-<SPAN class="goog-ws-grey">
-Visualizzazione di <SPAN xmlns="http://www.w3.org/1999/xhtml" class="goog-ws-list-rowCount">{{menu.count}}</SPAN> voci
-</SPAN>
+<div class="row">
+  <div class="span12">
+    <h2>Pagina Gestione Menu</h2>
+    <form action="/adminmenu" method="POST" id="form_0">
+      <div class="control-group">
+       <div class="controls">
+         <input type="hidden" name="cmd" value="upload" method="POST"/>
+         <label>Città</label>
+         <select name="citta">
+         <option>Vuoto</option>
+         </select>         
+         <label>Menu</label>
+         <textarea name="data" cols="120" rows="20"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <input type="submit" class="btn btn-button"/>
+      </div>
+    </form>
+  </div>
+</div>
