@@ -5,6 +5,11 @@
       <div class="control-group">
        <div class="controls">
          <input type="hidden" name="cmd" value="upload" method="POST"/>
+         <label>Cosa</label>
+         <select class="large required" id="what" name="what">
+          <option value="menu">Menu</option>
+          <option value="content">Ingredienti</option>
+         </select>
          <label>Città</label>
          <select class="large required" id="citta" name="city">
           {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
