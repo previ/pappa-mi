@@ -43,11 +43,22 @@ DATE_FORMAT = "%Y-%m-%d"
 
 class MobileHandler(BasePage):
   
+  def get(self): 
+    
+    template_values = {
+      "main": "mobile/public.html"
+    }
+    self.getBase(template_values)
+  def post(self):
+    return self.get()
+
+class MobilePrivateHandler(BasePage):
+  
   @reguser_required
   def get(self): 
     
     template_values = {
-      "main": "mobile/index.html"
+      "main": "mobile/priv.html"
     }
     self.getBase(template_values)
   def post(self):
@@ -55,7 +66,8 @@ class MobileHandler(BasePage):
 
     
 app = webapp.WSGIApplication([
-    ('/mobile', MobileHandler)
+    ('/mobile', MobileHandler),
+    ('/mobile/priv', MobilePrivateHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404

@@ -460,15 +460,15 @@ class Piatto(model.Model):
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None
-    if settimana not in cls._pi_gi_cache:
+    if str(menu.id) + "-" + str(settimana) not in cls._pi_gi_cache:
       pi_gi = dict()
       for pg in PiattoGiorno.query().filter(PiattoGiorno.menu == menu.key).filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto.get()
-      cls._pi_gi_cache[settimana] = pi_gi
+      cls._pi_gi_cache[str(menu.id) + "-" + str(settimana)] = pi_gi
     else:
-      pi_gi = cls._pi_gi_cache[settimana]
+      pi_gi = cls._pi_gi_cache[str(menu.id) + "-" + str(settimana)]
     return pi_gi
         
   @classmethod
@@ -959,7 +959,7 @@ class Nota(model.Model):
   note = model.TextProperty(default="")
   anno = model.IntegerProperty()
     
-  creato_il = model.DateTimeProperty(auto_now_add=True)
+  creato_il = model.DateTimeProperty(auto_now=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
