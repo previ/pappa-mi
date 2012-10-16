@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
@@ -51,7 +51,8 @@ class LoginPage(BasePage):
 
       self.getBase(template_values)
     else:
-      self.redirect("/")
+      nxt = self.request.get("nxt") if self.request.get("nxt") else "/"
+      self.redirect(nxt)
   def post(self):
     return self.get()
 
