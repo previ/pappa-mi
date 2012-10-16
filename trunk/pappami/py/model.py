@@ -446,6 +446,7 @@ class Ingrediente(model.Model):
 class PiattoIngrediente(model.Model):
   piatto = model.KeyProperty(kind=Piatto)
   ingrediente = model.KeyProperty(kind=Ingrediente)
+  quantita = model.FloatProperty()
   
 class PiattoGiorno(model.Model):
   menu = model.KeyProperty(kind=MenuNew)
