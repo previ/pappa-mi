@@ -50,4 +50,4 @@ veespo.templates.add( 'p-pappa-mi-init' , 'pagecreate', function(event, entry){
 veespo.templates.add( 'p-pappa-mi-init' , 'pagebeforeshow', function(event, entry){
  console.log("Init page...");
 });
-  
+
