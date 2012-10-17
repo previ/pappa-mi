@@ -1,14 +1,14 @@
-window.pappami = window.pappami || {};
 
-veespo.templates.add( 'p-pappa-mi-init' , 'pagecreate', function(event, entry){
+$("#page-init").bind('pagecreate', function(event, entry){
   
-  entry.refs.header.find('span[data-v-title]').text("Pappa Mi");
+  $("#page-init").find('span[data-v-title]').text("Pappa-Mi");
   
-  pappami.uid = mutils.cookie.get("m-pappa-mi-uid") || "uid-pappa-mi-0";
-  pappami.resetMenu = true;
+  //pappami.uid = mutils.cookie.get("m-pappa-mi-uid") || "uid-pappa-mi-0";
+  //pappami.resetMenu = true;
   
+  $.mobile.changePage('#page-menu');  
 
-  entry.refs.content.html('<a data-role="button" href="/mobile#page-menu">Leggi e vota il Menù</a>');
+  //entry.refs.content.html('<a data-role="button" href="/mobile#page-menu">Leggi e vota il Menù</a>');
  
   /*
   var list = $('<select data-native-menu="false">').change(
@@ -46,8 +46,9 @@ veespo.templates.add( 'p-pappa-mi-init' , 'pagecreate', function(event, entry){
   });
 */  
 });
-
+/*
 veespo.templates.add( 'p-pappa-mi-init' , 'pagebeforeshow', function(event, entry){
  console.log("Init page...");
 });
+*/
 

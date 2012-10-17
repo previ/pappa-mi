@@ -9,9 +9,9 @@
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   
-  <title>Pappa Mi Demo</title>
+  <title>Pappa-Mi Demo</title>
   
-  <script>
+  <script>  
   console.log(self.name + " - " + window.location.href);
   if (window.location.href.indexOf('#')!=-1){
     window.location = window.location.href.substr(0,window.location.href.indexOf('#'));
@@ -29,14 +29,24 @@
 
 <body> 
 
-<div data-role="page" id="page-init" data-v-templates='g-veespo-bare,p-pappa-mi-init'>
+<!--div data-role="page" id="page-init" >
   <div data-role="content">
-    <div style="color: #B63017; font-size:16px; line-height:1.5em;">Pappa Mi is Loading...</div>'  
+    <div style="color: #B63017; font-size:16px; line-height:1.5em;">Pappa-Mi is Loading...</div>'  
   </div>
-</div>
+</div-->
 
 <!-- app -->
-<div data-role="page" id="page-menu"            data-v-templates='g-veespo-bare,p-pappa-mi-menu'></div>
+<div data-role="page" id="page-menu">
+ <div data-role="header"><h1>Pappa-Mi - Menù</h1></div> 
+ <div data-role="content">
+  <select id="cm" name="cm">
+  </select>
+  <select id="data" name="data">
+  </select>
+ </div>
+ <div id="menu"></div>
+ <div data-role="footer" data-position="fixed"><h3>footer</h3></div>
+</div>
 <div data-role="page" id="page-veespo-settings" data-v-templates='g-veespo-confirm,p-spot-settings'></div>
 
 </body>
@@ -73,8 +83,7 @@
 <script src="http://glass.veespo.com/lib/lib-ext/js/touchpunch.js"></script>
 <script src="http://glass.veespo.com/lib/lib-ext/js/mustache.js"></script>
  
-<!--  veespo -->  
-<!--  note: load order important -->  
+<!--  veespo -->
 <script src="http://glass.veespo.com/lib/core/js/mutils.js"></script>  
 <script src="http://glass.veespo.com/lib/core/js/logging.js"></script>  
 <script src="http://glass.veespo.com/lib/core/js/init.js"></script>  
@@ -90,11 +99,9 @@
 <script src="http://glass.veespo.com/lib/core/js/page.js"></script>   
 <script src="http://glass.veespo.com/lib/core/js/popups.js"></script>   
 
-<!--  app framework--> 
 <script src="http://glass.veespo.com/lib/lib-pages/js/pageManager.js"></script>
 <script src="http://glass.veespo.com/lib/lib-pages/js/templateManager.js"></script>
 
-<!--  pages veespo -->
 <script src="http://glass.veespo.com/lib/core/pages/g-tabs.js"></script>
 <script src="http://glass.veespo.com/lib/core/pages/g-main.js"></script>
 <script src="http://glass.veespo.com/lib/core/pages/g-bare.js"></script>

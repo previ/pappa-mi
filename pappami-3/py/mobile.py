@@ -54,11 +54,11 @@ class MobileHandler(BasePage):
 
 class MobilePrivateHandler(BasePage):
   
-  @reguser_required
+  @reguser_required_mobile
   def get(self): 
     
     template_values = {
-      "main": "mobile/priv.html"
+      "main": "mobile/index.html"
     }
     self.getBase(template_values)
   def post(self):
