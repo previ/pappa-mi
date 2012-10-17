@@ -574,6 +574,16 @@ def reguser_required(func):
       return func(basePage, *args, **kwargs)
   return callf    
 
+def reguser_required_mobile(func):
+  def callf(basePage, *args, **kwargs):
+    user = basePage.request.user if basePage.request.user else None
+    commissario = basePage.getCommissario(user)
+    if commissario == None:
+      basePage.response.set_status(401, "Authentication required")
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf    
+
 config = {
     'webapp2_extras.sessions': {
         'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'

@@ -65,8 +65,21 @@ class MenuApiHandler(CMMenuHandler):
     menus = self.getMenu(data, c)      
     if len(menus):
       menu = self.getMenu(data, c)[0]
-      
-    self.output_as_json(menu.to_dict())
+    menu_api = [
+      { 'id': menu.primo.key.id(),
+        'desc1': menu.primo.nome,
+        'desc2': 'primo'},
+      { 'id': menu.secondo.key.id(),
+        'desc1': menu.secondo.nome,
+        'desc2': 'secondo' },
+      { 'id': menu.contorno.key.id(),
+        'desc1': menu.contorno.nome,
+        'desc2': 'contorno' },
+      { 'id': menu.dessert.key.id(),
+        'desc1': menu.dessert.nome,
+        'desc2': 'dessert' }];
+
+    self.output_as_json(menu_api)
 
  
     
