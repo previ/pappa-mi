@@ -39,13 +39,17 @@
 <div data-role="page" id="page-menu">
  <div data-role="header"><h1>Pappa-Mi - Menù</h1></div> 
  <div data-role="content">
-  <select id="cm" name="cm">
+ <!--fieldset id="params" data-role="controlgroup" data-type="horizontal">
+  <select id="cm" name="cm" data-mini="true">
+  <option>Scuola</option>
   </select>
-  <select id="data" name="data">
+  <select id="data" name="data" data-mini="true" adata-native-menu="false">
+  <option>Data</option>
   </select>
+ </fieldset-->
  </div>
  <div id="menu"></div>
- <div data-role="footer" data-position="fixed"><h3>footer</h3></div>
+ <div data-role="footer" data-position="fixed"><h3 id="user"></h3></div>
 </div>
 <div data-role="page" id="page-veespo-settings" data-v-templates='g-veespo-confirm,p-spot-settings'></div>
 
