@@ -1,0 +1,43 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+
+<!--  original -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+
+<script src="http://glass.veespo.com/lib/lib-ext/js/jquery-1.7.1.min.js"></script>
+<script src="http://glass.veespo.com/lib/lib-ext/js/jquery-ui-1.8.23.custom.min.js"></script>
+<script src="http://glass.veespo.com/lib/lib-ext/js/jquery.mobile-1.1.0.min.js"></script>
+  
+  <title>Pappa-Mi Come si mangia ascuola</title>
+</head> 
+
+<body> 
+<script>
+$(document).bind( "pageloadfailed", function( event, data ){
+
+	// Let the framework know we're going to handle things.
+	event.preventDefault();
+
+	window.location.href="/eauth/login?next="+data.absUrl;
+	//$.mobile.changePage("#page-login");
+	data.deferred.reject( data.absUrl, data.options );
+});  
+</script>
+<div data-role="page" id="page-public">
+  <div data-role="content">
+    <h1>Welcome to Pappa-Mi mobile</h1>
+    <a data-role="button" href="/mobile/priv">Leggi e vota il Menù</a>
+  </div>
+</div>
+
+</body>
+
+</html>
