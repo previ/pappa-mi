@@ -3,8 +3,9 @@
     //$("page-menu").find('span[data-v-title]').text("Pappa Mi");    
 
     // School
-    var sel_sk = $('#cm');
-    var sel_date = $('#data');    
+    var params = $('<fieldset id="params" data-role="controlgroup" data-type="horizontal"/>');
+    var sel_sk = $('<select id="cm" name="school" data-mini="true" data-native-menu="false"/>');
+    var sel_date = $('<select id="data" name="cm" data-mini="true" data-native-menu="false"/>');    
 
     veespo.ready(function(){
 
@@ -14,6 +15,7 @@
 
 	userpappami = data;
        
+	$('#user').text(userpappami.fullname);
 	veespo.set.group("group-pappa-mi");
 	veespo.set.lang("it");
 	veespo.set.userId("uid-" + userpappami.id);
@@ -33,26 +35,49 @@
 	  if(i==0){
 	    d.attr("selected",1);
 	  }
-	  sel_date.append( d.attr("value", "dt-pappa-mi-"+(date.getFullYear())+"-"+date.getMonth()+"-"+date.getDate()).text(date.toLocaleDateString()));
+	  sel_date.append( d.attr("value", "dt-pappa-mi-"+(date.getFullYear())+"-"+date.getMonth()+"-"+date.getDate()).text(date.toLocaleDateString("it")));
 	 }
 	}
     
 	// Data
+	params.append(sel_sk);
+	params.append(sel_date);
+	$('#page-menu').find('[data-role="content"]').append(params).trigger("create");
+
 	sel_date.change( loadMenu );
 	sel_sk.change( loadMenu );
     
-	loadMenu();
+	sel_date.trigger("change");
       }});    
     });
    
   });
-  /*
+  
+  $("#page-menu").bind('swipeleft', function(event, entry) {
+    var sel_date = $('#data');    
+    var cur_sel = sel_date.find("[selected]");
+    next_sel = cur_sel.next();
+    if(next_sel) {
+      next_sel.attr("selected", "true");
+      cur_sel.removeAttr("selected");
+    }
+  });
+  $("#page-menu").bind('swiperight', function(event, entry) {
+    var sel_date = $('#data');    
+    var cur_sel = sel_date.find("[selected]");
+    next_sel = cur_sel.previous();
+    if(next_sel) {
+      next_sel.attr("selected", "true");
+      cur_sel.removeAttr("selected");
+    }
+  });
+
   $("#page-menu").bind('pagebeforeshow', function(event){ 
     console.log("Schools page...");
-    $("#page-menu").find('span[data-v-title]').text(userpappami.fullname);
+    /*$("#page-menu").find('span[data-v-title]').text(userpappami.fullname);
     if (pappami.resetMenu){
       //entry.refs.menuAnc.empty();
-    } else {
+    } else {*/
       var lrt = veespo.get.lastSavedTargetId();
       $("#page-menu").find('span[data-role]="button"').each(function(){
         var e = $(this);
@@ -62,9 +87,9 @@
           e.find(".ui-icon").addClass("ui-icon-check").removeClass("ui-icon-plus");
         }
       });
-    }  
+    //}  
   }); 
-  */
+
 //});  
 
 var menu = {};
@@ -99,6 +124,12 @@ function loadMenu() {
     $('#menu').html($(html)).trigger("create");
        
     $('#menu').find('span[data-role]="button"').bind('tap', function(evt){
+      for (var i=$.mobile.urlHistory.activeIndex-1; i>=0; i--){
+	if ($.mobile.urlHistory.stack[i].url.indexOf("page-veespo") == -1){
+	  return i;
+	}
+      }
+
       var e  = mutils.event.elem(evt);
       var id = mutils.geu(e, "data-veespo-id", "att");
       var title = getDish(id.substring('demo-pappa-mi-'.length)).desc1;
