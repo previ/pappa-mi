@@ -53,22 +53,37 @@
    
   });
   
-  $("#page-menu").bind('swipeleft', function(event, entry) {
-    var sel_date = $('#data');    
-    var cur_sel = sel_date.find("[selected]");
-    next_sel = cur_sel.next();
-    if(next_sel) {
-      next_sel.attr("selected", "true");
-      cur_sel.removeAttr("selected");
+  $("#page-menu").bind('swipeleft', function(event) {
+    var sel_date_old = $('#data')
+    alert(sel_date_old.val());
+    var sel_date = $('<select id="data" name="cm" data-mini="true" data-native-menu="false"/>');
+    now = new Date();
+    for( i=0;i<=7;i++) {
+     date = new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
+     if(date.getDay()<6 && date.getDay()>0) {
+      var d = $("<option>");
+      if(sel_date_old.val() == "dt-pappa-mi-"+(date.getFullYear())+"-"+date.getMonth()+"-"+date.getDate()){
+	d.attr("selected",1);
+      }
+      sel_date.append( d.attr("value", "dt-pappa-mi-"+(date.getFullYear())+"-"+date.getMonth()+"-"+date.getDate()).text(date.toLocaleDateString("it")));
+     }
     }
+    alert(sel_date.html());
+    sel_date_old.html(sel_date).trigger("create");
+    
+    
   });
-  $("#page-menu").bind('swiperight', function(event, entry) {
+  $("#page-menu").bind('swiperight', function(event) {
     var sel_date = $('#data');    
-    var cur_sel = sel_date.find("[selected]");
-    next_sel = cur_sel.previous();
+    var cur_sel = sel_date.find("option[selected]");
+    next_sel = cur_sel.prev();
     if(next_sel) {
+      alert(cur_sel.val());
       next_sel.attr("selected", "true");
       cur_sel.removeAttr("selected");
+      sel_date.val(next_sel.val())
+      sel_date.trigger("create");      
+      sel_date.trigger("change");      
     }
   });
 
