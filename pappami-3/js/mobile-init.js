@@ -6,7 +6,7 @@ $("#page-init").bind('pagecreate', function(event, entry){
   //pappami.uid = mutils.cookie.get("m-pappa-mi-uid") || "uid-pappa-mi-0";
   //pappami.resetMenu = true;
   
-  $.mobile.changePage('#page-menu');  
+  $.mobile.changePage('#page-menu', {changeHash: true, transition: 'fade'});
 
   //entry.refs.content.html('<a data-role="button" href="/mobile#page-menu">Leggi e vota il Menù</a>');
  
