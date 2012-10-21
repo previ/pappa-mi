@@ -58,7 +58,7 @@ class MobilePrivateHandler(BasePage):
   def get(self): 
     
     template_values = {
-      "main": "mobile/index.html"
+      "main": "mobile/menu.html"
     }
     self.getBase(template_values)
   def post(self):
