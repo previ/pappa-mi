@@ -45,6 +45,18 @@ class CMMenuDataHandler(CMMenuHandler):
       
       json.dump(menu.to_dict(), self.response.out)
 
+    if( self.request.get("cmd") == "getdetails" ):
+      details = dict()
+      piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
+      details['piatto'] = piatto_key.get().nome
+      details['ingredienti'] = dict()
+      for ing_p in IngredientePiatto.query().filter(IngredientePiatto.piatto==piatto_key):
+        ing = ing_p.ingrediente.get()
+        qty = ing_p.quantita
+        details['ingredienti'][ing.nome] = ing.quantita
+              
+      json.dump(details, self.response.out)
+
     else:
       template_values = dict()
       template_values['content'] = 'menu.html'      

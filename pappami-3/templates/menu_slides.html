@@ -12,8 +12,8 @@
        <h3>{{m.primo.nome}}</h3>
        <div class="row">
         <div class="span4">
-         <button class="btn" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
-         <button class="btn" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
+         <button class="btn btn-ing" data-original-title="Ingredienti" data-detail-key='{{m.primo.key.id()}}'>Ingredienti</button>
+         <button class="btn btn-nut" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
         </div>
        </div>
       </div>
@@ -22,8 +22,8 @@
        <h3>{{m.secondo.nome}}</h3>
        <div class="row">
         <div class="span4">
-         <button class="btn" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
-         <button class="btn" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
+         <button class="btn btn-ing" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
+         <button class="btn btn-nut" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
         </div>
        </div>
       </div>
@@ -34,8 +34,8 @@
        <h3>{{m.contorno.nome}}</h3>
        <div class="row">
         <div class="span4">
-         <button class="btn" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
-         <button class="btn" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
+         <button class="btn btn-ing" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
+         <button class="btn btn-nut" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
         </div>
        </div>
       </div>
@@ -44,8 +44,8 @@
        <h3>{{m.dessert.nome}}</h3>
        <div class="row">
         <div class="span4">
-         <button class="btn" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
-         <button class="btn" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
+         <button class="btn btn-ing" data-original-title="Ingredienti" data-content="Dati non disponibili">Ingredienti</button>
+         <button class="btn btn-nut" data-original-title="Nutrizione" data-content="Dati non disponibili{#<img src='http://chart.apis.google.com/chart?chf=bg,s,FFFFFF&chs=160x60&cht=p&chco=7777CC|76A4FB|3399CC|3366CC&chd=t:{{m.secondo.carboidrati}},{{m.secondo.grassi}},{{m.secondo.proteine}}&chp=0&chdl={{m.secondo.carboidrati}} Carboidrati|{{m.secondo.grassi}} Grassi|{{m.secondo.proteine}} Proteine'/>#}">Nutrizione</button>
         </div>
        </div>
       </div>
@@ -54,6 +54,7 @@
  {%endfor%}
 <script>
 $(function(){
- $("button.btn").popover({});
+ $("button.btn-ing").on("click", showDishDetails); 
+ $("button.btn-nut").popover({});
 });
 </script>
