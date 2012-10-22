@@ -47,14 +47,18 @@ class CMMenuDataHandler(CMMenuHandler):
 
     if( self.request.get("cmd") == "getdetails" ):
       details = dict()
+      factors = {'Materna': 0.625,
+                 'Primaria': 0.875,
+                 'Secondaria': 1.0}
+      cm = model.Key('Commissione', int(self.request.get('cm'))).get()
       piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
       details['piatto'] = piatto_key.get().nome
-      details['ingredienti'] = dict()
-      for ing_p in IngredientePiatto.query().filter(IngredientePiatto.piatto==piatto_key):
-        ing = ing_p.ingrediente.get()
-        qty = ing_p.quantita
-        details['ingredienti'][ing.nome] = ing.quantita
-              
+      details['ingredienti'] = list()
+      for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
+        ing = p_i.ingrediente.get()
+        qty = p_i.quantita
+        details['ingredienti'].append({'nome': ing.nome,
+                                       'quantita': p_i.quantita * factors[cm.tipoScuola]})
       json.dump(details, self.response.out)
 
     else:
