@@ -176,13 +176,14 @@ class AdminMenuHandler(BasePage):
               ing = Ingrediente()
               ing.nome = fields[1]
               ing.put()
-            ing_piatto = PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto.key).filter(PiattoIngrediente.ingrediente==ing.key).get()
-            if not ing_piatto:
-              ing_piatto = PiattoIngrediente()
-              ing_piatto.piatto = piatto.key
-              ing_piatto.ingrediente = ing.key
-              ing_piatto.quantita = float(fields[2])
-              ing_piatto.put()
+            p_i = PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto.key).filter(PiattoIngrediente.ingrediente==ing.key).get()
+            if not p_i:
+              logging.info("fields[2]: " + fields[2])
+              p_i = PiattoIngrediente()
+              p_i.piatto = piatto.key
+              p_i.ingrediente = ing.key
+              p_i.quantita = float(fields[2])
+              p_i.put()
       self.response.out.write("initMenu Ok")
       return      
 

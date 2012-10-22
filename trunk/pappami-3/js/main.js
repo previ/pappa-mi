@@ -38,41 +38,23 @@ function oncitychanged() {
     }
   }
 }
-/*
-function getCommissioniFromCache(term) {
-  found = Array();
-  for(c in cache) {	
-    if(term.toUpperCase() == c.substring(0,term.length).toUpperCase()) {
-      found.push({"label": c, "value": cache[c]});
-    }
-  }
-  return found;
-}
 
-function chgscope() {
-  $("#commissione_sel").autocomplete({
-    minLength: 2,
-    source: function( request, response ) {
-      var term = request.term;
-      request.city = $("#citta").val();
-      if ( city == null || city != $("#citta").val() ) {
-	cache = {};
-	lastXhr = $.getJSON( "/profilo/getcm", request, function( data, status, xhr ) {
-	  items = data;
-	  for (item in items) {
-	    cache[items[item]["label"]] = items[item]["value"];
-	  }
-	  city = $("#citta").val();
-	  response(getCommissioniFromCache(term));
-	});
-      } else {
-	response(getCommissioniFromCache(term));
+function showDishDetails(event) {
+  var target = $(event.target);
+  if(!target.attr("data-content")) {
+    var params = {'cmd': 'getdetails', 'piatto': target.attr("data-detail-key"), 'cm': target.attr("data-detail-cm")};
+    $.ajax({url:"/menu", 
+	    data: params,
+	    dataType:'json',
+	    success:function(data) { 
+      var html = '<h5>'+data.piatto+'</h5><ul class=\'unstyled\'>';
+      html += '<li><spam>Ingrediente</span><span style=\'float:right;\'>g.</span></li>';
+      for( var i in data.ingredienti) {
+	html += '<li><spam>' + data.ingredienti[i].nome + '</span><span style=\'float:right;\'>' + Math.round(data.ingredienti[i].quantita*10)/10; + '</span></li>';
       }
-    },
-    select: function(event, ui) { 
-      $("#commissione").val(ui.item.value);
-      ui.item.value= ui.item.label;
-    } 
-  });    
+      html += '</ul>';
+      target.attr('data-content', html);    
+      target.popover('show');
+    }});
+  }
 }
-*/
