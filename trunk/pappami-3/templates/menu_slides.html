@@ -54,12 +54,12 @@
  {%endfor%}
 <script>
 var isVisible = false;
-var clickedAway = false;
 
 $(document).click(function(e) {
-  if(isVisible && clickedAway) {
+  if(isVisible) {
     $('button.btn-ing').popover('hide');
-    isVisible = clickedAway = false;
+    isVisible = false;
+    e.preventDefault()
   } else {
     clickedAway = true;
   }
