@@ -40,22 +40,23 @@ function oncitychanged() {
 }
 
 function showDishDetails(event) {
-  var target = $(event.target);
-  var params = {'cmd': 'getdetails', 'piatto': target.attr("data-detail-key"), 'cm': target.attr("data-detail-cm")};
-  $.ajax({url:"/menu", 
-	  data: params,
-	  dataType:'json',
-	  success:function(data) { 
-    var html = '<h5>'+data.piatto+'</h5><ul class=\'unstyled\'>';
-    html += '<li><spam>Ingrediente</span><span style=\'float:right;\'>g.</span></li>';
-    for( var i in data.ingredienti) {
-      html += '<li><spam>' + data.ingredienti[i].nome + '</span><span style=\'float:right;\'>' + Math.round(data.ingredienti[i].quantita*10)/10; + '</span></li>';
-    }
-    html += '</ul>';
-    target.attr('data-content', html);    
-    target.popover('show');
-    clickedAway = false
-    isVisible = true
-    event.preventDefault()
-  }});
+  if(!isVisible){
+    var target = $(event.target);
+    var params = {'cmd': 'getdetails', 'piatto': target.attr("data-detail-key"), 'cm': target.attr("data-detail-cm")};
+    $.ajax({url:"/menu", 
+	    data: params,
+	    dataType:'json',
+	    success:function(data) { 
+      var html = '<h5>'+data.piatto+'</h5><ul class=\'unstyled\'>';
+      html += '<li><spam>Ingrediente</span><span style=\'float:right;\'>g.</span></li>';
+      for( var i in data.ingredienti) {
+	html += '<li><spam>' + data.ingredienti[i].nome + '</span><span style=\'float:right;\'>' + Math.round(data.ingredienti[i].quantita*10)/10; + '</span></li>';
+      }
+      html += '</ul>';
+      target.attr('data-content', html);    
+      target.popover('show');
+      isVisible = true
+      event.preventDefault()
+    }});
+  }
 }
