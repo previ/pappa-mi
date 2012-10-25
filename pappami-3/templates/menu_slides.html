@@ -53,8 +53,22 @@
     </div>
  {%endfor%}
 <script>
-$(function(){
- $("button.btn-ing").on("click", showDishDetails); 
- $("button.btn-nut").popover({});
+var isVisible = false;
+var clickedAway = false;
+
+$(document).click(function(e) {
+  if(isVisible && clickedAway) {
+    $('button.btn-ing').popover('hide');
+    isVisible = clickedAway = false;
+  } else {
+    clickedAway = true;
+  }
 });
+$(document).ready(function (){
+$('button.btn-ing').popover({
+        html: true,
+        trigger: 'manual'
+    }).click(function(e) {showDishDetails(e);});
+});
+$('button.btn-nut').popover({});
 </script>
