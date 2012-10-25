@@ -150,7 +150,7 @@ function loadMenu() {
     var template = '';
     template += '<table class="pappa-mi-menu">';
     template += '{{#list}}'; 
-    template += '<tr data-veespo-id="{{id}}">';
+    template += '<tr data-veespo-id="demo-pappa-mi-{{id}}">';
     template += '<td class="left">{{desc1}}</td>';
     
     if(today.getTime() >= date_d.getTime()) {

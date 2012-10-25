@@ -50,17 +50,19 @@ class CMMenuDataHandler(CMMenuHandler):
       factors = {'Materna': 0.625,
                  'Primaria': 0.875,
                  'Secondaria': 1.0}
+      factor = 1.0
       if self.request.get('cm'):
         cm = model.Key('Commissione', int(self.request.get('cm'))).get()
-        piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
-        details['piatto'] = piatto_key.get().nome
-        details['ingredienti'] = list()
-        for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
-          ing = p_i.ingrediente.get()
-          qty = p_i.quantita
-          details['ingredienti'].append({'nome': ing.nome,
-                                         'quantita': p_i.quantita * factors[cm.tipoScuola]})
-        json.dump(details, self.response.out)
+        factor = factors[cm.tipoScuola]
+      piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
+      details['piatto'] = piatto_key.get().nome
+      details['ingredienti'] = list()
+      for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
+        ing = p_i.ingrediente.get()
+        qty = p_i.quantita
+        details['ingredienti'].append({'nome': ing.nome,
+                                       'quantita': p_i.quantita * factor})
+      json.dump(details, self.response.out)
 
     else:
       template_values = dict()
