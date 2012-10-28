@@ -42,9 +42,10 @@ $(document).ready(function () {
 });
 
 function onNodeClick(){
- $(this).parent().siblings(".active").removeClass("active")
- $(this).parent().addClass("active")
- key=$(this).attr('key')
+ node_item = $(this);
+ node_item.parent().siblings(".active").removeClass("active");
+ node_item.parent().addClass("active");
+ key=node_item.attr('key');
  
  loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
 }
@@ -66,19 +67,20 @@ function onMoreClick(key){
 
 
 function loadPosts(key,current_cursor){
- $("ul#node_list li").unbind('click')
+ //$("ul#node_list li").unbind('click')
  if(!$("div#node_stream_"+key).hasClass('no_more_posts')){
  $.ajax({
   type: 'POST',
   url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
   dataType:'json',
   success:function(data) { 
-   $("#node_stream_"+key).siblings().hide()
-   $("#node_stream_"+key).show();
+   //$("#node_stream_"+key).siblings().hide()
+   //$("#node_stream_"+key).show();
    $("#form_node").attr("value",key);
    $("#node_stream_"+key).attr("next_cursor",data.cursor)
-   $("ul#node_list li").click(onNodeClick)	 
+   //$("ul#node_list li").click(onNodeClick)	 
    if(data.response=="success"){
+    alert(data.html);
     $("div#node_stream_"+key+" ul").last().append(data.html)
    } else if(data.response="no_posts"){
     $("div#node_stream_"+key).addClass('no_more_posts')
@@ -95,9 +97,9 @@ function loadPosts(key,current_cursor){
   }
  });
  } else {
-  $("ul#node_list li").click(onNodeClick)
-  $("#node_stream_"+key).siblings().hide()
-  $("div#node_stream_"+key).show()
+  //$("ul#node_list li").click(onNodeClick)
+  //$("#node_stream_"+key).siblings().hide()
+  //$("div#node_stream_"+key).show()
  }
 }
 
@@ -114,10 +116,10 @@ function loadPosts(key,current_cursor){
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
     <li class="nav-header"><i class="icon-tags"></i>Nodi</li>
-    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i onclick='location.href="/social/node/{{node.key.urlsafe()}}"' class="pull-right permalink"></i></a></li>
+    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
     <li>
-     <a href="/socil/nodelist">Altre scuole e argomenti</a>
+     <a href="/social/nodelist">Altre scuole e argomenti</a>
     </li>
    </ul>    
   </div>

@@ -56,61 +56,6 @@ class ActivityFilter():
   users = None
   group = None
 
-
-class SocialAjaxHandler(webapp.RequestHandler):
-        def dispatch(self):
-        # Get a session store for this request.
-            try:
-                webapp.RequestHandler.dispatch(self)
-            finally:
-                pass
-        
-        def handle_exception(self,exception,debug_mode=False):
-            
-            if type(exception).__name__== FloodControlException.__name__:
-               template = jinja_environment.get_template("social/ajax/flooderror.html")
-               template_values={
-                                'flood_time':SOCIAL_FLOOD_TIME,
-                                
-                                }     
-               html=template.render(template_values) 
-               time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
-              
-               time=SOCIAL_FLOOD_TIME-time.seconds
-               response = {'response':'flooderror','time':time,'html':html}
-              
-               json = son.dumps(response)
-               self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-               self.response.out.write(json)
-               return
-            else:
-                super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
-
-        def getCommissario(self, user = None):
-            if user is None:
-              user = self.request.user
-            if user :
-              #logging.info("userid: " + str(user.key.id()))
-              return Commissario.get_by_user(user)
-            else:
-              return None
-        def success(self,url=None):
-            
-            response = {'response':'success'}
-            if url:
-                response['url']=url
-            
-            json = json.dumps(response)
-            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-            self.response.out.write(json)
-        
-        def error(self):
-            
-            response = {'response':'error'}
-            
-            json = json.dumps(response)
-            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-            self.response.out.write(json)
             
 class BasePage(webapp.RequestHandler):  
   
@@ -357,6 +302,39 @@ class BasePage(webapp.RequestHandler):
         
       memcache.add(name,news)
     return news
+  
+class SocialAjaxHandler(BasePage):
+        
+  def handle_exception(self,exception,debug_mode=False):
+      
+    if type(exception).__name__== FloodControlException.__name__:
+      template = jinja_environment.get_template("social/ajax/flooderror.html")
+      template_values={
+                       'flood_time':SOCIAL_FLOOD_TIME,
+                       
+                       }     
+      html=template.render(template_values) 
+      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+     
+      time=SOCIAL_FLOOD_TIME-time.seconds
+      response = {'response':'flooderror','time':time,'html':html}
+     
+      self.output_as_json(response)
+      return
+    else:
+      super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
+
+
+    def success(self,url=None):
+      
+      response = {'response':'success'}
+      if url:
+          response['url']=url      
+      self.output_as_json(response)
+  
+  def error(self):     
+      response = {'response':'error'}      
+      self.output_as_json(response)
   
 class CMCommissioniDataHandler(BasePage):
 

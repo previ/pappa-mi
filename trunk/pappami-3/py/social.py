@@ -359,9 +359,7 @@ class SocialManagePost(SocialAjaxHandler):
 
            html=template.render(template_values)
            response = {'response':'success','html':html,"cursor":''}
-           json = simplejson.dumps(response)
-           self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-           self.response.out.write(json)
+           self.output_as_json(response)
            
            
        if cmd == "create_reply_post":
@@ -391,9 +389,7 @@ class SocialManagePost(SocialAjaxHandler):
 
            html=template.render(template_values)
            response = {'response':'success','html':html,"cursor":''}
-           json = simplejson.dumps(response)
-           self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-           self.response.out.write(json)
+           self.output_as_json(response)
            
            
        if cmd == "delete_reply_post":
@@ -448,9 +444,7 @@ class SocialManagePost(SocialAjaxHandler):
           
           if post:
               response = {'response':'success','content':post.get().content}
-              json = simplejson.dumps(response)
-              self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-              self.response.out.write(json)
+              self.output_as_json(response)
              
           
                
@@ -549,18 +543,14 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     if not nodelist or not next_curs:
                         
                         response = {'response':'no_nodes'}
-                        json = simplejson.dumps(response)
-                        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                        self.response.out.write(json)
+                        self.output_as_json(response)
                         return
                         
                     template = jinja_environment.get_template("social/pagination/node.html")
                     
                     html=template.render(template_values)
                     response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
-                    json = simplejson.dumps(response)
-                    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                    self.response.out.write(json)
+                    self.output_as_json(response)
                  
                 if cmd=="post":
                         node=model.Key(urlsafe=self.request.get("node"))
@@ -584,9 +574,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         if not postlist or not next_curs:
                             
                             response = {'response':'no_posts'}
-                            json = simplejson.dumps(response)
-                            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                            self.response.out.write(json)
+                            self.output_as_json(response)
                             return
                             
                                 
@@ -594,9 +582,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
        
                         html=template.render(template_values)
                         response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
-                        json = simplejson.dumps(response)
-                        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                        self.response.out.write(json)
+                        self.output_as_json(response)
                   
                 if cmd=="post_main":
                         node=model.Key(urlsafe=self.request.get("node"))
@@ -620,9 +606,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         if not postlist or not next_curs:
                             
                             response = {'response':'no_posts'}
-                            json = simplejson.dumps(response)
-                            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                            self.response.out.write(json)
+                            self.output_as_json(response)
                             return
                             
                                 
@@ -630,18 +614,14 @@ class SocialPaginationHandler(SocialAjaxHandler):
        
                         html=template.render(template_values)
                         response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
-                        json = simplejson.dumps(response)
-                        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                        self.response.out.write(json)
+                        self.output_as_json(response)
                     
                 if cmd=="notifications":
                     notlist, next_curs, more = SocialProfile.retrieve_notifications(user,cursor)
                     if not notlist or not next_curs:
                             
                             response = {'response':'no_notificationss'}
-                            json = simplejson.dumps(response)
-                            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                            self.response.out.write(json)
+                            self.output_as_json(response)
                             return
                    
                     template = jinja_environment.get_template("social/pagination/notifications.html")
@@ -654,11 +634,8 @@ class SocialPaginationHandler(SocialAjaxHandler):
                                      }
                     html=template.render(template_values)
                     response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
-                    json = simplejson.dumps(response)
-                    
-                    
-                    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                    self.response.out.write(json)
+                    self.output_as_json(response)
+
                 if cmd=="search_nodes":
                     nodes=[]
                     if not cursor or cursor == "undefined":
@@ -687,9 +664,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     else:
                         response={'html':"",'list':[]}
                         
-                    json = simplejson.dumps(response)
-                    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-                    self.response.out.write(json)        
+                    self.output_as_json(response)
                         
          
 class SocialNotificationsListHandler(BasePage):
@@ -739,9 +714,7 @@ class SocialDLoadHandler(SocialAjaxHandler):
             template = jinja_environment.get_template("social/ajax/modal_reshare.html")
             html=template.render(template_values)
             response = {'response':'success','html':html}
-            json = simplejson.dumps(response)
-            self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-            self.response.out.write(json)
+            self.output_as_json(response)
         
 class SocialUtils:
     @classmethod
