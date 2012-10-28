@@ -34,73 +34,67 @@ $(document).ready(function () {
   $('#new_post').slideUp();
  }});
 
-  $("div#main_stream").children().hide()
- {%if node_list%}
+ $("ul#node_list a").click(onNodeClick);
+ $("#more_posts").click(onMoreClick);
+
+  //$("div#main_stream").children().hide()
   init()
-  {%endif%}
   init_search()
 });
 
 function onNodeClick(){
  node_item = $(this);
+ key=node_item.attr('key');
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
+ $("#node_title span").text(node_item.text());
+ $("#node_title a").attr("href", "/social/node/"+key);
+ node_item.parent().addClass("active");
  key=node_item.attr('key');
- 
- loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
+ $("#main_stream_list").empty();
+ loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
 }
 
 function init(){
- $("#node_list a").click(onNodeClick);
- $("ul#node_list a").click(onNodeClick);
- $("[key]").first().parent().addClass("active");
- key=$("[key]").attr('key');
- loadPosts(key,$("#node_stream_"+key).attr('next_cursor'));
+ $("#node_list").children().find("[key]")[0].click();
 }
 
-
-
-
-function onMoreClick(key){
- loadPosts(key,$("#node_stream_"+key).attr('next_cursor'))
+function onMoreClick(){
+ key = $('#node_list li.active a').attr('key');
+ loadPosts(key,$("#main_stream").attr('next_cursor'))
 }
 
 
 function loadPosts(key,current_cursor){
- //$("ul#node_list li").unbind('click')
- if(!$("div#node_stream_"+key).hasClass('no_more_posts')){
  $.ajax({
   type: 'POST',
   url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
   dataType:'json',
   success:function(data) { 
-   //$("#node_stream_"+key).siblings().hide()
-   //$("#node_stream_"+key).show();
    $("#form_node").attr("value",key);
-   $("#node_stream_"+key).attr("next_cursor",data.cursor)
-   //$("ul#node_list li").click(onNodeClick)	 
+   $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
-    alert(data.html);
-    $("div#node_stream_"+key+" ul").last().append(data.html)
+    $("#main_stream_list").append(data.html)
    } else if(data.response="no_posts"){
-    $("div#node_stream_"+key).addClass('no_more_posts')
+   $("#no_more_posts").alert();
+   $("#no_more_posts").show();
+    /*
     if(current_cursor!=undefined){
-     $("div#add_posts_"+key).hide()
-     
+     $("div#add_posts_"+key).hide()     
      if($("div#node_stream_"+key+">ul").children().length>0){
       $("div#node_stream_"+key+" .pagination_errors").show()
      } else {
       $("div#node_stream_"+key+" .empty_errors").show()  
      }   
-    }    
+    } */   
    }
   }
  });
- } else {
+ //} else {
   //$("ul#node_list li").click(onNodeClick)
   //$("#node_stream_"+key).siblings().hide()
   //$("div#node_stream_"+key).show()
- }
+ //}
 }
 
 
@@ -110,7 +104,6 @@ function loadPosts(key,current_cursor){
 {%set tab_activity="active"%}
 {%include "navigation.html"%}
 
-{%if node_list%}
 <div id="node_selector">	
  <div class="row">
   <div class="span3">
@@ -156,21 +149,21 @@ function loadPosts(key,current_cursor){
 	 </div>
  </form> 
 </div>
-   <div id="main_stream">{%for node in node_list%}
-    <div id="node_stream_{{node.key.urlsafe()}}">
-     <ul id="main_stream_list" class="unstyled">
-     </ul>
-     <div id="add_posts_{{node.key.urlsafe()}}" onClick="onMoreClick(key)" class="btn btn-primary" type="submit">Mostra altri post</div>
-     <div class="pagination_errors" style="visibility:hidden"  >Non ci sono altri post</div>
-     <div class="empty_errors" style="visibility:hidden"  >Non ci sono post in questo gruppo</div>
-    </div>{%endfor%}
+   <div id="node_title">
+    <h4 style="display:inline;"><span>titolo</span></h4><a class="pull-right" href="">link<i class="icon-resize-full"></i></a>
+   <div>
+   <div id="main_stream">
+    <ul id="main_stream_list" class="unstyled">
+    </ul>
+   </div>
+   <div id="main_cmd">
+    <div id="more_posts" class="btn btn-normal span5 offset2">Carica altri...</div>
+    <div id="no_more_posts" class="span5 offset2 alert alert-info fade in" style="display:none;">Non sono presenti altri messaggi<a class="close" data-dismiss="alert" href="#">&times;</a>
+    </div>
    </div>
   </div>
  </div>
 </div>	
-{%else%}
-<div>Non sei ancora iscritto a nessun gruppo. Usa la nostra funzione di ricerca per trovare gruppi di discussione che ti potrebbero interessare.</div>
-{%endif%}
  <div id="new-data" style="display:none;">
   <div id="new-data-form" style="border: none;"></div> 
   <div id="new-data-preview" style="display:none;"></div> 
