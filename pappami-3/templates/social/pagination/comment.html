@@ -15,9 +15,9 @@
 			</div>				
 		{% if user %} 
 
-			<div class="s_post_commands">
-				{%if subscription.can_admin or user==reply.author%}<button class="btn btn-danger" onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-				{%if subscription.can_admin  or user.key==reply.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
+			<div class="s_post_commands btn-group">
+				{%if subscription.can_admin or user==reply.author%}<button class="btn btn-normal btn-mini" onClick="onReplyDelete('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
+				{%if subscription.can_admin  or user.key==reply.author%}<button class="btn btn-normal btn-mini" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{reply.key.urlsafe()}}')"><i class="icon-pencil"></i>Modifica</button>{%endif%}
 	
 			</div>		
 		{% endif%}							
