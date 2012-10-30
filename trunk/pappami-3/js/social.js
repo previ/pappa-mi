@@ -532,23 +532,32 @@ function onPostDelete(user,node,post){
 	
 }
 
-function onPostSubscribe(user,post){
-	 $.ajax({url:'/social/subscribe?user='+user+ '&cmd=subscribepost&post='+post,dataType:"JSON", success:function(data){
-		 
-		 onSuccess(data)
-		}
+function onPostSubscribe(post){
+  $.ajax({url:'/social/subscribe?cmd=subscribepost&post='+post,
+	  dataType:"JSON", 
+	  success:function(data){
+	    $("#postsub").hide();
+	    $("#postunsub").show();
+  	    $.pnotify({
+	      title: 'Info',
+	      text: 'Sei iscritto a questo post'
+	    });
+	  }
 	 });
-	
-	
 }
 
-function onPostUnsubscribe(user,post){
-	 $.ajax({url:'/social/subscribe?user='+user+ '&cmd=unsubscribepost&post='+post,dataType:"JSON", success:function(data){
-		  
-		 onSuccess(data)
-		}
-	 });
-	
+function onPostUnsubscribe(post){
+  $.ajax({url:'/social/subscribe?cmd=unsubscribepost&post='+post,
+	  dataType:"JSON", 
+	  success:function(data){
+	    $("#postsub").show();
+	    $("#postunsub").hide();
+	    $.pnotify({
+	      title: 'Info',
+              text: 'Non sei più iscritto a questo post'
+	    });
+	  }
+	});	
 }
 
 function loadSmallMap(lat,lon) {

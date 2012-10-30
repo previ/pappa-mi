@@ -325,7 +325,7 @@ class SocialAjaxHandler(BasePage):
       super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
 
 
-    def success(self,url=None):
+  def success(self,url=None):
       
       response = {'response':'success'}
       if url:

@@ -60,3 +60,5 @@ function showDishDetails(event) {
     }});
   }
 }
+
+$.pnotify.defaults.delay = 5000;

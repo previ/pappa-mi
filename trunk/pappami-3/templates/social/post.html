@@ -31,11 +31,8 @@ $(document).ready(function () {
 				<div class="s_post_commands">
  					{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
 					{%if subscription.can_admin or user.key==post.author%}<button class="btn btn-primary" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Modifica</button>{%endif%}
-					{%if postsub %}
-					<button class="btn btn-primary" onClick="onPostUnsubscribe('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-share-alt"></i>Non seguire</button>
-					{%else%}
-					<button class="btn btn-primary" onClick="onPostSubscribe('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-share-alt"></i>Segui</button>
-					{%endif%}
+					<button id="postunsub" class="btn btn-normal" {%if not postsub %}style="display:none;"{%endif%} onClick="onPostUnsubscribe('{{post.key.urlsafe()}}')"><i class="icon-minus-sign"></i>Non seguire</button>
+					<button id="postsub" class="btn btn-normal" {%if postsub %}style="display:none;"{%endif%} onClick="onPostSubscribe('{{post.key.urlsafe()}}')"><i class="icon-plus-sign"></i>Segui</button>					
 					<button class="btn btn-primary" onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')"><i class="icon-share-alt"></i>Reshare</button>
 				</div>
 			{% endif%}			
