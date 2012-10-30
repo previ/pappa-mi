@@ -287,7 +287,7 @@ class SocialMapHandler(webapp.RequestHandler):
      
 class SocialSubscribeHandler(SocialAjaxHandler):
        def get(self):
-        user = model.Key(urlsafe=self.request.get("user")).get()
+        user = self.get_current_user()
         
         cmd = self.request.get('cmd')
         if cmd == "subscribe":
