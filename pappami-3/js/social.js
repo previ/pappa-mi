@@ -43,60 +43,91 @@ var fstyles = {
   }
 };
 
+var tiny_mce_opts = {
+  // Location of TinyMCE script
+  script_url : '/js/tiny_mce/tiny_mce.js',     
+  // General options
+  width : "100%",
+  //height: "300px",
+  content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+  theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+  font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+  theme : "advanced",
+  plugins : "autolink, autoresize", 
+  theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+  theme_advanced_buttons2 : "",
+  theme_advanced_buttons3 : "",			
+  theme_advanced_toolbar_location : "top",
+  theme_advanced_toolbar_align : "left",
+  theme_advanced_resizing : false     
+};
+
 $(document).ready(function() { 
-	$('#post_content_text,#node_description_text,#reply_message').tinymce({
-	     // Location of TinyMCE script
-	     script_url : '/js/tiny_mce/tiny_mce.js',     
-	     // General options
-	     width : "100%",
-	     //height: "300px",
-	     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
-	     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
-	     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
-	     theme : "advanced",
-	     plugins : "autolink, autoresize", 
-	     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
-	     theme_advanced_buttons2 : "",
-	     theme_advanced_buttons3 : "",			
-	     theme_advanced_toolbar_location : "top",
-	     theme_advanced_toolbar_align : "left",
-	     theme_advanced_resizing : false     
-	    });
+  $('#post_content_text,#node_description_text,#reply_message').tinymce({
+    // Location of TinyMCE script
+    script_url : '/js/tiny_mce/tiny_mce.js',     
+    // General options
+    width : "100%",
+    //height: "300px",
+    content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
+    theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
+    font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
+    theme : "advanced",
+    plugins : "autolink, autoresize", 
+    theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+    theme_advanced_buttons2 : "",
+    theme_advanced_buttons3 : "",			
+    theme_advanced_toolbar_location : "top",
+    theme_advanced_toolbar_align : "left",
+    theme_advanced_resizing : false     
+   });
 });
 
-function initReplyForm() {
-	$("#reply_form").validate({
-		errorClass: "error",
-		errorPlacement: function(error, element) {
-		var item = $(element);
-		item.tooltip({title:error.text(), trigger:'manual'});
-		item.tooltip('show');
-	},
-	highlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.addClass(errorClass); 
-	},
-	unhighlight: function(element, errorClass, validClass) {
-		var item = $(element).parents(".form_parent");
-		item.removeClass(errorClass); 
-		$(element).tooltip('hide');
-	},  
-	rules: {}
-	});
-	
-	$('#new_comment_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
-		if (data.response!="success") {
-			if(data.response=="flooderror"){
-				onFloodError(data)
-				return			  
-			}
-		}
-		$("#comment_list").append(data.html)
-		$("#comment_submit").button("reset");
-	}, beforeSubmit: function(arr,$form) {
-		$("#comment_submit").button("loading");
-		//$('#new_comment').slideUp();
-	}});
+function initPost() {
+  $("#reply_form").validate({
+	  errorClass: "error",
+	  errorPlacement: function(error, element) {
+	  var item = $(element);
+	  item.tooltip({title:error.text(), trigger:'manual'});
+	  item.tooltip('show');
+  },
+  highlight: function(element, errorClass, validClass) {
+	  var item = $(element).parents(".form_parent");
+	  item.addClass(errorClass); 
+  },
+  unhighlight: function(element, errorClass, validClass) {
+	  var item = $(element).parents(".form_parent");
+	  item.removeClass(errorClass); 
+	  $(element).tooltip('hide');
+  },  
+  rules: {}
+  });
+  
+  $('#new_comment_form').ajaxForm({clearForm: true, dataType:'json', success: function(data) { 
+    if (data.response!="success") {
+      if(data.response=="flooderror"){
+	onFloodError(data, function(){} )
+	return			  
+      }
+    }
+    $("#comment_list").append(data.html)
+    $("#comment_submit").button("reset");
+    $(document).ready(function(){
+      $('.post_reply_del').click(onReplyDelete);    
+      $('.post_reply_edit').click(onPostEdit);  
+    });
+  }, beforeSubmit: function(arr,$form) {
+	  $("#comment_submit").button("loading");
+	  //$('#new_comment').slideUp();
+  }});	
+  
+  $('.post_sub').click(onPostSubscribe);
+  $('.post_unsub').click(onPostUnsubscribe);
+  $('.post_del').click(onPostDelete);
+  $('.post_edit').click(onPostEdit);
+  $('.post_reshare').click(onPostReshare);  
+  $('.post_reply_del').click(onReplyDelete);
+  $('.post_reply_edit').click(onPostEdit);
 }
 
 function drawSocialMap(data) {
@@ -224,18 +255,13 @@ function drawSmallMap(data) {
 }    
 
 function onSuccess(data){
-	if(data.response=="success"){
-	
-	if(data.url)
-		{
-		window.location.href=data.url
-		
-		}
-	else
-		window.location.reload()
-		
-	}
-	
+  if(data.response=="success"){
+    if(data.url) {
+     window.location.href=data.url
+    } else {
+     window.location.reload()
+    }
+  }
 }
 
 function floodUpdate(){
@@ -261,14 +287,12 @@ function floodUpdate(){
 
 
 function onReplySubmitted(user,post,node){	
-	
-	
-if($("#reply_form").valid()){
-	data= {}
-	data['user']= user
-	data['post']=post
-	data['node']=node
-	data['content']=$("#reply_message").attr("value")
+  if($("#reply_form").valid()){
+    data= {}
+    data['user']= user
+    data['post']=post
+    data['node']=node
+    data['content']=$("#reply_message").attr("value")
 	
 	$.ajax({
 		 type: 'POST',
@@ -282,7 +306,7 @@ if($("#reply_form").valid()){
 				 {
 				if(data.response=="flooderror")
 				 {
-					onFloodError(data)
+					onFloodError(data, function(){})
 					
 					 return
 						
@@ -294,113 +318,84 @@ if($("#reply_form").valid()){
 	}
 }
 
-/*
-function onOpenPostSubmitted(){
-		
-	if($("#new_post_form").valid()){
-	data= {}
-	data['user']=$("#form_user").attr("value")
-	data['node']=$("#form_node").attr("value")
-	data['content']=$("#post_content_text").attr("value")
-	data['title']=$("#post_title_text").attr("value")
-	$.ajax({
+
+function onPostEdit(){
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var reply = $(this).parents('.s_reply').attr("data-reply-key");    
+    
+  if(reply) post = reply;
+  
+  var edit_post = $(".edit_post").clone();
+  edit_post.find('.edit_content').attr('value', $(this).parents(".s_post_content").find('.post_content').html())
+  $(this).parents(".s_post_content").find(".edit_hollow").append(edit_post);
+  edit_post.find(".edit_content").tinymce(tiny_mce_opts);
+  $(".s_post_commands").hide()
+  $(this).parents(".s_post_content").find('.post_content').hide()
+
+  edit_post.show();
+
+  $(document).ready(function(){
+    edit_post.find('.s_post_edit_submit').click(onPostEditSubmit);
+    edit_post.find('.s_post_edit_cancel').click(onEditCancel);
+  });
+}
+
+var onEditCancel = function (){
+  $(".s_post_commands").show()
+  $(this).parents(".s_post_content").find('.post_content').show();
+  $(this).parents(".edit_hollow").empty();
+}
+
+function onPostEditSubmit(){
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var reply = $(this).parents('.s_reply').attr("data-reply-key");    
+  
+  if(reply) post = reply;
+
+  var edit_post = $(this).parents('.edit_post');
+  var data = {'cmd':'edit_open_post', 'post':post, 'content': edit_post.find(".edit_content").attr("value")}
+  
+  $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost?cmd=create_open_post', 
+	  url:'/social/managepost', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
 	    if (data.response!="success") {
-	      if(data.response=="flooderror"){
-		  onFloodError(data)
-		  return			  
-	      }
+	      if(data.response=="flooderror") {
+		onFloodError(data, function(){})
+		return
+  	      }
 	    }
-	    $("#main_stream_list").prepend(data.html)
-	   }
-	  })
-	
-}
-}
-*/
-function onPostEdit(user,node,post){
-	data= {}
-	data['user']= user
-	data['node']=node
-	
-	data['post']=post
-	data['content']=$("#post_content_"+post).html()
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=content_edit', 
-		 data: data,
-		 success:function(data){
-
-			 $("#edit_hollow_"+post).html(data)
-			  $("#edit_form_"+post).tinymce({
-			     // Location of TinyMCE script
-			     script_url : '/js/tiny_mce/tiny_mce.js',     
-			     // General options
-			     width : "100%",
-			     //height: "300px",
-			     content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
-			     theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
-			     font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
-			     theme : "advanced",
-			     plugins : "autolink, autoresize", 
-			     theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
-			     theme_advanced_buttons2 : "",
-			     theme_advanced_buttons3 : "",			
-			     theme_advanced_toolbar_location : "top",
-			     theme_advanced_toolbar_align : "left",
-			     theme_advanced_resizing : false     
-			    });
-			 $(".s_post_commands").hide()
-			 $("#post_content_"+post).hide()
-			 
-			 }})
+	    $("#post_content_"+post).html(data.content)
+	    $("#edit_hollow_"+post).empty()
+	    $("#post_content_"+post).show()		   
+	    $(".s_post_commands").show()
+	    }})
 }
 
-
-function onEditCancel(user,node,post){
-	
-	$("#edit_hollow_"+post).empty()
-	$(".s_post_commands").show()
-	$("#post_content_"+post).show()
-	 
-	
-	}
-function onPostEditSubmit(user,node,post){
-
-	data= {}
-	data['user']= user
-	data['node']=node
-	data['post']=post
-	data['content']=$("#edit_form_"+post).attr("value")
-
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=edit_open_post', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-			 
-			 if (data.response!="success")
-			 {
-			if(data.response=="flooderror")
-			 {
-				onFloodError(data)
-				
-				 return
-					
-			 }
-		 	 
-			 	 }
-			 $("#post_content_"+post).html(data.content)
-			 $("#edit_hollow_"+post).empty()
-			 $("#post_content_"+post).show()
-			 
-			 $(".s_post_commands").show()
-			 }})
+function onReplyEditSubmit(){
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var reply = $(this).parents('.s_reply').attr("data-reply-key");    
+  var data = {'cmd':'edit_open_post', 'node':node, 'post':reply, 'content': $(this).parents('.edit_post').find(".edit_content").attr("value")}
+  
+  $.ajax({
+	  type: 'POST',
+	  url:'/social/managepost', 
+	  data: data,
+	  dataType:'json',
+	  success:function(data){
+	    if (data.response!="success") {
+	      if(data.response=="flooderror") {
+		onFloodError(data, function(){})
+		return
+  	      }
+	    }
+	    $("#post_content_"+post).html(data.content)
+	    $("#edit_hollow_"+post).empty()
+	    $("#post_content_"+post).show()		   
+	    $(".s_post_commands").show()
+	    }})
 }
 
 
@@ -411,130 +406,111 @@ function onOpenPostForm(){
     $("#new_post").slideUp()  
   }
 }
-function onOpenPostFormCancel(){
+
+function onOpenPostFormCancel() {
   $("#new_post").slideUp()
 }
 	
-
-
-function onPostReshare(user,post,node){
-	data= {}
-	data['user']= user
-	data['node']=node
-	data['post']=post
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/dload?cmd=modal_reshare', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-			 
-			 $("#modal_reshare").html(data.html)
-			 $("#reshare_"+post).modal();
-			 }})
-			 
-	
+function onPostReshare() {
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  $.ajax({
+    type: 'POST',
+    url:'/social/dload', 
+    data: {'cmd': 'modal_reshare'},
+    dataType:'json',
+    success:function(data){
+      $("#modal_reshare").html(data.html);
+      $(document).ready(function () {
+	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
+	$("#modal_reshare").find('#form_post').attr("value", post);
+	$('#post_content_text').tinymce(tiny_mce_opts);
+	$('form#post_reshare').ajaxForm({clearForm: true, dataType:'json', success:function(data){
+	  if(data.response!="success") {
+	    if(data.response=="flooderror") {
+	      $("#reshare_"+post).modal('hide');
+	      onFloodError(data, function(){
+		$("#reshare_"+post).modal('show')
+	      });
+	      return
+	    }
+	  }
+	  onSuccess(data)
+	}});
+      });
+      $("#post_reshare").show();
+      $("#post_reshare").modal();
+    }});
 }
-
-
 
 function onFloodError(data,callback){
-	$(".main").append(data.html)
-	$("#flood_error").modal()
-	$('#flood_error').on('hide', function () {
-		
-		clearInterval( floodErrorTimer)
-		$("#flood_error").remove()
-		callback()
-})
-	i=0
-	time_left=data.time
-	span=$('.seconds_left')
-	time_left
-	floodUpdate()
-	floodErrorTimer=setInterval(function() {floodUpdate() }, 980);
+  $(".main").append(data.html)
+  $("#flood_error").modal()
+  $('#flood_error').on('hide', function () {
+    clearInterval( floodErrorTimer)
+    $("#flood_error").remove()
+    callback()
+  });
+  i=0
+  time_left=data.time
+  span=$('.seconds_left')
+  time_left
+  floodUpdate()
+  floodErrorTimer=setInterval(function() {floodUpdate() }, 980);
 }
 
 
-function onPostReshareSubmit(post){
-	data= {}
-	data['post']=post
-	data['title']=$("#post_title_text_"+post).attr('value')
-	data['content']=$("#post_content_text_"+post).attr('value')
-	data['node']=$("#node_selector_"+post+" option:selected").val()
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=reshare_open_post', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-
-			 
-			 if (data.response!="success")
-				 {
-				if(data.response=="flooderror")
-				 {
-					$("#reshare_"+post).modal('hide');
-					onFloodError(data,
-							function(){
-					 $("#reshare_"+post).modal('show')
-					 
-					});
-					
-					 return
-				 }
-					
-						
-				 
-			 	 }
-		 
-			 onSuccess(data)
-			
-			 }})
-	
+function onReplyDelete() {
+  var node = $(this).parents('.s_post_root').attr("data-node-key");
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var reply = $(this).parents('.s_reply').attr("data-reply-key");    
+  var data= {'cmd': 'delete_reply_post', 'post': post, 'node': node, 'reply': reply}
+  if( confirm("Sei sicuro di voler cancellare il commento?") ){
+    $.ajax({type: 'POST',
+	    url:'/social/managepost', 
+	    data: data,
+	    dataType:'json',
+	    success:function(data){
+	      $('[data-reply-key="'+reply+'"]').hide();
+	      $('[data-reply-key="'+reply+'"]').remove();
+	    }});
+  }	  	
 }
 
-
-function onReplyDelete(user,post,node,reply){
-	data= {}
-	data['user']= user
-	
-	data['post']=post
-	data['node']=node
-	data['reply']=reply
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=delete_reply_post', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-			 
-			 
-			 onSuccess(data)
-			 }})
-	
+function onPostDelete(){
+  var node = $(this).parents('.s_post').attr("data-node-key");
+  var post = $(this).parents('.s_post').attr("data-post-key");    
+  if( confirm("Sei sicuro di voler cancellare il post?") ){
+    var data = {'cmd':'delete_open_post', 'post':post, 'node':node};
+    $.ajax({
+      type: 'POST',
+      url:'/social/managepost', 
+      data: data,
+      dataType:'json',
+      success:function(data){ window.location.href = "/social"; }});
+  }	  	
 }
 
-function onPostDelete(user,node,post){
-	data= {}
-	data['post']=post
-	data['node']=node
-	data['user']= user
-	
-	$.ajax({
-		 type: 'POST',
-		 url:'/social/managepost?cmd=delete_open_post', 
-		 data: data,
-		 dataType:'json',
-		 success:function(data){
-			 onSuccess(data)
-			 }})
-	
+function onPostItemDelete(){
+  var post = $(this).parents('.s_post').attr("data-post-key");    
+  if( confirm("Sei sicuro di voler cancellare il post?") ){
+    var data = {'cmd':'delete_open_post', 'post':post };
+    $.ajax({
+      type: 'POST',
+      url:'/social/managepost', 
+      data: data,
+      dataType:'json',
+      success:function(data){
+	      $('[data-post-key="'+post+'"]').remove();
+      }});
+  }	  	
 }
 
-function onPostSubscribe(post){
-  $.ajax({url:'/social/subscribe?cmd=subscribepost&post='+post,
-	  dataType:"JSON", 
+function onPostSubscribe(){
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var data = {'cmd':'subscribepost', 'post':post};
+  $.ajax({url:'/social/subscribe',
+	  data: data,
+          dataType:'json',
 	  success:function(data){
 	    $("#postsub").hide();
 	    $("#postunsub").show();
@@ -547,8 +523,11 @@ function onPostSubscribe(post){
 }
 
 function onPostUnsubscribe(post){
-  $.ajax({url:'/social/subscribe?cmd=unsubscribepost&post='+post,
-	  dataType:"JSON", 
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var data = {'cmd':'unsubscribepost', 'post':post};
+  $.ajax({url:'/social/subscribe',
+	  data: data,
+          dataType:'json',
 	  success:function(data){
 	    $("#postsub").show();
 	    $("#postunsub").hide();

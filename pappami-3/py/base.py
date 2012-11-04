@@ -310,13 +310,13 @@ class SocialAjaxHandler(BasePage):
     if type(exception).__name__== FloodControlException.__name__:
       template = jinja_environment.get_template("social/ajax/flooderror.html")
       template_values={
-                       'flood_time':SOCIAL_FLOOD_TIME,
+                       'flood_time':Const.SOCIAL_FLOOD_TIME,
                        
                        }     
       html=template.render(template_values) 
       time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
      
-      time=SOCIAL_FLOOD_TIME-time.seconds
+      time=Const.SOCIAL_FLOOD_TIME-time.seconds
       response = {'response':'flooderror','time':time,'html':html}
      
       self.output_as_json(response)

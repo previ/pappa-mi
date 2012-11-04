@@ -1,5 +1,5 @@
 {% for post in postlist%}
-<li class="s_post">
+<li class="s_post" data-post-key='{{post.key.urlsafe()}}'>
 	<div class="thumbnail"> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
@@ -12,7 +12,7 @@
 			</div>				
 			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>									
 			<div class="s_post_commands">
-				{%if subscription.can_admin%}<button class="btn btn-danger" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
+				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}
 			</div>		
 			<div class="latest_comment">
 				Ultimo commento<div class="s_latest_date">&nbsp;- {{post.latest_comment_date.strftime('%d %m %Y')}}</div> 

@@ -5,6 +5,11 @@
 padding-bottom: 8px;
 }
 
+.s_reply {
+margin-top: 8px;
+margin-bottom: 8px;
+}
+
 .s_post_avatar {
 display: table-cell;
 padding-left: 5px;

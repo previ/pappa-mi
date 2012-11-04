@@ -134,55 +134,50 @@ class SocialPostHandler(BasePage):
        
     
     def get(self,id):
-        try:
-            op=model.Key(urlsafe=id).get()
+        op=model.Key(urlsafe=id).get()
+        if op is None or not isinstance(op, SocialPost):
+           self.error()
+        node=op.key.parent()
+        op.commissario=Commissario.get_by_user(op.author.get())
+        replies=[]
+        for x in op.get_discussion():
+            
+            x.commissario=Commissario.get_by_user(x.author.get())
+            replies.append(x)
         
+        
+        current_user=self.get_current_user()
+        current_sub=None
+        if current_user is not None:
+            current_user=current_user.key
+            current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
+           
+            if current_sub is None:
+                current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
+                memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
             
-            if op is None or type(op) is not SocialPost:
-               self.error()
-            node=op.key.parent()
-            op.commissario=Commissario.get_by_user(op.author.get())
-            replies=[]
-            for x in op.get_discussion():
-                
-                x.commissario=Commissario.get_by_user(x.author.get())
-                replies.append(x)
+            postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
+           
+            if postsub is None:
+                postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
+                memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
+         
+            
+        template_values = {
+                           'content': 'social/post.html',
+                           'replies': replies,
+                           'post': op,
+                           'node':node.get(),
+                           'user':current_user,
+                        
+                           
+                                              }                    
+        if current_user:
+            template_values['subscription']=current_sub
+            template_values['postsub']=postsub
             
             
-            current_user=self.get_current_user()
-            current_sub=None
-            if current_user is not None:
-                current_user=current_user.key
-                current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
-               
-                if current_sub is None:
-                    current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
-                    memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
-                
-                postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
-               
-                if postsub is None:
-                    postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
-                    memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
-             
-                
-            template_values = {
-                               'content': 'social/post.html',
-                               'replies': replies,
-                               'post': op,
-                               'node':node.get(),
-                               'user':current_user,
-                            
-                               
-                                                  }                    
-            if current_user:
-                template_values['subscription']=current_sub
-                template_values['postsub']=postsub
-                
-                
-            self.getBase(template_values)
-        except:
-            self.error()
+        self.getBase(template_values)
 
     def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
         resource = SocialResource(parent=node,
@@ -326,17 +321,18 @@ class SocialSubscribeHandler(SocialAjaxHandler):
                      self.error()
               
 class SocialManagePost(SocialAjaxHandler):
-   def post(self):
-       
-      
+   
+   def post(self):             
        user=self.request.user
-       logging.info(self.request.get('node'))
-       node=model.Key(urlsafe=self.request.get('node'))
        cmd = self.request.get('cmd')
 
+       # create a new 'original' post
+       # parameters: 'node'
+       # parameters: 'title'
+       # parameters: 'content'
        if cmd == "create_open_post":
            self.response.headers["Content-Type"] = "text/xml"
-           node=node.get()
+           node=model.Key(urlsafe=self.request.get('node')).get()
            if not node.get_subscription(user).can_post:
                self.response.out.write("<response>error</response>")
                return
@@ -362,11 +358,13 @@ class SocialManagePost(SocialAjaxHandler):
            self.output_as_json(response)
            
            
+       # create a reply to a post
+       # parameters: 'post'
+       # parameters: 'content'
        if cmd == "create_reply_post":
            post=model.Key(urlsafe=self.request.get('post')).get()
+           node=post.key.parent().get()
            if post:
-            
-               node=node.get()
                if not node.get_subscription(user).can_reply:
                    self.success()
                    return
@@ -398,7 +396,9 @@ class SocialManagePost(SocialAjaxHandler):
                post=model.Key(urlsafe=self.request.get('post')).get()
                memcache.add("SocialPost-"+str(self.request.get('post')),post)
                
-           node=node.get()
+           #node=model.Key(urlsafe=self.request.get('node')).get()
+           node=post.key.parent().get()
+           
            if not node.get_subscription(user).can_admin:
                self.response.out.write("<response>error</response>")
                return
@@ -412,7 +412,9 @@ class SocialManagePost(SocialAjaxHandler):
            if post is None:
               post=model.Key(urlsafe=self.request.get('post')).get()
               
-           node=node.get()
+           #node=node.get()
+           node=post.key.parent().get()
+           
            #check admin permissions
            if not node.get_subscription(user).can_admin:
                return    
@@ -420,8 +422,9 @@ class SocialManagePost(SocialAjaxHandler):
            node.delete_post(post)
            
            self.success("/social/node/"+node.key.urlsafe())
-       if cmd== "reshare_open_post":
-           
+
+       if cmd== "reshare_open_post":          
+           node=model.Key(urlsafe=self.request.get('node')).get()           
            post=memcache.get("SocialPost-"+str(self.request.get('post')))
            if post is None:
                post=model.Key(urlsafe=self.request.get('post')).get()
@@ -430,11 +433,10 @@ class SocialManagePost(SocialAjaxHandler):
            title=self.request.get('title')
            content=self.request.get('content')
            
-           post=post.reshare(node,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
+           post=post.reshare(node.key,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
            self.success("/social/post/"+post.urlsafe())
         
        if cmd == "edit_open_post":
-
           logging.info(self.request.get('content'))
           post=model.Key(urlsafe=self.request.get('post')).get()
           post.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
@@ -444,8 +446,7 @@ class SocialManagePost(SocialAjaxHandler):
           
           if post:
               response = {'response':'success','content':post.get().content}
-              self.output_as_json(response)
-             
+              self.output_as_json(response)             
           
                
        if cmd == "edit_reply_post":
@@ -454,8 +455,8 @@ class SocialManagePost(SocialAjaxHandler):
            template_values = {
                            'template': 'social/contentedit.html',
                            'post':  self.request.get('post'),
-                           'node': self.request.get('node'),
-                           'user': self.request.get('user'),
+                           'node': node,
+                           'user': self.get_current_user(),
                            'content': self.request.get('content'),
                            
                                               }                    
@@ -698,18 +699,19 @@ class SocialMainHandler(BasePage):
         
 class SocialDLoadHandler(SocialAjaxHandler):
     @reguser_required
+    def get(self):
+        self.post()
+
+    @reguser_required
     def post(self):
         cmd=self.request.get("cmd")
         user=self.request.user
         
         if cmd=="modal_reshare":
             template_values = {
-                                    "my_nodelist":SocialNodeSubscription.get_nodes_by_user(user) ,
-                                    "post":self.request.get("post")
-        
-                                    }
-            
-            
+                "my_nodelist":SocialNodeSubscription.get_nodes_by_user(user) ,
+                "post":self.request.get("post")
+            }
             
             template = jinja_environment.get_template("social/ajax/modal_reshare.html")
             html=template.render(template_values)

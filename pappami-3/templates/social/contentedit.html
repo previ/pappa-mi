@@ -1,11 +1,7 @@
-<div id="edit_{{post}}">
-<input id="edit_form_{{post}}" value="{{content}}">
-
-</input>
-<div id="edit_commands">
-	<button class="btn btn-primary" onClick="onPostEditSubmit('{{user}}','{{node}}','{{post}}')"><i class="icon-share-alt"></i>Conferma</button>
-	
-	<button class="btn btn-primary" onClick="onEditCancel('{{user}}','{{node}}','{{post}}')"><i class="icon-share-alt"></i>Annulla</button>
-				
-</div>
+<div id="edit_post">
+	<input id="edit_form_{{post}}" value="{{content}}"/>
+	<div id="edit_commands btn-group">
+		<button class="btn btn-normal btn-mini" onclick="onPostEditSubmit('{{node}}','{{post}}')"><i class="icon-share-alt"></i>Conferma</button>	
+		<button class="btn btn-normal btn-mini" onclick="onEditCancel('{{node}}','{{post}}')"><i class="icon-share-alt"></i>Annulla</button>			
+	</div>
 </div>

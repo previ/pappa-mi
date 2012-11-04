@@ -1,10 +1,7 @@
 <script type="text/javascript">
-
-$(document).ready(function () {
-	initReplyForm()
-});
+$(document).ready(initPost);
 </script>
-<div class="row">
+<div class="s_post_root row" data-node-key='{{node.key.urlsafe()}}' data-post-key='{{post.key.urlsafe()}}'>
 	<div class="span12">
 		<div class="s_post thumbnail"> 
 			<div class="s_post_avatar">
@@ -17,49 +14,76 @@ $(document).ready(function () {
 					<div class="s_post_date">&nbsp;- il {{post.creation_date.strftime('%d %m %Y')}}</div>
 				</div>				
 				<div class="s_post_body">
-				<div  id="post_content_{{post.key.urlsafe()}}">{{post.content}}</div>
-				<div  id="edit_hollow_{{post.key.urlsafe()}}"></div>
-				
-				<div>
-				{%if post.resource%}
-				{%set resource = post.resource.get()%}
-				{%include "social/resources/"+resource.type+".html"%}
-				{%endif%}	
-				</div>			
+					<div class="post_content" id="post_content_{{post.key.urlsafe()}}">{{post.content}}</div>
+					<div class="edit_hollow" id="edit_hollow_{{post.key.urlsafe()}}"></div>
+					<div>
+					{%if post.resource%}
+					{%set resource = post.resource.get()%}
+					{%include "social/resources/"+resource.type+".html"%}
+					{%endif%}	
+					</div>			
 				</div>									
-			{% if user %} 
+				{% if user %} 
 				<div class="s_post_commands btn-group">
- 					{%if subscription.can_admin%}<button class="btn btn-normal btn-mini" onClick="onPostDelete('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-remove"></i>Elimina</button>{%endif%}
-					{%if subscription.can_admin or user.key==post.author%}<button class="btn btn-normal btn-mini" onClick="onPostEdit('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}','{{post.key.urlsafe()}}')"><i class="icon-pencil"></i>Modifica</button>{%endif%}
-					<button id="postunsub" class="btn btn-normal btn-mini" {%if not postsub %}style="display:none;"{%endif%} onClick="onPostUnsubscribe('{{post.key.urlsafe()}}')"><i class="icon-minus-sign"></i>Non seguire</button>
-					<button id="postsub" class="btn btn-normal btn-mini" {%if postsub %}style="display:none;"{%endif%} onClick="onPostSubscribe('{{post.key.urlsafe()}}')"><i class="icon-plus-sign"></i>Segui</button>					
-					<button class="btn btn-normal btn-mini" onClick="onPostReshare('{{user.key.urlsafe()}}','{{post.key.urlsafe()}}','{{node.key.urlsafe()}}')"><i class="icon-share-alt"></i>Reshare</button>
+					{%if subscription.can_admin%}
+					<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
+					{%endif%}
+					{%if subscription.can_admin or user.key==post.author%}
+					<button class="btn btn-normal btn-mini post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
+					<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if not postsub %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+					<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if postsub %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+					<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Reshare</button>
 				</div>
-			{% endif%}			
+				{% endif%}			
 			</div>			
 		</div>			
-
-		<div class="s_replies span8" id="replies">
+		<div class="s_replies" id="replies">
 			<ul id="comment_list" class="thumbnails">
-{%for reply in replies%}
-{%include "social/pagination/comment.html"%}
-{%endfor%}
+				{%for reply in replies%}
+				{%include "social/pagination/comment.html"%}
+				{%endfor%}
 			</ul>
-	{%if user and subscription.can_post%}	
-			<form id="new_comment_form" action="/social/managepost" method="post">
-				<input type="hidden" name="cmd" value="create_reply_post"/>
-				<input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
-				<input type="hidden" id="form_node" name="node" value="{{node.key.urlsafe()}}"/>				<input type="hidden" id="form_post" name="post" value="{{post.key.urlsafe()}}"/>
-
-				<div id="post_content" class="form_parent">
-					<input row="3" class="span8 comment_textarea required" id="reply_message" name="content"></textarea>
-					<input id="reply_submit" class="btn btn-primary" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
-				</div>
-			</form>
-	{%endif%}
+			{%if user and subscription.can_post%}	
+			<ul id="comment_list" class="thumbnails">
+				<li class="s_reply">
+				 <div class="thumbnail"> 
+				  <div class="s_post_avatar">
+				   <img class="avatar" src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.avatar(cmsro)}}">
+				  </div>
+				  <div class="s_post_content">
+				   <div class="s_post_header">			
+				    <div class="s_post_title"></div> 
+				    <div class="s_post_author">{{cmsro.nomecompleto(cmsro)}}</div>
+				    <div class="s_post_date"></div>
+				   </div>				
+				   <div class="s_post_body">
+				    <div class="post_content">		
+					<form id="new_comment_form" action="/social/managepost" method="post">
+						<input type="hidden" name="cmd" value="create_reply_post"/>				
+						<input type="hidden" id="form_node" name="node" value="{{node.key.urlsafe()}}"/>
+						<input type="hidden" id="form_post" name="post" value="{{post.key.urlsafe()}}"/>
+						<div id="post_content" class="form_parent">
+							<input row="3" class="span8 comment_textarea required" id="reply_message" name="content"></textarea>
+							<input id="reply_submit" class="btn btn-primary" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
+						</div>
+					</form>
+				    </div>
+				   </div>
+				  </div>
+				 </div>
+				</li>
+			</ul>
+			{%endif%}
 		</div>
 	</div>
 </div>
-
-<div id="modal_reshare">
+<div class="s_tools">
+	<div id="modal_reshare"></div>
+	<div class="edit_post" style="display:none;">
+		<input class="edit_content" name="content" value="">
+		<div id="edit_commands btn-group">
+			<button class="btn btn-normal btn-mini s_post_edit_submit"><i class="icon-share-alt"></i>Conferma</button>	
+			<button class="btn btn-normal btn-mini s_post_edit_cancel"><i class="icon-share-alt"></i>Annulla</button>			
+		</div>
+	</div>
 </div>
