@@ -1,25 +1,29 @@
-<div id="reshare_{{post}}" class="modal hide fade in" style="display: none; ">  
-<div class="modal-header">  
-<a class="close" data-dismiss="modal">x</a>  
-<h3>Ricondividi questo post</h3>  
-</div>  
-<div class="modal-body">  
-	<div id="post_title" class="form_parent">
-		<label id="post_content_label" for="titolo">Titolo</label>
-		<input class="span4 comment_textarea required" name="titolo" id="post_title_text_{{post}}"></input>
-	</div>
-	<div id="post_content" class="form_parent">
-		<label id="post_content_label" for="content">Contenuto</label>
-		<input class="span4 comment_textarea required" name="content" id="post_content_text_{{post}}"></input>
-	</div>
-	<div id="node_selector" class="form_parent">
-	<select class="large required" id="node_selector_{{post}}" name="node">
-      {%for node in my_nodelist%}<option value="{{node.key.urlsafe()}}">{{node.name}}</option>{%endfor%}
-     </select>
-	</div>
-</div>  
-<div class="modal-footer">  
-<a href="#" onClick="onPostReshareSubmit('{{post}}')" class="btn btn-success">Ricondividi</a>  
-<a href="#" class="btn" data-dismiss="modal">Annulla</a>  
-</div>  
+<div id="post_reshare" class="modal hide fade in" style="">  
+ <div class="modal-header">  
+  <a class="close" data-dismiss="modal">x</a>  
+  <h3>Pubblica questo post su una categoria diversa</h3>  
+ </div>  
+ <form id="post_reshare" action="/social/managepost" method="post">
+  <input type="hidden" name="cmd" value="reshare_open_post"/>				
+  <input type="hidden" id="form_post" name="post" value=""/>
+  <div class="modal-body">  
+   <div id="post_title" class="form_parent">
+    <label id="post_content_label" for="titolo">Titolo</label>
+    <input class="span4 comment_textarea required" name="title" id="post_title_text"></input>
+   </div>
+   <div id="post_content" class="form_parent">
+    <label id="post_content_label" for="content">Contenuto</label>
+    <input class="span4 comment_textarea required" name="content" id="post_content_text"></input>
+   </div>
+   <div id="node_selector" class="form_parent">
+    <select class="large required" id="node_selector" name="node">
+    {%for node in my_nodelist%}<option value="{{node.key.urlsafe()}}">{{node.name}}</option>{%endfor%}
+    </select>
+   </div>
+  </div>  
+  <div class="modal-footer">  
+   <button class="btn btn-primary">Ricondividi</button>  
+   <button class="btn btn-normal" data-dismiss="modal">Annulla</button>  
+  </div>  
+ </form>
 </div>

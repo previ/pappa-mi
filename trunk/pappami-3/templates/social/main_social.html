@@ -76,18 +76,10 @@ function loadPosts(key,current_cursor){
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
     $("#main_stream_list").append(data.html)
+    $('.post_del').click(onPostItemDelete);
    } else if(data.response="no_posts"){
    $("#no_more_posts").alert();
-   $("#no_more_posts").show();
-    /*
-    if(current_cursor!=undefined){
-     $("div#add_posts_"+key).hide()     
-     if($("div#node_stream_"+key+">ul").children().length>0){
-      $("div#node_stream_"+key+" .pagination_errors").show()
-     } else {
-      $("div#node_stream_"+key+" .empty_errors").show()  
-     }   
-    } */   
+   $("#no_more_posts").show();   
    }
   }
  });

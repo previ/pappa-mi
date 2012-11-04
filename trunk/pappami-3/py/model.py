@@ -19,8 +19,6 @@ import jinja2
 import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
-SOCIAL_FLOOD_TIME=30
-FLOOD_SYSTEM_ACTIVATED=True
 class Citta(model.Model):
   nome = model.StringProperty()
   codice =  model.StringProperty()
@@ -1380,9 +1378,9 @@ class SocialNode(model.Model):
         SocialPostSubscription(parent=self.key,user=author.key).put()
         
         SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
-        if FLOOD_SYSTEM_ACTIVATED:
+        if Const.FLOOD_SYSTEM_ACTIVATED:
        
-         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
+         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
         return new_post.key
         
         
@@ -1572,8 +1570,8 @@ class SocialPost(model.Model):
         SocialPostSubscription(parent=self.key,user=author.key).put()
         SocialNotification.create(source_key=self.key,author_key=author.key,type="new_reply",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
         
-        if FLOOD_SYSTEM_ACTIVATED:
-            memcache.add("FloodControl-"+str(author.key), datetime.now(),time=SOCIAL_FLOOD_TIME)
+        if Const.FLOOD_SYSTEM_ACTIVATED:
+            memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
         
         return new_comment
 
