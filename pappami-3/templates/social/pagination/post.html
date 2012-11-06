@@ -10,10 +10,12 @@
 				<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
 				<div class="s_post_date">&nbsp;- il {{post.creation_date.strftime('%d %m %Y')}}</div>
 			</div>				
-			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>									
+			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>
+			{%if subscription%}									
 			<div class="s_post_commands">
 				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}
 			</div>		
+			{%endif%}
 			<div class="latest_comment">
 				Ultimo commento<div class="s_latest_date">&nbsp;- {{post.latest_comment_date.strftime('%d %m %Y')}}</div> 
 			</div>					

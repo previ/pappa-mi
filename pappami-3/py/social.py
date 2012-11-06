@@ -667,20 +667,22 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         
 class SocialSearchHandler(SocialAjaxHandler):
     def get(self):
-        sr = list()
+        postlist = list()
         try:
             results = search.Index(name="index-posts").search(search.Query(query_string=self.request.get("query")))
         
             for scored_document in results:
-                sr.append(model.Key(urlsafe=scored_document.doc_id[5:]).get())
-                logging.info(model.Key(urlsafe=scored_document.doc_id[5:]).get())
+                post = model.Key(urlsafe=scored_document.doc_id[5:]).get()
+                post.commissario=Commissario.get_by_user(post.author.get())                
+                postlist.append(post)
+                
                 
         except search.Error:
                 logging.exception('Search failed' )
         
         template_values = {
             "content": "social/search.html",
-            "results": sr,
+            "postlist": postlist,
                  }
     
         self.getBase(template_values)
@@ -766,6 +768,21 @@ class SocialUtils:
             post=node.create_open_post("Contenuto di "+str(i),"Discussione "+str(i),user).get()
             for j in range(0,10):
                 post.create_reply_comment("Commento di "+str(j),user)
+
+
+    @classmethod
+    def unsubscribe_all(cls):
+        
+        for sub in SocialPostSubscription.query().fetch():
+            sub.key.delete()
+
+    @classmethod
+    def delete_nodes(cls):
+        
+        for node in SocialNode.query(SocialNode.latest_post==None).fetch():
+            node.key.delete()
+            
+ 
     @classmethod
     def locations_to_nodes(cls):
         
@@ -779,15 +796,16 @@ class SocialUtils:
                 scuole=[SocialResource.get_resource(x.key) for x in scuole]
                 nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(citta).key or SocialNode.resource.IN(scuole)).fetch()
                 for node in nodes:
-                    
-                    if not node.has_user(user):
-                        node.subscribe_user(user)
+                    node.subscribe_user(user)
     @classmethod
-    def generate_nodes(cls):             
+    def generate_nodes(cls):  
+        logging.info("generate_nodes.city")
         citta=Citta.get_all()
         for i in citta:
            node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=i.create_resource().key)
            node.put()
+        
+        logging.info("generate_nodes.cm")
         commissioni=Commissione.query().fetch()
         for i in commissioni:
         

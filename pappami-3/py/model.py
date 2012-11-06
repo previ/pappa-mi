@@ -41,15 +41,14 @@ class Citta(model.Model):
   def create_resource(self):
       
       resource=self.get_resource()
-      if resource:
-              return resource
-      else:    
+      if not resource:
         resource=SocialResource(parent=self.key,
                                         name=self.nome,
                                         type="city",
                                         geo=self.geo,
                                         )
         resource.put()
+      return resource
   
   def get_resource(self):
       resource=SocialResource.query(ancestor=self.key).get()
@@ -177,9 +176,7 @@ class Commissione(model.Model):
   def create_resource(self):
       
       resource=self.get_resource()
-      if resource:
-              return resource
-      else:    
+      if not resource:
         resource=SocialResource(parent=self.key,
                                         name=self.nome,
                                         
@@ -187,7 +184,7 @@ class Commissione(model.Model):
                                         geo=self.geo,
                                         )
         resource.put()
-        return resource
+      return resource
         
         
   def get_resource(self):
@@ -1359,6 +1356,16 @@ class SocialNode(model.Model):
         except search.Error, e:
             pass
 
+    def _post_delete_hook(self,future):
+        node=future.get_result().get()
+        index = search.Index(name='index-nodes',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.remove('node-'+node.key.urlsafe())
+        
+        except search.Error, e:
+            pass
+
     @classmethod
     def active_nodes(cls):
            return cls.query().filter(cls.active==True)
@@ -1448,6 +1455,7 @@ class SocialNode(model.Model):
             return True
         else:
             return False
+          
     def get_subscription(self,user_t):
         return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).get()
         
@@ -1605,6 +1613,16 @@ class SocialPost(model.Model):
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
             index.add(doc)
+        
+        except search.Error, e:
+            pass
+
+    def _post_delete_hook(self,future):
+        post=future.get_result().get()
+        index = search.Index(name='index-posts',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.remove('post-'+post.key.urlsafe())
         
         except search.Error, e:
             pass
