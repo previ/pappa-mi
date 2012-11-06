@@ -106,9 +106,7 @@ class SocialTest(BasePage):
      #   i.delete()
     #  SocialUtils.generate_random_contents(self.get_current_user())
         
-     
-    
-     
+          
 class NodeListHandler(BasePage):
   def get(self):
     geo = model.GeoPt(41.754922,12.502441)
@@ -667,6 +665,25 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         
                     self.output_as_json(response)
                         
+class SocialSearchHandler(SocialAjaxHandler):
+    def get(self):
+        sr = list()
+        try:
+            results = search.Index(name="index-posts").search(search.Query(query_string=self.request.get("query")))
+        
+            for scored_document in results:
+                sr.append(model.Key(urlsafe=scored_document.doc_id[5:]).get())
+                logging.info(model.Key(urlsafe=scored_document.doc_id[5:]).get())
+                
+        except search.Error:
+                logging.exception('Search failed' )
+        
+        template_values = {
+            "content": "social/search.html",
+            "results": sr,
+                 }
+    
+        self.getBase(template_values)
          
 class SocialNotificationsListHandler(BasePage):
         @reguser_required
@@ -689,10 +706,25 @@ class SocialMainHandler(BasePage):
     def get(self):
         user=self.get_current_user()
         node_list=SocialNodeSubscription.get_nodes_by_user(user,-SocialNodeSubscription.starting_date)
+        node_recent=[]
+        for node in SocialNode.get_most_recent():
+            if node not in node_list:
+                node_recent.append(node)
+            if len(node_recent) >= 3:
+                break
+        node_active=[]
+        for node in SocialNode.get_most_active():
+            if node not in node_list:
+                node_active.append(node)
+            if len(node_active) >= 3:
+                break
+                    
         
         template_values = {
                         'content': 'social/main_social.html',
                         'node_list':node_list,
+                        'node_active': node_active,
+                        'node_recent': node_recent,
                         'user':user
         }
         self.getBase(template_values)
@@ -826,6 +858,7 @@ app = webapp.WSGIApplication([
     ('/social/createnode', SocialCreateNodeHandler),
     ('/social/editnode/(.*)', SocialEditNodeHandler),
     ('/social/paginate', SocialPaginationHandler),
+    ('/social/search', SocialSearchHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
     ('/social', SocialMainHandler),

@@ -1325,11 +1325,22 @@ class SocialNode(model.Model):
     latest_post_date=model.DateTimeProperty(auto_now="")
     latest_post=model.KeyProperty(kind="SocialPost")
     resource=model.KeyProperty(kind="SocialResource")
+    created=model.DateTimeProperty(auto_now=True)
     
     
     @classmethod
     def get_nodes_by_resource(cls,resource_ref):
         nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
+        return nodes
+
+    @classmethod
+    def get_most_recent(cls):
+        nodes=SocialNode.query().order(-SocialNode.created).fetch()
+        return nodes
+
+    @classmethod
+    def get_most_active(cls):
+        nodes=SocialNode.query().order(-SocialNode.latest_post).fetch()
         return nodes
     
     def _post_put_hook(self,future):
@@ -1581,6 +1592,22 @@ class SocialPost(model.Model):
             reply.delete()
             self.total_comments=self.total_comments-1
             self.put()
+
+    def _post_put_hook(self,future):
+        post=future.get_result().get()
+        doc=search.Document(
+                        doc_id='post-'+post.key.urlsafe(),
+                        fields=[search.TextField(name='title', value=post.title),search.HtmlField(name='content', value=post.content)],
+                        language='it')
+        
+       
+        index = search.Index(name='index-posts',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.add(doc)
+        
+        except search.Error, e:
+            pass
 
 class SocialPostSubscription(model.Model):
     user = model.KeyProperty(kind=models.User)
