@@ -38,6 +38,7 @@ from form import CommissioneForm
 from gviz_api import *
 from base import BasePage, config
 #from gcalendar import *
+from social import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -725,7 +726,25 @@ class CMAdminHandler(BasePage):
         
       self.response.out.write(buff)
       return
+
+    if self.request.get("cmd") == "resetSocial":
+      SocialUtils.unsubscribe_all()
+      logging.info("resetSocial.1")
+      SocialUtils.delete_nodes()
+      logging.info("initSocial.2")
+      
+      self.response.out.write("initSocial Ok")
+      return
           
+    if self.request.get("cmd") == "initSocial":
+      SocialUtils.generate_nodes()
+      logging.info("initSocial.1")
+      SocialUtils.locations_to_nodes()
+      logging.info("initSocial.2")
+      
+      self.response.out.write("initSocial Ok")
+      return
+
     if self.request.get("cmd") == "flush":
       memcache.flush_query()
       self.response.out.write("flush Ok")
