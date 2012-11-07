@@ -98,7 +98,7 @@ class CentroCucinaLoader(Loader):
                      
     self.alias_old_names()
     
-loaders = [MenuLoader, CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
+loaders = [CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
 
 class CommissioneExporter(Exporter):
   def __init__(self):

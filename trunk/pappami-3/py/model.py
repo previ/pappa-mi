@@ -1356,12 +1356,12 @@ class SocialNode(model.Model):
         except search.Error, e:
             pass
 
-    def _post_delete_hook(self,future):
-        node=future.get_result().get()
+    def _pre_delete_hook(self,key):
+        
         index = search.Index(name='index-nodes',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
-            index.remove('node-'+node.key.urlsafe())
+            index.remove('node-'+key.urlsafe())
         
         except search.Error, e:
             pass
@@ -1617,12 +1617,11 @@ class SocialPost(model.Model):
         except search.Error, e:
             pass
 
-    def _post_delete_hook(self,future):
-        post=future.get_result().get()
+    def _pre_delete_hook(self,key):
         index = search.Index(name='index-posts',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
-            index.remove('post-'+post.key.urlsafe())
+            index.remove('post-'+key.urlsafe())
         
         except search.Error, e:
             pass

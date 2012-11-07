@@ -52,48 +52,47 @@ class NodeHandler(BasePage):
     
   
   def post(self):
-        self.response.out.write("");
+      self.response.out.write("");
         
   def get(self,node_id):
     
-   try:
-    node_i=model.Key(urlsafe=node_id).get()
-    node=node_i.key
-       #if node does not exist
-    if not node_i or node_i.active==False :
-       
-        self.error()
-    
-   
-        
-    current_user=self.get_current_user()
-    if current_user is None:
-        logged=False
-        is_sub=False
-    else:
-        logged=True
-        is_sub= node.get().is_user_subscribed(current_user)
-     
-    #check permission
-    can_post=False
-    current_user=self.get_current_user()
-    current_sub=get_current_sub(current_user,node)
-                
-    template_values = {
-          'content': 'social/node.html',
-          "user":current_user,
-          "node":node_i,
-          "is_sub":is_sub,
-          "show_sub_button": True if not logged or not is_sub else False,
-          "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list(10)],
-          "citta": Citta.get_all(),
-          "subscription":current_sub
-          }
-    
+  
+      node_i=model.Key(urlsafe=node_id).get()
+      node=node_i.key
+         #if node does not exist
+      if not node_i or node_i.active==False :
+         
+          self.error()
       
-    self.getBase(template_values)
-   except:
-       self.error()
+      
+          
+      current_user=self.get_current_user()
+      if current_user is None:
+          logged=False
+          is_sub=False
+      else:
+          logged=True
+          is_sub= node.get().is_user_subscribed(current_user)
+       
+      #check permission
+      can_post=False
+      current_user=self.get_current_user()
+      current_sub=get_current_sub(current_user,node)
+                  
+      template_values = {
+            'content': 'social/node.html',
+            "user":current_user,
+            "node":node_i,
+            "is_sub":is_sub,
+            "show_sub_button": True if not logged or not is_sub else False,
+            "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list(10)],
+            "citta": Citta.get_all(),
+            "subscription":current_sub
+            }
+      
+        
+      self.getBase(template_values)
+ 
 
        
     
