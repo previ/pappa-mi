@@ -27,8 +27,8 @@
  <div class="activity_avatar" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">
   <img class="avatar" src="{{activity.author_avatar(cmsro)}}" title="{{activity.author(cmsro)}}">
  </div>
- <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-original-title="apri in un'altra finestra"></span>
- {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-original-title="mostra / nascondi dettagli"></span>{%endif%}  
+ <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-html="true" data-original-title="apri in un'altra<br/>finestra"></span>
+ {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-html="true" data-original-title="mostra / nascondi<br/>dettagli"></span>{%endif%}  
  <div class="activity_body">
   <div class="activity_author" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">{{activity.author(cmsro)}}</div>  
   <div class="activity_author_title">{{activity.author_title(cmsro)}}</div>
