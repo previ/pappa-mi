@@ -15,7 +15,7 @@ class Const:
   ENTITY_FETCH_LIMIT = 50
   ACTIVITY_CACHE_EXP = 900
   SOCIAL_FLOOD_TIME = 5
-  FLOOD_SYSTEM_ACTIVATED = True
+  FLOOD_SYSTEM_ACTIVATED = False
 
 class cached_property(object):
   """A decorator that converts a function into a lazy property.
