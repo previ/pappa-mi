@@ -809,7 +809,7 @@ class SocialUtils:
         for i in commissioni:
         
            c=i.citta.get()
-           node=SocialNode(name=i.nome,description="Gruppo di discussione per la commissione della scuola "+i.nome+" di "+c.nome,resource=i.create_resource().key)
+           node=SocialNode(name=i.nome,description="Gruppo di discussione per la commissione della scuola " + i.tipo + " " + i.nome + " di " + c.nome, resource = i.create_resource().key)
            node.put()
 
 class SocialNewsLetter(BasePage):

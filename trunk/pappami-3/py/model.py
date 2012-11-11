@@ -178,9 +178,8 @@ class Commissione(model.Model):
       resource=self.get_resource()
       if not resource:
         resource=SocialResource(parent=self.key,
-                                        name=self.nome,
-                                        
-                                        type="commission",
+                                        name=self.nome,                                        
+                                        type="cm",
                                         geo=self.geo,
                                         )
         resource.put()
@@ -1381,7 +1380,7 @@ class SocialNode(model.Model):
     def create_open_post(self,content,title,author,resource=None):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
-            raise base.FloodControlException
+          raise base.FloodControlException
         
         new_post= SocialPost(parent=self.key)
         new_post.author=author.key
@@ -1396,9 +1395,8 @@ class SocialNode(model.Model):
         SocialPostSubscription(parent=self.key,user=author.key).put()
         
         SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
-        if Const.FLOOD_SYSTEM_ACTIVATED:
-       
-         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+        if Const.FLOOD_SYSTEM_ACTIVATED:       
+          memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
         return new_post.key
         
         
@@ -1574,7 +1572,7 @@ class SocialPost(model.Model):
     def create_reply_comment(self,content,author):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
-            raise base.FloodControlException
+          raise base.FloodControlException
         
         new_comment= SocialComment(parent=self.key)
         new_comment.author=author.key
@@ -1590,7 +1588,7 @@ class SocialPost(model.Model):
         SocialNotification.create(source_key=self.key,author_key=author.key,type="new_reply",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
         
         if Const.FLOOD_SYSTEM_ACTIVATED:
-            memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+          memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
         
         return new_comment
 
