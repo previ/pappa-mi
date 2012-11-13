@@ -1311,16 +1311,21 @@ class StatisticheIspezioni(model.Model):
         self.incValSub(attr, attr_sub, isp)
         
 class SocialNode(model.Model):
+  
     name=model.StringProperty(default="")
-    description=model.StringProperty(default="")
+    description=model.StringProperty(default="", indexed=False)
     active=model.BooleanProperty(default=True)
     founder=model.KeyProperty(default=None)
+    
     default_post=model.BooleanProperty(default=True)
     default_reply=model.BooleanProperty(default=True)
     default_admin=model.BooleanProperty(default=False)
+    
     latest_post_date=model.DateTimeProperty(auto_now="")
-    latest_post=model.KeyProperty(kind="SocialPost")
+    #latest_post=model.KeyProperty(kind="SocialPost")
+    
     resource=model.KeyProperty(kind="SocialResource")
+    
     created=model.DateTimeProperty(auto_now=True)
     
     
