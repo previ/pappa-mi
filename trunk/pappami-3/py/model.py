@@ -13,7 +13,7 @@ from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
 import base
-from common import cached_property, Const
+from common import cached_property, Const, Cache
 from engineauth import models
 import jinja2
 import os
@@ -91,10 +91,6 @@ class CentroCucina(model.Model):
   creato_il = model.DateTimeProperty(auto_now_add=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
-
-  #_lock = threading.RLock()
-  #_ce_cu_zo_cache = None
-  #_zo_of_cache = None  
   
   @classmethod
   def get_by_citta(cls, citta_key):
@@ -757,7 +753,7 @@ class Nonconformita(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
-  
+    
   @classmethod
   def get_by_cm(cls, cm):
     return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
@@ -1311,56 +1307,72 @@ class StatisticheIspezioni(model.Model):
         self.incValSub(attr, attr_sub, isp)
         
 class SocialNode(model.Model):
-  
-    name=model.StringProperty(default="")
-    description=model.StringProperty(default="", indexed=False)
-    active=model.BooleanProperty(default=True)
-    founder=model.KeyProperty(default=None)
+    name = model.StringProperty(default="")
+    description = model.TextProperty(default="",indexed=False)
+    active = model.BooleanProperty(default=True)
+    founder = model.KeyProperty(default=None)
+
+    default_post = model.BooleanProperty(default=True,indexed=False)
+    default_reply = model.BooleanProperty(default=True,indexed=False)
+    default_admin = model.BooleanProperty(default=False,indexed=False)
+
+    #latest_activity = model.DateTimeProperty(auto_now="")
+    #latest_post = model.KeyProperty(kind="SocialPost")
+
+    resource = model.KeyProperty(repeated=True)
+    res_type = model.StringProperty(repeated=True)
     
-    default_post=model.BooleanProperty(default=True)
-    default_reply=model.BooleanProperty(default=True)
-    default_admin=model.BooleanProperty(default=False)
-    
-    latest_post_date=model.DateTimeProperty(auto_now="")
-    #latest_post=model.KeyProperty(kind="SocialPost")
-    
-    resource=model.KeyProperty(kind="SocialResource")
-    
-    created=model.DateTimeProperty(auto_now=True)
-    
+    created = model.DateTimeProperty(auto_now=True)
+    rank = model.IntegerProperty()
     
     @classmethod
     def get_nodes_by_resource(cls,resource_ref):
-        nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
-        return nodes
+      nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
+      return nodes
 
     @classmethod
     def get_most_recent(cls):
-        nodes=SocialNode.query().order(-SocialNode.created).fetch()
-        return nodes
+      nodes=SocialNode.query().order(-SocialNode.created).fetch()
+      return nodes
 
     @classmethod
     def get_most_active(cls):
-        nodes=SocialNode.query().order(-SocialNode.latest_post).fetch()
-        return nodes
-    
-    def _post_put_hook(self,future):
-        node=future.get_result().get()
-        doc=search.Document(
-                        doc_id='node-'+node.key.urlsafe(),
-                        fields=[search.TextField(name='name', value=node.name),search.HtmlField(name='description', value=node.description)],
-                        language='it')
-        
-       
-        index = search.Index(name='index-nodes',
-                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
-        try:
-            index.add(doc)
-        
-        except search.Error, e:
-            pass
+      nodes=SocialNode.query().order(-SocialNode.rank).fetch()
+      return nodes
 
-    def _pre_delete_hook(self,key):
+    def init_rank(self):
+      init_rank = datetime.now() - Const.BASE_RANK
+      self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
+      
+    def calc_rank(self, activity):
+      values = {SocialPost: 10,
+                SocialComment: 7,
+                Vote: 3 }
+      now = datetime.now()
+      delta = now - self.last_act
+      delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
+      self.rank += ((delta_rank * values[activity]) / 10)
+        
+    def _post_put_hook(self, future):
+      Cache.get_cache("SocialPost").clear_all()
+      
+      node=future.get_result().get()
+      doc=search.Document(
+                      doc_id='node-'+node.key.urlsafe(),
+                      fields=[search.TextField(name='name', value=node.name),
+                              search.HtmlField(name='description', value=node.description)],
+                      language='it')
+      
+     
+      index = search.Index(name='index-nodes',
+                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      try:
+          index.add(doc)
+      
+      except search.Error, e:
+          pass
+
+    def _pre_delete_hook_1(cls, key):
         
         index = search.Index(name='index-nodes',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
@@ -1382,7 +1394,7 @@ class SocialNode(model.Model):
    
     
     
-    def create_open_post(self,content,title,author,resource=None):
+    def create_open_post(self, author, title, content, resources=[], res_types=[]):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
           raise base.FloodControlException
@@ -1391,10 +1403,12 @@ class SocialNode(model.Model):
         new_post.author=author.key
         new_post.content=content
         new_post.title=title
-        new_post.resource=resource
+        new_post.resource=resources
+        new_post.res_type=res_types
+        new_post.init_rank()
         new_post.put()
-        self.latest_post=new_post.key
-        self.latest_post_date=new_post.creation_date
+        self.last_act=new_post.created
+        self.calc_rank(SocialPost)
         self.put()
         comm=Commissario.get_by_user(author)
         SocialPostSubscription(parent=self.key,user=author.key).put()
@@ -1425,7 +1439,7 @@ class SocialNode(model.Model):
     
     def get_latest_posts(self,amount):
         
-        posts= SocialPost.query(ancestor=self.key).order(-SocialPost.creation_date).fetch(amount)
+        posts= SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(amount)
         return posts    
         
     def subscribe_user(self,current_user):
@@ -1444,12 +1458,15 @@ class SocialNode(model.Model):
                
         user1.init_perm()
     
+        Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+    
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
          if subscription is not None:
             subscription.key.delete()
             memcache.delete("SocialNodeSubscription-"+str(self.key.id())+"-"+str(current_user.key.id()))
-        
+            Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+                    
          else:
              raise users.UserNotFoundError
             
@@ -1483,7 +1500,7 @@ class SocialNode(model.Model):
     def get_latest_post(self):
         last_post=memcache.get("last_post_"+str(self.key.id()))
         if not last_post:
-            last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.creation_date).fetch(1)
+            last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(1)
             memcache.add("last_post_"+str(self.key.id()),last_post)
         return last_post
     
@@ -1504,49 +1521,98 @@ class SocialNode(model.Model):
    
    
 class SocialPost(model.Model):
-    author=model.KeyProperty(kind=models.User)
-    total_comments=model.IntegerProperty(default=0)
-    content=model.TextProperty(default="")
-    public_reference=model.StringProperty(default="")
-    creation_date=model.DateTimeProperty(auto_now=True)
-    title=model.StringProperty(default="")
-    resource=model.KeyProperty(kind="SocialResource")
-    latest_comment_date=model.DateTimeProperty(auto_now=True)
-    latest_comment=model.KeyProperty(kind="SocialComment")
-    def get_discussion(self):
-        op=self.key
-        discussion=SocialComment.query(ancestor=op).order(SocialComment.creation_date).fetch()
-        return discussion
-    def reshare(self,target_node,new_author,new_content, new_title):
-        resource=None
+    def __init__(self, *args, **kwargs):
+      self._comments = None
+      super(SocialPost, self).__init__(*args, **kwargs)  
+  
+    author = model.KeyProperty(kind=models.User)
+    title = model.StringProperty(default="")
+    content = model.TextProperty(default="")
+    #public_reference=model.StringProperty(default="")
+    resource=model.KeyProperty(repeated=True)
+    res_type=model.StringProperty(repeated=True)
     
-        #reshare of a reshare
-        if self.resource is not None:
-            resource_key=self.resource
-            resource=resource_key.get()
-        #reshare of a post
-        else:
-            #reshare of an already reshared post
-            resource=SocialResource.query(ancestor=self.key).get()
-            #reshare of a never reshared post
-            if resource is None:
-                resource=SocialResource(parent=self.key,
-                                        title=self.title,
-                                        type="post",
-                                        author=self.author,
-                                        content=self.content,
-                                        creation_date=self.creation_date
-                                        
-                                        )
-                resource.put()
-                resource_key=resource.key
-            else:
-                resource_key=resource.key
-                
-        new_post=resource.publish(target_node,new_content,new_title,new_author)
-        if new_post:
-                      
-            return new_post
+    created = model.DateTimeProperty(auto_now=True)
+    modified = model.DateTimeProperty(auto_now=True)
+    
+    comments = model.IntegerProperty(default=0)
+    last_act = model.DateTimeProperty(auto_now=True)
+    
+    rank = model.IntegerProperty(default=0)
+    
+    def get_comments(self):
+      if not self._comments:
+        self._comments = list()
+        for comment in SocialComment.query(ancestor=self.key).order(SocialComment.created).fetch():
+          self._comments.append(comment)
+          
+      return self._comments
+    
+    def reset_comments(self):
+      self._comments = None
+      
+    @classmethod
+    def get_by_node_rank(cls, node, page, start_cursor=None):
+      cache = Cache.get_cache("SocialPost")
+      cache_key = "SocialPost-" + str(node.id) + "-" + str(start_cursor)
+      postlist = cache.get(cache_key)
+      next_cursor = cache.get(cache_key + "-next_cursor")
+      more = None
+      if not postlist:
+        postlist, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        cache.put(cache_key, postlist)
+        cache.put(cache_key + "-next_cursor", next_cursor)
+      return postlist, next_cursor, more
+    
+    @classmethod
+    def get_user_stream(cls, user, page, start_cursor=None):
+      cache =  Cache.get_cache("user_stream")
+      cache_key = "UserStream-" + str(user.key.id) + "-" + str(start_cursor)
+      stream = cache.get(cache_key)
+      next_cursor = cache.get(cache_key + "-next_cursor")
+      if not stream:
+        stream = list()        
+        for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
+            postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=start_cursor)
+            for post in postlist:
+                stream.append(post)
+                    
+        stream = sorted(stream, key=lambda post: post.rank, reverse=True)
+        next_cursor = int(start_cursor if start_cursor else 0) + 1
+        cache.put(cache_key, stream)
+        cache.put(cache_key + "-next_cursor", next_cursor)
+      return stream, next_cursor, True
+
+    def reshare(self,target_node,new_author,new_content, new_title):
+      resource=None
+  
+      #reshare of a reshare
+      if self.resource is not None:
+          resource_key=self.resource
+          resource=resource_key.get()
+      #reshare of a post
+      else:
+          #reshare of an already reshared post
+          resource=SocialResource.query(ancestor=self.key).get()
+          #reshare of a never reshared post
+          if resource is None:
+              resource=SocialResource(parent=self.key,
+                                      title=self.title,
+                                      type="post",
+                                      author=self.author,
+                                      content=self.content,
+                                      created=self.created
+                                      
+                                      )
+              resource.put()
+              resource_key=resource.key
+          else:
+              resource_key=resource.key
+              
+      new_post=resource.publish(target_node,new_content,new_title,new_author)
+      if new_post:
+                    
+          return new_post
     
     def subscribe_user(self,current_user):
         #user has already subscribed to this post
@@ -1584,9 +1650,8 @@ class SocialPost(model.Model):
         new_comment.content=content
         new_comment.put()
         
-        self.latest_comment_date=new_comment.creation_date
-        self.latest_comment=new_comment.key
-        self.total_comments=self.total_comments+1
+        self.comments=self.comments + 1
+        self.calc_rank(SocialComment)
         self.put()
         comm=Commissario.get_by_user(author)
         SocialPostSubscription(parent=self.key,user=author.key).put()
@@ -1604,23 +1669,38 @@ class SocialPost(model.Model):
             self.total_comments=self.total_comments-1
             self.put()
 
-    def _post_put_hook(self,future):
-        post=future.get_result().get()
-        doc=search.Document(
-                        doc_id='post-'+post.key.urlsafe(),
-                        fields=[search.TextField(name='title', value=post.title),search.HtmlField(name='content', value=post.content)],
-                        language='it')
-        
-       
-        index = search.Index(name='index-posts',
-                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
-        try:
-            index.add(doc)
-        
-        except search.Error, e:
-            pass
+    def init_rank(self):
+      init_rank = datetime.now() - Const.BASE_RANK
+      self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
 
-    def _pre_delete_hook(self,key):
+    def calc_rank(self, activity):
+      values = {SocialComment: 7,
+                Vote: 3 }
+      now = datetime.now()
+      delta = now - self.last_act
+      delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
+      self.rank += ((delta_rank * values[activity]) / 10)
+
+    def _post_put_hook(cls, future):
+      Cache.get_cache("SocialPost").clear_all()
+      
+      post=future.get_result().get()
+      doc=search.Document(
+                      doc_id='post-'+post.key.urlsafe(),
+                      fields=[search.TextField(name='title', value=post.title),
+                              search.HtmlField(name='content', value=post.content)],
+                      language='it')
+      
+     
+      index = search.Index(name='index-posts',
+                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      try:
+          index.add(doc)
+      
+      except search.Error, e:
+          pass
+
+    def _pre_delete_hook(cls, key):
         index = search.Index(name='index-posts',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
@@ -1653,23 +1733,28 @@ class SocialNodeSubscription(model.Model):
         self.put()
         
     @classmethod
-    def get_nodes_by_user(self,user_t, order_method=None):
+    def get_nodes_by_user(self, user_t, order_method=None):
         
         if not order_method:
             order_method=SocialNodeSubscription.starting_date
         
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
-        node_list=[i.key.parent().get() for i in subscriptions_list if i.key.parent().get()]
+        for s in subscriptions_list:
+          logging.info(s.key.parent().get())
+          
+        node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
     
     @classmethod
-    def get_nodes_keys_by_user(cls,user, order_method=None):
-         
-        if not order_method:
-            order_method=SocialNodeSubscription.starting_date
-        
-        sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(order_method).fetch(keys_only=True)
-        return [i.parent() for i in sub_list]
+    def get_nodes_keys_by_user(cls,user):
+      cache = Cache.get_cache("UserNodeSubscription")
+      cache_key = "UserNodeSubscription-" + str(user.key.id)
+      nodes = cache.get(cache_key)
+      if not nodes:        
+        sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(SocialNodeSubscription.starting_date).fetch(keys_only=True)
+        nodes = [i.parent() for i in sub_list]
+        cache.put(cache_key, nodes)
+      return nodes
     
 class SocialResource(model.Expando):
     url=model.StringProperty()
@@ -1743,16 +1828,39 @@ class SocialResource(model.Expando):
     
     
     def publish(self,target_node,new_content, new_title,new_author):
-        new_post=target_node.get().create_open_post(new_content,new_title,new_author,self.key)
+        new_post=target_node.get().create_open_post(content=new_content,title=new_title,author=new_author,resources=[self.key], res_types=["generic"])
         return new_post
     
 class SocialComment(model.Model):
     author=model.KeyProperty(kind=models.User)
     content=model.TextProperty(default="")
-    public_reference=model.StringProperty(default="")
-    creation_date=model.DateTimeProperty(auto_now=True)
-    
-    
+    #public_reference=model.StringProperty(default="")
+    created=model.DateTimeProperty(auto_now=True)
+
+    def _post_put_hook(self, future):
+      Cache.get_cache("SocialPost").clear_all()
+      future.get_result().get().key.parent().get().reset_comments()
+        
+
+class Vote(model.Model):
+  def __init__(self, *args, **kwargs):
+    self._commissario = None
+    super(Voto, self).__init__(*args, **kwargs)  
+  
+  ref = model.KeyProperty()
+  vote = model.IntegerProperty()
+
+  author = model.KeyProperty(kind=models.User)
+  creato_il = model.DateTimeProperty(auto_now_add=True)
+  
+  @cached_property
+  def author(self):
+    return Commissario.get_by_user(self.author)
+  
+  @classmethod
+  def get_by_ref(cls, ref):
+    return Vote.query().filter(Vote.ref==ref)
+
 class SocialProfile(model.Model):
       ultimo_accesso_notifiche= model.DateTimeProperty(auto_now=True)
       

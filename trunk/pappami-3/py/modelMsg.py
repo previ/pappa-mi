@@ -417,8 +417,7 @@ class Voto(model.Model):
   def get_by_msg(cls, msg):
     return Voto.query().filter(Voto.messaggio==msg)
     
-  
-  
+    
 class UserSubscription(model.Model):
   user = model.UserProperty(auto_current_user_add=True)
   obj = model.KeyProperty()

@@ -4,6 +4,7 @@
 
 import threading
 import logging
+import datetime
 from HTMLParser import HTMLParser
 
 class Const:
@@ -16,6 +17,8 @@ class Const:
   ACTIVITY_CACHE_EXP = 900
   SOCIAL_FLOOD_TIME = 5
   FLOOD_SYSTEM_ACTIVATED = False
+  BASE_RANK = datetime.datetime(2008, 1, 1)
+  DAY_SECONDS = 86400
 
 class cached_property(object):
   """A decorator that converts a function into a lazy property.
@@ -74,4 +77,53 @@ class Parser(HTMLParser):
   def handle_data(self, data):
     self.text += str(data)
     
+class Cache(object):
+  
+  _all_caches = dict()
+  _all_lock = threading.RLock()
+  
+  def __init__(self, cache_name, *args, **kwargs):
+    self._lock = threading.RLock()
+    self._cache = dict()
+    self.name=cache_name
+    Cache.put_cache(self.name, self)
+    super(Cache, self).__init__(*args, **kwargs) 
     
+  def get(self, name):
+    self._cache.get(name)
+    
+  def put(self, name, obj):
+    with self._lock:    
+      self._cache[name] = obj
+    
+  def clear(self, name):
+    with self._lock:    
+      del self._cache[name]
+
+  def clear_all(self):
+    with self._lock:    
+      self._cache.clear()
+    
+  @classmethod
+  def get_cache(cls,name):
+    cache=cls._all_caches.get(name)
+    if not cache:
+      cache = Cache(name)
+      cls.put_cache(name, cache)
+    return cache
+
+  @classmethod
+  def put_cache(cls,name, cache):
+    with cls._all_lock:
+      cls._all_caches[name] = cache
+ 
+  @classmethod
+  def clear_all_caches(cls):
+    with cls._all_lock:
+      for cache in cls._all_caches.itervalues():
+        cache.clear_all()
+  
+  
+  
+  
+  
