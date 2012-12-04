@@ -25,6 +25,7 @@ import wsgiref.handlers
 import random
 
 from google.appengine.ext.ndb import model
+from google.appengine.api import search
 from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -735,7 +736,13 @@ class CMAdminHandler(BasePage):
       
       self.response.out.write("resetSocial Ok")
       return
-          
+    
+    if self.request.get("cmd") == "resetIndex":
+      self.delete_all_in_index("index-posts")
+      logging.info("resetIndex.posts")
+      self.delete_all_in_index("index-nodes")
+      logging.info("resetIndex.nodes")
+      
     if self.request.get("cmd") == "initSocial":
       SocialUtils.generate_nodes()
       logging.info("initSocial.1")
@@ -826,6 +833,19 @@ class CMAdminHandler(BasePage):
       ua = UserEmail.get_by_emails([user.email()])
       self._users[user.user_id()] = ua
     return ua
+
+  def delete_all_in_index(self, index_name):
+      """Delete all the docs in the given index."""
+      doc_index = search.Index(name=index_name)
+  
+      while True:
+          # Get a list of documents populating only the doc_id field and extract the ids.
+          document_ids = [document.doc_id
+                          for document in doc_index.list_documents(ids_only=True)]
+          if not document_ids:
+              break
+          # Remove the documents for the given ids from the Index.
+          doc_index.remove(document_ids)
     
 class CMAdminCommissarioHandler(BasePage):
 

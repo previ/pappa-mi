@@ -190,7 +190,7 @@ class IspezioneHandler(BasePage):
         
         #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
         node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="ispezione", title="Ispezione", content=isp.note, res_key=isp.key)
+        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"])
         
 
       else:
@@ -198,7 +198,11 @@ class IspezioneHandler(BasePage):
         #template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
       
 
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -342,14 +346,18 @@ class NonconfHandler(BasePage):
   
         #template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
         node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="nonconf", title="Non conformità", content=nc.note, res_key=nc.key)
+        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
         
 
       else:
         pass
         #template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
       
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -489,13 +497,17 @@ class DietaHandler(BasePage):
   
         #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
         node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="dieta", title="Ispezione Diete speciali", content=dieta.note, res_key=dieta.key)
+        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"])
         
       else:
         pass
         #template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
 
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -636,12 +648,17 @@ class NotaHandler(BasePage):
   
         #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
         node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_resource(node=node, user=self.request.user, url="", type="ispezione", title=nota.titolo, content=nota.note, res_key=nota.key)
+        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"])
 
       else:
         pass
         #template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
         
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -684,7 +701,11 @@ class NotaHandler(BasePage):
           'form_errors': form.errors
         }
       
-    self.getBase(template_values) 
+    template = jinja_environment.get_template("social/pagination/post.html")
+
+    html=template.render(template_values)
+    response = {'response':'success','html':html,"cursor":''}
+    self.output_as_json(response)
         
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),

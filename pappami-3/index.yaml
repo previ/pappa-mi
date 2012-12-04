@@ -147,6 +147,11 @@ indexes:
 - kind: SocialComment
   ancestor: yes
   properties:
+  - name: created
+
+- kind: SocialComment
+  ancestor: yes
+  properties:
   - name: creation_date
 
 - kind: SocialComment
@@ -222,6 +227,12 @@ indexes:
 - kind: SocialPost
   ancestor: yes
   properties:
+  - name: last_act
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
   - name: last_comment_date
     direction: desc
 
@@ -235,6 +246,12 @@ indexes:
   ancestor: yes
   properties:
   - name: latest_post_date
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: rank
+    direction: desc
 
 - kind: ZonaOffset
   properties:

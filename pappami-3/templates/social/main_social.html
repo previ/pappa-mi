@@ -101,6 +101,7 @@ function loadPosts(key,current_cursor){
  <div class="row">
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
+    <li><a key="all" href="#"><i class="icon-home"></i>Tutto</a><i class="pull-right icon-chevron-right"></i></li>
     <li class="nav-header"><i class="icon-tags"></i>Argomenti</li>
     {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}

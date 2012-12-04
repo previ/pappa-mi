@@ -137,7 +137,7 @@ class SocialPostHandler(BasePage):
         node=op.key.parent()
         op.commissario=Commissario.get_by_user(op.author.get())
         replies=[]
-        for x in op.get_discussion():
+        for x in op.get_comments():
             
             x.commissario=Commissario.get_by_user(x.author.get())
             replies.append(x)
@@ -175,6 +175,26 @@ class SocialPostHandler(BasePage):
             
             
         self.getBase(template_values)
+
+    def create_post(self, node, user, title, content=None, resources=None, res_types=None):
+
+        post=node.get().create_open_post(user, title, content, resources, res_types)
+        
+        postlist = list()
+        postlist.append(post.get())
+        for x in postlist: 
+            x.commissario=Commissario.get_by_user(x.author.get())
+        
+        template_values = {
+          "main":"social/pagination/post.html",
+          "postlist":postlist,          
+          "cmsro":self.getCommissario(user), 
+          "subscription": py.social.get_current_sub(user,node),
+          "user": user,
+          "node":node.get()
+         }
+        
+        return template_values
 
     def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
         resource = SocialResource(parent=node,
@@ -333,7 +353,7 @@ class SocialManagePost(SocialAjaxHandler):
            if not node.get_subscription(user).can_post:
                self.response.out.write("<response>error</response>")
                return
-           post=node.create_open_post(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),user)
+           post=node.create_open_post(content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),title=feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),author=user)
 
            postlist = list()
            postlist.append(post.get())
@@ -482,6 +502,7 @@ class SocialCreateNodeHandler(BasePage):
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))
         node.founder=self.get_current_user().key
+        node.init_rank()
         logging.info(self.request.get("citta"))
         #node.resource=model.Key(urlsafe=self.request.get("citta")).get().create_resource().key
    
@@ -521,11 +542,13 @@ class SocialEditNodeHandler(BasePage):
             node.default_post=bool(self.request.get("default_post"))
             node.default_admin=bool(self.request.get("default_admin"))
             node.founder=self.get_current_user().key
+            node.init_rank()
             node.put()
             
             self.redirect("/social/node/"+str(node.key.id()))
 
 class SocialPaginationHandler(SocialAjaxHandler):
+
         def post(self):
                 cmd=self.request.get("cmd")
                 user=self.request.user
@@ -551,69 +574,83 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     self.output_as_json(response)
                  
                 if cmd=="post":
-                        node=model.Key(urlsafe=self.request.get("node"))
-                        if not cursor or cursor == "undefined":
-                            postlist, next_curs, more = SocialPost.query(ancestor=node).order(-SocialPost.latest_comment_date).fetch_page(10) 
-                        else:
-                             postlist, next_curs, more = SocialPost.query(ancestor=node).order(-SocialPost.latest_comment_date).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+                    node=model.Key(urlsafe=self.request.get("node"))
+                    if not cursor or cursor == "undefined":
+                        postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+                    else:
+                         postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                    
+                    for x in postlist: 
+
+                        x.commissario=Commissario.get_by_user(x.author.get())
                         
-                        for x in postlist: 
-    
-                            x.commissario=Commissario.get_by_user(x.author.get())
-                            
-                            
-                        template_values = {
-                                "postlist":postlist,
-                                 "cmsro":self.getCommissario(user), 
-                                 "subscription": get_current_sub(user,node),
-                                 "user": user,
-                                 "node":node.get()
-                                }
-                        if not postlist or not next_curs:
-                            
-                            response = {'response':'no_posts'}
-                            self.output_as_json(response)
-                            return
-                            
-                                
-                        template = jinja_environment.get_template("social/pagination/post.html")
-       
-                        html=template.render(template_values)
-                        response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                        
+                    template_values = {
+                            "postlist":postlist,
+                             "cmsro":self.getCommissario(user), 
+                             "subscription": get_current_sub(user,node),
+                             "user": user,
+                             "node":node.get()
+                            }
+                    if not postlist or not next_curs:
+                        
+                        response = {'response':'no_posts'}
                         self.output_as_json(response)
+                        return
+                        
+                            
+                    template = jinja_environment.get_template("social/pagination/post.html")
+   
+                    html=template.render(template_values)
+                    response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                    self.output_as_json(response)
                   
                 if cmd=="post_main":
-                        node=model.Key(urlsafe=self.request.get("node"))
+                    node=None
+                    next_curs_key=None
+                    node_urlsafe=self.request.get("node")
+                    if node_urlsafe=="all":                                            
                         if not cursor or cursor == "undefined":
-                            postlist, next_curs, more = SocialPost.query(ancestor=node).order(-SocialPost.latest_comment_date).fetch_page(10) 
+                            postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
                         else:
-                             postlist, next_curs, more = SocialPost.query(ancestor=node).order(-SocialPost.latest_comment_date).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+                            postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                        next_curs_key = next_curs
+                    else:
+                        node=model.Key(urlsafe=self.request.get("node"))
                         
-                        for x in postlist: 
-    
-                            x.commissario=Commissario.get_by_user(x.author.get())
-                            
-                            
-                        template_values = {
-                                "postlist":postlist,
-                                 "cmsro":self.getCommissario(user), 
-                                 "subscription": get_current_sub(user,node),
-                                 "user": user,
-                                 "node":node.get()
-                                }
-                        if not postlist or not next_curs:
-                            
-                            response = {'response':'no_posts'}
-                            self.output_as_json(response)
-                            return
-                            
-                                
-                        template = jinja_environment.get_template("social/pagination/post.html")
-       
-                        html=template.render(template_values)
-                        response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
-                        self.output_as_json(response)
+                        if not cursor or cursor == "undefined":
+                            postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+                        else:
+                            postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                        if next_curs:
+                            next_curs_key = next_curs.urlsafe()
                     
+                    for x in postlist: 
+                        x.commissario=Commissario.get_by_user(x.author.get())
+                        #logging.info(x)
+                                                
+                        
+                    template_values = {
+                            "postlist":postlist,
+                            "cmsro":self.getCommissario(user), 
+                            "user": user
+                            }
+                    
+                    if node:
+                        template_values["subscription"]=get_current_sub(user,node)
+                        
+                    if not postlist and not next_curs_key:
+                        
+                        response = {'response':'no_posts'}
+                        self.output_as_json(response)
+                        return                        
+                            
+                    template = jinja_environment.get_template("social/pagination/post.html")
+    
+                    html=template.render(template_values)
+                    response = {'response':'success','html':html,"cursor":next_curs_key}
+                    self.output_as_json(response)
+                                            
                 if cmd=="notifications":
                     notlist, next_curs, more = SocialProfile.retrieve_notifications(user,cursor)
                     if not notlist or not next_curs:
@@ -663,6 +700,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         response={'html':"",'list':[]}
                         
                     self.output_as_json(response)
+
                         
 class SocialSearchHandler(SocialAjaxHandler):
     def get(self):
@@ -762,6 +800,7 @@ class SocialUtils:
         node=SocialNode()
         node.name="Test Node"
         node.description="Test node"
+        node.init_rank()
         node.put()
         for i in range(0,25):
             post=node.create_open_post("Contenuto di "+str(i),"Discussione "+str(i),user).get()
@@ -778,7 +817,7 @@ class SocialUtils:
     @classmethod
     def delete_nodes(cls):
         
-        for node in SocialNode.query(SocialNode.latest_post==None).fetch():
+        for node in SocialNode.query().fetch():
             node.key.delete()
             
  
@@ -792,8 +831,8 @@ class SocialUtils:
             if comm:
                 citta=comm.citta
                 scuole=comm.commissioni()
-                scuole=[SocialResource.get_resource(x.key) for x in scuole]
-                nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(citta).key or SocialNode.resource.IN(scuole)).fetch()
+                scuole=[x.key for x in scuole]
+                nodes=SocialNode.query().filter(SocialNode.resource==citta or SocialNode.resource.IN(scuole)).fetch()
                 for node in nodes:
                     node.subscribe_user(user)
     @classmethod
@@ -801,7 +840,8 @@ class SocialUtils:
         logging.info("generate_nodes.city")
         citta=Citta.get_all()
         for i in citta:
-           node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=i.create_resource().key)
+           node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
+           node.init_rank()
            node.put()
         
         logging.info("generate_nodes.cm")
@@ -809,7 +849,8 @@ class SocialUtils:
         for i in commissioni:
         
            c=i.citta.get()
-           node=SocialNode(name=i.nome,description="Gruppo di discussione per la commissione della scuola " + i.tipo + " " + i.nome + " di " + c.nome, resource = i.create_resource().key)
+           node=SocialNode(name=i.nome,description="Gruppo di discussione per la scuola " + i.tipo + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
+           node.init_rank()
            node.put()
 
 class SocialNewsLetter(BasePage):
