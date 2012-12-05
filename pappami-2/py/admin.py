@@ -339,7 +339,7 @@ class CMAdminHandler(BasePage):
         piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
         if not piatto:
           piatto = Piatto()
-          piatto.nome = menu.primo
+          piatto.nome = menu.frutta
           piatto.calorie = 200
           piatto.proteine = 30
           piatto.carboidrati = 40
@@ -655,10 +655,10 @@ class CMAdminHandler(BasePage):
       
       for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
         isp_str = ""
-        isp_str += (isp.commissione.get().nome if isp.commissione else "") + ","
+        isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + ","
         isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + ","
         isp_str += str(isp.dataIspezione) + ","
-        isp_str += str(isp.primoPrevisto) + ","
+        isp_str += unicode(isp.primoPrevisto) + ","
         isp_str += unicode(isp.primoEffettivo) + ","
         isp_str += str(isp.primoDist) + ","
         isp_str += str(isp.primoCondito) + ","
@@ -667,6 +667,33 @@ class CMAdminHandler(BasePage):
         isp_str += str(isp.primoQuantita) + ","
         isp_str += str(isp.primoAssaggio) + ","
         isp_str += str(isp.primoGradimento) + ","
+        isp_str += unicode(isp.secondoPrevisto) + ","
+        isp_str += unicode(isp.secondoEffettivo) + ","
+        isp_str += str(isp.secondoDist) + ","
+        isp_str += str(isp.secondoCottura) + ","
+        isp_str += str(isp.secondoTemperatura) + ","
+        isp_str += str(isp.secondoQuantita) + ","
+        isp_str += str(isp.secondoAssaggio) + ","
+        isp_str += str(isp.secondoGradimento) + ","
+        isp_str += unicode(isp.contornoPrevisto) + ","
+        isp_str += unicode(isp.contornoEffettivo) + ","
+        isp_str += str(isp.contornoCondito) + ","
+        isp_str += str(isp.contornoCottura) + ","
+        isp_str += str(isp.contornoTemperatura) + ","
+        isp_str += str(isp.contornoQuantita) + ","
+        isp_str += str(isp.contornoAssaggio) + ","
+        isp_str += str(isp.contornoGradimento) + ","
+        isp_str += unicode(isp.fruttaTipo) + ","
+        isp_str += unicode(isp.fruttaServita) + ","
+        isp_str += str(isp.fruttaMaturazione) + ","
+        isp_str += str(isp.fruttaQuantita) + ","
+        isp_str += str(isp.fruttaAssaggio) + ","
+        isp_str += str(isp.fruttaGradimento) + ","
+        isp_str += unicode(isp.paneTipo) + ","
+        isp_str += str(isp.paneServito) + ","
+        isp_str += str(isp.paneQuantita) + ","
+        isp_str += str(isp.paneAssaggio) + ","
+        isp_str += str(isp.paneGradimento) + ","
         isp_str += "\n"
         self.response.out.write(isp_str)
         
