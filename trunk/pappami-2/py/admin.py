@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
 #
@@ -20,7 +21,7 @@ import cgi
 import logging
 import urllib
 from google.appengine.api import urlfetch
-from datetime import datetime, date, time
+from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import random
 
@@ -647,6 +648,29 @@ class CMAdminHandler(BasePage):
           buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
         
       self.response.out.write(buff)
+      return
+
+    if self.request.get("cmd") == "getIspezioni":
+      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
+        isp_str = ""
+        isp_str += (isp.commissione.get().nome if isp.commissione else "") + ","
+        isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + ","
+        isp_str += str(isp.dataIspezione) + ","
+        isp_str += str(isp.primoPrevisto) + ","
+        isp_str += unicode(isp.primoEffettivo) + ","
+        isp_str += str(isp.primoDist) + ","
+        isp_str += str(isp.primoCondito) + ","
+        isp_str += str(isp.primoCottura) + ","
+        isp_str += str(isp.primoTemperatura) + ","
+        isp_str += str(isp.primoQuantita) + ","
+        isp_str += str(isp.primoAssaggio) + ","
+        isp_str += str(isp.primoGradimento) + ","
+        isp_str += "\n"
+        self.response.out.write(isp_str)
+        
+      self.response.out.write("Ok")
       return
           
     if self.request.get("cmd") == "flush":
