@@ -1559,26 +1559,34 @@ class SocialPost(model.Model):
       next_cursor = cache.get(cache_key + "-next_cursor")
       more = None
       if not postlist:
-        postlist, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        postlist = list()
+        posts, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
       return postlist, next_cursor, more
     
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
-      cache =  Cache.get_cache("user_stream")
+      cache =  Cache.get_cache("UserStream")
       cache_key = "UserStream-" + str(user.key.id) + "-" + str(start_cursor)
       stream = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       if not stream:
         stream = list()        
-        for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
-            postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=start_cursor)
-            for post in postlist:
-                stream.append(post)
-                    
-        stream = sorted(stream, key=lambda post: post.rank, reverse=True)
         next_cursor = int(start_cursor if start_cursor else 0) + 1
+        for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
+          next_cursor_rank = None
+          for x in range(0, next_cursor):
+            postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node, page=page, start_cursor=next_cursor_rank)
+            stream.extend(postlist)
+            if not more:
+              break
+        
+        stream = sorted(stream, key=lambda post: post.rank, reverse=True)
+        offset = int(start_cursor if start_cursor else 0)
+        logging.info("offset: " + str(offset))
+        stream = stream[offset*Const.ACTIVITY_FETCH_LIMIT : (offset+1)*Const.ACTIVITY_FETCH_LIMIT]
         cache.put(cache_key, stream)
         cache.put(cache_key + "-next_cursor", next_cursor)
       return stream, next_cursor, True

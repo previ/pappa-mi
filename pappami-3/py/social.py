@@ -613,7 +613,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         if not cursor or cursor == "undefined":
                             postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
                         else:
-                            postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                            postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=cursor)
                         next_curs_key = next_curs
                     else:
                         node=model.Key(urlsafe=self.request.get("node"))
@@ -639,7 +639,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     if node:
                         template_values["subscription"]=get_current_sub(user,node)
                         
-                    if not postlist and not next_curs_key:
+                    if not postlist or not next_curs_key:
                         
                         response = {'response':'no_posts'}
                         self.output_as_json(response)
