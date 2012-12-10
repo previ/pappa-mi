@@ -12,7 +12,7 @@ class Const:
   ACTIVITY_DATE_FORMAT = "%d/%m/%Y"
   TIME_FORMAT = "T%H:%M:%S"
   DATE_FORMAT = "%Y-%m-%d"
-  ACTIVITY_FETCH_LIMIT = 20
+  ACTIVITY_FETCH_LIMIT = 5
   ENTITY_FETCH_LIMIT = 50
   ACTIVITY_CACHE_EXP = 900
   SOCIAL_FLOOD_TIME = 5
@@ -90,7 +90,7 @@ class Cache(object):
     super(Cache, self).__init__(*args, **kwargs) 
     
   def get(self, name):
-    self._cache.get(name)
+    return self._cache.get(name)
     
   def put(self, name, obj):
     with self._lock:    
