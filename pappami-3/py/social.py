@@ -137,10 +137,9 @@ class SocialPostHandler(BasePage):
         node=op.key.parent()
         op.commissario=Commissario.get_by_user(op.author.get())
         replies=[]
-        for x in op.get_comments():
-            
-            x.commissario=Commissario.get_by_user(x.author.get())
-            replies.append(x)
+        #for x in op.get_comments():            
+        #    x.commissario=Commissario.get_by_user(x.author.get())
+        #    replies.append(x)
         
         
         current_user=self.get_current_user()
@@ -182,8 +181,8 @@ class SocialPostHandler(BasePage):
         
         postlist = list()
         postlist.append(post.get())
-        for x in postlist: 
-            x.commissario=Commissario.get_by_user(x.author.get())
+        #for x in postlist: 
+        #    x.commissario=Commissario.get_by_user(x.author.get())
         
         template_values = {
           "main":"social/pagination/post.html",
@@ -207,8 +206,8 @@ class SocialPostHandler(BasePage):
         
         postlist = list()
         postlist.append(post.get())
-        for x in postlist: 
-            x.commissario=Commissario.get_by_user(x.author.get())
+        #for x in postlist: 
+        #    x.commissario=Commissario.get_by_user(x.author.get())
         
         template_values = {
           "main":"social/pagination/post.html",
@@ -357,8 +356,8 @@ class SocialManagePost(SocialAjaxHandler):
 
            postlist = list()
            postlist.append(post.get())
-           for x in postlist: 
-               x.commissario=Commissario.get_by_user(x.author.get())
+           #for x in postlist: 
+           #    x.commissario=Commissario.get_by_user(x.author.get())
            
            template_values = {
                "postlist":postlist,
@@ -580,9 +579,8 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     else:
                          postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
                     
-                    for x in postlist: 
-
-                        x.commissario=Commissario.get_by_user(x.author.get())
+                    #for x in postlist: 
+                    #    x.commissario=Commissario.get_by_user(x.author.get())
                         
                         
                     template_values = {
@@ -625,8 +623,8 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         if next_curs:
                             next_curs_key = next_curs.urlsafe()
                     
-                    for x in postlist: 
-                        x.commissario=Commissario.get_by_user(x.author.get())
+                    #for x in postlist: 
+                    #    x.commissario=Commissario.get_by_user(x.author.get())
                         #logging.info(x)
                                                 
                         
@@ -849,7 +847,7 @@ class SocialUtils:
         for i in commissioni:
         
            c=i.citta.get()
-           node=SocialNode(name=i.nome,description="Gruppo di discussione per la scuola " + i.tipo + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
+           node=SocialNode(name=i.nome,description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
            node.init_rank()
            node.put()
 

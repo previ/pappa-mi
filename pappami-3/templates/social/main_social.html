@@ -134,10 +134,17 @@ function loadPosts(key,current_cursor){
  <form id="new_post_form" action="/social/managepost" method="post">
  <input type="hidden" name="cmd" value="create_open_post"/>
  <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
- <input type="hidden" id="form_node" name="node" value=""/>
+ <!--input type="hidden" id="form_node" name="node" value=""/-->
+	 <div id="post_title" class="form_parent">
+		 <label id="post_content_label" for="titolo">Argomento</label>
+		 <select class="required" name="node" id="form_node">
+    {%for node in node_list%}<option value="{{node.key.urlsafe()}}" href="#">{{node.name}}</option>
+    {%endfor%}
+		 </select>
+	 </div>
 	 <div id="post_title" class="form_parent">
 		 <label id="post_content_label" for="titolo">Titolo</label>
-		 <input class="span8 comment_textarea required" name="title" id="post_title_text"></input>
+		 <input class="span8 required" name="title" id="post_title_text"></input>
 	 </div>
 	 <div id="post_content" class="form_parent">
 		 <label id="post_content_label" for="content">Contenuto</label>

@@ -1326,8 +1326,8 @@ class SocialNode(model.Model):
     rank = model.IntegerProperty()
     
     @classmethod
-    def get_nodes_by_resource(cls,resource_ref):
-      nodes=SocialNode.query().filter(SocialNode.resource==SocialResource.get_resource(resource_ref).key).fetch()
+    def get_nodes_by_resource(cls,res_key):
+      nodes=SocialNode.query().filter(SocialNode.resource==res_key).fetch()
       return nodes
 
     @classmethod
@@ -1355,6 +1355,7 @@ class SocialNode(model.Model):
         
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
       
       node=future.get_result().get()
       doc=search.Document(
@@ -1391,9 +1392,6 @@ class SocialNode(model.Model):
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
         
-   
-    
-    
     def create_open_post(self, author, title, content, resources=[], res_types=[]):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
@@ -1551,6 +1549,10 @@ class SocialPost(model.Model):
     def reset_comments(self):
       self._comments = None
       
+    @cached_property
+    def commissario(self):
+      return Commissario.get_by_user(self.author.get())
+    
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
       cache = Cache.get_cache("SocialPost")
@@ -1592,6 +1594,15 @@ class SocialPost(model.Model):
       return stream, next_cursor, True
 
     def reshare(self,target_node,new_author,new_content, new_title):
+      new_post = None
+      if len(self.res_type) > 0 and self.res_type[0] == "post":
+        #reshare of a reshare
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.resource[0]], res_types=[self.res_type[0]])
+      else:
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key], res_types=["post"])
+      return new_post
+      
+    def reshare_old(self,target_node,new_author,new_content, new_title):
       resource=None
   
       #reshare of a reshare
@@ -1691,6 +1702,7 @@ class SocialPost(model.Model):
 
     def _post_put_hook(cls, future):
       Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
       
       post=future.get_result().get()
       doc=search.Document(
@@ -1847,8 +1859,12 @@ class SocialComment(model.Model):
 
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
       future.get_result().get().key.parent().get().reset_comments()
         
+    @cached_property
+    def commissario(self):
+      return Commissario.get_by_user(self.author.get())
 
 class Vote(model.Model):
   def __init__(self, *args, **kwargs):
