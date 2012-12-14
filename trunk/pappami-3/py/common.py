@@ -98,7 +98,8 @@ class Cache(object):
     
   def clear(self, name):
     with self._lock:    
-      del self._cache[name]
+      if self._cache.get(name):
+        del self._cache[name]
 
   def clear_all(self):
     with self._lock:    

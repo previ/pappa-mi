@@ -189,8 +189,9 @@ class IspezioneHandler(BasePage):
         memcache.delete("statsMese")
         
         #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
-        node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"])
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(isp.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"])
         
 
       else:
@@ -345,8 +346,9 @@ class NonconfHandler(BasePage):
         memcache.delete("statsMese")
   
         #template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
-        node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
         
 
       else:
@@ -496,8 +498,9 @@ class DietaHandler(BasePage):
         memcache.delete("statsMese")
   
         #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
-        node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"])
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]       
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"])
         
       else:
         pass
@@ -647,8 +650,9 @@ class NotaHandler(BasePage):
         memcache.delete("statsMese")
   
         #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
-        node = model.Key(urlsafe=self.request.get("node"))
-        template_values = SocialPostHandler().create_post(node=node, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"])
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"])
 
       else:
         pass
