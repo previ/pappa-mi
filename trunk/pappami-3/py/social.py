@@ -756,7 +756,15 @@ class SocialMainHandler(BasePage):
             if len(node_active) >= 3:
                 break
                     
-        
+        logging.info("node_list")
+        for n in node_list:
+            logging.info(n.name)
+        logging.info("node_recent")
+        for n in node_recent:
+            logging.info(n.name)
+        logging.info("node_active")
+        for n in node_active:
+            logging.info(n.name)
         template_values = {
                         'content': 'social/main_social.html',
                         'node_list':node_list,
@@ -838,18 +846,21 @@ class SocialUtils:
         logging.info("generate_nodes.city")
         citta=Citta.get_all()
         for i in citta:
-           node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
-           node.init_rank()
-           node.put()
+            if len(SocialNode.get_nodes_by_resource(i.key)) == 0:
+                node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
+                node.init_rank()
+                node.put()
         
         logging.info("generate_nodes.cm")
         commissioni=Commissione.query().fetch()
         for i in commissioni:
-        
-           c=i.citta.get()
-           node=SocialNode(name=i.nome,description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
-           node.init_rank()
-           node.put()
+            if len(SocialNode.get_nodes_by_resource(i.key)) == 0:
+                logging.info(i.nome)
+                c=i.citta.get()
+                node=SocialNode(name=i.tipoScuola + " " + i.nome,
+                                description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
+                node.init_rank()
+                node.put()
 
 class SocialNewsLetter(BasePage):
     
