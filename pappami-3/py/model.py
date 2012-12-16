@@ -1760,7 +1760,8 @@ class SocialNodeSubscription(model.Model):
         
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
         for s in subscriptions_list:
-          logging.info(s.key.parent().get())
+          logging.info("Node.key: " + str(s.key.parent()))
+          logging.info("Node: " + s.key.parent().get().name)
           
         node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
