@@ -126,6 +126,8 @@ function initPost() {
   $('.post_del').click(onPostDelete);
   $('.post_edit').click(onPostEdit);
   $('.post_reshare').click(onPostReshare);  
+  $('.post_vote').click(onPostVote);  
+  $('.post_unvote').click(onPostVote);  
   $('.post_reply_del').click(onReplyDelete);
   $('.post_reply_edit').click(onPostEdit);
 }
@@ -442,6 +444,42 @@ function onPostReshare() {
     }});
 }
 
+function onPostVote() {
+  var post_root = $(this).parents('.s_post_root');
+  var post = $(this).parents('.s_post_root').attr("data-post-key");    
+  var vote = $(this).attr("data-vote");  
+  $.ajax({
+    type: 'POST',
+    url:'/social/managepost', 
+    data: {'cmd': 'vote_post',
+	   'post': post,
+	   'vote': vote },
+    dataType:'json',
+    success:function(data){
+      if(data.response!="success") {
+	if(data.response=="flooderror") {
+	  onFloodError(data, function(){
+	    $("#reshare_"+post).modal('show')
+	  });
+	  return
+	}
+      }
+      post_root.find('.s_post_votes').html(data.votes);
+      if(parseInt(data.votes) > 0) {
+	post_root.find('.s_post_votes_c').show();
+      } else {
+	post_root.find('.s_post_votes_c').hide();
+      }      
+      if(parseInt(vote) == 1) {
+	post_root.find('.post_vote').hide();
+	post_root.find('.post_unvote').show();
+      } else {
+	post_root.find('.post_vote').show();
+	post_root.find('.post_unvote').hide();
+      }
+    }});
+}
+
 function onFloodError(data,callback){
   $(".main").append(data.html)
   $("#flood_error").modal()
@@ -600,4 +638,94 @@ $('#search_text').typeahead({minLength:2,
         });
     }
 });
+}
+
+function onNodeClick(){
+ node_item = $(this);
+ key=node_item.attr('key');
+ node_item.parent().siblings(".active").removeClass("active");
+ node_item.parent().addClass("active");
+ $("#node_title").find("span").text(node_item.text());
+ $("#node_title > a").attr("href", "/social/node/"+key);
+ node_item.parent().addClass("active");
+ key=node_item.attr('key');
+ $("#main_stream_list").empty();
+ $("#no_more_posts").hide(); 
+ loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
+}
+
+function init(){
+ $("#new_post_form").validate({
+  errorClass: "error",
+  errorPlacement: function(error, element) {
+    var item = $(element);
+    item.tooltip({title:error.text(), trigger:'manual'});
+    item.tooltip('show');
+  },
+  highlight: function(element, errorClass, validClass) {
+    var item = $(element).parents(".form_parent");
+    item.addClass(errorClass); 
+  },
+  unhighlight: function(element, errorClass, validClass) {
+    var item = $(element).parents(".form_parent");
+    item.removeClass(errorClass); 
+    $(element).tooltip('hide');
+  },  
+  rules: {
+  }
+ });
+ $('#new_post_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
+  if (data.response!="success") {
+   if(data.response=="flooderror"){
+    onFloodError(data)
+    return			  
+   }
+  }
+  $("#main_stream_list").prepend(data.html)
+  $("#open_post_submit").button("reset");
+ }, beforeSubmit: function(arr,$form) {
+  $("#open_post_submit").button("loading");
+  $('#new_post').slideUp();
+ }});
+
+ $("ul#node_list").find("a").click(onNodeClick);
+ $("#more_posts").click(onMoreClick);
+
+ $("#node_list").children().find("[key]")[0].click();
+  $('#m_allegato_file_1').change(function(){
+   $('#m_allegato_file_2').show(); 
+  });
+  $('#m_allegato_file_2').change(function(){
+   $('#m_allegato_file_3').show();
+  }); 
+}
+
+function onMoreClick(){
+ key = $('#node_list > li.active a').attr('key');
+ loadPosts(key,$("#main_stream").attr('next_cursor'))
+}
+
+
+function loadPosts(key,current_cursor){
+ $.ajax({
+  type: 'POST',
+  url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
+  dataType:'json',
+  success:function(data) { 
+   $("#form_node").attr("value",key);
+   $("#main_stream").attr("next_cursor",data.cursor)
+   if(data.response=="success"){
+    $("#main_stream_list").append(data.html)
+    $('.post_del').click(onPostItemDelete);
+   } else if(data.response="no_posts"){
+   $("#no_more_posts").alert();
+   $("#no_more_posts").show();   
+   }
+  }
+ });
+ //} else {
+  //$("ul#node_list li").click(onNodeClick)
+  //$("#node_stream_"+key).siblings().hide()
+  //$("div#node_stream_"+key).show()
+ //}
 }

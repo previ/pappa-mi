@@ -21,7 +21,20 @@ $(document).ready(initPost);
 					{%include "social/resources/"+post.res_type[loop.index-1]+".html"%}
 					</div>			
 					{%endfor%}	
-				</div>									
+					{% if post.attachments|count > 0 %}
+					<div class="post_attach well">
+					<div><i class="icon-file"></i> Allegati</div>
+					<ul class="thumbnails">{%for attach in post.attachments%}
+					 <li><a class="thumbnail" href="{{attach.path()}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb()}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}</li>{%endfor%}
+					</ul>
+					</div>			
+					{% endif %}  
+				</div>		
+				<div class="s_post_fback pull-left">
+				<span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star"></i><span class="s_post_votes badge badge-success">{{post.votes|count}}</span></span>
+				<span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt"></i><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}>{{post.reshares|count}}</span></span>
+				</div>
+				
 				{% if user %} 
 				<div class="s_post_commands btn-group">
 					{%if subscription.can_admin%}
@@ -32,6 +45,8 @@ $(document).ready(initPost);
 					<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if not postsub %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
 					<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if postsub %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
 					<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Reshare</button>
+					<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+					<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
 				</div>
 				{% endif%}			
 			</div>			
