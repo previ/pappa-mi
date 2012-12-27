@@ -1,96 +1,10 @@
 <script type="text/javascript">
 
 $(document).ready(function () {
- $("#new_post_form").validate({
-  errorClass: "error",
-  errorPlacement: function(error, element) {
-    var item = $(element);
-    item.tooltip({title:error.text(), trigger:'manual'});
-    item.tooltip('show');
-  },
-  highlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
-    item.addClass(errorClass); 
-  },
-  unhighlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
-    item.removeClass(errorClass); 
-    $(element).tooltip('hide');
-  },  
-  rules: {
-  }
- });
- $('#new_post_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
-  if (data.response!="success") {
-   if(data.response=="flooderror"){
-    onFloodError(data)
-    return			  
-   }
-  }
-  $("#main_stream_list").prepend(data.html)
-  $("#open_post_submit").button("reset");
- }, beforeSubmit: function(arr,$form) {
-  $("#open_post_submit").button("loading");
-  $('#new_post').slideUp();
- }});
-
- $("ul#node_list").find("a").click(onNodeClick);
- $("#more_posts").click(onMoreClick);
-
-  //$("div#main_stream").children().hide()
-  init()
-  init_search()
+ //$("div#main_stream").children().hide()
+ init()
+ init_search()
 });
-
-function onNodeClick(){
- node_item = $(this);
- key=node_item.attr('key');
- node_item.parent().siblings(".active").removeClass("active");
- node_item.parent().addClass("active");
- $("#node_title").find("span").text(node_item.text());
- $("#node_title > a").attr("href", "/social/node/"+key);
- node_item.parent().addClass("active");
- key=node_item.attr('key');
- $("#main_stream_list").empty();
- $("#no_more_posts").hide(); 
- loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
-}
-
-function init(){
- $("#node_list").children().find("[key]")[0].click();
-}
-
-function onMoreClick(){
- key = $('#node_list > li.active a').attr('key');
- loadPosts(key,$("#main_stream").attr('next_cursor'))
-}
-
-
-function loadPosts(key,current_cursor){
- $.ajax({
-  type: 'POST',
-  url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
-  dataType:'json',
-  success:function(data) { 
-   $("#form_node").attr("value",key);
-   $("#main_stream").attr("next_cursor",data.cursor)
-   if(data.response=="success"){
-    $("#main_stream_list").append(data.html)
-    $('.post_del').click(onPostItemDelete);
-   } else if(data.response="no_posts"){
-   $("#no_more_posts").alert();
-   $("#no_more_posts").show();   
-   }
-  }
- });
- //} else {
-  //$("ul#node_list li").click(onNodeClick)
-  //$("#node_stream_"+key).siblings().hide()
-  //$("div#node_stream_"+key).show()
- //}
-}
-
-
 
 </script>
 
@@ -131,7 +45,7 @@ function loadPosts(key,current_cursor){
    </div>
    {%endif%}  
 <div id="new_post" style="display:none" class="well">
- <form id="new_post_form" action="/social/managepost" method="post">
+ <form id="new_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
  <input type="hidden" name="cmd" value="create_open_post"/>
  <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
  <!--input type="hidden" id="form_node" name="node" value=""/-->
@@ -150,6 +64,13 @@ function loadPosts(key,current_cursor){
 		 <label id="post_content_label" for="content">Contenuto</label>
 		 <input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
 	 </div>
+	 <div id="post_attachments" class="form_parent">       
+	  <label class="control-label" for="e_attach">Allegati</label>
+	  <input type="file" name="attach_file_1" id="p_attach_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <input type="file" name="attach_file_2" id="p_attach_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <input type="file" name="attach_file_3" id="p_attach_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	 </div>
+	 
 	 <div class="form-actions">
 		 <input id="open_post_submit" class="btn btn-primary" type="submit" value="Salva" data-loading-text="Invio risposta in corso..."/>	
 		 <input id="open_post_cancel_button" class="btn btn-primary" type="reset" value="Annulla" onclick="onOpenPostFormCancel()"/>

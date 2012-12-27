@@ -671,6 +671,10 @@ class Ispezione(model.Model):
   def data(self): 
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
 
+  @property
+  def restype(self):
+    return "isp"
+  
   testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
             "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
             "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
@@ -768,6 +772,10 @@ class Nonconformita(model.Model):
   def sommario(self):
     return self.tipoNome()
 
+  @property
+  def restype(self):
+    return "nc"
+
   @cached_property
   def get_allegati(self): 
     if not self.allegati:
@@ -856,6 +864,10 @@ class Dieta(model.Model):
 
   def sommario(self):
     return self.tipoNome()
+  
+  @property
+  def restype(self):
+    return "dieta"
   
   @classmethod
   def get_by_cm_data_turno_tipo(cls, cm, data, turno, tipo):
@@ -961,6 +973,10 @@ class Nota(model.Model):
 
   def sommario(self):
     return self.titolo
+
+  @property
+  def restype(self):
+    return "nota"
   
   @cached_property
   def notefmt(self):
@@ -995,8 +1011,13 @@ class Allegato(model.Model):
   
   dati=None
   
+  @classmethod
+  def get_by_obj(cls, obj):
+    return cls.query().filter(Allegato.obj==obj)
+  
   def isImage(self):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
+
   def contentType(self):
     return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
   
@@ -1546,12 +1567,36 @@ class SocialPost(model.Model):
           
       return self._comments
     
+    def get_by_resource(self, res):
+      return SocialPost.query().filter(SocialPost.resource==res).fetch()
+    
     def reset_comments(self):
       self._comments = None
       
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
+
+    @cached_property
+    def votes(self):
+      votes = list()
+      for v in Vote.get_by_ref(self.key):
+        votes.append(v)
+      return votes
+
+    @cached_property
+    def reshares(self):
+      reshares = list()
+      for p in self.get_by_resource(self.key):
+        reshares.append(p)
+      return reshares
+
+    @cached_property
+    def attachments(self):
+      attachments = list()
+      for attach in Allegato.query().filter(Allegato.obj == self.key):
+        attachments.append(attach)
+      return attachments
     
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
@@ -1688,6 +1733,35 @@ class SocialPost(model.Model):
             self.total_comments=self.total_comments-1
             self.put()
 
+    def vote(self, vote, user):
+      if vote == 0:
+        for p_vote in self.votes:
+          if p_vote.c_u == user.key:
+            if p_vote.vote == 1:
+              p_vote.key.delete()
+            break;
+      else :
+        vote = Vote(ref = self.key, vote = vote, c_u = user.key)
+        vote.put()
+  
+      try:
+        del self.cache["votes"]
+      except AttributeError:
+        pass
+      self.calc_rank(Vote)
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+
+    def can_vote(self, user):
+      if not user:
+        return False
+      canvote = True
+      for p_vote in self.votes:
+        if p_vote.c_u == user.key:
+          canvote = False
+          break;
+      return canvote
+
     def init_rank(self):
       init_rank = datetime.now() - Const.BASE_RANK
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
@@ -1761,7 +1835,10 @@ class SocialNodeSubscription(model.Model):
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
         for s in subscriptions_list:
           logging.info("Node.key: " + str(s.key.parent()))
-          logging.info("Node: " + s.key.parent().get().name)
+          if not s.key.parent().get():
+            s.key.delete()
+          else:
+            logging.info("Node: " + s.key.parent().get().name)
           
         node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
@@ -1870,17 +1947,17 @@ class SocialComment(model.Model):
 class Vote(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissario = None
-    super(Voto, self).__init__(*args, **kwargs)  
+    super(Vote, self).__init__(*args, **kwargs)  
   
   ref = model.KeyProperty()
   vote = model.IntegerProperty()
 
-  author = model.KeyProperty(kind=models.User)
-  creato_il = model.DateTimeProperty(auto_now_add=True)
+  c_u = model.KeyProperty(kind=models.User)
+  c_d = model.DateTimeProperty(auto_now_add=True)
   
   @cached_property
   def author(self):
-    return Commissario.get_by_user(self.author)
+    return Commissario.get_by_user(self.c_u)
   
   @classmethod
   def get_by_ref(cls, ref):

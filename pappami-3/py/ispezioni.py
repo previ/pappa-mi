@@ -180,18 +180,14 @@ class IspezioneHandler(BasePage):
         isp.creato_da = self.get_current_user().key
         isp.modificato_da = self.get_current_user().key
         isp.put()
-  
-        for allegato in isp.allegati:
-          allegato.obj = isp.key
-          allegato.put()
-        
+          
         memcache.delete("stats")
         memcache.delete("statsMese")
         
         #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
         #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(isp.commissione)[0]
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"])
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
         
 
       else:
@@ -337,11 +333,7 @@ class NonconfHandler(BasePage):
         nc.creato_da = self.get_current_user().key
         nc.modificato_da = self.get_current_user().key
         nc.put()
-  
-        for allegato in nc.allegati:
-          allegato.obj = nc.key
-          allegato.put()
-  
+    
         memcache.delete("stats")
         memcache.delete("statsMese")
   
@@ -489,18 +481,14 @@ class DietaHandler(BasePage):
         dieta.creato_da = self.get_current_user().key
         dieta.modificato_da = self.get_current_user().key
         dieta.put()
-  
-        for allegato in dieta.allegati:
-          allegato.obj = dieta.key
-          allegato.put()
-        
+          
         memcache.delete("stats")
         memcache.delete("statsMese")
   
         #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
         #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]       
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"])
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
         
       else:
         pass
@@ -641,18 +629,14 @@ class NotaHandler(BasePage):
         nota.put()
         
         #logging.info(nota.allegati)
-              
-        for allegato in nota.allegati:
-          allegato.obj = nota.key
-          allegato.put()
-  
+                
         memcache.delete("stats")
         memcache.delete("statsMese")
   
         #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
         #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"])
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
 
       else:
         pass

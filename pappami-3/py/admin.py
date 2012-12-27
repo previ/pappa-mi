@@ -753,44 +753,7 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "migSocial":
-      root_node = SocialNode.query().filter(SocialNode.name=="Mensa scolastica").get()
-      for tag in Tag.get_all():
-        node=SocialNode(name=tag.nome,description="Gruppo di discussione")
-        #node.put()
-        
-      for msg in Messaggio.get_all():
-        nodes = []
-        title = ""
-        content = ""
-        resource = None
-        node_resource = SocialResource.get_resource(msg.grp)
-        if node_resource:
-          logging.info(node_resource.type)
-          node = SocialNode.query().filter(SocialNode.resource==node_resource.key).get()
-          nodes.append(node)
-        elif len(msg.tags()) > 0:
-          for tag in msg.tags():
-            node = SocialNode.query().filter(SocialNode.name==tag.nome).get()
-            if node:
-              nodes.append(node)
-        else:
-          nodes.append(root_node)
-          
-        
-        for node in nodes:  
-          title = msg.title
-          logging.info(title)
-          logging.info(node.name)
-          if msg.tipo in [101, 102, 103, 104]:
-            if msg.testo:
-              content = msg.testo
-            res = SocialResource(type="isp")
-            res.obj  = msg.root
-            res.put()
-            resource = res.key
-          post = node.create_open_post(content, title, msg.c_ua.get(), resource)
-          
-                
+      SocialUtils.msg_to_post()     
       self.response.out.write("migSocial Ok")
       return
 
