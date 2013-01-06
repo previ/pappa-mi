@@ -1010,7 +1010,11 @@ class Allegato(model.Model):
   descrizione = model.StringProperty(default="",indexed=False)
   
   dati=None
-  
+
+  @classmethod
+  def _pre_delete_hook_1(cls, key):
+    blobstore.delete(key.get().blob_key)
+
   @classmethod
   def get_by_obj(cls, obj):
     return cls.query().filter(Allegato.obj==obj)
@@ -1334,7 +1338,7 @@ class SocialNode(model.Model):
     founder = model.KeyProperty(default=None)
 
     default_post = model.BooleanProperty(default=True,indexed=False)
-    default_reply = model.BooleanProperty(default=True,indexed=False)
+    default_comment = model.BooleanProperty(default=True,indexed=False)
     default_admin = model.BooleanProperty(default=False,indexed=False)
 
     #latest_activity = model.DateTimeProperty(auto_now="")
@@ -1442,7 +1446,7 @@ class SocialNode(model.Model):
         sub=SocialPostSubscription.query(ancestor=post.key).get()
         if sub:
             sub.key.delete()
-        #delete reply notifications
+        #delete comment notifications
         model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key)))
         #delete post notifications
         model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key.parent()).filter(SocialNotification.source_key==post.key)))
@@ -1559,20 +1563,30 @@ class SocialPost(model.Model):
     
     rank = model.IntegerProperty(default=0)
     
-    def get_comments(self):
-      if not self._comments:
-        self._comments = list()
-        for comment in SocialComment.query(ancestor=self.key).order(SocialComment.created).fetch():
-          self._comments.append(comment)
-          
-      return self._comments
+    @cached_property
+    def extended_date(self):
+      delta = datetime.now() - self.created
+      if delta.days == 0 and delta.seconds < 3600:
+        return str(delta.seconds / 60) + " minuti fa"
+      elif delta.days == 0 and delta.seconds < 3600*24:
+        return str(delta.seconds / 3600) + " ore fa"
+      else:
+        return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+      
+    @cached_property
+    def comment_list(self):
+      comment_list = list()
+      for comment in SocialComment.query(ancestor=self.key).order(SocialComment.created).fetch():
+        comment_list.append(comment)          
+      return comment_list
+    
+    def reset_comment_list(self):
+      if self.__dict__.get("comment_list"):
+        del self.__dict__["comment_list"]
     
     def get_by_resource(self, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
-    
-    def reset_comments(self):
-      self._comments = None
-      
+          
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
@@ -1598,6 +1612,40 @@ class SocialPost(model.Model):
         attachments.append(attach)
       return attachments
     
+    def can_admin(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub.can_admin or self.author == user.key
+
+    def can_comment(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub.can_comment or self.author == user.key
+
+    def can_sub(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      return sub is None
+          
+    def remove_attachment(self, attach_key):
+      attach_key.delete()
+      self.clear_attachments()
+
+    def clear_attachments(self):
+      logging.info("attachments " + str(self.__dict__.get("attachments")))
+      logging.info("attachments " + str(self.attachments))
+      if self.__dict__.get("attachments"):
+        del self.__dict__["attachments"]
+
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
       cache = Cache.get_cache("SocialPost")
@@ -1704,34 +1752,32 @@ class SocialPost(model.Model):
          else:
              raise users.UserNotFoundError
     
-    def create_reply_comment(self,content,author):
-        floodControl=memcache.get("FloodControl-"+str(author.key))
-        if floodControl:
-          raise base.FloodControlException
-        
-        new_comment= SocialComment(parent=self.key)
-        new_comment.author=author.key
-        new_comment.content=content
-        new_comment.put()
-        
-        self.comments=self.comments + 1
-        self.calc_rank(SocialComment)
-        self.put()
-        comm=Commissario.get_by_user(author)
-        SocialPostSubscription(parent=self.key,user=author.key).put()
-        SocialNotification.create(source_key=self.key,author_key=author.key,type="new_reply",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
-        
-        if Const.FLOOD_SYSTEM_ACTIVATED:
-          memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
-        
-        return new_comment
+    def create_comment(self,content,author):
+      floodControl=memcache.get("FloodControl-"+str(author.key))
+      if floodControl:
+        raise base.FloodControlException
+      
+      new_comment= SocialComment(parent=self.key)
+      new_comment.author=author.key
+      new_comment.content=content
+      new_comment.put()
+      
+      self.comments=self.comments + 1
+      self.calc_rank(SocialComment)
+      self.put()
+      comm=Commissario.get_by_user(author)
+      SocialPostSubscription(parent=self.key,user=author.key).put()
+      SocialNotification.create(source_key=self.key,author_key=author.key,type="new_comment",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
+      
+      if Const.FLOOD_SYSTEM_ACTIVATED:
+        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+      
+      return new_comment
 
-    def delete_reply_comment(self,reply_id):
-        reply=model.Key(urlsafe=reply_id)
-        if reply:
-            reply.delete()
-            self.total_comments=self.total_comments-1
-            self.put()
+    def delete_comment(self, comment_key):
+      comment_key.delete()
+      self.comments=self.comments-1
+      self.put()
 
     def vote(self, vote, user):
       if vote == 0:
@@ -1814,15 +1860,15 @@ class SocialPostSubscription(model.Model):
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty(kind=models.User)
-    can_reply=model.BooleanProperty(default=False)
+    can_comment=model.BooleanProperty(default=False)
     can_post=model.BooleanProperty(default=False)
     can_admin=model.BooleanProperty(default=False)
     
     
     def init_perm(self):
         parent=self.key.parent().get()
-        self.can_reply=parent.default_reply
-        self.can_post=parent.default_reply
+        self.can_comment=parent.default_comment
+        self.can_post=parent.default_comment
         self.can_admin=parent.default_admin
         self.put()
         
@@ -1933,16 +1979,26 @@ class SocialComment(model.Model):
     author=model.KeyProperty(kind=models.User)
     content=model.TextProperty(default="")
     #public_reference=model.StringProperty(default="")
-    created=model.DateTimeProperty(auto_now=True)
+    created=model.DateTimeProperty(auto_now_add=True)
 
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
-      future.get_result().get().key.parent().get().reset_comments()
+      future.get_result().get().key.parent().get().reset_comment_list()
         
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
+
+    def can_admin(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub.can_admin or self.author == user.key
+
 
 class Vote(model.Model):
   def __init__(self, *args, **kwargs):
@@ -2019,26 +2075,26 @@ class SocialNotification(model.Model):
         template = jinja_environment.get_template("social/notifications/new_post.html")
         return template.render(template_values)  
       
-      def render_new_reply(self,current_user):
+      def render_new_comment(self,current_user):
         
-        reply=self.target_key.get()
+        comment=self.target_key.get()
         
        
         template_values = {
-                             "reply":reply,
+                             "comment":comment,
                              "notification":self,
                              "author":self.author
         }
         
     
        
-        template = jinja_environment.get_template("social/notifications/new_reply.html")
+        template = jinja_environment.get_template("social/notifications/new_comment.html")
         return template.render(template_values)  
       def render_multiple_replies(self):
         post=self.target_key.get()
           
         template_values = {
-                             "reply":reply,
+                             "comment":comment,
                              "notification":self,
                              "author":self.author
         }
