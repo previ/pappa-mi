@@ -1,11 +1,11 @@
-<div id="post_reshare" class="modal hide fade in" style="">  
+<div id="post_reshare" class="modal hide fade in"  style="display:none;" aria-hidden="true">  
+ <form id="post_reshare" action="/social/managepost" method="post">
  <div class="modal-header">  
   <a class="close" data-dismiss="modal">x</a>  
-  <h3>Pubblica questo post su una categoria diversa</h3>  
+  <h4>Pubblica questo post su una categoria diversa</h4>  
  </div>  
- <form id="post_reshare" action="/social/managepost" method="post">
   <input type="hidden" name="cmd" value="reshare_open_post"/>				
-  <input type="hidden" id="form_post" name="post" value=""/>
+  <input type="hidden" name="post" value=""/>
   <div class="modal-body">  
    <div id="post_title" class="form_parent">
     <label id="post_content_label" for="titolo">Titolo</label>
@@ -22,7 +22,7 @@
    </div>
   </div>  
   <div class="modal-footer">  
-   <button class="btn btn-primary">Ricondividi</button>  
+   <button class="btn btn-primary">Inoltra</button>  
    <button class="btn btn-normal" data-dismiss="modal">Annulla</button>  
   </div>  
  </form>

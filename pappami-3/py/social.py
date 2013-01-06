@@ -134,16 +134,13 @@ class SocialPostHandler(BasePage):
        
     
     def get(self,id):
-        op=model.Key(urlsafe=id).get()
-        if op is None or not isinstance(op, SocialPost):
-           self.error()
-        node=op.key.parent()
-        op.commissario=Commissario.get_by_user(op.author.get())
-        replies=[]
+        post = model.Key(urlsafe=id).get()
+        if post is None or not isinstance(post, SocialPost):
+            self.error()
+        node = post.key.parent()
         #for x in op.get_comments():            
         #    x.commissario=Commissario.get_by_user(x.author.get())
         #    replies.append(x)
-        
         
         current_user=self.get_current_user()
         current_sub=None
@@ -155,22 +152,18 @@ class SocialPostHandler(BasePage):
                 current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
                 memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
             
-            postsub=memcache.get("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()))
+            postsub=memcache.get("SocialPostSubscription-"+str(post.key.id())+"-"+str(current_user.id()))
            
             if postsub is None:
-                postsub=SocialPostSubscription.query(ancestor=op.key).filter(SocialPostSubscription.user==current_user).get()
-                memcache.add("SocialPostSubscription-"+str(op.key.id())+"-"+str(current_user.id()),postsub)
+                postsub=SocialPostSubscription.query(ancestor=post.key).filter(SocialPostSubscription.user==current_user).get()
+                memcache.add("SocialPostSubscription-"+str(post.key.id())+"-"+str(current_user.id()),postsub)
          
             
         template_values = {
                            'content': 'social/post.html',
-                           'replies': replies,
-                           'post': op,
-                           'node':node.get(),
+                           'post': post,
                            'user':current_user,
-                        
-                           
-                                              }                    
+        }                    
         if current_user:
             template_values['subscription']=current_sub
             template_values['postsub']=postsub
@@ -361,15 +354,12 @@ class SocialManagePost(SocialAjaxHandler):
             if not node.get_subscription(user).can_post:
                 self.response.out.write("<response>error</response>")
                 return
-            post=node.create_open_post(content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),title=feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),author=user)
-            SocialUtils.process_attachments(self.request, post)
+            post_key=node.create_open_post(content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),title=feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),author=user)
 
-
+            SocialUtils.process_attachments(self.request, post_key)
 
             postlist = list()
-            postlist.append(post.get())
-            #for x in postlist: 
-            #    x.commissario=Commissario.get_by_user(x.author.get())
+            postlist.append(post_key.get())
             
             template_values = {
                 "postlist":postlist,
@@ -386,29 +376,20 @@ class SocialManagePost(SocialAjaxHandler):
             self.output_as_json(response)
            
            
-        # create a reply to a post
+        # create a comment to a post
         # parameters: 'post'
         # parameters: 'content'
-        if cmd == "create_reply_post":
+        if cmd == "create_comment":
             post=model.Key(urlsafe=self.request.get('post')).get()
             node=post.key.parent().get()
-            if post:
-                if not node.get_subscription(user).can_reply:
-                    self.success()
-                    return
-            
-                
-            reply=post.create_reply_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
- 
-            reply.commissario=Commissario.get_by_user(reply.author.get())
-            
+                            
+            comment = post.create_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
+             
             template_values = {
                 "post":post,
-                "reply":reply,
+                "comment":comment,
                 "cmsro":self.getCommissario(user), 
-                "subscription": get_current_sub(user,node.key),
-                "user": user,
-                "node":node
+                "user": user
              }
             
             template = jinja_environment.get_template("social/pagination/comment.html")
@@ -418,21 +399,31 @@ class SocialManagePost(SocialAjaxHandler):
             self.output_as_json(response)
            
            
-        if cmd == "delete_reply_post":
-            post=memcache.get("SocialPost-"+str(self.request.get('post')))
-            if post is None:
-                post=model.Key(urlsafe=self.request.get('post')).get()
-                memcache.add("SocialPost-"+str(self.request.get('post')),post)
-                
-            #node=model.Key(urlsafe=self.request.get('node')).get()
-            node=post.key.parent().get()
+        if cmd == "delete_comment":
+            comment_key = model.Key(urlsafe=self.request.get('comment'))
+            post_key = comment_key.parent()              
+            node = post_key.parent().get()
             
-            if not node.get_subscription(user).can_admin:
-                self.response.out.write("<response>error</response>")
+            if user.key != comment_key.get().author and not node.get_subscription(user).can_admin:
+                self.error()
                 return
-            post.delete_reply_comment(self.request.get('reply'))
-            self.response.headers["Content-Type"] = "text/xml"
+            post_key.get().delete_comment(comment_key)
             self.success()
+
+        if cmd == "expand_post":
+            post = model.Key(urlsafe=self.request.get('post')).get()
+            template_values = {
+                               'main': 'social/post.html',
+                               'post': post,
+                               'user': user,
+                               "cmsro":self.getCommissario(user), 
+            }                                    
+                
+            template = jinja_environment.get_template("social/post.html")
+ 
+            html=template.render(template_values)
+            response = {'response':'success','post':post.key.urlsafe(),'html':html}
+            self.output_as_json(response)
 
         if cmd == "delete_open_post":
             post=memcache.get("SocialPost-"+str(self.request.get('post')))
@@ -450,6 +441,47 @@ class SocialManagePost(SocialAjaxHandler):
             node.delete_post(post)
             
             self.success("/social/node/"+node.key.urlsafe())
+
+        if cmd == "edit_post":
+           post=model.Key(urlsafe=self.request.get('post')).get()
+           node = post.key.parent().get()
+           template_values = {
+               "post":post,
+               "cmsro":self.getCommissario(user), 
+               "subscription": get_current_sub(user,node.key),
+               "user": user
+            }
+          
+           template = jinja_environment.get_template("social/ajax/post_edit.html")
+
+           html=template.render(template_values)
+           response = {'response':'success','post':post.key.urlsafe(),'html':html}
+           self.output_as_json(response)
+           
+        if cmd == "update_post":
+           post=model.Key(urlsafe=self.request.get('post')).get()
+           post.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
+           post.put()
+           node = post.key.parent().get()
+                     
+           SocialUtils.process_attachments(self.request, post.key)
+    
+           post.clear_attachments()
+
+           template_values = {
+               "post":post,
+               "node":node,
+               "cmsro":self.getCommissario(user), 
+               "subscription": get_current_sub(user,node.key),
+               "user": user
+            }
+          
+           template = jinja_environment.get_template("social/post.html")
+
+           html=template.render(template_values)
+           response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
+           self.output_as_json(response)
+           
 
         if cmd== "reshare_open_post":          
             node=model.Key(urlsafe=self.request.get('node')).get()           
@@ -469,24 +501,37 @@ class SocialManagePost(SocialAjaxHandler):
             vote = int(self.request.get('vote'))
             post.vote(vote, self.get_current_user())
                             
-            response = {'response':'success','votes':str(len(post.votes))}
+            response = {'response':'success', 'post': post.key.urlsafe(), 'votes':str(len(post.votes))}
             self.output_as_json(response)             
 
-        if cmd == "edit_open_post":
-           logging.info(self.request.get('content'))
-           post=model.Key(urlsafe=self.request.get('post')).get()
-           post.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
-           post=post.put()
+        if cmd== "post_attach_delete":          
+            post=model.Key(urlsafe=self.request.get('post')).get()
+            attach=model.Key(urlsafe=self.request.get('attach'))
+            post.remove_attachment(attach)
+                            
+            response = {'response':'success'}
+            self.output_as_json(response)             
+
+        if cmd == "update_comment":
+            comment=model.Key(urlsafe=self.request.get('comment')).get()
+            post_key = comment.key.parent()
+            node = post_key.parent().get()
+            comment.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
+            comment.put()
+                      
+            template_values = {
+                "comment":comment,
+                "cmsro":self.getCommissario(user), 
+                "subscription": get_current_sub(user,node.key),
+                "user": user
+             }
            
-           memcache.add("SocialPost-"+str(self.request.get('post')),post.get())
-           
-           if post:
-               response = {'response':'success','content':post.get().content}
-               self.output_as_json(response)             
-           
-                
-        if cmd == "edit_reply_post":
-            pass
+            template = jinja_environment.get_template("social/pagination/comment.html")
+ 
+            html=template.render(template_values)
+            logging.info(html)
+            response = {'response':'success','comment':comment.key.urlsafe(),'html':html,"cursor":''}
+            self.output_as_json(response)
 
         if cmd == "content_edit":
             template_values = {
@@ -518,7 +563,7 @@ class SocialCreateNodeHandler(BasePage):
         node=SocialNode()
         node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
         node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
-        node.default_reply=bool(self.request.get("default_reply"))
+        node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))
         node.founder=self.get_current_user().key
@@ -558,7 +603,7 @@ class SocialEditNodeHandler(BasePage):
         node=model.Key(urlsafe=self.request.get("node_id")).get()
         node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
         node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
-        node.default_reply=bool(self.request.get("default_reply"))
+        node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))
         node.founder=self.get_current_user().key
@@ -824,18 +869,20 @@ class SocialUtils:
     
     @classmethod
     def process_attachments(cls, request, obj):
-        for i in range(1,10):
-          if request.get('attach_file_' + str(i)):
-            if len(request.get('attach_file_' + str(i))) < 10000000 :
-              allegato = Allegato()
-              allegato.nome = request.POST['attach_file_' + str(i)].filename
-              blob = Blob()
-              blob.create(allegato.nome)
-              allegato.blob_key = blob.write(request.get('attach_file_' + str(i)))
-              allegato.obj = obj
-              allegato.put()
-            else:
-              logging.info("attachment is too big.")
+        for att in request.POST.getall('attach_file'):
+            if hasattr(att, "filename"):
+                if len(att.value) < 10000000 :
+                    attachment = Allegato()
+                    attachment.nome = att.filename
+                    blob = Blob()
+                    blob.create(attachment.nome)
+                    attachment.blob_key = blob.write(att.value)
+                    attachment.obj = obj
+                    attachment.put()
+                else:
+                    logging.info("attachment is too big.")
+        for att_key in request.POST.getall('attach_delete'):
+            model.Key(urlsafe=att_key).delete()
         
     @classmethod
     def generate_all_social_profiles(cls):
@@ -852,7 +899,7 @@ class SocialUtils:
         for i in range(0,25):
             post=node.create_open_post("Contenuto di "+str(i),"Discussione "+str(i),user).get()
             for j in range(0,10):
-                post.create_reply_comment("Commento di "+str(j),user)
+                post.create_comment("Commento di "+str(j),user)
 
 
     @classmethod
@@ -924,7 +971,7 @@ class SocialUtils:
                 post=node.create_open_post(m.c_ua, m.title, m.body, [], [])
             if m.commenti:
                 for mc in Messaggio.get_by_parent(m.key):
-                    post.create_reply_comment(mc.body, mc.c_ua)
+                    post.create_comment(mc.body, mc.c_ua)
                 
             for a in m.get_allegati(m.key):
                 a.obj = post.key

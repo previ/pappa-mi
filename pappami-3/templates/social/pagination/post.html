@@ -1,10 +1,10 @@
 {% for post in postlist%}
-<li class="s_post" data-post-key='{{post.key.urlsafe()}}'>
+<li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
 	<div class="thumbnail"> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		</div>
-		<div class="s_post_content">
+		<div class="s_post_container">
 			<div class="s_post_header">			
 				<div class="s_post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
 				<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
@@ -16,9 +16,25 @@
 				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}
 			</div>		
 			{%endif%}
-			<div class="latest_comment">
-				Ultimo commento<div class="s_latest_date">&nbsp;- {{post.last_act.strftime('%d/%m/%Y %H:%M')}}</div> 
-			</div>					
+			<div class="s_post_feedback pull-left">
+			 <span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star"></i><span class="s_post_votes badge badge-success">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt"></i><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}>{{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment"></i><span class="s_post_comments_c badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}>{{post.comments}}</span></span>
+			</div>
+				
+			{% if user %} 
+			<div class="s_post_commands btn-group">
+				{%if post.can_admin(user)%}
+				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
+				{%endif%}
+				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if not post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
+				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+				<button class="btn btn-normal btn-mini post_expand" data-vote="0"><i class="icon-resize-full"></i>Espandi</button>
+			</div>
+			{% endif%}			
 	
 		</div>				
 	</div>

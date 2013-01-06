@@ -15,18 +15,18 @@ $(document).ready(function () {
  <div class="row">
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
-    <li><a key="all" href="#"><i class="icon-home"></i>Tutto</a><i class="pull-right icon-chevron-right"></i></li>
+    <li><a data-node-key="all" href="#"><i class="icon-home"></i>Tutto</a><i class="pull-right icon-chevron-right"></i></li>
     <li class="nav-header"><i class="icon-tags"></i>Argomenti</li>
-    {%for node in node_list%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_list%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
     <li>
      <a href="/social/nodelist"><i class="icon-search"></i>Altre scuole e argomenti</a>
     </li>
-    <li class="nav-header"><i class="icon-plus"></i>Più discussi</li>
-    {%for node in node_active%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    <li class="nav-header"><i class="icon-fire"></i>Più discussi</li>
+    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
-    <li class="nav-header"><i class="icon-plus"></i>Nuovi</li>
-    {%for node in node_recent%}<li><a key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    <li class="nav-header"><i class="icon-asterisk"></i>Nuovi</li>
+    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
    </ul>    
   </div>
@@ -64,11 +64,11 @@ $(document).ready(function () {
 		 <label id="post_content_label" for="content">Contenuto</label>
 		 <input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
 	 </div>
-	 <div id="post_attachments" class="form_parent">       
+	 <div class="form_parent post_attachments">       
 	  <label class="control-label" for="e_attach">Allegati</label>
-	  <input type="file" name="attach_file_1" id="p_attach_file_1" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	  <input type="file" name="attach_file_2" id="p_attach_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	  <input type="file" name="attach_file_3" id="p_attach_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <input type="file" name="attach_file" id="p_attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <!--input type="file" name="attach_file" id="p_attach_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <input type="file" name="attach_file" id="p_attach_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/-->
 	 </div>
 	 
 	 <div class="form-actions">
@@ -97,3 +97,6 @@ $(document).ready(function () {
   <div id="new-data-preview" style="display:none;"></div> 
  </div> 
  <div id="new-nc" style="display:none;"></div>
+<div id="tools" class="s_tools">
+	<div class="s_modal_reshare"></div>
+</div>
