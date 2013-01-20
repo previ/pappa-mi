@@ -160,6 +160,11 @@ indexes:
   - name: creation_date
     direction: desc
 
+- kind: SocialEvent
+  properties:
+  - name: status
+  - name: date
+
 - kind: SocialNode
   properties:
   - name: active
@@ -191,6 +196,12 @@ indexes:
 - kind: SocialNotification
   properties:
   - name: author_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: author_key
   - name: source_key
   - name: date
     direction: desc
@@ -210,6 +221,12 @@ indexes:
 - kind: SocialNotification
   properties:
   - name: source_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: user
   - name: date
     direction: desc
 

@@ -1,6 +1,14 @@
-
+<ul class="unstyled">
 {%for notification in notifications %}
+<li>
 <div class="notification" date="{{notification.date}}">
-{{notification.render(user)}}
+{{notification.event.get().source.get().commissario.nomecompleto(cmsro)}} ha aggiunto
+{%if notification.event.get().type=='post'%}
+ un <a href="/social/post/{{notification.event.get().source.urlsafe()}}">post</a>
+{%elif notification.event.get().type=='comment'%} 
+ un <a href="/social/post/{{notification.event.get().target.urlsafe()}}#{{notification.event.get().source.urlsafe()}}">commento</a>
+{%endif%}
 </div>
+</li>
 {%endfor%}
+</ul>

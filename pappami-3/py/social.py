@@ -614,6 +614,8 @@ class SocialEditNodeHandler(BasePage):
 
 class SocialPaginationHandler(SocialAjaxHandler):
 
+    def get(self):
+        return self.post()
     def post(self):
             cmd=self.request.get("cmd")
             user=self.request.user
@@ -716,12 +718,14 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 self.output_as_json(response)
                                         
             if cmd=="notifications":
-                notlist, next_curs, more = SocialProfile.retrieve_notifications(user,cursor)
-                if not notlist or not next_curs:
-                        
-                        response = {'response':'no_notificationss'}
-                        self.output_as_json(response)
-                        return
+                notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=None)
+                for n in notlist:
+                    logging.info(n)
+
+                if not notlist or not next_curs:                    
+                    response = {'response':'no_notificationss'}
+                    self.output_as_json(response)
+                    return
                
                 template = jinja_environment.get_template("social/pagination/notifications.html")
                
@@ -733,6 +737,33 @@ class SocialPaginationHandler(SocialAjaxHandler):
                                  }
                 html=template.render(template_values)
                 response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                self.output_as_json(response)
+
+            if cmd=="ntfy_summary":
+                start_cursor = None
+                if cursor or cursor != "undefined":
+                    start_cursor = Cursor(urlsafe=cursor)
+                    
+                notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=start_cursor)
+
+                if not notlist and not next_curs:                    
+                    response = {'response':'no_notifications'}
+                    self.output_as_json(response)
+                    return
+               
+                template = jinja_environment.get_template("social/pagination/notifications.html")
+               
+                
+                template_values={
+                                 'notifications':notlist,                                  
+                                 'user':user.key,
+                                 'cmsro':self.getCommissario(user)
+                                 }
+                html=template.render(template_values)
+                next_curs_str = None
+                if next_curs:
+                    next_curs_str = next_curs.urlsafe()
+                response = {'response':'success','html':html,"cursor":next_curs_str}
                 self.output_as_json(response)
 
             if cmd=="search_nodes":
@@ -765,7 +796,102 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     
                 self.output_as_json(response)
 
-                        
+class SocialNotificationHandler(SocialAjaxHandler):
+
+    def get(self):
+        if self.request.get("cmd") == "clear":
+            cursor = None
+            while True:
+                cursor = SocialNotificationHandler.clear_events(cursor)
+                if not cursor:
+                    break;
+        if self.request.get("cmd") == "process":
+            job = {'event_cursor':None}
+            while True:
+                job = SocialNotificationHandler.process_events(job)
+                logging.info("event_cursor: " + str(job["event_cursor"]))
+                if not job["event_more"]:
+                    break;
+        Cache.get_cache("SocialNotifications").clear_all()
+        self.success()
+            
+    """
+    process events as a batch
+    input: 
+      event_cursor
+      node_cursor_<node_id>
+      for every event in batch(defined by cursor) do:
+        if event is a new post:
+          process subscription in batch(definied by none_cursor_id), if batch size > limit, do not save event state, else mark event as processed 
+    """
+    @classmethod
+    def process_events(cls, job):
+        event_cursor = job['event_cursor']
+        events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor)
+        for e in events:
+            if e.type=="post":
+                node_cursor = job.get('node_cursor_' + str(e.target.id()))
+                ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor)
+                for s in ns:
+                    SocialNotification.create(e.key, s.user)
+                if ns_more:
+                    job['node_cursor_' + str(e.target.id())] = ns_next_cursor
+                else:
+                    e.status = 1
+                    e.put()
+            if e.type=="comment":
+                for s in SocialPostSubscription.get_by_post(e.target):
+                    SocialNotification.create(e.key, s.user)
+                e.status = 1
+                e.put()
+        job['event_more'] = event_more 
+        job['event_cursor'] = event_next_cursor
+        return job
+
+    @classmethod
+    def clear_events(cls, cursor):
+        results, next_cursor, more = SocialEvent.get_by_status(0, cursor)
+        for n in SocialNotification.get_by_date(date=None):
+            n.key.delete()
+        return None
+        
+        
+    @classmethod
+    def retrieve_new_notifications_(cls,user_t, date):
+        nodes_list=SocialNodeSubscription.get_nodes_keys_by_user(user_t)
+        posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
+        
+        sources_list=nodes_list+posts_list
+        logging.info(sources_list)
+        c = 0
+        for n in SocialNotification.query().filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(SocialNotification.author_key).order(-SocialNotification.date).fetch():
+            if n.date < date:
+                break;
+            c += 1
+        return c
+
+    @classmethod
+    def retrieve_new_notifications(cls, user_t, date):
+        return SocialNotification.get_by_user(user_t, cursor=None)
+                   
+
+    @classmethod
+    def retrieve_notifications_(self,user_t,cursor):
+      nodes_list=SocialNodeSubscription.get_nodes_keys_by_user(user_t)
+      posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
+      
+      
+      sources_list=nodes_list+posts_list
+      logging.info(sources_list)
+      if not cursor or cursor == "undefined":
+          return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10)
+      else:
+          return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+
+    @classmethod
+    def retrieve_notifications(cls, user_t, start_cursor):
+        return SocialNotification.get_by_user(user_t, cursor=start_cursor)
+    
 class SocialSearchHandler(SocialAjaxHandler):
     def get(self):
         postlist = list()
@@ -792,16 +918,15 @@ class SocialNotificationsListHandler(BasePage):
         @reguser_required
         def get(self):
             user=self.get_current_user()
-            prof=SocialProfile.query(ancestor=user.key).get()
+            cmsro = self.getCommissario(user)
             
             template_values = {
                            'content': 'social/notifications.html',
                            'user':user,
-                           'last_visit': prof.ultimo_accesso_notifiche
+                           'last_visit': cmsro.ultimo_accesso_notifiche
                           }
-                           
-            prof.ultimo_accesso_notifiche=datetime.now()
-            prof.put()
+            cmsro.ultimo_accesso_notifiche = datetime.now()
+            cmsro.put()
             self.getBase(template_values)
             
 class SocialMainHandler(BasePage):
@@ -821,7 +946,14 @@ class SocialMainHandler(BasePage):
                 node_active.append(node)
             if len(node_active) >= 3:
                 break
-                    
+            
+        cmsro = self.getCommissario(user)
+        last_access = cmsro.ultimo_accesso_notifiche
+        if not last_access:
+            cmsro.ultimo_accesso_notifiche = datetime.now()
+            cmsro.put()
+            last_access = datetime.now()
+            
         logging.info("node_list")
         for n in node_list:
             logging.info(n.name)
@@ -836,7 +968,8 @@ class SocialMainHandler(BasePage):
                         'node_list':node_list,
                         'node_active': node_active,
                         'node_recent': node_recent,
-                        'user':user
+                        'user':user,
+                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, last_access)[0]))
         }
         self.getBase(template_values)
 
@@ -1047,6 +1180,7 @@ app = webapp.WSGIApplication([
     ('/social/search', SocialSearchHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
+    ('/social/evtproc', SocialNotificationHandler),
     ('/social', SocialMainHandler),
     ],
                              
