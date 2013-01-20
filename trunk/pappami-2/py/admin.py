@@ -694,10 +694,24 @@ class CMAdminHandler(BasePage):
         isp_str += str(isp.paneQuantita) + ","
         isp_str += str(isp.paneAssaggio) + ","
         isp_str += str(isp.paneGradimento) + ","
+        isp_str += str(isp.giudizioGlobale) + ","
         isp_str += "\n"
         self.response.out.write(isp_str)
         
-      self.response.out.write("Ok")
+      return
+
+    if self.request.get("cmd") == "getNonconf":
+      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for nc in Nonconformita.query().filter(Nonconformita.dataNonconf>dataInizio).order(Nonconformita.dataNonconf):
+        nc_str = ""
+        nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + ","
+        nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + ","
+        nc_str += str(nc.dataNonconf) + ","
+        nc_str += str(richiestaCampionatura.tipo) + ","
+        nc_str += str(richiestaCampionatura.richiestaCampionatura) + ","
+        self.response.out.write(nc_str)
+        
       return
           
     if self.request.get("cmd") == "flush":
