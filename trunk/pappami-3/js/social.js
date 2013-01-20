@@ -819,6 +819,45 @@ function init(){
  $("#node_list").children().find('a[data-node-key="all"]')[0].click();
  $('input[name="attach_file"]').change(addAttach);
  $('.post_attach_delete').click(onAttachDelete);   
+ var ntfy_pop = $('#ntf_cnt');
+ ntfy_pop.attr("data-visible", 'false');
+
+ $(document).click(function(e) {
+  var ntfy_pop = $('#ntf_cnt');
+  if(ntfy_pop.attr("data-visible") == 'true') {
+    ntfy_pop.popover('hide');
+    ntfy_pop.attr("data-visible", 'false');
+    e.preventDefault()
+  } else {
+    clickedAway = true;
+  }
+ });
+
+ var ntfy_pop = $('#ntf_cnt');
+ ntfy_pop.popover({
+	  html: true,
+	  trigger: 'manual'
+     }).click(function(e) {onOpenNotifications(e);});
+  
+ }
+
+function onOpenNotifications(event) {
+  var data = {'cmd': 'ntfy_summary'}
+  var ntfy_pop = $('#ntf_cnt');
+  if(ntfy_pop.attr("data-visible") == 'false') {
+    $.ajax({
+     type: 'POST',
+     url:'/social/paginate', 
+     data: data,
+     dataType:'json',
+     success:function(data) {
+       ntfy_pop = $('#ntf_cnt');
+       ntfy_pop.attr('data-content', data.html);
+       ntfy_pop.popover('show');
+       ntfy_pop.attr("data-visible", 'true');
+       event.preventDefault();
+     }});
+  }
 }
 
 function addAttach() {
