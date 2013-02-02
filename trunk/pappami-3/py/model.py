@@ -264,7 +264,6 @@ class Commissario(model.Model):
   
   @classmethod
   def get_for_newsletter(cls):
-
     return Commissario.query().filter(Commissario.newsletter==True)
 
   @classmethod
@@ -387,6 +386,7 @@ class Commissario(model.Model):
   privacy_subjects = {0: "anyone",
                       1: "registered",
                       2: "cm"}
+
   
 class CommissioneCommissario(model.Model):
   commissione = model.KeyProperty(kind=Commissione)
@@ -1341,6 +1341,8 @@ class SocialNode(model.Model):
     default_comment = model.BooleanProperty(default=True,indexed=False)
     default_admin = model.BooleanProperty(default=False,indexed=False)
 
+    last_act = model.DateTimeProperty(auto_now=True)
+
     #latest_activity = model.DateTimeProperty(auto_now="")
     #latest_post = model.KeyProperty(kind="SocialPost")
 
@@ -1411,8 +1413,7 @@ class SocialNode(model.Model):
     @classmethod
     def active_nodes(cls):
            return cls.query().filter(cls.active==True)
-    
-    
+        
               
     def __init__(self, *args, **kwargs):
         super(SocialNode, self).__init__(*args, **kwargs) 
@@ -1581,8 +1582,7 @@ class SocialPost(model.Model):
       return comment_list
     
     def reset_comment_list(self):
-      if self.__dict__.get("comment_list"):
-        del self.__dict__["comment_list"]
+      self.comment_list.invalidate()
     
     def get_by_resource(self, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
@@ -1619,7 +1619,7 @@ class SocialPost(model.Model):
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
-      return sub.can_admin or self.author == user.key
+      return sub and (sub.can_admin or self.author == user.key)
 
     def can_comment(self, user):
       sub_cache = Cache.get_cache('SocialNodeSubscription')
@@ -1630,11 +1630,16 @@ class SocialPost(model.Model):
         sub_cache.put(cache_key, sub)
       return sub.can_comment or self.author == user.key
 
+    @cached_property
+    def subscriptions(self):
+      subs = dict()
+      for s in SocialPostSubscription.query(ancestor=self.key).fetch():
+        subs[s.user] = s
+      return subs
+      
     def can_sub(self, user):
-      sub_cache = Cache.get_cache('SocialNodeSubscription')
-      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
-      sub = sub_cache.get(cache_key)
-      return sub is None
+      logging.info(str(self.subscriptions.get(user.key) is None))
+      return (self.subscriptions.get(user.key) is None)
           
     def remove_attachment(self, attach_key):
       attach_key.delete()
@@ -1726,29 +1731,29 @@ class SocialPost(model.Model):
                     
           return new_post
     
-    def subscribe_user(self,current_user):
-        #user has already subscribed to this post
-        if SocialPostSubscription.query( SocialPostSubscription.user==current_user.key,ancestor=self.key).count()>0:
-            return
+    def subscribe_user(self, user):
+      #user has already subscribed to this post
+      if self.subscriptions.get(user.key):
+        return
         
-        sub = SocialPostSubscription(parent=self.key)
-        
-        if current_user:
-            sub.user=current_user.key
-        else:
-            raise users.UserNotFoundError
-        
-        sub.put()
-               
-       
+      sub = SocialPostSubscription(parent=self.key)
+      
+      if user:
+          sub.user=user.key
+      else:
+          raise users.UserNotFoundError
+      
+      sub.put()    
+      self.subscriptions.invalidate()
+              
+    def unsubscribe_user(self, user):
+      subscription=self.subscriptions.get(user.key)
+      if subscription is not None:
+         subscription.key.delete()
+         self.subscriptions.invalidate()
     
-    def unsubscribe_user(self, current_user):
-         subscription=SocialPostSubscription.query( SocialPostSubscription.user==current_user.key,ancestor=self.key).get()
-         if subscription is not None:
-            subscription.key.delete()
-        
-         else:
-             raise users.UserNotFoundError
+      else:
+          raise users.UserNotFoundError
     
     def create_comment(self,content,author):
       floodControl=memcache.get("FloodControl-"+str(author.key))
@@ -1763,6 +1768,8 @@ class SocialPost(model.Model):
       self.comments=self.comments + 1
       self.calc_rank(SocialComment)
       self.put()
+      self.key.parent().get().calc_rank(SocialComment)
+      self.key.parent().get().put()
       
       self.subscribe_user(author)
       
@@ -1797,6 +1804,9 @@ class SocialPost(model.Model):
       except AttributeError:
         pass
       self.calc_rank(Vote)
+      self.key.parent().get().calc_rank(Vote)
+      self.key.parent().get().put()
+      
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
 
@@ -1818,6 +1828,8 @@ class SocialPost(model.Model):
       values = {SocialComment: 7,
                 Vote: 3 }
       now = datetime.now()
+      if self.last_act is None:
+        self.last_act = now
       delta = now - self.last_act
       delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
       self.rank += ((delta_rank * values[activity]) / 10)
@@ -2010,7 +2022,7 @@ class SocialComment(model.Model):
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
-      return sub.can_admin or self.author == user.key
+      return sub and (sub.can_admin or self.author == user.key)
 
 
 class Vote(model.Model):
@@ -2080,12 +2092,16 @@ class SocialNotification(model.Model):
   date = model.DateTimeProperty(auto_now_add=True)
   
   status = model.IntegerProperty()
-  
+
+  def set_read(self):
+    self.status=1
+    self.put()
+    
   @classmethod
   def create(cls, event_key, user_key):
     notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=0)
     notification.put()
-
+  
   @classmethod
   def get_by_user(cls, user, cursor=None):
     cache = Cache.get_cache('SocialNotification')

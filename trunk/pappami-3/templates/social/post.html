@@ -42,8 +42,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				{%endif%}
 				{%if post.can_admin(user)%}
 				<button class="btn btn-normal btn-mini post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
-				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if not post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
-				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
 				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Reshare</button>
 				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
 				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
@@ -74,7 +74,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
 						<div class="">
-							<input row="3" class="span8 s_post_comment required" name="content"></textarea>
+							<textarea row="3" class="span8 s_post_comment required" name="content"></textarea>
 							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
 						</div>
 					</form>
