@@ -8,6 +8,8 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import feedparser
 from google.appengine.ext.ndb import model
+from google.appengine.api.taskqueue import Task, Queue
+
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
@@ -32,15 +34,6 @@ def fix_padding(string):
     except: 
         pass
     
-def get_current_sub(current_user,node):
-    if current_user:
-        current_user=current_user.key
-        current_sub=memcache.get("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()))
-        if current_sub is None:
-              current_sub=SocialNodeSubscription.query(ancestor=node).filter(SocialNodeSubscription.user==current_user).get()
-              memcache.add("SocialNodeSubscription-"+str(node.id())+"-"+str(current_user.id()),current_sub)
-       
-        return current_sub
     
 class NodeHandler(BasePage):
   
@@ -80,7 +73,7 @@ class NodeHandler(BasePage):
       #check permission
       can_post=False
       current_user=self.get_current_user()
-      current_sub=get_current_sub(current_user,node)
+      current_sub=node_i.get_subscription(current_user)
                   
       template_values = {
             'content': 'social/node.html',
@@ -190,7 +183,7 @@ class SocialPostHandler(BasePage):
           "main":"social/pagination/post.html",
           "postlist":postlist,          
           "cmsro":post.get().commissario, 
-          "subscription": py.social.get_current_sub(user,node),
+          "subscription": node.get().get_subscription(user),
           "user": user,
           "node":node.get()
          }
@@ -215,7 +208,7 @@ class SocialPostHandler(BasePage):
           "main":"social/pagination/post.html",
           "postlist":postlist,          
           "cmsro":self.getCommissario(user), 
-          "subscription": py.social.get_current_sub(user,node),
+          "subscription": node.get().get_subscription(user),
           "user": user,
           "node":node.get()
          }
@@ -364,7 +357,7 @@ class SocialManagePost(SocialAjaxHandler):
             template_values = {
                 "postlist":postlist,
                 "cmsro":self.getCommissario(user), 
-                "subscription": get_current_sub(user,node.key),
+                "subscription": node.get_subscription(user),
                 "user": user,
                 "node":node
              }
@@ -426,10 +419,7 @@ class SocialManagePost(SocialAjaxHandler):
             self.output_as_json(response)
 
         if cmd == "delete_open_post":
-            post=memcache.get("SocialPost-"+str(self.request.get('post')))
-            
-            if post is None:
-               post=model.Key(urlsafe=self.request.get('post')).get()
+            post=model.Key(urlsafe=self.request.get('post')).get()
                
             #node=node.get()
             node=post.key.parent().get()
@@ -448,7 +438,7 @@ class SocialManagePost(SocialAjaxHandler):
            template_values = {
                "post":post,
                "cmsro":self.getCommissario(user), 
-               "subscription": get_current_sub(user,node.key),
+               "subscription": node.get_subscription(user),
                "user": user
             }
           
@@ -472,7 +462,7 @@ class SocialManagePost(SocialAjaxHandler):
                "post":post,
                "node":node,
                "cmsro":self.getCommissario(user), 
-               "subscription": get_current_sub(user,node.key),
+               "subscription": node.get_subscription(user),
                "user": user
             }
           
@@ -485,10 +475,7 @@ class SocialManagePost(SocialAjaxHandler):
 
         if cmd== "reshare_open_post":          
             node=model.Key(urlsafe=self.request.get('node')).get()           
-            post=memcache.get("SocialPost-"+str(self.request.get('post')))
-            if post is None:
-                post=model.Key(urlsafe=self.request.get('post')).get()
-                memcache.add("SocialPost-"+str(self.request.get('post')),post)
+            post=model.Key(urlsafe=self.request.get('post')).get()
                 
             title=self.request.get('title')
             content=self.request.get('content')
@@ -522,7 +509,7 @@ class SocialManagePost(SocialAjaxHandler):
             template_values = {
                 "comment":comment,
                 "cmsro":self.getCommissario(user), 
-                "subscription": get_current_sub(user,node.key),
+                "subscription": node.get_subscription(user),
                 "user": user
              }
            
@@ -641,11 +628,11 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 self.output_as_json(response)
              
             if cmd=="post":
-                node=model.Key(urlsafe=self.request.get("node"))
+                node=model.Key(urlsafe=self.request.get("node")).get()
                 if not cursor or cursor == "undefined":
-                    postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+                    postlist, next_curs, more = SocialPost.get_by_node_rank(node=node.key, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
                 else:
-                     postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                     postlist, next_curs, more = SocialPost.get_by_node_rank(node=node.key, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
                 
                 #for x in postlist: 
                 #    x.commissario=Commissario.get_by_user(x.author.get())
@@ -654,9 +641,9 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 template_values = {
                         "postlist":postlist,
                          "cmsro":self.getCommissario(user), 
-                         "subscription": get_current_sub(user,node),
+                         "subscription": node.get_subscription(user),
                          "user": user,
-                         "node":node.get()
+                         "node":node
                         }
                 if not postlist or not next_curs:
                     
@@ -703,7 +690,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         }
                 
                 if node:
-                    template_values["subscription"]=get_current_sub(user,node)
+                    template_values["subscription"]=node.get().get_subscription(user)
                     
                 if not postlist or not next_curs_key:
                     
@@ -718,12 +705,13 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 self.output_as_json(response)
                                         
             if cmd=="notifications":
+                
                 notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=None)
                 for n in notlist:
                     logging.info(n)
 
-                if not notlist or not next_curs:                    
-                    response = {'response':'no_notificationss'}
+                if not notlist:                 
+                    response = {'response':'no_notifications'}
                     self.output_as_json(response)
                     return
                
@@ -732,11 +720,13 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 
                 template_values={
                                  'notifications':notlist,
-                              
-                                 'user':user.key,
+                                 'cmsro':self.getCommissario(user),
+                                 'user':user.key
                                  }
                 html=template.render(template_values)
-                response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                response = {'response':'success','html':html}
+                if more:
+                    response['cursor'] = next_curs.urlsafe()
                 self.output_as_json(response)
 
             if cmd=="ntfy_summary":
@@ -795,25 +785,38 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     response={'html':"",'list':[]}
                     
                 self.output_as_json(response)
+    
 
 class SocialNotificationHandler(SocialAjaxHandler):
-
     def get(self):
+        logging.info("SocialNotificationHandler")
         if self.request.get("cmd") == "clear":
             cursor = None
             while True:
                 cursor = SocialNotificationHandler.clear_events(cursor)
                 if not cursor:
                     break;
-        if self.request.get("cmd") == "process":
+        elif self.request.get("cmd") == "process":
             job = {'event_cursor':None}
-            while True:
-                job = SocialNotificationHandler.process_events(job)
-                logging.info("event_cursor: " + str(job["event_cursor"]))
-                if not job["event_more"]:
-                    break;
-        Cache.get_cache("SocialNotifications").clear_all()
+            job = SocialNotificationHandler.process_events(job)
+            logging.info("event_cursor: " + str(job["event_cursor"]))
+            if job["event_more"]:
+                self.putTask('/social/event', job=job)
+ 
+        else:
+            self.putTask('/social/event', job={})
+            
+        Cache.get_cache("SocialNotification").clear_all()
+           
         self.success()
+        
+    def startTask(self):
+        self.putTask('/social/event', job={})
+        
+    def putTask(self, aurl, job):
+      task = Task(url=aurl, params={'cmd': 'process', "job": job}, method="GET")
+      queue = Queue()
+      queue.add(task)
             
     """
     process events as a batch
@@ -833,7 +836,8 @@ class SocialNotificationHandler(SocialAjaxHandler):
                 node_cursor = job.get('node_cursor_' + str(e.target.id()))
                 ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor)
                 for s in ns:
-                    SocialNotification.create(e.key, s.user)
+                    if e.user != s.user:
+                        SocialNotification.create(e.key, s.user)
                 if ns_more:
                     job['node_cursor_' + str(e.target.id())] = ns_next_cursor
                 else:
@@ -841,7 +845,8 @@ class SocialNotificationHandler(SocialAjaxHandler):
                     e.put()
             if e.type=="comment":
                 for s in SocialPostSubscription.get_by_post(e.target):
-                    SocialNotification.create(e.key, s.user)
+                    if e.user != s.user:
+                        SocialNotification.create(e.key, s.user)
                 e.status = 1
                 e.put()
         job['event_more'] = event_more 
@@ -891,7 +896,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
     @classmethod
     def retrieve_notifications(cls, user_t, start_cursor):
         return SocialNotification.get_by_user(user_t, cursor=start_cursor)
-    
+        
 class SocialSearchHandler(SocialAjaxHandler):
     def get(self):
         postlist = list()
@@ -923,7 +928,9 @@ class SocialNotificationsListHandler(BasePage):
             template_values = {
                            'content': 'social/notifications.html',
                            'user':user,
-                           'last_visit': cmsro.ultimo_accesso_notifiche
+                           'last_visit': cmsro.ultimo_accesso_notifiche,
+                           'notify_list': SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche)
+                           
                           }
             cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
@@ -1161,10 +1168,6 @@ class SocialNewsLetter(BasePage):
             )
             self.response.headers.add_header('content-type', 'text/html', charset='utf-8')
             self.response.out.write(html)
-            
-            
-
-
   
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
@@ -1180,7 +1183,7 @@ app = webapp.WSGIApplication([
     ('/social/search', SocialSearchHandler),
     ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
-    ('/social/evtproc', SocialNotificationHandler),
+    ('/social/event', SocialNotificationHandler),
     ('/social', SocialMainHandler),
     ],
                              

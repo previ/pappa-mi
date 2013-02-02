@@ -24,11 +24,6 @@
 				
 			{% if user %} 
 			<div class="s_post_commands btn-group">
-				{%if post.can_admin(user)%}
-				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
-				{%endif%}
-				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if not post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
-				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
 				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
 				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
 				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
