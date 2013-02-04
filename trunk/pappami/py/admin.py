@@ -892,7 +892,7 @@ class CMAdminHandler(BasePage):
           cm.telefono = fields[12]
           cm.fax = fields[13]
           geo = fields[14].split(',')
-          cm.geo = model.GeoPt(lat=float(geo[0]), float(geo[1]))
+          cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
           cm.creato_da = users.get_current_user()
           cm.creato_il = datetime.now()
           cm.modificato_da = users.get_current_user()
