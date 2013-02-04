@@ -871,6 +871,7 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "upCommissioni":
+      data = self.request.get("rawdata")
       for line in data.split("\n"):
         logging.info(line)
         fields = line.split("\t")
