@@ -83,9 +83,16 @@ class CMFeedIspNCHandler(BasePage):
 
   def get(self): 
     buff = memcache.get("feed_ispnc")
+
     cm = None
     if self.request.get("key"):
-      cm = model.Key(urlsafe=self.request.get("key"))
+      cmk = self.request.get("key")
+      if cmk.isnumeric():
+        cm = model.Key("Commissione", int(cmk))
+      else:
+        cm = model.Key("Commissione", model.Key(urlsafe=cmk).id())
+        self.request.GET["cm"] = cm.id()
+
     
     path = "/genitore/"
     if self.request.get('public'):

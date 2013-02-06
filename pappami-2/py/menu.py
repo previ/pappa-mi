@@ -128,7 +128,12 @@ class MenuScraper(BasePage):
   def get(self): 
     template_values = dict()
     
-    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=01&x2=05&x3=2012', deadline=60)
+    date = datetime.now().date()
+    
+    if self.request.get("data"):
+      date = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
+    
+    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=' + str(date.day) + '&x2='+ str(date.month) +'&x3=' + str(date.year), deadline=60)
     p = MenuParser()
     p.text = ""
     p.feed(response.content)
