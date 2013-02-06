@@ -79,10 +79,10 @@ handlers:
   script: py.stats.app
   login: admin
   
-- url: /admin/.*
+- url: /adminmenu
   script: py.admin.app
   login: admin
-
+  
 - url: /admin/*
   script: py.admin.app
   login: admin
