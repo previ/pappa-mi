@@ -326,7 +326,7 @@ class CMStatCalcHandler(BasePage):
   def putTask(self, aurl, year, offset=0, limit=50):
     task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
     if year:
-      task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
+      task.params["year"] = str(year)
     queue = Queue()
     queue.add(task)
     

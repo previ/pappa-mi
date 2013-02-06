@@ -46,7 +46,7 @@ class MainPage(BasePage):
         
     commissario = self.getCommissario(self.get_current_user())
     if commissario:
-      self.redirect("/a")
+      self.redirect("/social")
       return
       #return self.getPrivate(template_values)
           
@@ -134,7 +134,6 @@ class ActivityHandler(BasePage):
     template_values["fgcolor"] = "000000"    
     template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
     template_values["geo"] = geo
-    template_values["billboard"] = "navigation.html"
     template_values["content"] = "activities.html"
     template_values["host"] = self.getHost()
     template_values["tags"] = self.getTopTags()

@@ -1,0 +1,51 @@
+<script type="text/javascript">
+$(document).ready(function () {
+  $(".pagination_errors").hide()
+  $(".empty_errors").hide()
+  loadNotifications() 
+});
+
+function mark_visited(){
+  $("div.notification").each(function(){
+    date=new Date(this.attr("date"))
+  });
+}
+
+function loadNotifications() {
+  cursor = $("#notifications_list").attr('data-cursor');
+  data = {'cmd': 'notifications',
+	  'cursor': cursor };
+  $.ajax({
+	  type: 'POST',
+          url:"/social/paginate",
+	  data: data,
+          dataType:'json',
+	  success:function(data){
+	    if(data.response=="success"){
+	      $("#notifications_list").attr('data-cursor', data.cursor);
+	      $("#notifications_list").last().append(data.html)
+	      /*mark as visited
+	      $("#notifications_list>div").each(function(){
+	        date=new Date($(this).attr("date"))
+		if(date<last_visit){
+		  $(this).addClass("visited")
+		}
+	      });*/
+	      } else if(data.response="no_notifications") {
+	        $("#add_notifications").hide()
+		if($("#notifications_list").children().length>0) {
+		  $(".pagination_errors").show()
+		} else {
+		  $(".empty_errors").show()
+		}
+	      }
+	    }})
+}
+
+    
+</script>
+
+<div id="notifications_list"></div>
+<div id="add_notifications" class="btn btn-primary" type="submit">Mostra altre notifiche</div>
+<div class="empty_errors" style="display:none;">Non ci sono notifiche </div>
+<div class="pagination_errors" style="display:none;">Non ci sono altre notifiche </div>

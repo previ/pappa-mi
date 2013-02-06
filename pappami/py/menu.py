@@ -45,6 +45,25 @@ class CMMenuDataHandler(CMMenuHandler):
       
       json.dump(menu.to_dict(), self.response.out)
 
+    if( self.request.get("cmd") == "getdetails" ):
+      details = dict()
+      factors = {'Materna': 0.625,
+                 'Primaria': 0.875,
+                 'Secondaria': 1.0}
+      factor = 1.0
+      if self.request.get('cm'):
+        cm = model.Key('Commissione', int(self.request.get('cm'))).get()
+        factor = factors[cm.tipoScuola]
+      piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
+      details['piatto'] = piatto_key.get().nome
+      details['ingredienti'] = list()
+      for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
+        ing = p_i.ingrediente.get()
+        qty = p_i.quantita
+        details['ingredienti'].append({'nome': ing.nome,
+                                       'quantita': p_i.quantita * factor})
+      json.dump(details, self.response.out)
+
     else:
       template_values = dict()
       template_values['content'] = 'menu.html'      
@@ -128,12 +147,7 @@ class MenuScraper(BasePage):
   def get(self): 
     template_values = dict()
     
-    date = datetime.now().date()
-    
-    if self.request.get("data"):
-      date = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
-    
-    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=' + str(date.day) + '&x2='+ str(date.month) +'&x3=' + str(date.year), deadline=60)
+    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=01&x2=05&x3=2012', deadline=60)
     p = MenuParser()
     p.text = ""
     p.feed(response.content)

@@ -1,0 +1,102 @@
+<script type="text/javascript">
+
+$(document).ready(function () {
+ //$("div#main_stream").children().hide()
+ init()
+ init_search()
+});
+
+</script>
+
+{%set tab_activity="active"%}
+{%include "navigation.html"%}
+
+<div id="node_selector">	
+ <div class="row">
+  <div class="span3">
+   <ul id="node_list" class="nav nav-list well">
+    <li><a data-node-key="all" href="#"><i class="icon-home"></i>Tutto</a><i class="pull-right icon-chevron-right"></i></li>
+    <li class="nav-header"><i class="icon-tags"></i>Argomenti</li>
+    {%for node in node_list%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%endfor%}
+    <li>
+     <a href="/social/nodelist"><i class="icon-search"></i>Altre scuole e argomenti</a>
+    </li>
+    <li class="nav-header"><i class="icon-fire"></i>Più discussi</li>
+    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%endfor%}
+    <li class="nav-header"><i class="icon-asterisk"></i>Nuovi</li>
+    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%endfor%}
+   </ul>    
+  </div>
+  <div class="span9">
+{%if user %}	
+   <div class="well" style="padding: 10px;"><h4><small>Aggiungi nuovo</small></h4>
+    <div class="btn-toolbar">
+     <div id="open_post_button" class="btn btn-primary" onclick="onOpenPostForm()">Messaggio</div>
+     {%if commissario%}
+     <button class="btn btn-primary" onclick="opennewisp();">Ispezione</button>
+     <button class="btn btn-primary" onclick="opennewdieta();">Ispezione Diete</button>
+     <button class="btn btn-primary" onclick="opennewnc();">Non conformit&agrave;</button>
+    {%endif%}
+     <button class="btn btn-primary" onclick="opennewnota();">Nota</button>
+    </div>
+   </div>
+   {%endif%}  
+<div id="new_post" style="display:none" class="well">
+ <form id="new_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+ <input type="hidden" name="cmd" value="create_open_post"/>
+ <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
+ <!--input type="hidden" id="form_node" name="node" value=""/-->
+	 <div id="post_title" class="form_parent">
+		 <label id="post_content_label" for="titolo">Argomento</label>
+		 <select class="required" name="node" id="form_node">
+    {%for node in node_list%}<option value="{{node.key.urlsafe()}}" href="#">{{node.name}}</option>
+    {%endfor%}
+		 </select>
+	 </div>
+	 <div id="post_title" class="form_parent">
+		 <label id="post_content_label" for="titolo">Titolo</label>
+		 <input class="span8 required" name="title" id="post_title_text"></input>
+	 </div>
+	 <div id="post_content" class="form_parent">
+		 <label id="post_content_label" for="content">Contenuto</label>
+		 <input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
+	 </div>
+	 <div class="form_parent post_attachments">       
+	  <label class="control-label" for="e_attach">Allegati</label>
+	  <input type="file" name="attach_file" id="p_attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <!--input type="file" name="attach_file" id="p_attach_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+	  <input type="file" name="attach_file" id="p_attach_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/-->
+	 </div>
+	 
+	 <div class="form-actions">
+		 <input id="open_post_submit" class="btn btn-primary" type="submit" value="Salva" data-loading-text="Invio risposta in corso..."/>	
+		 <input id="open_post_cancel_button" class="btn btn-primary" type="reset" value="Annulla" onclick="onOpenPostFormCancel()"/>
+	 </div>
+ </form> 
+</div>
+   <div id="node_title">
+    <h4 style="display:inline;"><span>titolo</span></h4><a class="pull-right" href="">link<i class="icon-resize-full"></i></a>
+   <div>
+   <div id="main_stream">
+    <ul id="main_stream_list" class="unstyled">
+    </ul>
+   </div>
+   <div id="main_cmd">
+    <div id="more_posts" class="btn btn-normal span5 offset2">Carica altri...</div>
+    <div id="no_more_posts" class="span5 offset2 alert alert-info fade in" style="display:none;">Non sono presenti altri messaggi<a class="close" data-dismiss="alert" href="#">&times;</a>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>	
+ <div id="new-data" style="display:none;">
+  <div id="new-data-form" style="border: none;"></div> 
+  <div id="new-data-preview" style="display:none;"></div> 
+ </div> 
+ <div id="new-nc" style="display:none;"></div>
+<div id="tools" class="s_tools">
+	<div class="s_modal_reshare"></div>
+</div>

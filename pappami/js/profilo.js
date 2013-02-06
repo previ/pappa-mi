@@ -15,6 +15,10 @@ var combo_config = {
 
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
+	var parts = window.location.href.slice(window.location.href.indexOf('?') + 1).split('#');
+	
+	$('a[href=#'+parts[1]+"]").tab('show');
+	
     $("#avatar_dialog").dialog({ title:"Immagine", modal: true, width: "30em", zIndex: 3, autoOpen: false });
     $("#avatar").click(function() {
         $("#avatar_dialog").dialog("open");

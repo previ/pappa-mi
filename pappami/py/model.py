@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-
+from google.appengine.api import search
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
 import google.appengine.api.images
 import threading
-
+import math
 from google.appengine.ext.ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
-
-from common import cached_property, Const
+import base
+from common import cached_property, Const, Cache
 from engineauth import models
+import jinja2
+import os
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -35,6 +38,23 @@ class Citta(model.Model):
   def get_first(cls):
     return cls.query().get()
   
+  def create_resource(self):
+      
+      resource=self.get_resource()
+      if not resource:
+        resource=SocialResource(parent=self.key,
+                                        name=self.nome,
+                                        type="city",
+                                        geo=self.geo,
+                                        )
+        resource.put()
+      return resource
+  
+  def get_resource(self):
+      resource=SocialResource.query(ancestor=self.key).get()
+      if resource:
+          assert resource.type=="city"
+      return resource
   
 class Configurazione(model.Model):
   nome = model.StringProperty()
@@ -44,6 +64,10 @@ class Configurazione(model.Model):
   def get_value_by_name(cls, name):
     return Configurazione.query(Configurazione.nome == name).get().valore
   
+  
+      
+  
+      
 class CentroCucina(model.Model):  
   def __init__(self, *args, **kwargs):
     self._ce_cu_zo_cache = None
@@ -67,10 +91,6 @@ class CentroCucina(model.Model):
   creato_il = model.DateTimeProperty(auto_now_add=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
-
-  #_lock = threading.RLock()
-  #_ce_cu_zo_cache = None
-  #_zo_of_cache = None  
   
   @classmethod
   def get_by_citta(cls, citta_key):
@@ -148,7 +168,27 @@ class Commissione(model.Model):
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
-    
+  
+  def create_resource(self):
+      
+      resource=self.get_resource()
+      if not resource:
+        resource=SocialResource(parent=self.key,
+                                        name=self.nome,                                        
+                                        type="cm",
+                                        geo=self.geo,
+                                        )
+        resource.put()
+      return resource
+        
+        
+  def get_resource(self):
+      resource=SocialResource.query(ancestor=self.key).get()
+      if resource:
+          assert resource.type=="commission"
+      return resource
+  
+  
   def commissari(self):
     if not self._commissari:
       self._commissari = list()
@@ -182,7 +222,7 @@ class Commissario(model.Model):
   avatar_data = model.BlobProperty()
 
   emailComunicazioni = model.StringProperty()
-
+  newsletter=model.BooleanProperty(default=True)
   privacy = model.PickleProperty()
   notify = model.PickleProperty()
 
@@ -196,7 +236,8 @@ class Commissario(model.Model):
   modificato_da = model.KeyProperty(kind=models.User)
   
   ultimo_accesso_il = model.DateTimeProperty()
-
+  ultimo_accesso_notifiche= model.DateTimeProperty()
+  
   stato = model.IntegerProperty()
   
   cmdefault = None  
@@ -220,7 +261,11 @@ class Commissario(model.Model):
   @classmethod
   def get_all(cls):
     return Commissario.query()
-    
+  
+  @classmethod
+  def get_for_newsletter(cls):
+    return Commissario.query().filter(Commissario.newsletter==True)
+
   @classmethod
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
@@ -341,6 +386,7 @@ class Commissario(model.Model):
   privacy_subjects = {0: "anyone",
                       1: "registered",
                       2: "cm"}
+
   
 class CommissioneCommissario(model.Model):
   commissione = model.KeyProperty(kind=Commissione)
@@ -404,15 +450,15 @@ class Piatto(model.Model):
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None
-    if settimana not in cls._pi_gi_cache:
+    if str(menu.key.id) + "-" + str(settimana) not in cls._pi_gi_cache:
       pi_gi = dict()
       for pg in PiattoGiorno.query().filter(PiattoGiorno.menu == menu.key).filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto.get()
-      cls._pi_gi_cache[settimana] = pi_gi
+      cls._pi_gi_cache[str(menu.key.id) + "-" + str(settimana)] = pi_gi
     else:
-      pi_gi = cls._pi_gi_cache[settimana]
+      pi_gi = cls._pi_gi_cache[str(menu.key.id) + "-" + str(settimana)]
     return pi_gi
         
   @classmethod
@@ -468,6 +514,7 @@ class MenuHelper():
   giorno = None
   settimana = None
 
+  #_giorni = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì","Sabato", "Domenica"]
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):
     return self._giorni[self.giorno-1]
@@ -475,7 +522,8 @@ class MenuHelper():
     return datetime.now().date() == self.data
   
   def to_dict(self):
-    return {"primo": self.primo.nome, "primo_key": str(self.primo.key),
+    return {"data":str(self.data), "giorno": str(self.giorno), "settimana":self.getData(),
+            "primo": self.primo.nome, "primo_key": str(self.primo.key),
             "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key),
             "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key),
             "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key)}
@@ -623,6 +671,10 @@ class Ispezione(model.Model):
   def data(self): 
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
 
+  @property
+  def restype(self):
+    return "isp"
+  
   testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
             "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
             "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
@@ -705,7 +757,7 @@ class Nonconformita(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
-  
+    
   @classmethod
   def get_by_cm(cls, cm):
     return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
@@ -719,6 +771,10 @@ class Nonconformita(model.Model):
 
   def sommario(self):
     return self.tipoNome()
+
+  @property
+  def restype(self):
+    return "nc"
 
   @cached_property
   def get_allegati(self): 
@@ -808,6 +864,10 @@ class Dieta(model.Model):
 
   def sommario(self):
     return self.tipoNome()
+  
+  @property
+  def restype(self):
+    return "dieta"
   
   @classmethod
   def get_by_cm_data_turno_tipo(cls, cm, data, turno, tipo):
@@ -902,7 +962,7 @@ class Nota(model.Model):
   note = model.TextProperty(default="")
   anno = model.IntegerProperty()
     
-  creato_il = model.DateTimeProperty(auto_now_add=True)
+  creato_il = model.DateTimeProperty(auto_now=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
@@ -913,6 +973,10 @@ class Nota(model.Model):
 
   def sommario(self):
     return self.titolo
+
+  @property
+  def restype(self):
+    return "nota"
   
   @cached_property
   def notefmt(self):
@@ -946,9 +1010,18 @@ class Allegato(model.Model):
   descrizione = model.StringProperty(default="",indexed=False)
   
   dati=None
+
+  @classmethod
+  def _pre_delete_hook_1(cls, key):
+    blobstore.delete(key.get().blob_key)
+
+  @classmethod
+  def get_by_obj(cls, obj):
+    return cls.query().filter(Allegato.obj==obj)
   
   def isImage(self):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
+
   def contentType(self):
     return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
   
@@ -1257,8 +1330,800 @@ class StatisticheIspezioni(model.Model):
     for attr in self._attrs_sub:
       for attr_sub in getattr(self, attr+"_names"):
         self.incValSub(attr, attr_sub, isp)
-  
+        
+class SocialNode(model.Model):
+    name = model.StringProperty(default="")
+    description = model.TextProperty(default="",indexed=False)
+    active = model.BooleanProperty(default=True)
+    founder = model.KeyProperty(default=None)
 
+    default_post = model.BooleanProperty(default=True,indexed=False)
+    default_comment = model.BooleanProperty(default=True,indexed=False)
+    default_admin = model.BooleanProperty(default=False,indexed=False)
+
+    last_act = model.DateTimeProperty(auto_now=True)
+
+    #latest_activity = model.DateTimeProperty(auto_now="")
+    #latest_post = model.KeyProperty(kind="SocialPost")
+
+    resource = model.KeyProperty(repeated=True)
+    res_type = model.StringProperty(repeated=True)
+    
+    created = model.DateTimeProperty(auto_now=True)
+    rank = model.IntegerProperty()
+    
+    @classmethod
+    def get_nodes_by_resource(cls,res_key):
+      nodes=SocialNode.query().filter(SocialNode.resource==res_key).fetch()
+      return nodes
+
+    @classmethod
+    def get_most_recent(cls):
+      nodes=SocialNode.query().order(-SocialNode.created).fetch()
+      return nodes
+
+    @classmethod
+    def get_most_active(cls):
+      nodes=SocialNode.query().order(-SocialNode.rank).fetch()
+      return nodes
+
+    def init_rank(self):
+      init_rank = datetime.now() - Const.BASE_RANK
+      self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
+      
+    def calc_rank(self, activity):
+      values = {SocialPost: 10,
+                SocialComment: 7,
+                Vote: 3 }
+      now = datetime.now()
+      delta = now - self.last_act
+      delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
+      self.rank += ((delta_rank * values[activity]) / 10)
+        
+    def _post_put_hook(self, future):
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      
+      node=future.get_result().get()
+      doc=search.Document(
+                      doc_id='node-'+node.key.urlsafe(),
+                      fields=[search.TextField(name='name', value=node.name),
+                              search.HtmlField(name='description', value=node.description)],
+                      language='it')
+      
+     
+      index = search.Index(name='index-nodes',
+                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      try:
+          index.add(doc)
+      
+      except search.Error, e:
+          pass
+
+    def _pre_delete_hook_1(cls, key):
+        
+        index = search.Index(name='index-nodes',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.remove('node-'+key.urlsafe())
+        
+        except search.Error, e:
+            pass
+
+    @classmethod
+    def active_nodes(cls):
+           return cls.query().filter(cls.active==True)
+        
+              
+    def __init__(self, *args, **kwargs):
+        super(SocialNode, self).__init__(*args, **kwargs) 
+        
+    def create_open_post(self, author, title, content, resources=[], res_types=[]):
+        floodControl=memcache.get("FloodControl-"+str(author.key))
+        if floodControl:
+          raise base.FloodControlException
+        
+        new_post= SocialPost(parent=self.key)
+        new_post.author=author.key
+        new_post.content=content
+        new_post.title=title
+        new_post.resource=resources
+        new_post.res_type=res_types
+        new_post.init_rank()
+        new_post.put()
+        self.last_act=new_post.created
+        self.calc_rank(SocialPost)
+        self.put()
+        comm=Commissario.get_by_user(author)
+        SocialPostSubscription(parent=self.key,user=author.key).put()
+        
+        #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
+        
+        SocialEvent.create(type="post", target_key=self.key, source_key=new_post.key, user_key=author.key)
+        
+        if Const.FLOOD_SYSTEM_ACTIVATED:       
+          memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+        return new_post.key
+        
+        
+    def delete_post(self,post):
+        sub=SocialPostSubscription.query(ancestor=post.key).get()
+        if sub:
+            sub.key.delete()
+        #delete comment notifications
+        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key)))
+        #delete post notifications
+        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key.parent()).filter(SocialNotification.source_key==post.key)))
+        #delete comments
+        model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
+        post.key.delete()
+           
+        
+    def set_position(self,lat,lon):
+        self.geo=model.GeoPt(lat,lon)
+        self.put()
+    
+    def get_latest_posts(self,amount):
+        
+        posts= SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(amount)
+        return posts    
+        
+    def subscribe_user(self,current_user):
+        #user has already subscribed to this node
+        if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).count()>0:
+            return
+        
+        user1 = SocialNodeSubscription(parent=self.key)
+        if current_user:
+            user1.user=current_user.key
+        else:
+            raise users.UserNotFoundError
+        
+        user1.put()
+               
+        user1.init_perm()
+    
+        Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+    
+    def unsubscribe_user(self, current_user):
+         subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
+         if subscription is not None:
+            subscription.key.delete()
+            Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+                    
+         else:
+             raise users.UserNotFoundError
+            
+    def is_user_subscribed(self,user_t):
+        if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).count()>0:
+            return True
+        else:
+            return False
+          
+    def get_subscription(self,user_t):
+        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).get()
+        
+        
+    def subscription_list(self,amount):
+       q=SocialNodeSubscription.query(ancestor=self.key).order(-SocialNodeSubscription.starting_date).fetch(amount)
+       q=[i.user.get() for i in q if (i.user is not None)]
+       return q
+    
+    def delete_subscription(self,user_t):
+        SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
+        
+
+    def permission_for_edit(self, permission):
+        perm=getattr(self,"default_"+permission)
+        if perm is True: 
+            return "<option selected value='True'>S&igrave;</option>\n<option value='False'>No</option>"
+        
+        else:
+            return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
+    
+    def get_latest_post(self):
+        last_post=memcache.get("last_post_"+str(self.key.id()))
+        if not last_post:
+            last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(1)
+            memcache.add("last_post_"+str(self.key.id()),last_post)
+        return last_post
+    
+    @classmethod    
+    def get_all_cursor(cls, cursor):
+        if cursor and cursor != "":
+          return SocialNode.active_nodes().order(SocialNode.name).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
+        else:
+          return SocialNode.active_nodes().order(SocialNode.name).iter(produce_cursors=True)
+
+    @classmethod    
+    def get_active_cursor(cls, cursor):
+        if cursor and cursor != "":
+          return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
+        else:
+          return SocialNode.active_nodes().filter().iter(produce_cursors=True)
+    
+   
+   
+class SocialPost(model.Model):
+    def __init__(self, *args, **kwargs):
+      self._comments = None
+      super(SocialPost, self).__init__(*args, **kwargs)  
+  
+    author = model.KeyProperty(kind=models.User)
+    title = model.StringProperty(default="")
+    content = model.TextProperty(default="")
+    #public_reference=model.StringProperty(default="")
+    resource=model.KeyProperty(repeated=True)
+    res_type=model.StringProperty(repeated=True)
+    
+    created = model.DateTimeProperty(auto_now=True)
+    modified = model.DateTimeProperty(auto_now=True)
+    
+    comments = model.IntegerProperty(default=0)
+    last_act = model.DateTimeProperty(auto_now=True)
+    
+    rank = model.IntegerProperty(default=0)
+    
+    @cached_property
+    def extended_date(self):
+      delta = datetime.now() - self.created
+      if delta.days == 0 and delta.seconds < 3600:
+        return str(delta.seconds / 60) + " minuti fa"
+      elif delta.days == 0 and delta.seconds < 3600*24:
+        return str(delta.seconds / 3600) + " ore fa"
+      else:
+        return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+      
+    @cached_property
+    def comment_list(self):
+      comment_list = list()
+      for comment in SocialComment.query(ancestor=self.key).order(SocialComment.created).fetch():
+        comment_list.append(comment)          
+      return comment_list
+    
+    def reset_comment_list(self):
+      self.comment_list.invalidate()
+    
+    def get_by_resource(self, res):
+      return SocialPost.query().filter(SocialPost.resource==res).fetch()
+          
+    @cached_property
+    def commissario(self):
+      return Commissario.get_by_user(self.author.get())
+
+    @cached_property
+    def votes(self):
+      votes = list()
+      for v in Vote.get_by_ref(self.key):
+        votes.append(v)
+      return votes
+
+    @cached_property
+    def reshares(self):
+      reshares = list()
+      for p in self.get_by_resource(self.key):
+        reshares.append(p)
+      return reshares
+
+    @cached_property
+    def attachments(self):
+      attachments = list()
+      for attach in Allegato.query().filter(Allegato.obj == self.key):
+        attachments.append(attach)
+      return attachments
+    
+    def can_admin(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub and (sub.can_admin or self.author == user.key)
+
+    def can_comment(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub.can_comment or self.author == user.key
+
+    @cached_property
+    def subscriptions(self):
+      subs = dict()
+      for s in SocialPostSubscription.query(ancestor=self.key).fetch():
+        subs[s.user] = s
+      return subs
+      
+    def can_sub(self, user):
+      logging.info(str(self.subscriptions.get(user.key) is None))
+      return (self.subscriptions.get(user.key) is None)
+          
+    def remove_attachment(self, attach_key):
+      attach_key.delete()
+      self.clear_attachments()
+
+    def clear_attachments(self):
+      logging.info("attachments " + str(self.__dict__.get("attachments")))
+      logging.info("attachments " + str(self.attachments))
+      if self.__dict__.get("attachments"):
+        del self.__dict__["attachments"]
+
+    @classmethod
+    def get_by_node_rank(cls, node, page, start_cursor=None):
+      cache = Cache.get_cache("SocialPost")
+      cache_key = "SocialPost-" + str(node.id) + "-" + str(start_cursor)
+      postlist = cache.get(cache_key)
+      next_cursor = cache.get(cache_key + "-next_cursor")
+      more = None
+      if not postlist:
+        postlist = list()
+        posts, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        postlist = [p for p in posts]
+        cache.put(cache_key, postlist)
+        cache.put(cache_key + "-next_cursor", next_cursor)
+      return postlist, next_cursor, more
+    
+    @classmethod
+    def get_user_stream(cls, user, page, start_cursor=None):
+      cache =  Cache.get_cache("UserStream")
+      cache_key = "UserStream-" + str(user.key.id) + "-" + str(start_cursor)
+      stream = cache.get(cache_key)
+      next_cursor = cache.get(cache_key + "-next_cursor")
+      if not stream:
+        stream = list()        
+        next_cursor = int(start_cursor if start_cursor else 0) + 1
+        for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
+          next_cursor_rank = None
+          for x in range(0, next_cursor):
+            postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node, page=page, start_cursor=next_cursor_rank)
+            stream.extend(postlist)
+            if not more:
+              break
+        
+        stream = sorted(stream, key=lambda post: post.rank, reverse=True)
+        offset = int(start_cursor if start_cursor else 0)
+        logging.info("offset: " + str(offset))
+        stream = stream[offset*Const.ACTIVITY_FETCH_LIMIT : (offset+1)*Const.ACTIVITY_FETCH_LIMIT]
+        cache.put(cache_key, stream)
+        cache.put(cache_key + "-next_cursor", next_cursor)
+      return stream, next_cursor, True
+
+    def reshare(self,target_node,new_author,new_content, new_title):
+      new_post = None
+      if len(self.res_type) > 0 and self.res_type[0] == "post":
+        #reshare of a reshare
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.resource[0]], res_types=[self.res_type[0]])
+      else:
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key], res_types=["post"])
+      return new_post
+      
+    def reshare_old(self,target_node,new_author,new_content, new_title):
+      resource=None
+  
+      #reshare of a reshare
+      if self.resource is not None:
+          resource_key=self.resource
+          resource=resource_key.get()
+      #reshare of a post
+      else:
+          #reshare of an already reshared post
+          resource=SocialResource.query(ancestor=self.key).get()
+          #reshare of a never reshared post
+          if resource is None:
+              resource=SocialResource(parent=self.key,
+                                      title=self.title,
+                                      type="post",
+                                      author=self.author,
+                                      content=self.content,
+                                      created=self.created
+                                      
+                                      )
+              resource.put()
+              resource_key=resource.key
+          else:
+              resource_key=resource.key
+              
+      new_post=resource.publish(target_node,new_content,new_title,new_author)
+      if new_post:
+                    
+          return new_post
+    
+    def subscribe_user(self, user):
+      #user has already subscribed to this post
+      if self.subscriptions.get(user.key):
+        return
+        
+      sub = SocialPostSubscription(parent=self.key)
+      
+      if user:
+          sub.user=user.key
+      else:
+          raise users.UserNotFoundError
+      
+      sub.put()    
+      self.subscriptions.invalidate()
+              
+    def unsubscribe_user(self, user):
+      subscription=self.subscriptions.get(user.key)
+      if subscription is not None:
+         subscription.key.delete()
+         self.subscriptions.invalidate()
+    
+      else:
+          raise users.UserNotFoundError
+    
+    def create_comment(self,content,author):
+      floodControl=memcache.get("FloodControl-"+str(author.key))
+      if floodControl:
+        raise base.FloodControlException
+      
+      new_comment= SocialComment(parent=self.key)
+      new_comment.author=author.key
+      new_comment.content=content
+      new_comment.put()
+      
+      self.comments=self.comments + 1
+      self.calc_rank(SocialComment)
+      self.put()
+      self.key.parent().get().calc_rank(SocialComment)
+      self.key.parent().get().put()
+      
+      self.subscribe_user(author)
+      
+      SocialPostSubscription(parent=self.key,user=author.key).put()
+
+      #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_comment",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
+      SocialEvent.create(type="comment", target_key=self.key, source_key=new_comment.key, user_key=author.key)
+      
+      if Const.FLOOD_SYSTEM_ACTIVATED:
+        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+      
+      return new_comment
+
+    def delete_comment(self, comment_key):
+      comment_key.delete()
+      self.comments=self.comments-1
+      self.put()
+
+    def vote(self, vote, user):
+      if vote == 0:
+        for p_vote in self.votes:
+          if p_vote.c_u == user.key:
+            if p_vote.vote == 1:
+              p_vote.key.delete()
+            break;
+      else :
+        vote = Vote(ref = self.key, vote = vote, c_u = user.key)
+        vote.put()
+  
+      try:
+        del self.cache["votes"]
+      except AttributeError:
+        pass
+      self.calc_rank(Vote)
+      self.key.parent().get().calc_rank(Vote)
+      self.key.parent().get().put()
+      
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+
+    def can_vote(self, user):
+      if not user:
+        return False
+      canvote = True
+      for p_vote in self.votes:
+        if p_vote.c_u == user.key:
+          canvote = False
+          break;
+      return canvote
+
+    def init_rank(self):
+      init_rank = datetime.now() - Const.BASE_RANK
+      self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
+
+    def calc_rank(self, activity):
+      values = {SocialComment: 7,
+                Vote: 3 }
+      now = datetime.now()
+      if self.last_act is None:
+        self.last_act = now
+      delta = now - self.last_act
+      delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
+      self.rank += ((delta_rank * values[activity]) / 10)
+
+    def _post_put_hook(cls, future):
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      
+      post=future.get_result().get()
+      doc=search.Document(
+                      doc_id='post-'+post.key.urlsafe(),
+                      fields=[search.TextField(name='title', value=post.title),
+                              search.HtmlField(name='content', value=post.content)],
+                      language='it')
+      
+     
+      index = search.Index(name='index-posts',
+                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      try:
+          index.add(doc)
+      
+      except search.Error, e:
+          pass
+
+    def _pre_delete_hook(cls, key):
+        index = search.Index(name='index-posts',
+                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        try:
+            index.remove('post-'+key.urlsafe())
+        
+        except search.Error, e:
+            pass
+
+class SocialPostSubscription(model.Model):
+    user = model.KeyProperty(kind=models.User)
+    
+    @classmethod
+    def get_posts_keys_by_user(cls,user):
+      sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key).fetch(keys_only=True)
+      return [i.parent() for i in sub_list]  
+
+    @classmethod
+    def get_by_post(cls,post_key):
+      return SocialPostSubscription.query(ancestor=post_key).fetch()
+        
+class SocialNodeSubscription(model.Model):
+    starting_date=model.DateProperty(auto_now=True)
+    user = model.KeyProperty(kind=models.User)
+    can_comment=model.BooleanProperty(default=False)
+    can_post=model.BooleanProperty(default=False)
+    can_admin=model.BooleanProperty(default=False)
+    
+    
+    def init_perm(self):
+        parent=self.key.parent().get()
+        self.can_comment=parent.default_comment
+        self.can_post=parent.default_comment
+        self.can_admin=parent.default_admin
+        self.put()
+        
+    @classmethod
+    def get_nodes_by_user(self, user_t, order_method=None):
+        
+        if not order_method:
+            order_method=SocialNodeSubscription.starting_date
+        
+        subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
+        for s in subscriptions_list:
+          logging.info("Node.key: " + str(s.key.parent()))
+          if not s.key.parent().get():
+            s.key.delete()
+          else:
+            logging.info("Node: " + s.key.parent().get().name)
+          
+        node_list=[i.key.parent().get() for i in subscriptions_list]
+        return node_list
+    
+    @classmethod
+    def get_nodes_keys_by_user(cls,user):
+      cache = Cache.get_cache("UserNodeSubscription")
+      cache_key = "UserNodeSubscription-" + str(user.key.id)
+      nodes = cache.get(cache_key)
+      if not nodes:        
+        sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(SocialNodeSubscription.starting_date).fetch(keys_only=True)
+        nodes = [i.parent() for i in sub_list]
+        cache.put(cache_key, nodes)
+      return nodes
+
+    @classmethod
+    def get_by_node(cls, node_key, cursor):
+      if cursor:
+        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20, start_cursor=cursor)
+      else:
+        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20)
+
+class SocialResource(model.Expando):
+    url=model.StringProperty()
+    type=model.StringProperty()
+    
+#    def _post_put_hook(self,future):
+#        assert self.key.parent()
+#        count=SocialResource.query(ancestor=self.key.parent()).count()
+#        logging.info(self.key.parent().get())
+#        assert count==1
+#        assert False
+#        logging.info("aaaaaaaaaaaaaaaaaaaaaaaaa")
+#           
+    @staticmethod
+    def get_resource(key):
+        return SocialResource.query(ancestor=key).get()
+    #rompo l'MVC, possano gli Dei antichi e nuovi perdonare il mio sacrilegio    
+    #deprecated
+    #def render(self):
+        #render_method = getattr(self,'render_'+self.type)
+        #return render_method()
+    
+    
+    #def render_post(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/post.html")
+       
+        #return template.render(template_values)  
+    
+    #def render_ispezione(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/ispezione.html")
+        #return template.render(template_values)  
+
+    #def render_nonconf(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/nonconf.html")
+        #return template.render(template_values)  
+    #def render_dieta(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/dieta.html")
+        #return template.render(template_values)  
+    #def render_nota(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/nota.html")
+        #return template.render(template_values)  
+    
+    #def render_city(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/city.html")
+        #return template.render(template_values)  
+    #def render_commission(self):
+        #template_values = {
+                 #"resource":self
+        #}
+        #template = jinja_environment.get_template("social/resources/commission.html")
+                
+        #return template.render(template_values)  
+    
+    
+    def publish(self,target_node,new_content, new_title,new_author):
+        new_post=target_node.get().create_open_post(content=new_content,title=new_title,author=new_author,resources=[self.key], res_types=["generic"])
+        return new_post
+    
+class SocialComment(model.Model):
+    author=model.KeyProperty(kind=models.User)
+    content=model.TextProperty(default="")
+    #public_reference=model.StringProperty(default="")
+    created=model.DateTimeProperty(auto_now_add=True)
+
+    def _post_put_hook(self, future):
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      future.get_result().get().key.parent().get().reset_comment_list()
+        
+    @cached_property
+    def commissario(self):
+      return Commissario.get_by_user(self.author.get())
+
+    def can_admin(self, user):
+      sub_cache = Cache.get_cache('SocialNodeSubscription')
+      cache_key = str(self.key.parent().parent().id) + "-" + str(user.key.id)
+      sub = sub_cache.get(cache_key)
+      if not sub:
+        sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
+        sub_cache.put(cache_key, sub)
+      return sub and (sub.can_admin or self.author == user.key)
+
+
+class Vote(model.Model):
+  def __init__(self, *args, **kwargs):
+    self._commissario = None
+    super(Vote, self).__init__(*args, **kwargs)  
+  
+  ref = model.KeyProperty()
+  vote = model.IntegerProperty()
+
+  c_u = model.KeyProperty(kind=models.User)
+  c_d = model.DateTimeProperty(auto_now_add=True)
+  
+  @cached_property
+  def author(self):
+    return Commissario.get_by_user(self.c_u)
+  
+  @classmethod
+  def get_by_ref(cls, ref):
+    return Vote.query().filter(Vote.ref==ref)
+
+class SocialProfile(model.Model):
+      ultimo_accesso_notifiche= model.DateTimeProperty(auto_now=True)
+      
+      @classmethod
+      def create(cls,user):
+          if cls.query(ancestor=user).get():
+              return
+          else:
+             SocialProfile(parent=user).put()
+      
+      #@classmethod
+      #def retrieve_notifications(self,user_t,cursor):
+        #nodes_list=SocialNodeSubscription.get_nodes_keys_by_user(user_t)
+        #posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
+        
+        
+        #sources_list=nodes_list+posts_list
+        #logging.info(sources_list)
+        #if not cursor or cursor == "undefined":
+               #return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10) 
+        #else:
+               #return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+                    
+
+class SocialEvent(model.Model):
+  type = model.StringProperty()
+  target = model.KeyProperty()
+  source = model.KeyProperty()
+  user = model.KeyProperty()
+  date = model.DateTimeProperty(auto_now_add=True)
+  status = model.IntegerProperty()
+
+  @classmethod
+  def create(cls, type, target_key, source_key, user_key):
+    event=cls(type=type, target=target_key, source=source_key, user=user_key, status=0)
+    event.put()
+
+  @classmethod
+  def get_by_status(cls, status, cursor):
+    return SocialEvent.query().filter(SocialEvent.status==status).order(SocialEvent.date).fetch_page(20, start_cursor=cursor)
+          
+  
+class SocialNotification(model.Model):
+  event = model.KeyProperty()
+  user = model.KeyProperty()
+  date = model.DateTimeProperty(auto_now_add=True)
+  
+  status = model.IntegerProperty()
+
+  def set_read(self):
+    self.status=1
+    self.put()
+    
+  @classmethod
+  def create(cls, event_key, user_key):
+    notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=0)
+    notification.put()
+  
+  @classmethod
+  def get_by_user(cls, user, cursor=None):
+    cache = Cache.get_cache('SocialNotification')
+    cache_key = "SocialNotification-" + str(user.id) + str(cursor)
+    ntfs = cache.get(cache_key)
+    next_cursor = None
+    more = None
+    if not ntfs:
+      ntfs = list()
+      results, next_cursor, more = SocialNotification.query().filter(SocialNotification.user==user).order(-SocialNotification.date).fetch_page(20, start_cursor=cursor)
+      for n in results:
+        ntfs.append(n)
+      cache.put(cache_key, ntfs)
+
+    return ntfs, next_cursor, more
+        
+  @classmethod
+  def get_by_date(cls, date, cursor=None):
+      return SocialNotification.query().order(-SocialNotification.date)
+      
+      
+          
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)

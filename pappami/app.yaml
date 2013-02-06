@@ -1,5 +1,5 @@
-application: pappa-mi-hr
-version: 2
+application: test-pappa-mi-hr
+version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -40,7 +40,7 @@ skip_files: |
  (.*/RCS/.*)|
  (\..*)| 
  )$
- 
+
 handlers:
 
 - url: /_ah/mail/.+ 
@@ -78,11 +78,15 @@ handlers:
 - url: /admin/stats/.*
   script: py.stats.app
   login: admin
-  
+
 - url: /adminmenu
   script: py.admin.app
   login: admin
   
+- url: /admin/.*
+  script: py.admin.app
+  login: admin
+
 - url: /admin/*
   script: py.admin.app
   login: admin
@@ -173,7 +177,22 @@ handlers:
 
 - url: /menuslide/*
   script: py.menu.app
-  
+
+- url: /social/.*
+  script: py.social.app
+
+- url: /social/*
+  script: py.social.app
+
+- url: /api/.*
+  script: py.api.app
+
+- url: /mobile/.*
+  script: py.mobile.app
+
+- url: /mobile/*
+  script: py.mobile.app
+
 - url: .*
   script: py.main.app
 

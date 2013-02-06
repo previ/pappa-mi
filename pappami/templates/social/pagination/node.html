@@ -1,0 +1,10 @@
+{%for node in nodelist%}
+	<li class="span4">
+		<div class="thumbnail">
+			<div class="node">
+				<div class="s_node_name"><a href="/social/node/{{node.key.urlsafe()}}">{{ node.name }}</a></div>
+				<div class="s_node_description">{{node.description|truncate(length=200, end="...")}}</div>
+			</div>
+		</div>
+	</li>
+{% endfor %}

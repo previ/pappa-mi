@@ -1,0 +1,126 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="apple-touch-icon" href="/img/logo_57.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/img/logo_72.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/img/logo_114.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
+
+  
+  <title>Pappa-Mi Mobile</title>
+  
+  <script>  
+  console.log(self.name + " - " + window.location.href);
+  if (window.location.href.indexOf('#')!=-1){
+    window.location = window.location.href.substr(0,window.location.href.indexOf('#'));
+  }
+  window.veespo = {
+      config:{
+        apiUrl:        "http://glass.veespo.com:6900",
+		    apiKey:        "api-demo-pappa-mi",
+		    delayInit:     false,
+		    userDetails:   {},
+      },
+  };
+  </script>
+</head> 
+
+<body> 
+
+<!-- app -->
+<div data-role="page" id="page-menu">
+ <div data-role="header">
+  <a href="/mobile" rel="external" data-icon="home" data-role="button" data-iconpos="notext"></a>
+  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi - Menù</h1>
+  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop"></a>
+ </div> 
+ <div data-role="content">
+ </div>
+ <div id="menu"></div>
+ <!--div data-role="footer" data-position="fixed"><h3 id="user"></h3></div-->
+</div>
+<div data-role="page" id="page-veespo-settings" data-v-templates='g-veespo-confirm,p-spot-settings'></div>
+
+<div data-role="dialog" id="page-profile">
+  <div data-role="header" data-theme="d">
+  <h1>Profilo</h1>
+  </div>
+  <div data-role="content" data-theme="c">
+    <p>Profilo: <span id="user"></span></p>
+    <a href="dialog/index.html" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
+  </div>
+</div>
+
+</body>
+
+<!--  original -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+<link rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css" />
+<link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />  
+<link rel="stylesheet" href="/css/mobile.css" />  
+<!-- local
+<link rel="stylesheet" href="http://veespo.com/lib/lib-ext/css/jquery.mobile-1.1.0.min.css" />
+<link rel="stylesheet" href="http://veespo.com/lib/lib-ext/css/jquery.mobile.simpledialog.min.css" /> 
+-->
+
+<link rel="stylesheet" href="http://veespo.com/lib/core/css/veespo.css" />
+<link rel="stylesheet" href="http://veespo.com/lib/core/css/tags.css" />
+<link rel="stylesheet" href="http://veespo.com/lib/core/css/colors.css" />
+
+<!--  original -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+<script src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js"></script>
+
+<!--
+<script src="http://veespo.com/lib/lib-ext/js/jquery-1.7.1.min.js"></script>
+<script src="http://veespo.com/lib/lib-ext/js/jquery-ui-1.8.23.custom.min.js"></script>
+<script src="http://veespo.com/lib/lib-ext/js/jquery.mobile-1.1.0.min.js"></script>
+<script src="http://veespo.com/lib/lib-ext/js/jquery.mobile.simpledialog2.min.js"></script>
+-->
+<!--  veespo hosted -->  
+<script src="http://veespo.com/lib/lib-ext/js/jquery.nicescroll.js"></script>
+<script src="http://veespo.com/lib/lib-ext/js/touchpunch.js"></script>
+<script src="http://veespo.com/lib/lib-ext/js/mustache.js"></script>
+ 
+<!--  veespo -->
+<script src="http://veespo.com/lib/core/js/mutils.js"></script>  
+<script src="http://veespo.com/lib/core/js/logging.js"></script>  
+<script src="http://veespo.com/lib/core/js/init.js"></script>  
+<script src="http://veespo.com/lib/core/js/lib.js"></script>  
+<script src="http://veespo.com/lib/core/js/state.js"></script>  
+<script src="http://veespo.com/lib/core/js/api.js"></script>  
+<script src="http://veespo.com/lib/core/js/settings.js"></script>
+<script src="http://veespo.com/lib/core/js/interface.js"></script>  
+<script src="http://veespo.com/lib/core/js/dialogs.js"></script>  
+<script src="http://veespo.com/lib/core/js/tags.js"></script>  
+<script src="http://veespo.com/lib/core/js/colors.js"></script> 
+<script src="http://veespo.com/lib/core/js/debug.js"></script>     
+<script src="http://veespo.com/lib/core/js/page.js"></script>   
+<script src="http://veespo.com/lib/core/js/popups.js"></script>   
+
+<script src="http://veespo.com/lib/lib-pages/js/pageManager.js"></script>
+<script src="http://veespo.com/lib/lib-pages/js/templateManager.js"></script>
+
+<script src="http://veespo.com/lib/core/pages/g-tabs.js"></script>
+<script src="http://veespo.com/lib/core/pages/g-main.js"></script>
+<script src="http://veespo.com/lib/core/pages/g-bare.js"></script>
+<script src="http://veespo.com/lib/core/pages/g-confirm.js"></script>
+<script src="http://veespo.com/lib/core/pages/g-dialog.js"></script>
+<script src="http://veespo.com/lib/core/pages/p-tags.js"></script>
+<script src="http://veespo.com/lib/core/pages/p-colors.js"></script>
+<script src="http://veespo.com/lib/core/pages/p-lang.js"></script>
+<script src="http://veespo.com/lib/core/pages/p-user.js"></script>
+
+<!--  pages pappa mi-->
+<script src="/js/mobile/mobile-menu.js"></script>
+
+</html>

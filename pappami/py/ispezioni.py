@@ -25,6 +25,8 @@ from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
 from py.modelMsg import *
 from py.comments import CMCommentHandler
+from py.social import *
+
          
 class CMGetIspDataHandler(BasePage):
 
@@ -175,25 +177,29 @@ class IspezioneHandler(BasePage):
         else:
           isp.anno = isp.dataIspezione.year - 1
           
-        isp.creato_il = datetime.now()        
         isp.creato_da = self.get_current_user().key
         isp.modificato_da = self.get_current_user().key
         isp.put()
-
-        for allegato in isp.allegati:
-          allegato.obj = isp.key
-          allegato.put()
-        
+          
         memcache.delete("stats")
         memcache.delete("statsMese")
         
-        template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(isp.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
+        
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
       
 
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -244,7 +250,6 @@ class IspezioneHandler(BasePage):
 
         self.getBase(template_values)
         
-
 class NonconfHandler(BasePage):
   
   @commissario_required
@@ -325,24 +330,28 @@ class NonconfHandler(BasePage):
         else:
           nc.anno = nc.dataNonconf.year - 1
   
-        nc.creato_il = datetime.now()        
         nc.creato_da = self.get_current_user().key
         nc.modificato_da = self.get_current_user().key
         nc.put()
-  
-        for allegato in nc.allegati:
-          allegato.obj = nc.key
-          allegato.put()
-  
+    
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
+        
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
       
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -469,24 +478,27 @@ class DietaHandler(BasePage):
         else:
           dieta.anno = dieta.dataIspezione.year - 1
   
-        dieta.creato_il = datetime.now()        
         dieta.creato_da = self.get_current_user().key
         dieta.modificato_da = self.get_current_user().key
         dieta.put()
-  
-        for allegato in dieta.allegati:
-          allegato.obj = dieta.key
-          allegato.put()
-        
+          
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
-
+        #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]       
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
+        
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
 
-      self.getBase(template_values) 
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -612,25 +624,29 @@ class NotaHandler(BasePage):
         else:
           nota.anno = nota.dataNota.year - 1
        
-        nota.creato_il = datetime.now()        
         nota.creato_da = self.get_current_user().key
         nota.modificato_da = self.get_current_user().key
         nota.put()
         
         #logging.info(nota.allegati)
-              
-        for allegato in nota.allegati:
-          allegato.obj = nota.key
-          allegato.put()
-  
+                
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+        #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
+        #node = model.Key(urlsafe=self.request.get("node"))
+        node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
+        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
 
       else:
-        template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
+        pass
+        #template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
         
+      template = jinja_environment.get_template("social/pagination/post.html")
+
+      html=template.render(template_values)
+      response = {'response':'success','html':html,"cursor":''}
+      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -673,8 +689,12 @@ class NotaHandler(BasePage):
           'form_errors': form.errors
         }
       
-    self.getBase(template_values) 
-    
+    template = jinja_environment.get_template("social/pagination/post.html")
+
+    html=template.render(template_values)
+    response = {'response':'success','html':html,"cursor":''}
+    self.output_as_json(response)
+        
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),
     ('/isp/ispval', IspezioneValidationHandler),
