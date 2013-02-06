@@ -20,13 +20,15 @@
         $("[data-original-title]").tooltip();
     });
 </script> 
-<li class="activity_item" id="activity_{{activity.key.id()}}">
+<li class="activity_item" id="activity_{{activity.key.id()}}">{%if detail%}
+<meta property='og:title' content='{{activity.title}}' />
+<meta name="description" content='{{activity.summary}}' />{%endif%}
 <div class="activity_box">
  <div class="activity_avatar" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">
   <img class="avatar" src="{{activity.author_avatar(cmsro)}}" title="{{activity.author(cmsro)}}">
  </div>
- <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-original-title="apri in un'altra finestra"></span>
- {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-original-title="mostra / nascondi dettagli"></span>{%endif%}  
+ <span class="permalink" onclick="permalink('{{activity.key.id()}}')" rel="tooltip" data-html="true" data-original-title="apri in un'altra<br/>finestra"></span>
+ {%if detail is undefined and activity.hasdetail%}<span id="detail_exp_{{activity.key.id()}}" role="button" class="exp" tabindex="0" onclick="ondetail('{{activity.key.id()}}')" rel="tooltip" data-html="true" data-original-title="mostra / nascondi<br/>dettagli"></span>{%endif%}  
  <div class="activity_body">
   <div class="activity_author" onclick="filteractivities('user={{activity.c_ua.id()}}&type=&tag=&cm=')">{{activity.author(cmsro)}}</div>  
   <div class="activity_author_title">{{activity.author_title(cmsro)}}</div>
@@ -36,19 +38,19 @@
   {%if detail is undefined%}<div class="activity_summary" id="summary_{{activity.key.id()}}"{%if detail is undefined and activity.hasdetail%} style="cursor:pointer;" onclick="ondetail('{{activity.key.id()}}')"{%endif%}>{{activity.summary}}</div>{%else%}{% include detail %}{%endif%}
   <div class="activity_detail" id="detail_{{activity.key.id()}}"></div>
   <div class="activity_footer">   
-   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> persone <span id="vnum_{{activity.key.id()}}_me" {%if user is none or activity.canvote(user)%}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
+   <div class="activity_feedback" id="votes_{{activity.key.id()}}" onclick="onshowvotes('{{activity.key.id()}}')" style="display:{%if activity.likes() %}inline{%else%}none{%endif%};"><span class="badge badge-success">Piace a <span id="vnum_{{activity.key.id()}}">{{activity.likes()}}</span> {%if activity.likes() > 1%}persone{%else%}persona{%endif%} </span><span id="vnum_{{activity.key.id()}}_me" {%if user is none or activity.canvote(user)%}style='display:none;'{%endif%}> (compreso te)</span></div>{%if user%}
    <div class="activity_vote" id="vote_1_{{activity.key.id()}}" style="display:{%if activity.canvote(user)%}inline{%else%}none{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',1)">Mi piace</div>
     <!--button id="vote_{{activity.key.id()}}" onclick="onvote('{{activity.key.id()}}',-1)">Non mi piace</button-->
    </div>
    <div class="activity_vote" id="vote_2_{{activity.key.id()}}" style="display:{%if activity.canvote(user) %}none{%else%}inline{%endif%};">
     <div class="activity_vote_button" id="vote_{{activity.key.id()}}" onclick="onunvote('{{activity.key.id()}}')">Ho cambiato idea</div>
-   </div>
-   <div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:{%if activity.comments() > 0 %}inline{%else%}none{%endif%};" onclick="onexpcomments('{{activity.key.id()}}')"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>
-   <span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</span></div>
+   </div>{%endif%}
+   <div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:{%if activity.comments() > 0 %}inline{%else%}none{%endif%};" onclick="onexpcomments('{{activity.key.id()}}')"><span class="badge badge-info"><span id="comments_num_{{activity.key.id()}}">{{activity.comments()}}</span> commenti</span> <span id="comments_exp_{{activity.key.id()}}" role="button" class="expcmt" tabindex="0" onclick="onexpcomments('{{activity.key.id()}}')">&nbsp;&nbsp;</span></div>
+   {%if user%}<span>&nbsp;</span><div class="activity_comments" id="comments_header_{{activity.key.id()}}" style="display:inline;" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</span>{%endif%}</div>
    <div id="comments_container_{{activity.key.id()}}" style="display:none;">
     <ul class="comment_list" id="comment_list_{{activity.key.id()}}"></ul>
-   </div>   
+   </div>{%if user%}
    <div id="comment_new_exp_{{activity.key.id()}}" class="expcommentnew" tabindex="0" role="button" onclick="onexpcommentnew('{{activity.key.id()}}')">Aggiungi un commento</div>
    <div class="activity_comment_new" id="comment_new_container_{{activity.key.id()}}">    
     <div class="comment_form">
