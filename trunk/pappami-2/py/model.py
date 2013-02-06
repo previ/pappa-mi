@@ -446,6 +446,7 @@ class Ingrediente(model.Model):
 class PiattoIngrediente(model.Model):
   piatto = model.KeyProperty(kind=Piatto)
   ingrediente = model.KeyProperty(kind=Ingrediente)
+  quantita = model.FloatProperty()
   
 class PiattoGiorno(model.Model):
   menu = model.KeyProperty(kind=MenuNew)
@@ -1052,6 +1053,10 @@ class StatisticheIspezioni(model.Model):
   @classmethod
   def get_from_date(cls, data):
     return StatisticheIspezioni.query().filter(StatisticheIspezioni.dataInizio >= data)
+
+  @classmethod
+  def get_from_year(cls, year):
+    return StatisticheIspezioni.query().filter(StatisticheIspezioni.timeId == year)
   
   def primoAssaggioNorm(self):
     return fpformat.fix(float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede,2)
@@ -1295,6 +1300,10 @@ class StatisticheNonconf(model.Model):
   @classmethod
   def get_from_date(cls, data):
     return StatisticheNonconf.query().filter(StatisticheNonconf.dataInizio >= data)
+
+  @classmethod
+  def get_from_year(cls, year):
+    return StatisticheNonconf.query().filter(StatisticheNonconf.timeId == year)
   
   def getData(self, tipo):
     return self.data[self._tipiPos[tipo]]

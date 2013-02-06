@@ -30,8 +30,11 @@ class MailHandler(InboundMailHandler):
     return host
 
   def receive(self, message):
+    subject = message.subject
+      
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
-    logging.info("subject: " + self.decode(message.subject))
+    logging.info("subject: " + subject)
+    
     text_bodies = message.bodies('text/plain')
     
     #for body in text_bodies:
@@ -42,7 +45,7 @@ class MailHandler(InboundMailHandler):
       logging.info("found commissario")      
       nota = Nota()
       nota.creato_da = commissario.usera
-      nota.titolo = self.decode(message.subject)
+      nota.titolo = subject
       
       commissione = None
       cms = commissario.commissioni()
@@ -153,8 +156,8 @@ Pappa-Mi staff """)
     logging.info("sending mail to: " + message.to)
     message.send()
             
+  #deprecated
   def decode(self, text):
-    return text
     if len(decode_header(text)) > 0 and len(decode_header(text)[0]) > 1 and decode_header(text)[0][0] is not None and decode_header(text)[0][1] is not None:
       decoded_text = decode_header(text)[0]
       decoded_text = decoded_text[0].decode(decoded_text[1])

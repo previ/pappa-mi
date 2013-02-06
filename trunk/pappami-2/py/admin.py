@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
 #
@@ -21,18 +20,18 @@ import cgi
 import logging
 import urllib
 from google.appengine.api import urlfetch
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, date, time
 import wsgiref.handlers
 import random
 
 from google.appengine.ext.ndb import model
-from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.api import mail
 from engineauth import models
 
+from common import *
 from model import *
 from modelMsg import *
 from form import CommissioneForm
@@ -43,42 +42,152 @@ from base import BasePage, config
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-class CMAdminMenuHandler(BasePage):
+class AdminMenuHandler(BasePage):
 
-  def get(self):    
-
+  def get(self):
     template_values = {
-      #'content': '/admin/menu.html'
+      'content': '/admin/menu.html',
+      'citta': Citta.get_all()
     }
-
-    if( self.request.get("data") ):
-      data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-      menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
-      template_values['data'] = data
-      template_values['menu'] = menu
-
     self.getBase(template_values)
 
+
   def post(self):    
-    if( self.request.get("cmd") == "list" ):
+    if self.request.get("cmd") == "upload" and self.request.get("what") == "menu":
+      citta = model.Key("Citta", int(self.request.get("city")))
+      data = self.request.get("data")
+      for line in data.split("\n"):
+        fields = line.split("\t")
+        if len(fields) > 6:
+          menu = Menu()
+          menu.tipo = fields[0]
+          menu.validitaDa = datetime.datetime.strptime(fields[1],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.validitaA = datetime.datetime.strptime(fields[2],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.settimana = int(fields[3])
+          menu.giorno = int(fields[4])
+          menu.primo = fields[5]
+          menu.secondo = fields[6]
+          menu.contorno = fields[7]
+          menu.dessert = fields[8]
+          
+          logging.info("menu: " + str(menu.validitaA))
+          nm = MenuNew.query().filter(MenuNew.citta==citta).filter(Menu.validitaA==menu.validitaA).get()
+          if not nm:
+            nm = MenuNew()
+            nm.validitaDa = menu.validitaDa
+            nm.validitaA = menu.validitaA
+            nm.citta = citta
+            nm.put()
+          piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.primo
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.primo.put: " + piatto.nome)
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).filter(PiattoGiorno.tipo=='p').get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "p"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.primo.put: " + piatto.nome)
+          piatto = Piatto.query().filter(Piatto.nome==menu.secondo).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.secondo
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.secondo.put: " + piatto.nome)
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).filter(PiattoGiorno.tipo=='s').get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "s"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.secondo.put: " + piatto.nome)
+          piatto = Piatto.query().filter(Piatto.nome==menu.contorno).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.contorno
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.contorno.put: " + piatto.nome)
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).filter(PiattoGiorno.tipo=='c').get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "c"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.contorno.put: " + piatto.nome)
+          piatto = Piatto.query().filter(Piatto.nome == menu.dessert).get()
+          if not piatto:
+            piatto = Piatto()
+            piatto.nome = menu.dessert
+            piatto.calorie = 200
+            piatto.proteine = 30
+            piatto.carboidrati = 40
+            piatto.grassi = 30
+            piatto.gi = 10
+            piatto.put()
+            logging.info("piatto.dessert.put:" + piatto.nome)
+          piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).filter(PiattoGiorno.tipo=='d').get()
+          if not piattoGiorno:
+            piattoGiorno = PiattoGiorno()
+            piattoGiorno.menu = nm.key
+            piattoGiorno.tipo = "d"
+            piattoGiorno.piatto = piatto.key
+            piattoGiorno.giorno = menu.giorno
+            piattoGiorno.settimana = menu.settimana
+            piattoGiorno.put()
+            logging.info("piattogiorno.dessert.put: " + piatto.nome)
+      self.response.out.write("initMenu Ok")
+      return      
+    if self.request.get("cmd") == "upload" and self.request.get("what") == "content":
+      data = self.request.get("data")
+      for line in data.split("\n"):
+        fields = line.split("\t")
+        if len(fields) > 2:
+          piatto = Piatto.query().filter(Piatto.nome == fields[0]).get()
+          if piatto:
+            ing = Ingrediente.query().filter(Ingrediente.nome==fields[1]).get()
+            if not ing:
+              ing = Ingrediente()
+              ing.nome = fields[1]
+              ing.put()
+            ing_piatto = PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto.key).filter(PiattoIngrediente.ingrediente==ing.key).get()
+            if not ing_piatto:
+              ing_piatto = PiattoIngrediente()
+              ing_piatto.piatto = piatto.key
+              ing_piatto.ingrediente = ing.key
+              ing_piatto.quantita = float(fields[2])
+              ing_piatto.put()
+      self.response.out.write("initMenu Ok")
+      return      
+          
 
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-
-      template_values = {
-        'content': 'admin/menu.html'
-      }
-
-      if self.request.get("data") :
-        data = datetime.datetime.strptime(self.request.get("data"),DATE_FORMAT).date()
-        menu = Menu.query().filter("validitaA >=", data).order("-validitaA").order("settimana").order("giorno")
-        template_values['data'] = data
-        template_values['menu'] = menu
-
-      self.getBase(template_values)
-
-
+    
 class CMAdminCommissioneHandler(BasePage):
 
   def get(self):    
@@ -339,7 +448,7 @@ class CMAdminHandler(BasePage):
         piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
         if not piatto:
           piatto = Piatto()
-          piatto.nome = menu.frutta
+          piatto.nome = menu.primo
           piatto.calorie = 200
           piatto.proteine = 30
           piatto.carboidrati = 40
@@ -493,7 +602,7 @@ class CMAdminHandler(BasePage):
           msg.put_async()
       self.response.out.write("initStream 2 Ok")
       return
-
+  
     if self.request.get("cmd") == "initStream3":
       for msg in Messaggio().query():
         if msg.c_ua is None:
@@ -529,7 +638,46 @@ class CMAdminHandler(BasePage):
       self.response.out.write("initStream 4 Ok")
       return
     
+    if self.request.get("cmd") == "fixStream":
+      for isp in Ispezione().query():
+        msgs = Messaggio.query().filter(Messaggio.par==isp.key).filter(Messaggio.tipo==101)
+        if msgs.count() == 0:
+          logging.info("Missing: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+          messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
+          messaggio.put()
+        elif msgs.count() == 2:
+          logging.info("Duplicate: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+          msgs.get().key.delete()
+        elif msgs.count() > 2:
+          logging.info("Multiple: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
+      self.response.out.write("fixStream 2 Ok")
+      return
 
+    if self.request.get("cmd") == "fixCreatoIl":
+      for isp in Ispezione.query().filter(Ispezione.creato_il==None):
+        isp.creato_il = isp.modificato_il
+        isp.put()
+      for nc in Nonconformita.query().filter(Nonconformita.creato_il==None):
+        nc.creato_il = nc.modificato_il
+        nc.put()
+      for dieta in Dieta.query().filter(Dieta.creato_il==None):
+        dieta.creato_il = dieta.modificato_il
+        dieta.put()
+      for nota in Nota.query().filter(Nota.creato_il==None):
+        nota.creato_il = nota.modificato_il
+        nota.put()
+      self.response.out.write("fixIsp Ok")
+      return
+
+    if self.request.get("cmd") == "fixTagObj":
+      for tagobj in TagObj().query():
+        obj = tagobj.obj.get()
+        if obj:
+          tagobj.creato_il = tagobj.obj.get().creato_il
+          tagobj.put()
+      self.response.out.write("fixTagObj Ok")
+      return
+    
     if self.request.get("cmd") == "initAuthR":
       logging.info("initAuth")
       offset = int(self.request.get("offset"))
@@ -585,8 +733,16 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "initEmailLower":
-      for c in Commissario.query().filter(Commissario.user_email_lower==None):
+      for c in Commissario.query().filter(Commissario.user_email_lower==""):
         c.user_email_lower = c.usera.get().email.lower()
+        c.put()
+        
+      self.response.out.write("Ok")
+      return
+
+    if self.request.get("cmd") == "initNumCommissari":
+      for c in Commissione.query().filter(Commissione.numCommissari==None):
+        c.numCommissari = 0
         c.put()
         
       self.response.out.write("Ok")
@@ -713,6 +869,37 @@ class CMAdminHandler(BasePage):
         self.response.out.write(nc_str)
         
       return
+
+    if self.request.get("cmd") == "upCommissioni":
+      data = self.request.get("rawdata")
+      for line in data.split("\n"):
+        logging.info(line)
+        fields = line.split("\t")
+        if len(fields) > 14:
+          cm = Commissione()
+          cm.citta = model.Key(urlsafe=field[0])
+          cm.codiceScuola = fields[1]
+          cm.nome = fields[2]
+          cm.nomeScuola = fields[3]
+          cm.tipoScuola = fields[4]
+          cm.strada = fields[5]
+          cm.civico = fields[6]
+          cm.provincia = fields[7]
+          cm.cap = fields[8]
+          cm.zona = fields[9]
+          cm.distretto = fields[10]
+          cm.email = fields[11]
+          cm.telefono = fields[12]
+          cm.fax = fields[13]
+          geo = fields[14].split(',')
+          cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
+          cm.creato_da = users.get_current_user()
+          cm.creato_il = datetime.now()
+          cm.modificato_da = users.get_current_user()
+          cm.modificato_il = datetime.now()
+          cm.numCommissari = 0
+          cm.stato = 1
+          cm.put()
           
     if self.request.get("cmd") == "flush":
       memcache.flush_query()
@@ -875,11 +1062,13 @@ class CMAdminCommissarioHandler(BasePage):
         'json': json
       }
       self.getBase(template_values)
+      
+      
         
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
-  ('/admin/menu', CMAdminMenuHandler),
+  ('/adminmenu', AdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
   ('/admin', CMAdminHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)

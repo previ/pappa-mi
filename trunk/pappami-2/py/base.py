@@ -179,7 +179,7 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.0.2 - 2012.05.26"
+    template_values["version"] = "2.0.4.6 - 2013.02.04"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
@@ -230,7 +230,7 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
+    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
     tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
     msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
