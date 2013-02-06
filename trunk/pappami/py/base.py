@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 #
 # Copyright 2007 Google Inc.
 #
@@ -33,7 +33,6 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
-
 import py.feedparser
 import httpagentparser
 
@@ -56,7 +55,8 @@ class ActivityFilter():
   msgtypes = None
   users = None
   group = None
-  
+
+            
 class BasePage(webapp.RequestHandler):  
   
   #@webapp.cached_property
@@ -77,12 +77,14 @@ class BasePage(webapp.RequestHandler):
         #logging.info(self.get_context())
         self.set_context()
         self.session_store.save_sessions(self.response)
+    
 
+  
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
     return self.session_store.get_session(backend="memcache")   
-    
+  
   def get_context(self):
     ctx = self.session.get("ctx")
     if ctx == None:
@@ -128,6 +130,9 @@ class BasePage(webapp.RequestHandler):
 
     if self.request.url.find("beta") != -1:
       self.redirect("http://www.pappa-mi.it")      
+
+    if (self.request.url.find("m.") != -1 or self.request.url.find("mobile.") != -1) and self.request.url.find("/mobile") == -1:
+      self.redirect("/mobile")      
       
     user = self.get_current_user()
     url = None
@@ -179,7 +184,7 @@ class BasePage(webapp.RequestHandler):
     #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "2.0.4.6 - 2013.02.04"
+    template_values["version"] = "2.0.0.3 - 2012.06.29"
     template_values["ctx"] = self.get_context()
     
     #logging.info("content: " + template_values["content"])
@@ -193,6 +198,11 @@ class BasePage(webapp.RequestHandler):
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
   
+  #response object dump as json string
+  def output_as_json(self, obj):   
+    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')    
+    json.dump(obj, self.response.out)
+    
   def getCommissario(self, user = None):
     if user is None:
       user = self.request.user
@@ -204,7 +214,7 @@ class BasePage(webapp.RequestHandler):
   
   #def getCommissioni(self):
     #return Commissioni.get_all()
-
+    
   @classmethod
   def getTopTags(cls):
     return Tag.get_top_referenced(40)
@@ -230,7 +240,7 @@ class BasePage(webapp.RequestHandler):
     
     activities = None
 
-    logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
+    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
 
     tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
     msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
@@ -274,9 +284,6 @@ class BasePage(webapp.RequestHandler):
     #logging.info("host: " + host)
     return host
 
-  _news = {"news_pappami":"http://blog.pappa-mi.it/feeds/posts/default",
-          "news_web": "http://www.google.com/reader/public/atom/user%2F14946287599631859889%2Fstate%2Fcom.google%2Fbroadcast",
-          "news_cal": "http://www.google.com/calendar/feeds/aiuto%40pappa-mi.it/public/basic"}
   
   @classmethod
   def getNews(self,name):
@@ -295,6 +302,39 @@ class BasePage(webapp.RequestHandler):
         
       memcache.add(name,news)
     return news
+  
+class SocialAjaxHandler(BasePage):
+        
+  def handle_exception(self,exception,debug_mode=False):
+      
+    if type(exception).__name__== FloodControlException.__name__:
+      template = jinja_environment.get_template("social/ajax/flooderror.html")
+      template_values={
+                       'flood_time':Const.SOCIAL_FLOOD_TIME,
+                       
+                       }     
+      html=template.render(template_values) 
+      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+     
+      time=Const.SOCIAL_FLOOD_TIME-time.seconds
+      response = {'response':'flooderror','time':time,'html':html}
+     
+      self.output_as_json(response)
+      return
+    else:
+      super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
+
+
+  def success(self,url=None):
+      
+      response = {'response':'success'}
+      if url:
+          response['url']=url      
+      self.output_as_json(response)
+  
+  def error(self):     
+      response = {'response':'error'}      
+      self.output_as_json(response)
   
 class CMCommissioniDataHandler(BasePage):
 
@@ -498,6 +538,7 @@ def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(basePage.request.user)
+    logging.info(commissario)
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
@@ -514,8 +555,24 @@ def reguser_required(func):
       return func(basePage, *args, **kwargs)
   return callf    
 
+def reguser_required_mobile(func):
+  def callf(basePage, *args, **kwargs):
+    user = basePage.request.user if basePage.request.user else None
+    commissario = basePage.getCommissario(user)
+    if commissario == None:
+      basePage.response.set_status(401, "Authentication required")
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf    
+
 config = {
     'webapp2_extras.sessions': {
         'secret_key': 'wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY'
     }
 }
+class FloodControlException(Exception):
+     def __init__(self):
+                pass
+                
+     def __str__(self):
+          return repr("Flood Control Error")

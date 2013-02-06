@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/> 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Content-Language" content="it-it"/>
-    <title>Pappa-Mi - Come si mangia a scuola</title>
+    <title>Pappa-Mi Raccolta dati Commissioni Mensa</title>
     <meta name="ROBOTS" content="ALL"/>
     <meta http-equiv="imagetoolbar" content="no"/>
     <meta name="MSSmartTagsPreventParsing" content="true"/>
-    {#<meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Copyright" content="Pappa-Mi"/>
     <meta name="keywords" content="Scuola, Mensa, Commissioni Mensa, Refezione, Scuola, Educazione alimentare, Nutrizione, Bambini"/>
     <meta name="google-site-verification" content="KnNDo_lamFY34HnzBbuWNRDHCoBJESIaYbPpUxCgQJI" />
-    <meta name="description" content="Cosa e come si mangia nelle mense scolastiche italiane, raccontato dai genitori delle commissioni mensa"/>
+    <meta name="description" content="Commissioni Mensa community"/>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -24,6 +24,7 @@
     <link type="text/css" href="/css/custom-theme/jquery.ui.1.8.16.ie.css" rel="stylesheet"/>
     <link type="text/css" href="/css/bootstrap.min.css" rel="stylesheet"/>
     <link type="text/css" href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link type="text/css" href="/css/jquery.pnotify.default.css" rel="stylesheet">
     <link type="text/css" href="/css/comments.css" rel="stylesheet" media="screen"/>
     <link type="text/css" href="/css/activity.css" rel="stylesheet" media="screen"/>		
     
@@ -31,7 +32,7 @@
     <link type="text/css" href="/css/jquery.ajaxComboBox.css" rel="stylesheet"/>
     
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
-
+    <link rel="stylesheet" href="/css/social.css" type="text/css" media="all" />
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="apple-touch-icon" href="/img/logo_57.png">
@@ -40,17 +41,18 @@
     <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
     
     <!-- Le javascript -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.js"></script>
 
 <!--[if IE]>
 <script src="/js/ieresizefix.js" type="text/javascript"></script>
 <![endif]-->	
-    <script src="/js/jquery.tools.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/js/jquery.tools.min.js"></script>
     <script type="text/javascript" src="/js/jquery.taghandler.js"></script> 
     <script type="text/javascript" src="/js/jquery.autogrow-textarea.js"></script> 
-    <script type="text/javascript" src="/js/jquery.form.js"></script> 
+    <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script> 
     <script type="text/javascript" src="/js/jquery.timers.js"></script> 
+    <script type="text/javascript" src="/js/jquery.countdown.js"></script> 
     <script type="text/javascript" src="/js/jquery.metadata.js"></script>
     <script type="text/javascript" src="/js/jquery.validate.js"></script> 
     <script type="text/javascript" src="/js/jquery.validate.messages_it.js"></script> 
@@ -61,9 +63,13 @@
     <script type="text/javascript" src="/js/Fluster2.packed.js"></script>
     <script type="text/javascript" src="/js/tiny_mce/tiny_mce.js"></script>
     <script type="text/javascript" src="/js/tiny_mce/jquery.tinymce.js"></script>
-    <script type="text/javascript" src="/js/jquery.ajaxComboBox.4.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.ajaxComboBox.4.3.js"></script>
+    <script type="text/javascript" src="/js/jquery.event.move.js"></script>
+    <script type="text/javascript" src="/js/jquery.event.swipe.js"></script>
+    <script type="text/javascript" src="/js/jquery.pnotify.min.js"></script>
     
-    <script type="text/javascript" src="/js/bs/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <!--script type="text/javascript" src="/js/bs/bootstrap-transition.js"></script>
     <script type="text/javascript" src="/js/bs/bootstrap-alert.js"></script>
     <script type="text/javascript" src="/js/bs/bootstrap-modal.js"></script>
     <script type="text/javascript" src="/js/bs/bootstrap-dropdown.js"></script>
@@ -74,8 +80,9 @@
     <script type="text/javascript" src="/js/bs/bootstrap-button.js"></script>
     <script type="text/javascript" src="/js/bs/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/js/bs/bootstrap-carousel.js"></script>
-    <script type="text/javascript" src="/js/bs/bootstrap-typeahead.js"></script>   
-
+    <script type="text/javascript" src="/js/bs/bootstrap-typeahead.js"></script-->   
+	
+    <script type="text/javascript" src="/js/social.js"></script> 
     <script type="text/javascript" src="/js/comments.js"></script> 
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
@@ -102,13 +109,18 @@
 	      <li><a href="/chi">Chi siamo</a></li>
 	      <li><a href="/contattaci" target="new">Contattaci</a></li>
 	      <li><a href="http://blog.pappa-mi.it">Blog</a></li>
-	      <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>
-	      <li><a href="http://www.youtube.com/pappamitube">Video</a></li>{% if admin %}
+	      <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>{% if admin %}
 	      <li><a href="/admin">Gestione Sistema</a></li>{% endif %}	    
-	    </ul>
+	      <li>
+	       <form class="navbar-search pull-left" action="/social/search" method="get">
+	        <input type="text" name="query" class="search-query span2" placeholder="Cerca">
+	       </form>
+	      </li>
+	     </ul>
 	    <ul class="nav pull-right">{% if not commissario and not genitore %}
 	      <li><a class="" href="/signup">Registrati &raquo;</a></li>
 	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
+	      <li><a id="ntf_cnt" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" href="#"><span class="badge badge-warning">{{notifications}}</span></a></li>
 	      <li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
 		<ul class="dropdown-menu">

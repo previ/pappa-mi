@@ -79,8 +79,10 @@ class SignupHandler(BasePage):
       user.email = self.request.get("email")      
       user.put()
       models.UserEmail.create(user.email, user.get_id())
+    
+    SocialProfile.create(user.key)
     commissario = Commissario()
-
+    
     form.populate_obj(commissario)
     commissario.usera = user.key
     commissario.citta = model.Key("Citta", int(self.request.get("citta")))

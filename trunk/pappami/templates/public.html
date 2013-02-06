@@ -9,6 +9,10 @@ $(function(){
  $('#contacts').tooltip({
   selector: "img"
  }) 
+ $(".carousel-inner")
+  .on('swipeleft', function(){$('.carousel').carousel('next')})
+  .on('swiperight', function(){$('.carousel').carousel('prev')}); 
+ 
 });
 </script> 
 <div class="row">

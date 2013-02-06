@@ -4,20 +4,20 @@ var cache = {},	lastXhr, city = null;
 var combo_config = {
   'navi_simple' : true,
   'lang'        : 'it',
-  'sub_info'    : false,
   'select_only' : true,
   'primary_key' : 'value',
   'bind_to'	: 'selected',
   'field'	: 'label',
   'db_table'    : 'citta',
   'button_img'  : '/img/combobox_button.png',
-  'load_img'    : '/img/ajax-loader.gif'
+  'load_img'    : '/img/ajax-loader.gif',
+  'sub_info'    : false
 }
 
 var init_value = "";
 
 function oncitychanged() {
-  combo_config['init_val'] = init_value;
+  combo_config['init_record'] = init_value;
   if( $("#citta").val() != "" && $("#citta").val() != city) {
     if( !cache[$("#citta").val()] ) {
       var query = { 'city': $("#citta").val() }
@@ -38,41 +38,27 @@ function oncitychanged() {
     }
   }
 }
-/*
-function getCommissioniFromCache(term) {
-  found = Array();
-  for(c in cache) {	
-    if(term.toUpperCase() == c.substring(0,term.length).toUpperCase()) {
-      found.push({"label": c, "value": cache[c]});
-    }
+
+function showDishDetails(event) {
+  if(!isVisible){
+    var target = $(event.target);
+    var params = {'cmd': 'getdetails', 'piatto': target.attr("data-detail-key"), 'cm': target.attr("data-detail-cm")};
+    $.ajax({url:"/menu", 
+	    data: params,
+	    dataType:'json',
+	    success:function(data) { 
+      var html = '<h5>'+data.piatto+'</h5><ul class=\'unstyled\'>';
+      html += '<li><spam>Ingrediente</span><span style=\'float:right;\'>g.</span></li>';
+      for( var i in data.ingredienti) {
+	html += '<li><spam>' + data.ingredienti[i].nome + '</span><span style=\'float:right;\'>' + Math.round(data.ingredienti[i].quantita*10)/10; + '</span></li>';
+      }
+      html += '</ul>';
+      target.attr('data-content', html);    
+      target.popover('show');
+      isVisible = true
+      event.preventDefault()
+    }});
   }
-  return found;
 }
 
-function chgscope() {
-  $("#commissione_sel").autocomplete({
-    minLength: 2,
-    source: function( request, response ) {
-      var term = request.term;
-      request.city = $("#citta").val();
-      if ( city == null || city != $("#citta").val() ) {
-	cache = {};
-	lastXhr = $.getJSON( "/profilo/getcm", request, function( data, status, xhr ) {
-	  items = data;
-	  for (item in items) {
-	    cache[items[item]["label"]] = items[item]["value"];
-	  }
-	  city = $("#citta").val();
-	  response(getCommissioniFromCache(term));
-	});
-      } else {
-	response(getCommissioniFromCache(term));
-      }
-    },
-    select: function(event, ui) { 
-      $("#commissione").val(ui.item.value);
-      ui.item.value= ui.item.label;
-    } 
-  });    
-}
-*/
+$.pnotify.defaults.delay = 5000;

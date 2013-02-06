@@ -1,6 +1,6 @@
 import datetime
 import base64
-from google.appengine.ext.db import *
+from google.appengine.ext.ndb import model
 from google.appengine.tools.bulkloader import Loader, Exporter
 from google.appengine.api import users
 from py.model import *
@@ -98,7 +98,7 @@ class CentroCucinaLoader(Loader):
                      
     self.alias_old_names()
     
-loaders = [MenuLoader, CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
+loaders = [CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
 
 class CommissioneExporter(Exporter):
   def __init__(self):
@@ -266,4 +266,5 @@ class MenuExporter(Exporter):
                      ('dessert', str, None)
                      ])
     
-exporters = [CommissioneExporter, CommissioneCentroCucinaExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]  
+  
+exporters = [CommissioneExporter, CommissioneCentroCucinaExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]

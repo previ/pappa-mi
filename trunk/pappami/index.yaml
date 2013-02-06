@@ -83,6 +83,13 @@ indexes:
 
 - kind: Messaggio
   properties:
+  - name: c_ua
+  - name: livello
+  - name: creato_il
+    direction: desc
+
+- kind: Messaggio
+  properties:
   - name: grp
   - name: creato_il
     direction: desc
@@ -137,10 +144,130 @@ indexes:
   - name: __key__
     direction: desc
 
-- kind: TagObj
+- kind: SocialComment
+  ancestor: yes
   properties:
-  - name: tag
-  - name: creato_il
+  - name: created
+
+- kind: SocialComment
+  ancestor: yes
+  properties:
+  - name: creation_date
+
+- kind: SocialComment
+  ancestor: yes
+  properties:
+  - name: creation_date
+    direction: desc
+
+- kind: SocialEvent
+  properties:
+  - name: status
+  - name: date
+
+- kind: SocialNode
+  properties:
+  - name: active
+  - name: name
+
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: latest_post_date
+    direction: desc
+
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: starting_date
+
+- kind: SocialNodeSubscription
+  properties:
+  - name: user
+  - name: starting_date
+    direction: desc
+
+- kind: SocialNodeSubscription
+  ancestor: yes
+  properties:
+  - name: starting_date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: author_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: author_key
+  - name: source_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: author_key
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: author_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: source_key
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
+  - name: user
+  - name: date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: creation_date
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: creation_date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: last_act
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: last_comment_date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: latest_comment_date
+    direction: desc
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: latest_post_date
+
+- kind: SocialPost
+  ancestor: yes
+  properties:
+  - name: rank
     direction: desc
 
 - kind: ZonaOffset

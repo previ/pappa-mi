@@ -4,6 +4,9 @@ $(function(){
  // Initialize Slides
  // DOM Ready
 
+ $("#menu_carousel_inner")
+  .on('swipeleft', slidenext)
+  .on('swiperight', slideprev); 
  
  init_value = "{{ctx.cm_key}}";
  $('#citta').change( oncitychanged);

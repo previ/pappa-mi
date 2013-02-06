@@ -25,19 +25,21 @@ import wsgiref.handlers
 import random
 
 from google.appengine.ext.ndb import model
+from google.appengine.api import search
+from google.appengine.api import users
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.api import mail
 from engineauth import models
 
-from common import *
 from model import *
 from modelMsg import *
 from form import CommissioneForm
 from gviz_api import *
 from base import BasePage, config
 #from gcalendar import *
+from social import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -176,18 +178,18 @@ class AdminMenuHandler(BasePage):
               ing = Ingrediente()
               ing.nome = fields[1]
               ing.put()
-            ing_piatto = PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto.key).filter(PiattoIngrediente.ingrediente==ing.key).get()
-            if not ing_piatto:
-              ing_piatto = PiattoIngrediente()
-              ing_piatto.piatto = piatto.key
-              ing_piatto.ingrediente = ing.key
-              ing_piatto.quantita = float(fields[2])
-              ing_piatto.put()
+            p_i = PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto.key).filter(PiattoIngrediente.ingrediente==ing.key).get()
+            if not p_i:
+              logging.info("fields[2]: " + fields[2])
+              p_i = PiattoIngrediente()
+              p_i.piatto = piatto.key
+              p_i.ingrediente = ing.key
+              p_i.quantita = float(fields[2])
+              p_i.put()
       self.response.out.write("initMenu Ok")
       return      
-          
 
-    
+
 class CMAdminCommissioneHandler(BasePage):
 
   def get(self):    
@@ -203,8 +205,8 @@ class CMAdminCommissioneHandler(BasePage):
       if(self.request.get("key") == ""):
         commissione = Commissione()       
       else:
-        commissione = Commissione.get(self.request.get("key"))    
-        key = commissione.key()
+        commissione = model.Key("Commissione", self.request.get("key")).get()
+        key = commissione.key
               
       template_values = {
         'content': 'admin/commissione.html',
@@ -215,17 +217,13 @@ class CMAdminCommissioneHandler(BasePage):
         'centroCucina': self.request.get("centroCucina"),
         'zona': self.request.get("zona"),
         'distretto': self.request.get("distretto"),
-        'centriCucina': CentroCucina.query().order("nome")
+        'centriCucina': CentroCucina.query().order(CentroCucina.nome)
       }
     
       self.getBase(template_values)
 
     else:
-      url = users.create_logout_url("/")
-      url_linktext = 'Logout'
-      user = users.get_current_user()
-
-      centriCucina = CentroCucina.query().order("nome")
+      centriCucina = CentroCucina.query().order(CentroCucina.nome)
 
       template_values = {
         'content': 'admin/commissioni.html',
@@ -233,70 +231,11 @@ class CMAdminCommissioneHandler(BasePage):
       }
       self.getBase(template_values)
       
-      #if self.request.get("offset"):
-        #offset = int(self.request.get("offset"))
-      #else:
-        #offset = 0
-        
-      #if offset > 0:
-        #prev = offset - 10
-      #else:
-        #prev = None
-      #next = offset + 10
-      
-      ## Creating the data
-      #description = {"nome": ("string", "Commissione"),
-                     #"nomeScuola": ("string", "Scuola"),
-                     #"tipo": ("string", "Tipo"),
-                     #"indirizzo": ("string", "Indirizzo"),
-                     #"distretto": ("string", "Dist."),
-                     #"zona": ("string", "Zona"),
-                     #"geo": ("string", "Geo"),
-                     #"comando": ("string", "")}
-      
-      #commissioni = Commissione.query()
-      #if self.request.get("tipoScuola") :
-        #commissioni = commissioni.filter("tipoScuola", self.request.get("tipoScuola"))
-      #if self.request.get("centroCucina") :
-        #commissioni = commissioni.filter("centroCucina", CentroCucina.get(self.request.get("centroCucina")))
-      #if self.request.get("nome") :
-        #commissioni = commissioni.filter("nome>=", self.request.get("nome"))
-        #commissioni = commissioni.filter("nome<", self.request.get("nome") + u'\ufffd')
-
-      #data = list()
-      #try:
-        #for commissione in commissioni.order("nome").fetch(10, offset):
-          #data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipo": commissione.tipoScuola, "indirizzo": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
-      #except db.Timeout:
-        #errmsg = "Timeout"
-        
-      ## Loading it into gviz_api.DataTable
-      #data_table = DataTable(description)
-      #data_table.LoadData(data)
-
-      ## Creating a JSon string
-      #gvizdata = data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipo", "indirizzo", "distretto", "zona", "geo", "comando"))
-
-      #centriCucina = CentroCucina.query().order("nome")
-
-      #template_values = {
-        #'content': 'admin/commissioni.html',
-        #'centriCucina': centriCucina,
-        #'gvizdata': gvizdata,
-        #'prev': prev,
-        #'next': next,
-        #'tipoScuola': self.request.get("tipoScuola"),
-        #'centroCucina': self.request.get("centroCucina"),
-        #'zona': self.request.get("zona"),
-        #'distretto': self.request.get("distretto"),
-        #'nome': self.request.get("nome")
-      #}
-      #self.getBase(template_values)
 
   def post(self):    
     if( self.request.get("cmd") == "save" ):
       if self.request.get("key"):
-        commissione = Commissione.get(self.request.get("key"))
+        commissione = model.Key("Commissione", self.request.get("key")).get()
       else:
         commissione = Commissione()
         
@@ -314,7 +253,7 @@ class CMAdminCommissioneHandler(BasePage):
       url_linktext = 'Logout'
       user = users.get_current_user()
  
-      centriCucina = CentroCucina.query().order("nome")
+      centriCucina = CentroCucina.query().order(CentroCucina.nome)
       
       #if query.is_valid():
       commissioni = Commissione.query()
@@ -653,19 +592,10 @@ class CMAdminHandler(BasePage):
       self.response.out.write("fixStream 2 Ok")
       return
 
-    if self.request.get("cmd") == "fixCreatoIl":
-      for isp in Ispezione.query().filter(Ispezione.creato_il==None):
+    if self.request.get("cmd") == "fixIsp":
+      for isp in Ispezione().query().filter(Ispezione.creato_il==None):
         isp.creato_il = isp.modificato_il
         isp.put()
-      for nc in Nonconformita.query().filter(Nonconformita.creato_il==None):
-        nc.creato_il = nc.modificato_il
-        nc.put()
-      for dieta in Dieta.query().filter(Dieta.creato_il==None):
-        dieta.creato_il = dieta.modificato_il
-        dieta.put()
-      for nota in Nota.query().filter(Nota.creato_il==None):
-        nota.creato_il = nota.modificato_il
-        nota.put()
       self.response.out.write("fixIsp Ok")
       return
 
@@ -733,16 +663,8 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "initEmailLower":
-      for c in Commissario.query().filter(Commissario.user_email_lower==""):
+      for c in Commissario.query().filter(Commissario.user_email_lower==None):
         c.user_email_lower = c.usera.get().email.lower()
-        c.put()
-        
-      self.response.out.write("Ok")
-      return
-
-    if self.request.get("cmd") == "initNumCommissari":
-      for c in Commissione.query().filter(Commissione.numCommissari==None):
-        c.numCommissari = 0
         c.put()
         
       self.response.out.write("Ok")
@@ -806,101 +728,35 @@ class CMAdminHandler(BasePage):
       self.response.out.write(buff)
       return
 
-    if self.request.get("cmd") == "getIspezioni":
-      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+    if self.request.get("cmd") == "resetSocial":
+      SocialUtils.unsubscribe_all()
+      logging.info("resetSocial.1")
+      SocialUtils.delete_nodes()
+      logging.info("resetSocial.2")
       
-      for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
-        isp_str = ""
-        isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
-        isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
-        isp_str += str(isp.dataIspezione) + "\t"
-        isp_str += unicode(isp.primoPrevisto) + "\t"
-        isp_str += unicode(isp.primoEffettivo) + "\t"
-        isp_str += str(isp.primoDist) + "\t"
-        isp_str += str(isp.primoCondito) + "\t"
-        isp_str += str(isp.primoCottura) + "\t"
-        isp_str += str(isp.primoTemperatura) + "\t"
-        isp_str += str(isp.primoQuantita) + "\t"
-        isp_str += str(isp.primoAssaggio) + "\t"
-        isp_str += str(isp.primoGradimento) + "\t"
-        isp_str += unicode(isp.secondoPrevisto) + "\t"
-        isp_str += unicode(isp.secondoEffettivo) + "\t"
-        isp_str += str(isp.secondoDist) + "\t"
-        isp_str += str(isp.secondoCottura) + "\t"
-        isp_str += str(isp.secondoTemperatura) + "\t"
-        isp_str += str(isp.secondoQuantita) + "\t"
-        isp_str += str(isp.secondoAssaggio) + "\t"
-        isp_str += str(isp.secondoGradimento) + "\t"
-        isp_str += unicode(isp.contornoPrevisto) + "\t"
-        isp_str += unicode(isp.contornoEffettivo) + "\t"
-        isp_str += str(isp.contornoCondito) + "\t"
-        isp_str += str(isp.contornoCottura) + "\t"
-        isp_str += str(isp.contornoTemperatura) + "\t"
-        isp_str += str(isp.contornoQuantita) + "\t"
-        isp_str += str(isp.contornoAssaggio) + "\t"
-        isp_str += str(isp.contornoGradimento) + "\t"
-        isp_str += unicode(isp.fruttaTipo) + "\t"
-        isp_str += unicode(isp.fruttaServita) + "\t"
-        isp_str += str(isp.fruttaMaturazione) + "\t"
-        isp_str += str(isp.fruttaQuantita) + "\t"
-        isp_str += str(isp.fruttaAssaggio) + "\t"
-        isp_str += str(isp.fruttaGradimento) + "\t"
-        isp_str += unicode(isp.paneTipo) + "\t"
-        isp_str += str(isp.paneServito) + "\t"
-        isp_str += str(isp.paneQuantita) + "\t"
-        isp_str += str(isp.paneAssaggio) + "\t"
-        isp_str += str(isp.paneGradimento) + "\t"
-        isp_str += str(isp.giudizioGlobale) + "\t"
-        isp_str += "\n"
-        self.response.out.write(isp_str)
-        
+      self.response.out.write("resetSocial Ok")
+      return
+    
+    if self.request.get("cmd") == "resetIndex":
+      self.delete_all_in_index("index-posts")
+      logging.info("resetIndex.posts")
+      self.delete_all_in_index("index-nodes")
+      logging.info("resetIndex.nodes")
+      
+    if self.request.get("cmd") == "initSocial":
+      SocialUtils.generate_nodes()
+      logging.info("initSocial.1")
+      SocialUtils.locations_to_nodes()
+      logging.info("initSocial.2")
+      
+      self.response.out.write("initSocial Ok")
       return
 
-    if self.request.get("cmd") == "getNonconf":
-      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
-      
-      for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
-        nc_str = ""
-        nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + "\t"
-        nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + "\t"
-        nc_str += str(nc.dataNonconf) + "\t"
-        nc_str += str(nc.tipo) + "\t"
-        nc_str += str(nc.richiestaCampionatura) + "\n"
-        self.response.out.write(nc_str)
-        
+    if self.request.get("cmd") == "migSocial":
+      SocialUtils.msg_to_post()     
+      self.response.out.write("migSocial Ok")
       return
 
-    if self.request.get("cmd") == "upCommissioni":
-      data = self.request.get("rawdata")
-      for line in data.split("\n"):
-        logging.info(line)
-        fields = line.split("\t")
-        if len(fields) > 14:
-          cm = Commissione()
-          cm.citta = model.Key(urlsafe=field[0])
-          cm.codiceScuola = fields[1]
-          cm.nome = fields[2]
-          cm.nomeScuola = fields[3]
-          cm.tipoScuola = fields[4]
-          cm.strada = fields[5]
-          cm.civico = fields[6]
-          cm.provincia = fields[7]
-          cm.cap = fields[8]
-          cm.zona = fields[9]
-          cm.distretto = fields[10]
-          cm.email = fields[11]
-          cm.telefono = fields[12]
-          cm.fax = fields[13]
-          geo = fields[14].split(',')
-          cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
-          cm.creato_da = users.get_current_user()
-          cm.creato_il = datetime.now()
-          cm.modificato_da = users.get_current_user()
-          cm.modificato_il = datetime.now()
-          cm.numCommissari = 0
-          cm.stato = 1
-          cm.put()
-          
     if self.request.get("cmd") == "flush":
       memcache.flush_query()
       self.response.out.write("flush Ok")
@@ -940,6 +796,19 @@ class CMAdminHandler(BasePage):
       ua = UserEmail.get_by_emails([user.email()])
       self._users[user.user_id()] = ua
     return ua
+
+  def delete_all_in_index(self, index_name):
+      """Delete all the docs in the given index."""
+      doc_index = search.Index(name=index_name)
+  
+      while True:
+          # Get a list of documents populating only the doc_id field and extract the ids.
+          document_ids = [document.doc_id
+                          for document in doc_index.list_documents(ids_only=True)]
+          if not document_ids:
+              break
+          # Remove the documents for the given ids from the Index.
+          doc_index.remove(document_ids)
     
 class CMAdminCommissarioHandler(BasePage):
 
@@ -1062,8 +931,6 @@ class CMAdminCommissarioHandler(BasePage):
         'json': json
       }
       self.getBase(template_values)
-      
-      
         
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
