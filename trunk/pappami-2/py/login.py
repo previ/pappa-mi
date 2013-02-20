@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2007 Google Inc.
@@ -202,9 +202,11 @@ class PwdRecoverRequestPage(BasePage):
       email = self.request.get("email")
       #logging.info(email)
       user = models.UserEmail.get_by_emails([email])
+      auth_id = models.User.generate_auth_id("password", email)
+      profile = models.UserProfile.get_by_id(auth_id)
       if user is None:
         error = "Email non presente in archivio"
-      elif user.has_auth_strategy("password"):
+      elif user.has_auth_strategy("password") and profile is not None:
         self.sendPwdRecEmail(email)
         error = "Ok"
       else:
