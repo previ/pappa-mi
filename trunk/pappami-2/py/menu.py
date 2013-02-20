@@ -44,7 +44,7 @@ class CMMenuDataHandler(CMMenuHandler):
         menu = self.getMenu(data, c)[0]
       
       json.dump(menu.to_dict(), self.response.out)
-
+      return
     else:
       template_values = dict()
       template_values['content'] = 'menu.html'      
