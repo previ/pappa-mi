@@ -215,7 +215,10 @@ function onSuccess(data){
     if(data.url) {
      window.location.href=data.url
     } else {
-     window.location.reload()
+      $.pnotify({
+	title: 'Info',
+	text: 'Impostazioni salvate'
+      });
     }
   }
 }
@@ -730,24 +733,56 @@ function loadSmallMap(lat,lon) {
   jQuery.get("/social/socialmap", {}, drawSmallMap );
 }  
 
-function onSubscription(user_key,node_key)
-{
-	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=subscribe',dataType:"JSON", success:function(data){
-		  
-		 onSuccess(data)
-		}
-	 });
-	 
+
+function redraw_node() {
+  var subscribed = $('.node_root').attr('data-sub-status');
+  var ntfy_period = $('.node_root').attr('data-ntfy-period');
+  
+  $('.ntfy_period > i').css('visibility', 'hidden');
+  
+  if( subscribed == 'true' ) {
+	$('#subscribe_btn').html('Disiscriviti');
+	$('#sub_prop').show();
+	$('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
+  } else {
+	$('#sub_prop').hide();
+	$('#subscribe_btn').html('Iscriviti');
+  }
 }
 
-function onUnsubscription(user_key,node_key)
-{
-	 $.ajax({url:'/social/subscribe?node='+node_key+'&user='+user_key+ '&cmd=unsubscribe',dataType:"JSON", success:function(data){
-		 onSuccess(data)
-		 
-		}
-	 });
-	 
+function onSubUnsubNode() {
+  var node_root = $(this).parents('.node_root');
+  var node_key = node_root.attr('data-node-key');
+  var sub_status = node_root.attr('data-sub-status');
+  var data = {
+    'node': node_key,
+    'cmd': sub_status == 'true' ? 'unsubscribe' : 'subscribe'
+  };
+  $.ajax({url:'/social/subscribe', data: data, dataType:"JSON", success:function(data){
+      node_root.attr('data-sub-status', sub_status == 'true' ? 'false' : 'true');
+      onSuccess(data);
+      redraw_node();
+    }
+  });	 
+}
+
+function onNotificationPeriod() {
+  var node_root = $(this).parents('.node_root');
+  var node_key = node_root.attr('data-node-key');
+  var ntfy_period = $(this).attr('data-ntfy-period');
+  var data = {'cmd': 'set_ntfy_period',
+	      'node': node_key,
+	      'ntfy_period': ntfy_period};
+
+  $.ajax({url:'/social/subscribe',
+	  data: data,
+	  dataType:"JSON", 
+	  success:function(data){ 
+	    node_root.attr('data-ntfy-period', ntfy_period);
+  	    onSuccess(data)
+            redraw_node();
+	  }
+  });	 
 }
 
 function init_search(){
@@ -799,6 +834,7 @@ function init(){
   rules: {
   }
  });
+ $("#post_content_text").tinymce(tiny_mce_opts);
  $('#new_post_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
   if (data.response!="success") {
    if(data.response=="flooderror"){
@@ -873,13 +909,19 @@ function onMoreClick(){
 }
 
 
-function loadPosts(key,current_cursor){
+function loadPosts(node_key,current_cursor) {
+ var data = {
+  'cmd': 'post_main',
+  'node': node_key,
+  'cursor': current_cursor
+  };
  $.ajax({
   type: 'POST',
-  url:'/social/paginate?cmd=post_main&node='+key+'&cursor='+current_cursor, 
+  url:'/social/paginate',
+  data: data,
   dataType:'json',
   success:function(data) { 
-   $("#form_node").attr("value",key);
+   $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
     $("#main_stream_list").append(data.html)
