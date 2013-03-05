@@ -3,7 +3,7 @@
 {%for notification in notifications %}
 <li>
 <div class="notification" date="{{notification.date}}">
-{%if notification.status == 0%}<i class='icon-info-sign'></i>{%endif%}
+{%if notification.status == 1%}<i class='icon-info-sign'></i>{{notification.set_read()}}{%endif%}
 {{notification.event.get().source.get().commissario.nomecompleto(cmsro)}} ha aggiunto
 {%if notification.event.get().type=='post'%}
  un <a href="#" onclick="location.href='/social/post/{{notification.event.get().source.urlsafe()}}'">post</a>
@@ -12,6 +12,5 @@
 {%endif%}
 </div>
 </li>
-{{ notification.set_read() }}
 {%endfor%}
 </ul>

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 from py.base import *
 from google.appengine.api import users
 import os
@@ -51,16 +54,12 @@ class NodeHandler(BasePage):
       self.response.out.write("");
         
   def get(self,node_id):
-    
-  
       node_i=model.Key(urlsafe=node_id).get()
       node=node_i.key
          #if node does not exist
       if not node_i or node_i.active==False :
          
-          self.error()
-      
-      
+          self.error()            
           
       current_user=self.get_current_user()
       if current_user is None:
@@ -330,6 +329,17 @@ class SocialSubscribeHandler(SocialAjaxHandler):
                 self.success()
             else:
                 self.error()
+
+        if cmd == "set_ntfy_period":
+            node = model.Key(urlsafe=self.request.get('node')).get()
+            if node:
+                ns = node.subscriptions[user.key]
+                if ns:
+                    ns.ntfy_period = int(self.request.get('ntfy_period'))
+                    ns.put()
+                self.success()
+            else:
+                self.error()
               
 class SocialManagePost(SocialAjaxHandler):
    
@@ -375,7 +385,7 @@ class SocialManagePost(SocialAjaxHandler):
         if cmd == "create_comment":
             post=model.Key(urlsafe=self.request.get('post')).get()
             node=post.key.parent().get()
-                            
+            logging.info("content:" + self.request.get("content"))
             comment = post.create_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
              
             template_values = {
@@ -802,6 +812,8 @@ class SocialNotificationHandler(SocialAjaxHandler):
             logging.info("event_cursor: " + str(job["event_cursor"]))
             if job["event_more"]:
                 self.putTask('/social/event', job=job)
+            else:
+                self.process_notifications()
  
         else:
             self.putTask('/social/event', job={})
@@ -832,21 +844,29 @@ class SocialNotificationHandler(SocialAjaxHandler):
         event_cursor = job['event_cursor']
         events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor)
         for e in events:
-            if e.type=="post":
+            logging.info("event: " + e.type)
+            if e.type==SocialEvent.new_post:
                 node_cursor = job.get('node_cursor_' + str(e.target.id()))
                 ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor)
                 for s in ns:
                     if e.user != s.user:
                         SocialNotification.create(e.key, s.user)
+                        s.has_ntfy = True
+                        s.put()
                 if ns_more:
                     job['node_cursor_' + str(e.target.id())] = ns_next_cursor
                 else:
                     e.status = 1
                     e.put()
-            if e.type=="comment":
+            if e.type==SocialEvent.new_comment:
+                logging.info("new_comment")
                 for s in SocialPostSubscription.get_by_post(e.target):
+                    logging.info("s: " + str(s))
                     if e.user != s.user:
+                        logging.info("new_comment.created")
                         SocialNotification.create(e.key, s.user)
+                        s.has_ntfy = True
+                        s.put()
                 e.status = 1
                 e.put()
         job['event_more'] = event_more 
@@ -877,7 +897,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
 
     @classmethod
     def retrieve_new_notifications(cls, user_t, date):
-        return SocialNotification.get_by_user(user_t, cursor=None)
+        return SocialNotification.get_by_user_date(user_t, date)
                    
 
     @classmethod
@@ -896,6 +916,68 @@ class SocialNotificationHandler(SocialAjaxHandler):
     @classmethod
     def retrieve_notifications(cls, user_t, start_cursor):
         return SocialNotification.get_by_user(user_t, cursor=start_cursor)
+    
+    @classmethod
+    def process_notifications(cls):
+        logging.info("process_notifications")
+        user_ntfy = dict()
+        
+        #Node Subscription
+        for sub in SocialNodeSubscription.get_by_ntfy():
+            notifications = user_ntfy.get(sub.user)
+            if notifications is None:
+                notifications = list()
+                user_ntfy[sub.user] = notifications
+            for ntfy in SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created):
+                notifications.append(ntfy)
+                ntfy.status = SocialNotification.status_notified
+                ntfy.put()
+            sub.has_ntfy = False
+            sub.last_ntfy_sent = datetime.now()
+            sub.put()
+
+        #Post Subscriptions
+        for sub in SocialPostSubscription.get_by_ntfy():
+            logging.info("SocialPostSub")
+            notifications = user_ntfy.get(sub.user)
+            if notifications is None:
+                notifications = list()
+                user_ntfy[sub.user] = notifications
+            for ntfy in SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created):
+                notifications.append(ntfy)
+                ntfy.status = SocialNotification.status_notified
+                ntfy.put()
+            sub.has_ntfy = False
+            sub.put()
+        
+        for user in user_ntfy:
+            notifications = user_ntfy.get(user)
+            if len(notifications) > 0:
+                cls.send_notifications_email(user, notifications)
+            else:
+                logging.info("user: " + user.get().email + " has no notifications")
+                
+        
+    @classmethod
+    def send_notifications_email(cls, user, notifications):
+        logging.info("Sending notification to user: " + user.get().email)
+        for n in notifications:
+            logging.info("Notification: " + str(n.event.get().type))
+            
+        template = jinja_environment.get_template("social/notifications_email.html")
+        html=template.render({"notifications":notifications})
+        """mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
+        to=user.get().email,
+        subject="[Pappa-Mi] Novità",
+        body="",
+        html=html
+        )"""
+        #self.response.headers.add_header('content-type', 'text/html', charset='utf-8')
+        #self.response.out.write(html)
+        logging.info(html)
+    
+        
+            
         
 class SocialSearchHandler(SocialAjaxHandler):
     def get(self):
@@ -955,7 +1037,7 @@ class SocialMainHandler(BasePage):
                 break
             
         cmsro = self.getCommissario(user)
-        last_access = cmsro.ultimo_accesso_notifiche
+        last_access = cmsro.ultimo_accesso_il
         if not last_access:
             cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
@@ -976,7 +1058,7 @@ class SocialMainHandler(BasePage):
                         'node_active': node_active,
                         'node_recent': node_recent,
                         'user':user,
-                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, last_access)[0]))
+                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_il)))
         }
         self.getBase(template_values)
 

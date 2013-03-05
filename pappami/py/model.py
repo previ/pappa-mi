@@ -1367,6 +1367,13 @@ class SocialNode(model.Model):
       nodes=SocialNode.query().order(-SocialNode.rank).fetch()
       return nodes
 
+    @cached_property
+    def subscriptions(self):
+      subs = dict()
+      for s in SocialNodeSubscription.query(ancestor=self.key).fetch():
+        subs[s.user] = s
+      return subs
+
     def init_rank(self):
       init_rank = datetime.now() - Const.BASE_RANK
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
@@ -1395,7 +1402,7 @@ class SocialNode(model.Model):
       index = search.Index(name='index-nodes',
                    consistency=search.Index.PER_DOCUMENT_CONSISTENT)
       try:
-          index.add(doc)
+          index.put(doc)
       
       except search.Error, e:
           pass
@@ -1405,7 +1412,7 @@ class SocialNode(model.Model):
         index = search.Index(name='index-nodes',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
-            index.remove('node-'+key.urlsafe())
+            index.delete('node-'+key.urlsafe())
         
         except search.Error, e:
             pass
@@ -1582,7 +1589,7 @@ class SocialPost(model.Model):
       return comment_list
     
     def reset_comment_list(self):
-      self.comment_list.invalidate()
+      self.comment_list = None
     
     def get_by_resource(self, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
@@ -1734,7 +1741,10 @@ class SocialPost(model.Model):
     def subscribe_user(self, user):
       #user has already subscribed to this post
       if self.subscriptions.get(user.key):
+        logging.info("user already subscribed")
         return
+
+      logging.info("user not yet subscribed")
         
       sub = SocialPostSubscription(parent=self.key)
       
@@ -1744,13 +1754,13 @@ class SocialPost(model.Model):
           raise users.UserNotFoundError
       
       sub.put()    
-      self.subscriptions.invalidate()
+      self.subscriptions = None
               
     def unsubscribe_user(self, user):
       subscription=self.subscriptions.get(user.key)
       if subscription is not None:
          subscription.key.delete()
-         self.subscriptions.invalidate()
+         self.subscriptions = None
     
       else:
           raise users.UserNotFoundError
@@ -1773,8 +1783,6 @@ class SocialPost(model.Model):
       
       self.subscribe_user(author)
       
-      SocialPostSubscription(parent=self.key,user=author.key).put()
-
       #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_comment",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
       SocialEvent.create(type="comment", target_key=self.key, source_key=new_comment.key, user_key=author.key)
       
@@ -1849,7 +1857,7 @@ class SocialPost(model.Model):
       index = search.Index(name='index-posts',
                    consistency=search.Index.PER_DOCUMENT_CONSISTENT)
       try:
-          index.add(doc)
+          index.put(doc)
       
       except search.Error, e:
           pass
@@ -1858,13 +1866,14 @@ class SocialPost(model.Model):
         index = search.Index(name='index-posts',
                      consistency=search.Index.PER_DOCUMENT_CONSISTENT)
         try:
-            index.remove('post-'+key.urlsafe())
+            index.delete('post-'+key.urlsafe())
         
         except search.Error, e:
             pass
 
 class SocialPostSubscription(model.Model):
     user = model.KeyProperty(kind=models.User)
+    has_ntfy = model.BooleanProperty(default=False)
     
     @classmethod
     def get_posts_keys_by_user(cls,user):
@@ -1874,15 +1883,24 @@ class SocialPostSubscription(model.Model):
     @classmethod
     def get_by_post(cls,post_key):
       return SocialPostSubscription.query(ancestor=post_key).fetch()
+    
+    @classmethod
+    def get_by_ntfy(cls):
+      return SocialPostSubscription.query().filter(SocialPostSubscription.has_ntfy==True).fetch()    
         
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty(kind=models.User)
+
     can_comment=model.BooleanProperty(default=False)
     can_post=model.BooleanProperty(default=False)
     can_admin=model.BooleanProperty(default=False)
+
+    ntfy_period=model.IntegerProperty(default=0)
+    has_ntfy=model.BooleanProperty(default=False)
+    last_ntfy_sent=model.DateTimeProperty(default=None)
     
-    
+
     def init_perm(self):
         parent=self.key.parent().get()
         self.can_comment=parent.default_comment
@@ -1924,6 +1942,15 @@ class SocialNodeSubscription(model.Model):
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20, start_cursor=cursor)
       else:
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20)
+    
+    @classmethod
+    def get_by_ntfy(cls):
+      subs = list()
+      for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).fetch():
+        logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
+        if sub.last_ntfy_sent is None or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now():
+          subs.append(sub)
+      return subs
 
 class SocialResource(model.Expando):
     url=model.StringProperty()
@@ -2078,13 +2105,17 @@ class SocialEvent(model.Model):
 
   @classmethod
   def create(cls, type, target_key, source_key, user_key):
-    event=cls(type=type, target=target_key, source=source_key, user=user_key, status=0)
+    event=cls(type=type, target=target_key, source=source_key, user=user_key, status=cls.status_created)
     event.put()
 
   @classmethod
   def get_by_status(cls, status, cursor):
     return SocialEvent.query().filter(SocialEvent.status==status).order(SocialEvent.date).fetch_page(20, start_cursor=cursor)
           
+  status_created = 0
+  status_processed = 1
+  new_post = "post"
+  new_comment = "comment"
   
 class SocialNotification(model.Model):
   event = model.KeyProperty()
@@ -2094,12 +2125,12 @@ class SocialNotification(model.Model):
   status = model.IntegerProperty()
 
   def set_read(self):
-    self.status=1
+    self.status=self.status_read
     self.put()
     
   @classmethod
   def create(cls, event_key, user_key):
-    notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=0)
+    notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=cls.status_created)
     notification.put()
   
   @classmethod
@@ -2117,10 +2148,32 @@ class SocialNotification(model.Model):
       cache.put(cache_key, ntfs)
 
     return ntfs, next_cursor, more
-        
+
+  @classmethod
+  def get_by_user_date(cls, user, date):
+    cursor = None
+    more = True
+    nns = list()
+    while more:
+      ns, cursor, more = cls.get_by_user(user, cursor)
+      for n in ns:
+        if n.date > date:
+          nns.append(n)
+        else:
+          more = False
+    return nns
+  
   @classmethod
   def get_by_date(cls, date, cursor=None):
-      return SocialNotification.query().order(-SocialNotification.date)
+    return SocialNotification.query().order(-SocialNotification.date)
+    
+  @classmethod
+  def get_by_user_status(cls, user, status):
+    return SocialNotification.query().filter(SocialNotification.user==user).filter(SocialNotification.status==status)
+  
+  status_created = 0
+  status_notified = 1
+  status_read = 2
       
       
           

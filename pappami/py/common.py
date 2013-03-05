@@ -59,6 +59,18 @@ class cached_property(object):
         obj.cache[self.__name__] = value
   
       return value
+
+  def __set__(self, obj, value):
+    if obj is None:
+      return self
+    if not hasattr(obj, "cache"):
+      obj.cache = dict()
+  
+    with self.lock:
+      if value is None and obj.cache.get(self.__name__):
+        del obj.cache[self.__name__]
+  
+      return value
   
   def invalidate(self, obj):
     del obj.cache[self.__name__]
