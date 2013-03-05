@@ -806,9 +806,14 @@ function onNodeClick(){
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
  $("#node_title").find("span").text(node_item.text());
- $("#node_title > a").attr("href", "/social/node/"+key);
+ if(key!="all") {
+   $("#node_title > a").attr("href", "/social/node/"+key);
+   $("#node_title > a").show();
+ } else {
+   $("#node_title > a").hide();
+ }
  node_item.parent().addClass("active");
- key=node_item.attr('data-node-key');
+ //key=node_item.attr('data-node-key');
  $("#main_stream_list").empty();
  $("#no_more_posts").hide(); 
  loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
