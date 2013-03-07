@@ -331,8 +331,10 @@ function initPost(post_root) {
 	return			  
       }
     }
-    post_root.find(".s_comment_list").append(data.html)
+    post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_comment_submit").button("reset");
+    tinymce.get('comment_content').setContent('');
+  
   }, beforeSubmit: function(arr,$form) {
 	  post_root.find(".s_comment_submit").button("loading");
 	  //$('#new_comment').slideUp();
@@ -434,6 +436,7 @@ function onCommentSubmit(data){
   }
   comment_root = $('[data-comment-key="'+ data.comment +'"]');
   comment_root.html(data.html);
+
   $(document).ready(function(){
     initComment(comment_root);
   });
@@ -566,7 +569,7 @@ function onPostReshare() {
 	modal_reshare = $("#tools").find("#post_reshare")
 	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
 	modal_reshare.find('input[name="post"]').attr("value", post);
-	$('#post_content_text').tinymce(tiny_mce_opts);
+	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
 	modal_reshare.find('form').ajaxForm({clearForm: true, dataType:'json', success:function(data){
 	  if(data.response!="success") {
 	    if(data.response=="flooderror") {
@@ -577,7 +580,13 @@ function onPostReshare() {
 	      return
 	    }
 	  }
-	  onSuccess(data)
+	  if( $("#main_stream_list") ) {
+	      $("#main_stream_list").prepend(data.html);
+	      modal_reshare.modal('hide');
+	      modal_reshare.empty();
+	  } else {
+	    onSuccess(data)
+	  }
 	}});
 	modal_reshare.show();
 	modal_reshare.modal();
@@ -849,6 +858,7 @@ function init(){
   }
   $("#main_stream_list").prepend(data.html)
   $("#open_post_submit").button("reset");
+  tinymce.get('post_content_text').setContent('');
  }, beforeSubmit: function(arr,$form) {
   $("#open_post_submit").button("loading");
   $('#new_post').slideUp();
@@ -937,6 +947,7 @@ function loadPosts(node_key,current_cursor) {
     $('.post_unvote').click(onPostVote);      
     $('.post_reshare').click(onPostReshare);
     $('.post_expand').click(onPostExpand); 
+    $("a.node").click(onNodeClick);
    } else if(data.response="no_posts"){
    $("#no_more_posts").alert();
    $("#no_more_posts").show();   

@@ -1,0 +1,22 @@
+<script type="text/javascript">
+$(document).ready(function () {
+});
+
+</script>
+{#%set tab_node="active"%#}
+{#%include "navigation.html"%#}
+<!--div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div-->
+<h3>Ricerca</h3>
+<div class="row">
+ <div class="span12">
+  <div class="well">
+   <form>
+    <label for="search_text">Cerca una discussione o ispezione:</label>
+    <input name="query" id="search_text" type="text">
+   </form>
+  </div>
+  <ul id="search_result" class="thumbnails">
+  {%include "social/pagination/post.html"%}
+  </ul>
+ </div>
+</div>

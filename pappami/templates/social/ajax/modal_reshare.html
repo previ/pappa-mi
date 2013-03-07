@@ -2,23 +2,24 @@
  <form id="post_reshare" action="/social/managepost" method="post">
  <div class="modal-header">  
   <a class="close" data-dismiss="modal">x</a>  
-  <h4>Pubblica questo post su una categoria diversa</h4>  
+  <h4>Pubblica questo post su un'argomento diverso</h4>  
  </div>  
   <input type="hidden" name="cmd" value="reshare_open_post"/>				
   <input type="hidden" name="post" value=""/>
   <div class="modal-body">  
-   <div id="post_title" class="form_parent">
-    <label id="post_content_label" for="titolo">Titolo</label>
-    <input class="span4 comment_textarea required" name="title" id="post_title_text"></input>
-   </div>
-   <div id="post_content" class="form_parent">
-    <label id="post_content_label" for="content">Contenuto</label>
-    <input class="span4 comment_textarea required" name="content" id="post_content_text"></input>
-   </div>
-   <div id="node_selector" class="form_parent">
+   <div id="node_selector" class="form">
+    <label id="post_content_label" for="content">Argomento</label>
     <select class="large required" id="node_selector" name="node">
     {%for node in my_nodelist%}<option value="{{node.key.urlsafe()}}">{{node.name}}</option>{%endfor%}
     </select>
+   </div>
+   <div id="post_title" class="form_parent">
+    <label id="post_content_label" for="titolo">Titolo</label>
+    <input id="reshare_post_title_text" class="span5 required" name="title"/>
+   </div>
+   <div id="post_content" class="form_parent">
+    <label id="post_content_label" for="content">Contenuto</label>
+    <input id="reshare_post_content_text" class="comment_textarea required" name="content"/>
    </div>
   </div>  
   <div class="modal-footer">  

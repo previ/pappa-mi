@@ -31,8 +31,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				{% endif %}  
 			</div>		
 			<div class="s_post_feedback pull-left">
-			 <span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star"></i><span class="s_post_votes badge badge-success">{{post.votes|count}}</span></span>
-			 <span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt"></i><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}>{{post.reshares|count}}</span></span>
+			 <span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><span class="s_post_votes badge badge-success"><i class="icon-star icon-white"></i> {{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> {{post.reshares|count}}</span></span>
 			</div>
 			
 			{% if user %} 
@@ -74,7 +74,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
 						<div class="">
-							<textarea row="3" class="span8 s_post_comment required" name="content"></textarea>
+							<input id="comment_content" class="s_post_comment required" name="content"/>
 							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
 						</div>
 					</form>
