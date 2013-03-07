@@ -103,12 +103,12 @@ class SocialTest(BasePage):
           
 class NodeListHandler(BasePage):
   def get(self):
-    geo = model.GeoPt(41.754922,12.502441)
+    #geo = model.GeoPt(41.754922,12.502441)
     template_values = {
       'content': 'social/nodelist.html',
-      #'nodelist': SocialNode.active_nodes(),
+      'nodelist': SocialNode.get_most_active()
       #'citta': Citta.get_all(),
-      'geo':geo}
+      }
         
     self.getBase(template_values)
     
@@ -814,6 +814,36 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     response={'html':"",'list':[]}
                     
                 self.output_as_json(response)
+                
+                if cmd=="browse_nodes":
+                    nodes= list()
+                    if not cursor or cursor == "undefined":
+                        try:
+                            for n in SocialNode.get_most_active():
+                                nodes.append(n)
+                                if len(nodes) > 50:
+                                    break
+                                
+                        except search.Error:
+                                logging.exception('Browse failed' )
+                    
+                    template_values = {
+                            "nodelist":nodes,
+                             }
+               
+                        
+                    template = jinja_environment.get_template("social/pagination/node.html")
+                    if nodes:
+                        html=template.render(template_values)
+                        response = {'html':html,
+                                
+                                 
+                                  #cursor":next_curs.urlsafe()
+                                  }
+                    else:
+                        response={'html':"",'list':[]}
+                        
+                    self.output_as_json(response)
     
 
 class SocialNotificationHandler(SocialAjaxHandler):
@@ -1046,13 +1076,13 @@ class SocialMainHandler(BasePage):
         for node in SocialNode.get_most_recent():
             if node not in node_list:
                 node_recent.append(node)
-            if len(node_recent) >= 3:
+            if len(node_recent) >= 5:
                 break
         node_active=[]
         for node in SocialNode.get_most_active():
             if node not in node_list:
                 node_active.append(node)
-            if len(node_active) >= 3:
+            if len(node_active) >= 5:
                 break
             
         cmsro = self.getCommissario(user)

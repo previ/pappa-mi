@@ -1,36 +1,8 @@
 <script type="text/javascript">
 
 $(document).ready(function () {
-  $("#pagination_errors").hide()
-
-  //loadNodes(undefined)
   init_search()
 });
-
-
-/*
-function loadNodes(current_cursor){
-	
-$.ajax({
-		 type: 'POST',
-		 url:'/social/paginate?cmd=node&cursor='+current_cursor, 
-		dataType:'json',
-		 success:function(data){
-		 	if(data.response=="success"){
-			$("#add_nodes").unbind("click").click(function(){loadNodes(data.cursor)})
-			 $("#node_list").last().append(data.html)
-			 }
-			 else if(data.response="no_nodes"){
-			 	$("#add_nodes").hide()
-  				$(".pagination_errors").show()
-			 }
-			 
-			 }
-			 
-			 })
-	
-}
-*/
     
 </script>
 {%set tab_node="active"%}
@@ -43,17 +15,17 @@ $.ajax({
  </div>
 </div>
 {%endif%}
-<h3>Elenco Nodi</h3>
+<h3>Elenco Argomenti</h3>
 <div class="row">
  <div class="span12">
   <div class="well">
    <form>
-    <label for="search_text">Cerca un argomento per nome:</label>
+    <label for="search_text">Cerca per nome:</label>
     <input id="search_text" type="text">
    </form>
   </div>
-  <ul id="search_result" class="thumbnails"></ul>
+  <ul id="node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
  </div>
 </div>
-<div id="add_nodes" class="btn btn-normal" type="submit">Mostra altri nodi</div>
-<div class="pagination_errors">Non ci sono altri nodi</div>
+<button id="add_nodes" class="btn btn-normal" type="submit" style="display:none;">Mostra altri nodi</button>
+<div id="pagination_errors" style="display:none;">Non ci sono altri nodi</div>

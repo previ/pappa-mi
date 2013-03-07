@@ -1364,7 +1364,16 @@ class SocialNode(model.Model):
 
     @classmethod
     def get_most_active(cls):
-      nodes=SocialNode.query().order(-SocialNode.rank).fetch()
+      cache = Cache.get_cache("SocialNode")
+      nodes = cache.get('most-actives')
+      if not nodes:
+        nodes = list()
+        for n in SocialNode.query().order(-SocialNode.rank).fetch():
+            nodes.append(n)
+            if len(nodes) >= 50:
+                break
+        cache.put('most-actives', nodes)
+      
       return nodes
 
     @cached_property
