@@ -490,8 +490,27 @@ class SocialManagePost(SocialAjaxHandler):
             title=self.request.get('title')
             content=self.request.get('content')
             
-            post=post.reshare(node.key,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
-            self.success("/social/post/"+post.urlsafe())
+            rs_post_key=post.reshare(node.key,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
+            if False:
+                self.success("/social/post/"+rs_post_key.urlsafe())
+            else:
+                postlist = list()
+                postlist.append(rs_post_key.get())
+                
+                template_values = {
+                    "postlist":postlist,
+                    "cmsro":self.getCommissario(user), 
+                    "subscription": node.get_subscription(user),
+                    "user": user,
+                    "node":node
+                 }
+               
+                template = jinja_environment.get_template("social/pagination/post.html")
+     
+                html=template.render(template_values)
+                response = {'response':'success','html':html,"cursor":'', 'post': rs_post_key.urlsafe()}
+                self.output_as_json(response)
+                
         
         if cmd== "vote_post":          
             post=model.Key(urlsafe=self.request.get('post')).get()
@@ -702,7 +721,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 if node:
                     template_values["subscription"]=node.get().get_subscription(user)
                     
-                if not postlist or not next_curs_key:
+                if len(postlist) == 0:
                     
                     response = {'response':'no_posts'}
                     self.output_as_json(response)

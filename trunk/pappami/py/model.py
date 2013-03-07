@@ -1591,6 +1591,12 @@ class SocialPost(model.Model):
     def reset_comment_list(self):
       self.comment_list = None
     
+    def get_comments_text(self):
+      text = ""
+      for c in self.comment_list:
+        text += c.content + " "
+      return text
+    
     def get_by_resource(self, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
           
@@ -1664,13 +1670,14 @@ class SocialPost(model.Model):
       cache_key = "SocialPost-" + str(node.id) + "-" + str(start_cursor)
       postlist = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
-      more = None
+      more = cache.get(cache_key + "-more")
       if not postlist:
         postlist = list()
         posts, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
         postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
+        cache.put(cache_key + "-more", more)
       return postlist, next_cursor, more
     
     @classmethod
@@ -1682,17 +1689,19 @@ class SocialPost(model.Model):
       if not stream:
         stream = list()        
         next_cursor = int(start_cursor if start_cursor else 0) + 1
+        #logging.info("next_cursor:" + str(next_cursor))
         for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
           next_cursor_rank = None
           for x in range(0, next_cursor):
             postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node, page=page, start_cursor=next_cursor_rank)
+            #logging.info("node: " + node.get().name + " offset: " + str(x) + " postlist: " + str(len(postlist)) + " more: " + str(more))       
             stream.extend(postlist)
             if not more:
               break
         
         stream = sorted(stream, key=lambda post: post.rank, reverse=True)
         offset = int(start_cursor if start_cursor else 0)
-        logging.info("offset: " + str(offset))
+        #logging.info("offset: " + str(offset))
         stream = stream[offset*Const.ACTIVITY_FETCH_LIMIT : (offset+1)*Const.ACTIVITY_FETCH_LIMIT]
         cache.put(cache_key, stream)
         cache.put(cache_key + "-next_cursor", next_cursor)
@@ -1741,10 +1750,10 @@ class SocialPost(model.Model):
     def subscribe_user(self, user):
       #user has already subscribed to this post
       if self.subscriptions.get(user.key):
-        logging.info("user already subscribed")
+        #logging.info("user already subscribed")
         return
 
-      logging.info("user not yet subscribed")
+      #logging.info("user not yet subscribed")
         
       sub = SocialPostSubscription(parent=self.key)
       
@@ -1850,7 +1859,8 @@ class SocialPost(model.Model):
       doc=search.Document(
                       doc_id='post-'+post.key.urlsafe(),
                       fields=[search.TextField(name='title', value=post.title),
-                              search.HtmlField(name='content', value=post.content)],
+                              search.HtmlField(name='content', value=post.content),
+                              search.HtmlField(name='comments', value=post.get_comments_text())],
                       language='it')
       
      
@@ -1916,11 +1926,12 @@ class SocialNodeSubscription(model.Model):
         
         subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
         for s in subscriptions_list:
-          logging.info("Node.key: " + str(s.key.parent()))
+          #logging.info("Node.key: " + str(s.key.parent()))
           if not s.key.parent().get():
             s.key.delete()
           else:
-            logging.info("Node: " + s.key.parent().get().name)
+            #logging.info("Node: " + s.key.parent().get().name)
+            pass
           
         node_list=[i.key.parent().get() for i in subscriptions_list]
         return node_list
@@ -1947,7 +1958,7 @@ class SocialNodeSubscription(model.Model):
     def get_by_ntfy(cls):
       subs = list()
       for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).fetch():
-        logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
+        #logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
         if sub.last_ntfy_sent is None or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now():
           subs.append(sub)
       return subs
@@ -2037,7 +2048,7 @@ class SocialComment(model.Model):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
       future.get_result().get().key.parent().get().reset_comment_list()
-        
+              
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
