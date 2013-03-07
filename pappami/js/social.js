@@ -795,18 +795,16 @@ function onNotificationPeriod() {
 }
 
 function init_search(){
-$('#search_text').typeahead({minLength:2,
-
+  $('#search_text').typeahead({minLength:2,
     source: function (query, process) {
-
-        return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
-        	data=jQuery.parseJSON(data)
-        	if(data.html){
-        	$("#search_result").empty().hide().html(data.html).show(200)
-			}
-        });
+      return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
+	data=jQuery.parseJSON(data)
+	if(data.html) {
+	  $("#node_list").empty().hide().html(data.html).show(200)
+	}
+      });
     }
-});
+  });
 }
 
 function onNodeClick(){
