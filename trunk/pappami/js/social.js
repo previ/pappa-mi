@@ -768,7 +768,8 @@ function onSubUnsubNode() {
     'cmd': sub_status == 'true' ? 'unsubscribe' : 'subscribe'
   };
   $.ajax({url:'/social/subscribe', data: data, dataType:"JSON", success:function(data){
-      node_root.attr('data-sub-status', sub_status == 'true' ? 'false' : 'true');
+      node_root.attr('data-sub-status', data.subscribed );
+      node_root.attr('data-ntfy-period', data.ntfy_period);
       onSuccess(data);
       redraw_node();
     }
@@ -812,10 +813,11 @@ function onNodeClick(){
  key=node_item.attr('data-node-key');
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
- $("#node_title").find("span").text(node_item.text());
+ $("#node_title").find("span").text(node_item.find(".node_name").text());
  if(key!="all") {
    $("#node_title > a").attr("href", "/social/node/"+key);
    $("#node_title > a").show();
+   node_item.find(".sub_ntfy").hide();
  } else {
    $("#node_title > a").hide();
  }

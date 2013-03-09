@@ -12,7 +12,7 @@ $(document).ready(function () {
 
 <div id="node_name"><h2 style="display:inline">{{node.name}}</h2>
 	{%if user%}
-	<div id="node_commands" class="node_root pull-right" data-node-key='{{node.key.urlsafe()}}' data-sub-status='{%if subscription%}true{%else%}false{%endif%}' data-ntfy-period={%if subscription%}{{subscription.ntfy_period}}{%endif%}>
+	<div id="node_commands" class="node_root pull-right" data-node-key='{{node.key.urlsafe()}}' data-sub-status='{%if subscription%}true{%else%}false{%endif%}' data-ntfy-period='{%if subscription%}{{subscription.ntfy_period}}{%endif%}'>
 	 <div class="btn-group">
 	  <div id="subscribe_btn" class="btn"></div>
 	  <button id="sub_prop" class="btn dropdown-toggle" data-toggle="dropdown">

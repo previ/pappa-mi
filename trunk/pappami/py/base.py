@@ -164,6 +164,7 @@ class BasePage(webapp.RequestHandler):
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
+        commissario.set_cache()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
       #user.fullname = commissario.nomecompleto(commissario)
@@ -325,11 +326,14 @@ class SocialAjaxHandler(BasePage):
       super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
 
 
-  def success(self,url=None):
+  def success(self,url=None, data=None):
       
       response = {'response':'success'}
       if url:
-          response['url']=url      
+          response['url']=url  
+      if data:
+        response.update(data.items()) 
+        
       self.output_as_json(response)
   
   def error(self):     
