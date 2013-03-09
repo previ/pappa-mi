@@ -175,8 +175,6 @@ class SocialPostHandler(BasePage):
         
         postlist = list()
         postlist.append(post.get())
-        #for x in postlist: 
-        #    x.commissario=Commissario.get_by_user(x.author.get())
         
         template_values = {
           "main":"social/pagination/post.html",
@@ -298,8 +296,9 @@ class SocialSubscribeHandler(SocialAjaxHandler):
         if cmd == "subscribe":
             node = model.Key(urlsafe=self.request.get('node')).get()
             if node:
-                node.subscribe_user(user)
-                self.success()
+                sub = node.subscribe_user(user)
+                self.success(data={'subscribed': 'true',
+                                  'ntfy_period': str(sub.ntfy_period)})
             else:
                 self.error()
      
@@ -706,11 +705,9 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
                     if next_curs:
                         next_curs_key = next_curs.urlsafe()
-                
-                #for x in postlist: 
-                #    x.commissario=Commissario.get_by_user(x.author.get())
-                    #logging.info(x)
-                                            
+                    
+                    if node.get().get_subscription(user):
+                        node.get().get_subscription(user).reset_ntfy()
                     
                 template_values = {
                         "postlist":postlist,
@@ -901,6 +898,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
                     if e.user != s.user:
                         SocialNotification.create(e.key, s.user)
                         s.has_ntfy = True
+                        s.ntfy += 1
                         s.put()
                 if ns_more:
                     job['node_cursor_' + str(e.target.id())] = ns_next_cursor
@@ -1065,13 +1063,17 @@ class SocialNotificationsListHandler(BasePage):
                           }
             cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
+            cmsro.set_cache()
             self.getBase(template_values)
             
 class SocialMainHandler(BasePage):
     @reguser_required
     def get(self):
         user=self.get_current_user()
-        node_list=SocialNodeSubscription.get_nodes_by_user(user,-SocialNodeSubscription.starting_date)
+        subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
+        node_list = []
+        for sub in subs:
+            node_list.append(sub.key.parent().get())
         node_recent=[]
         for node in SocialNode.get_most_recent():
             if node not in node_list:
@@ -1086,11 +1088,12 @@ class SocialMainHandler(BasePage):
                 break
             
         cmsro = self.getCommissario(user)
-        last_access = cmsro.ultimo_accesso_il
+        last_access = cmsro.ultimo_accesso_notifiche
         if not last_access:
-            cmsro.ultimo_accesso_notifiche = datetime.now()
-            cmsro.put()
             last_access = datetime.now()
+        cmsro.ultimo_accesso_notifiche = datetime.now()
+        cmsro.put()
+        cmsro.set_cache()
             
         logging.info("node_list")
         for n in node_list:
@@ -1103,11 +1106,12 @@ class SocialMainHandler(BasePage):
             logging.info(n.name)
         template_values = {
                         'content': 'social/main_social.html',
+                        'subs':subs,
                         'node_list':node_list,
                         'node_active': node_active,
                         'node_recent': node_recent,
                         'user':user,
-                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_il)))
+                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, last_access)))
         }
         self.getBase(template_values)
 
@@ -1127,7 +1131,7 @@ class SocialDLoadHandler(SocialAjaxHandler):
         
         if cmd=="modal_reshare":
             template_values = {
-                "my_nodelist":SocialNodeSubscription.get_nodes_by_user(user) ,
+                "subs":SocialNodeSubscription.get_by_user(user) ,
                 "post":self.request.get("post")
             }
             
@@ -1275,11 +1279,11 @@ class SocialNewsLetter(BasePage):
         for user in user_list:
             all_posts=[]
             final_posts=[]
-            my_nodes=SocialNodeSubscription.get_nodes_by_user(user.usera.get())
-            for node in my_nodes:
+            subs = SocialNodeSubscription.get_by_user(user.usera.get())
+            for sub in subs:
                 logging.info("3")
-                if posts_by_node.has_key(''+str(node.key.id())):                
-                    all_posts= all_posts+posts_by_node[''+str(node.key.id())]
+                if posts_by_node.has_key(''+str(sub.parent().id())):                
+                    all_posts= all_posts+posts_by_node[''+str(sub.parent().id())]
             if len(all_posts)<=newsletter_size/2:
                 return
 

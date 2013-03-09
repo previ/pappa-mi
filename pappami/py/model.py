@@ -1495,11 +1495,12 @@ class SocialNode(model.Model):
         else:
             raise users.UserNotFoundError
         
-        user1.put()
+        #user1.put()
                
         user1.init_perm()
     
         Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+        return user1
     
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
@@ -1911,39 +1912,37 @@ class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty(kind=models.User)
 
-    can_comment=model.BooleanProperty(default=False)
-    can_post=model.BooleanProperty(default=False)
-    can_admin=model.BooleanProperty(default=False)
+    can_comment = model.BooleanProperty(default=False)
+    can_post = model.BooleanProperty(default=False)
+    can_admin = model.BooleanProperty(default=False)
 
-    ntfy_period=model.IntegerProperty(default=0)
-    has_ntfy=model.BooleanProperty(default=False)
-    last_ntfy_sent=model.DateTimeProperty(default=None)
-    
+    ntfy_period = model.IntegerProperty(default=0)
+    has_ntfy = model.BooleanProperty(default=False)
+    last_ntfy_sent = model.DateTimeProperty(default=None)
+    ntfy = model.IntegerProperty(default=0)
+    #last_ntfy_access = model.DateTimeProperty(default=None)
 
     def init_perm(self):
         parent=self.key.parent().get()
         self.can_comment=parent.default_comment
-        self.can_post=parent.default_comment
+        self.can_post=parent.default_post
         self.can_admin=parent.default_admin
         self.put()
         
+    def reset_ntfy(self):
+      self.ntfy = 0
+      self.put()
+      
     @classmethod
-    def get_nodes_by_user(self, user_t, order_method=None):
+    def get_by_user(self, user_t, order_method=None):
         
         if not order_method:
             order_method=SocialNodeSubscription.starting_date
         
-        subscriptions_list=SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
-        for s in subscriptions_list:
-          #logging.info("Node.key: " + str(s.key.parent()))
-          if not s.key.parent().get():
-            s.key.delete()
-          else:
-            #logging.info("Node: " + s.key.parent().get().name)
-            pass
+        subs = SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
           
-        node_list=[i.key.parent().get() for i in subscriptions_list]
-        return node_list
+        #node_list=[i.key.parent().get() for i in subscriptions_list]
+        return subs
     
     @classmethod
     def get_nodes_keys_by_user(cls,user):

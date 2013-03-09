@@ -10,7 +10,7 @@
    <div id="node_selector" class="form">
     <label id="post_content_label" for="content">Argomento</label>
     <select class="large required" id="node_selector" name="node">
-    {%for node in my_nodelist%}<option value="{{node.key.urlsafe()}}">{{node.name}}</option>{%endfor%}
+    {%for sub in subs%}<option value="{{sub.key.parent().urlsafe()}}">{{sub.key.parent().get().name}}</option>{%endfor%}
     </select>
    </div>
    <div id="post_title" class="form_parent">

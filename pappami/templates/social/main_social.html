@@ -15,18 +15,18 @@ $(document).ready(function () {
  <div class="row">
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
-    <li><a data-node-key="all" href="#"><i class="icon-home"></i>Tutti gli argomenti</a><i class="pull-right icon-chevron-right"></i></li>
+    <li><a data-node-key="all" href="#"><i class="icon-home"></i><span class="node_name">Tutti gli argomenti</span><i class="pull-right icon-chevron-right"></i></a></li>
     <li class="nav-header"><i class="icon-tags"></i>Argomenti</li>
-    {%for node in node_list%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%for sub in subs%}<li><a data-node-key="{{sub.key.parent().urlsafe()}}" href="#"><span class="node_name">{{sub.key.parent().get().name}}</span><span class="pull-right">{%if sub.ntfy>0%}<span class="sub_ntfy badge badge-warning">{{sub.ntfy}}</span>{%endif%}<i class="icon-chevron-right"></i></span></a></li>
     {%endfor%}
     <li>
      <a href="/social/nodelist"><i class="icon-search"></i>Altre scuole e argomenti</a>
     </li>
     <li class="nav-header"><i class="icon-fire"></i>Più discussi</li>
-    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span class="node_name">{{node.name}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
     <li class="nav-header"><i class="icon-asterisk"></i>Nuovi</li>
-    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#">{{node.name}}<i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span class="node_name">{{node.name}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
    </ul>    
   </div>
