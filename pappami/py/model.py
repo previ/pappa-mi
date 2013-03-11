@@ -244,7 +244,7 @@ class Commissario(model.Model):
 
   @classmethod
   def get_by_user(cls, user):
-    commissario = memcache.get("commissario-"+user.get_id())
+    commissario = memcache.get("commissario-"+str(user.key.id()))
     if not commissario:
       commissario = cls.query().filter(Commissario.usera == user.key).get()
       #if not commissario and user.email:
@@ -252,11 +252,11 @@ class Commissario(model.Model):
         #if commissario:
           #commissario.usera = user.key
           #commissario.put()
-      memcache.add("commissario-"+user.get_id(), commissario)
+      memcache.add("commissario-"+str(user.key.id()), commissario)
     return commissario
   
   def set_cache(self):
-    memcache.delete("commissario-"+str(self.usera.get().get_id()))
+    memcache.delete("commissario-"+str(self.usera.id()))
 
   @classmethod
   def get_all(cls):
@@ -1359,7 +1359,15 @@ class SocialNode(model.Model):
 
     @classmethod
     def get_most_recent(cls):
-      nodes=SocialNode.query().order(-SocialNode.created).fetch()
+      cache = Cache.get_cache("SocialNode")
+      nodes = cache.get('most-recent')
+      if not nodes:
+        nodes = list()
+        for n in SocialNode.query().order(-SocialNode.created).fetch():
+            nodes.append(n)
+            if len(nodes) >= 50:
+                break
+        cache.put('most-recent', nodes)
       return nodes
 
     @classmethod
@@ -1392,6 +1400,8 @@ class SocialNode(model.Model):
                 SocialComment: 7,
                 Vote: 3 }
       now = datetime.now()
+      if self.last_act is None:
+        self.last_act = now
       delta = now - self.last_act
       delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
       self.rank += ((delta_rank * values[activity]) / 10)
@@ -1451,7 +1461,7 @@ class SocialNode(model.Model):
         self.calc_rank(SocialPost)
         self.put()
         comm=Commissario.get_by_user(author)
-        SocialPostSubscription(parent=self.key,user=author.key).put()
+        new_post.subscribe_user(author)
         
         #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
         
@@ -1661,7 +1671,6 @@ class SocialPost(model.Model):
       return subs
       
     def can_sub(self, user):
-      logging.info(str(self.subscriptions.get(user.key) is None))
       return (self.subscriptions.get(user.key) is None)
           
     def remove_attachment(self, attach_key):
@@ -1669,10 +1678,7 @@ class SocialPost(model.Model):
       self.clear_attachments()
 
     def clear_attachments(self):
-      logging.info("attachments " + str(self.__dict__.get("attachments")))
-      logging.info("attachments " + str(self.attachments))
-      if self.__dict__.get("attachments"):
-        del self.__dict__["attachments"]
+      self.attachments = None
 
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
@@ -1826,10 +1832,8 @@ class SocialPost(model.Model):
         vote = Vote(ref = self.key, vote = vote, c_u = user.key)
         vote.put()
   
-      try:
-        del self.cache["votes"]
-      except AttributeError:
-        pass
+      self.votes = None
+      
       self.calc_rank(Vote)
       self.key.parent().get().calc_rank(Vote)
       self.key.parent().get().put()
@@ -2084,8 +2088,8 @@ class Vote(model.Model):
   
   @cached_property
   def author(self):
-    return Commissario.get_by_user(self.c_u)
-  
+    return Commissario.get_by_user(self.c_u.get())
+
   @classmethod
   def get_by_ref(cls, ref):
     return Vote.query().filter(Vote.ref==ref)

@@ -329,8 +329,6 @@ class SocialAjaxHandler(BasePage):
   def success(self,url=None, data=None):
       
       response = {'response':'success'}
-      if url:
-          response['url']=url  
       if data:
         response.update(data.items()) 
         

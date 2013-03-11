@@ -130,9 +130,6 @@ class SocialPostHandler(BasePage):
         if post is None or not isinstance(post, SocialPost):
             self.error()
         node = post.key.parent()
-        #for x in op.get_comments():            
-        #    x.commissario=Commissario.get_by_user(x.author.get())
-        #    replies.append(x)
         
         current_user=self.get_current_user()
         current_sub=None
@@ -297,7 +294,7 @@ class SocialSubscribeHandler(SocialAjaxHandler):
             node = model.Key(urlsafe=self.request.get('node')).get()
             if node:
                 sub = node.subscribe_user(user)
-                self.success(data={'subscribed': 'true',
+                self.success({'subscribed': 'true',
                                   'ntfy_period': str(sub.ntfy_period)})
             else:
                 self.error()
@@ -439,7 +436,7 @@ class SocialManagePost(SocialAjaxHandler):
             #delete replies
             node.delete_post(post)
             
-            self.success("/social/node/"+node.key.urlsafe())
+            self.success({'url':"/social/node/"+str(node.key.urlsafe())})
 
         if cmd == "edit_post":
            post=model.Key(urlsafe=self.request.get('post')).get()
@@ -491,7 +488,7 @@ class SocialManagePost(SocialAjaxHandler):
             
             rs_post_key=post.reshare(node.key,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
             if False:
-                self.success("/social/post/"+rs_post_key.urlsafe())
+                self.success({'url': "/social/post/"+str(rs_post_key.urlsafe())})
             else:
                 postlist = list()
                 postlist.append(rs_post_key.get())
@@ -519,6 +516,36 @@ class SocialManagePost(SocialAjaxHandler):
             response = {'response':'success', 'post': post.key.urlsafe(), 'votes':str(len(post.votes))}
             self.output_as_json(response)             
 
+        if cmd== "vote_list":          
+            post=model.Key(urlsafe=self.request.get('post')).get()
+
+            template_values = {
+                "cmsro":self.getCommissario(user), 
+                "votes":post.votes
+             }
+           
+            template = jinja_environment.get_template("social/pagination/voters.html")
+ 
+            html=template.render(template_values)
+                            
+            response = {'response':'success', 'html':html}
+            self.output_as_json(response)             
+
+        if cmd== "reshare_list":          
+            post=model.Key(urlsafe=self.request.get('post')).get()
+
+            template_values = {
+                "cmsro":self.getCommissario(user), 
+                "reshares":post.reshares
+             }
+           
+            template = jinja_environment.get_template("social/pagination/reshares.html")
+ 
+            html=template.render(template_values)
+                            
+            response = {'response':'success', 'html':html}
+            self.output_as_json(response)      
+            
         if cmd== "post_attach_delete":          
             post=model.Key(urlsafe=self.request.get('post')).get()
             attach=model.Key(urlsafe=self.request.get('attach'))
@@ -895,7 +922,9 @@ class SocialNotificationHandler(SocialAjaxHandler):
                 node_cursor = job.get('node_cursor_' + str(e.target.id()))
                 ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor)
                 for s in ns:
+                    logging.info("subs.user: " + s.user.get().email + " e.user: " + e.user.get().email)
                     if e.user != s.user:
+                        logging.info("new_post.created")
                         SocialNotification.create(e.key, s.user)
                         s.has_ntfy = True
                         s.ntfy += 1
@@ -971,6 +1000,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
         
         #Node Subscription
         for sub in SocialNodeSubscription.get_by_ntfy():
+            logging.info("SocialNodeSub")
             notifications = user_ntfy.get(sub.user)
             if notifications is None:
                 notifications = list()
@@ -979,6 +1009,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
+                logging.info("SocialNotification")
             sub.has_ntfy = False
             sub.last_ntfy_sent = datetime.now()
             sub.put()
@@ -994,9 +1025,11 @@ class SocialNotificationHandler(SocialAjaxHandler):
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
+                logging.info("SocialNotification")
             sub.has_ntfy = False
             sub.put()
         
+        logging.info("user_ntfy.len: " + str(len(user_ntfy)))
         for user in user_ntfy:
             notifications = user_ntfy.get(user)
             if len(notifications) > 0:
@@ -1012,16 +1045,16 @@ class SocialNotificationHandler(SocialAjaxHandler):
             logging.info("Notification: " + str(n.event.get().type))
             
         template = jinja_environment.get_template("social/notifications_email.html")
-        html=template.render({"notifications":notifications})
-        """mail.send_mail(sender="Example.com Support <example@pappa-mi.it>",
+        html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications})
+        mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
         to=user.get().email,
         subject="[Pappa-Mi] Novità",
         body="",
         html=html
-        )"""
+        )
         #self.response.headers.add_header('content-type', 'text/html', charset='utf-8')
         #self.response.out.write(html)
-        logging.info(html)
+        #logging.info(html)
     
         
             
@@ -1092,8 +1125,9 @@ class SocialMainHandler(BasePage):
         if not last_access:
             last_access = datetime.now()
         cmsro.ultimo_accesso_notifiche = datetime.now()
-        cmsro.put()
-        cmsro.set_cache()
+        if last_access - cmsro.ultimo_accesso_notifiche > timedelta(60):
+            cmsro.put()
+            cmsro.set_cache()
             
         logging.info("node_list")
         for n in node_list:
