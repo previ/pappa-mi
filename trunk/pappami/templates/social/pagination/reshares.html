@@ -1,0 +1,27 @@
+<div id="reshares_modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Ripubblicazioni</h3>
+  </div>
+  <div class="modal-body">
+  <ul class="voter_list">
+{%for post in reshares %}
+<li class="s_post_item">
+<div class="s_post_avatar">
+	<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+</div>
+<div class="s_post_container">
+	<div class="s_post_header">			
+		<div class="s_post_title"><a class="node" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</a> / <a class="post" href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+		<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
+		<div class="s_post_date">&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
+	</div>				
+	<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>
+</li>			
+{%endfor%}
+</ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Chiudi</button>
+  </div>
+</div>

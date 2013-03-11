@@ -17,7 +17,7 @@ width:85%;
 .s_comment {
 margin-top: 8px;
 margin-bottom: 8px;
-#width:100%;
+width:100%;
 }
 
 .s_post_avatar {
@@ -39,6 +39,11 @@ width:100%;
 display: block;
 }
 
+.s_post_title_1 {
+cursor: pointer;
+text-decoration: none;
+}
+
 .s_post_author {
 display: table-cell;
 font-style: italic;
@@ -57,6 +62,31 @@ padding-left: 1em;
 
 .s_post_commands {
 float:right;
+}
+
+.s_post_link, .s_post_link > a {
+display: table-cell;
+font-style: italic;
+color: #999;
+padding-left: 1em;
+cursor: pointer;
+}
+
+.s_node_link {
+cursor: pointer;
+text-decoration: none;
+}
+
+.s_post_votes_c {
+cursor: pointer;
+}
+
+.s_post_reshares_c {
+cursor: pointer;
+}
+
+.s_post_comments_c {
+cursor: pointer;
 }
 
 .s_comments {

@@ -5,43 +5,74 @@
   <meta property="og:title" content="Pappa-Mi notifications">
   <title>Pappa-Mi newsletter</title>
   <style type="text/css">
-  %include "social/bootstrap.min.css"%
+  {%include "social/base.css"%}
+  {%include "social/social.css"%}
+  {%include "social/bootstrap.min.css"%}
   </style>
  </head>	
  <body>
   <div class="container">
    <div class="row">
-    <div class="span6">
-     <h1><img src="http://www.pappa-mi.it/img/logo_72.png"/>Pappa-Mi</h1>
-     <h3>Le novità della settimana</h3>
+    <div class="span12">
+     <h1><img src="http://www.pappa-mi.it/img/logo_48.png"/>Pappa-Mi</h1>
+     <h3>Notifica</h3>
     </div>
    </div>
-  {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}<div class="row">
-    <div class="span6">
+   <div class="row">
+    <div class="span9">
+     <ul class="unstyled">
+  {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
+<li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
+	<div class="">
+	{{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="/social/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	</div>
+	<div class=""> 
+		<div class="s_post_avatar">
+			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_container">
+			<div class="s_post_header">			
+				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></span></div> 
+				<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
+				<div class="s_post_date">&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
+			</div>				
+			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>
+		</div>				
+	</div>
+</li>			
+  
+  {#<div class="row">
+    <div class="span12">
      <h4><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}/">Nuovo post: {{post.title}}</a></h4>
      <div class="muted">di {{post.author.get().email}} il {{post.creation_date}}</div>
      <div>{{post.content}}</div>
      <div><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}/">continua...</a></div>
     </div>
-   </div>
-   {%elif ntfy.event.get().type == "comment"%}{%set post = ntfy.event.get().target.get()%}{%set cmnt = ntfy.event.get().source.get()%}<div class="row">
+   </div>#}
+   {%elif ntfy.event.get().type == "comment"%}{%set post = ntfy.event.get().target.get()%}{%set cmnt = ntfy.event.get().source.get()%}
+   <li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
+	<div class="">
+	{{cmnt.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="/social/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">commento</a> al <a href="/social/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	</div>
+	<div class=""> 
+		<div class="s_post_avatar">
+			<img class="avatar" src="{{cmnt.commissario.avatar(cmsro)}}" title="{{cmnt.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_container">
+			<div class="s_post_body">{{cmnt.content|truncate(length=200, end="...")}}</div>
+		</div>				
+	</div>
+</li>			
+{#<div class="row">
     <div class="span6">
      <h4><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">Commento al post: {{post.title}}</a></h4>
      <div class="muted">di {{post.author.get().email}} il {{post.creation_date}}</div>
      <div>{{cmnt.content}}</div>
      <div><a href="http://www.pappa-mi.it/social/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">{{post.title}}">rispondi...</a></div>
     </div>
-   </div>{%endif%}{%endfor%}
-   <div class="row">
-    <div class="span6">
-     <div id="follow">
-      <a href="http://twitter.com/pappa_mi" target="_new"><img src="/img/twitter-icon.png" alt="Twitter" width="32" height="32" data-original-title="Twitter"></a>
-      <a href="//plus.google.com/110770353259380281779?prsrc=3" rel="publisher" style="text-decoration:none;">
-   <img src="//ssl.gstatic.com/images/icons/gplus-32.png" alt="Google+" style="border:0;width:32px;height:32px;" data-original-title=""></a>
-      <a href="http://www.pappa-mi.it/feed"><img src="/img/rss.png" alt="RSS" width="32" height="32" data-original-title="Feed RSS"></a>	    
-     </div>
+   </div>#}{%endif%}{%endfor%}
     </div>
-   </div>
+   </div>   
    <div class="row">
     <div class="span6">
      <a href="http://www.pappa-mi.it/profilo#newsletter">Modifica impostazioni notifiche email</a>

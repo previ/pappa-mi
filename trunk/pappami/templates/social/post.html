@@ -2,15 +2,16 @@
 $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
 </script>
 <div class="s_post_root row" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
-	<div class="s_post thumbnail"> 
+	<div class="s_post"> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">			
-				<div class="s_post_title"><a href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1">{{post.title}}</span></div> 
 				<div class="s_post_author">di {{post.commissario.nome}}</div>
 				<div class="s_post_date">{{post.extended_date}}</div>
+				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>				
 			<div class="s_post_body">
 				<div class="s_post_content">{{post.content}}</div>
@@ -31,8 +32,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				{% endif %}  
 			</div>		
 			<div class="s_post_feedback pull-left">
-			 <span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><span class="s_post_votes badge badge-success"><i class="icon-star icon-white"></i> {{post.votes|count}}</span></span>
-			 <span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> {{post.reshares|count}}</span></span>
+			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i><span class="s_post_reshares"> {{post.reshares|count}}</span></span>
 			</div>
 			
 			{% if user %} 
@@ -51,13 +52,13 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			{% endif%}			
 		</div>	<!-- s_post_container -->		
 		<div class="s_post_comments offset1">
-			<ul class="s_comment_list thumbnails">
+			<ul class="s_comment_list unstyled">
 				{%for comment in post.comment_list%}
 				{%include "social/pagination/comment.html"%}
 				{%endfor%}
 				{%if post.can_comment(user)%}	
 			</ul>
-			<ul class="thumbnails"> <!--comment_form-->
+			<ul class="unstyled"> <!--comment_form-->
 				<li class="s_comment thumbnail">
 				  <div class="s_post_avatar">
 				   <img class="avatar" src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.avatar(cmsro)}}">

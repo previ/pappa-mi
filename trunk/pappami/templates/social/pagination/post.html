@@ -6,9 +6,10 @@
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">			
-				<div class="s_post_title"><a class="node" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</a> / <a class="post" href="/social/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand">{{post.title}}</span></div> 
 				<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
 				<div class="s_post_date">&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
+				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>				
 			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>
 			{%if subscription%}									
@@ -17,9 +18,9 @@
 			</div>		
 			{%endif%}
 			<div class="s_post_feedback pull-left">
-			 <span class="s_post_votes_c"{%if post.votes|count == 0%} style="display:none;"{%endif%}><span class="s_post_votes badge badge-success"><i class="icon-star icon-white"></i> {{post.votes|count}}</span></span>
-			 <span class="s_post_reshares_c"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><span class="s_post_reshares badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> {{post.reshares|count}}</span></span>
-			 <span class="s_post_comments_c"{%if post.comments == 0%} style="display:none;"{%endif%}><span class="s_post_comments_c badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> {{post.comments}}</span></span>
+			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> <span class="s_post_reshares">{{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c post_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comments_c">{{post.comments}}</span></span>
 			</div>
 				
 			{% if user %} 
@@ -27,7 +28,6 @@
 				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
 				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
 				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
-				<button class="btn btn-normal btn-mini post_expand" data-vote="0"><i class="icon-resize-full"></i>Espandi</button>
 			</div>
 			{% endif%}			
 	

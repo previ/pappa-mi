@@ -348,6 +348,10 @@ function initPost(post_root) {
   post_root.find('.post_reshare').click(onPostReshare);  
   post_root.find('.post_vote').click(onPostVote);  
   post_root.find('.post_unvote').click(onPostVote);  
+  post_root.find('.s_node_link').click(onNodeClick);
+  post_root.find('.s_post_votes_c').click(onVotesDetail)
+  post_root.find('.s_post_reshares_c').click(onResharesDetail)
+  
   initComment(post_root);
 }
 
@@ -530,7 +534,7 @@ function onReplyEditSubmit(){
 function onPostExpand() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
-  var data = {'cmd':'expand_post', 'post':post_item.attr('data-post-key') }
+  var data = {'cmd':'expand_post', 'post':post_item.attr('data-post-key'), 'comments': true }
   
   $.ajax({
 	  type: 'POST',
@@ -539,6 +543,22 @@ function onPostExpand() {
 	  dataType:'json',
 	  success:function(data){
 	    post_item.html(data.html);
+	  }});
+  
+}
+
+function onPostCommentExpand() {
+  var post_key = getPostKeyByElement($(this));
+  var post_comments = $(this).parents('.s_post_comments');
+  var data = {'cmd':'expand_comments', 'post':post_item.attr('data-post-key') }
+  
+  $.ajax({
+	  type: 'POST',
+	  url:'/social/managepost', 
+	  data: data,
+	  dataType:'json',
+	  success:function(data){
+	    post_comments.html(data.html);
 	  }});
   
 }
@@ -858,6 +878,19 @@ function init(){
   }
   $("#main_stream_list").prepend(data.html)
   $("#open_post_submit").button("reset");
+  var post_root = $("#main_stream_list li:first-child")  
+  post_root.find('.post_del').click(onPostItemDelete);
+  post_root.find('.post_sub').click(onPostSubscribe);
+  post_root.find('.post_unsub').click(onPostUnsubscribe);
+  post_root.find('.post_vote').click(onPostVote);
+  post_root.find('.post_unvote').click(onPostVote);      
+  post_root.find('.post_reshare').click(onPostReshare);
+  post_root.find('.post_expand').click(onPostExpand); 
+  post_root.find('.s_node_link').click(onNodeClick);
+  post_root.find('.s_post_votes_c').click(onVotesDetail)
+  post_root.find('.s_post_reshares_c').click(onResharesDetail)
+  
+
   tinymce.get('post_content_text').setContent('');
  }, beforeSubmit: function(arr,$form) {
   $("#open_post_submit").button("loading");
@@ -947,7 +980,9 @@ function loadPosts(node_key,current_cursor) {
     $('.post_unvote').click(onPostVote);      
     $('.post_reshare').click(onPostReshare);
     $('.post_expand').click(onPostExpand); 
-    $("a.node").click(onNodeClick);
+    $('.s_node_link').click(onNodeClick);
+    $('.s_post_votes_c').click(onVotesDetail)
+    $('.s_post_reshares_c').click(onResharesDetail)
    } else if(data.response="no_posts"){
    $("#no_more_posts").alert();
    $("#no_more_posts").show();   
@@ -959,4 +994,42 @@ function loadPosts(node_key,current_cursor) {
   //$("#node_stream_"+key).siblings().hide()
   //$("div#node_stream_"+key).show()
  //}
+}
+
+function onVotesDetail() {
+ var post = getPostKeyByElement($(this));    
+
+ var data = {
+  'cmd': 'vote_list',
+  'post': post
+  };
+ $.ajax({
+  type: 'POST',
+  url:'/social/managepost',
+  data: data,
+  dataType:'json',
+  success:function(data) { 
+   $('body').append(data.html);
+   $('#votes_modal').modal()
+  }
+  });
+}
+
+function onResharesDetail() {
+ var post = getPostKeyByElement($(this));    
+
+ var data = {
+  'cmd': 'reshare_list',
+  'post': post
+  };
+ $.ajax({
+  type: 'POST',
+  url:'/social/managepost',
+  data: data,
+  dataType:'json',
+  success:function(data) { 
+   $('body').append(data.html);
+   $('#reshares_modal').modal()
+  }
+  });
 }
