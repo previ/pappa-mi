@@ -6,5 +6,5 @@ cron:
 
 - description: process events
   url: /social/event
-  schedule: every 1 mins
+  schedule: every 60 mins
  
