@@ -351,6 +351,9 @@ function initPost(post_root) {
   post_root.find('.s_node_link').click(onNodeClick);
   post_root.find('.s_post_votes_c').click(onVotesDetail)
   post_root.find('.s_post_reshares_c').click(onResharesDetail)
+  post_root.find('.show_comment_form').click(onPostCommentFormExpand)
+  post_root.find('.show_comment_form').click(onPostCommentsExpand)
+  post_root.find('.post_comments_expand').click(onPostCommentsExpand)
   
   initComment(post_root);
 }
@@ -547,7 +550,12 @@ function onPostExpand() {
   
 }
 
-function onPostCommentExpand() {
+function onPostCommentsExpand() {
+  var post_root = getPostRootByElement($(this))
+  post_root.find('.s_comment_list').show();
+}
+
+function onPostCommentExpandEx() {
   var post_key = getPostKeyByElement($(this));
   var post_comments = $(this).parents('.s_post_comments');
   var data = {'cmd':'expand_comments', 'post':post_item.attr('data-post-key') }
@@ -561,6 +569,11 @@ function onPostCommentExpand() {
 	    post_comments.html(data.html);
 	  }});
   
+}
+
+function onPostCommentFormExpand() {
+  $(this).parents('.s_comment_form').find('li.s_comment_form').show();
+  $(this).parents('.s_comment_form').find('li.s_comment_placeholder').hide()
 }
 
 function onOpenPostForm(){
@@ -889,6 +902,9 @@ function init(){
   post_root.find('.s_node_link').click(onNodeClick);
   post_root.find('.s_post_votes_c').click(onVotesDetail)
   post_root.find('.s_post_reshares_c').click(onResharesDetail)
+  post_root.find('.show_comment_form').click(onPostCommentFormExpand)
+  post_root.find('.show_comment_form').click(onPostCommentsExpand)
+  post_root.find('.post_comments_expand').click(onPostCommentsExpand)
   
 
   tinymce.get('post_content_text').setContent('');
