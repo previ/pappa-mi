@@ -1,7 +1,7 @@
 <script type="text/javascript">
 $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
 </script>
-<div class="s_post_root row" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
+<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
 	<div class="s_post"> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
@@ -34,6 +34,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_feedback pull-left">
 			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
 			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i><span class="s_post_reshares"> {{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c post_comments_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comments_c">{{post.comments}}</span></span>
 			</div>
 			
 			{% if user %} 
@@ -51,15 +52,18 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</div><!-- s_post_commands -->		
 			{% endif%}			
 		</div>	<!-- s_post_container -->		
-		<div class="s_post_comments offset1">
-			<ul class="s_comment_list unstyled">
+		<div class="s_post_comments">
+			<ul class="s_comment_list unstyled" style="display:none;">
 				{%for comment in post.comment_list%}
 				{%include "social/pagination/comment.html"%}
 				{%endfor%}
 				{%if post.can_comment(user)%}	
 			</ul>
-			<ul class="unstyled"> <!--comment_form-->
-				<li class="s_comment thumbnail">
+			<ul class="unstyled s_comment_form"> <!--comment_form-->
+				<li class="s_comment s_comment_placeholder">
+				 <input type="text" class="span6 show_comment_form" placeholder="Scrivi un commento"/>
+				</li>
+				<li class="s_comment s_comment_form thumbnail" style="display:none;">
 				  <div class="s_post_avatar">
 				   <img class="avatar" src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.avatar(cmsro)}}">
 				  </div>
@@ -75,7 +79,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
 						<div class="">
-							<input id="comment_content" class="s_post_comment required" name="content"/>
+							<textarea id="comment_content" class="s_post_comment required" name="content"></textarea>
 							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
 						</div>
 					</form>
