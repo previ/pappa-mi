@@ -373,6 +373,7 @@ class SocialManagePost(SocialAjaxHandler):
             html=template.render(template_values)
             response = {'response':'success','html':html,"cursor":''}
             self.output_as_json(response)
+            SocialNotificationHandler.startTask()
            
            
         # create a comment to a post
@@ -396,6 +397,7 @@ class SocialManagePost(SocialAjaxHandler):
             html=template.render(template_values)
             response = {'response':'success','html':html,"cursor":''}
             self.output_as_json(response)
+            SocialNotificationHandler.startTask()
            
            
         if cmd == "delete_comment":
@@ -889,16 +891,18 @@ class SocialNotificationHandler(SocialAjaxHandler):
                 self.process_notifications()
  
         else:
-            self.putTask('/social/event', job={})
+            self.startTask()
             
         Cache.get_cache("SocialNotification").clear_all()
            
         self.success()
         
-    def startTask(self):
-        self.putTask('/social/event', job={})
+    @classmethod    
+    def startTask(cls):
+        cls.putTask('/social/event', job={})
         
-    def putTask(self, aurl, job):
+    @classmethod    
+    def putTask(cls, aurl, job):
       task = Task(url=aurl, params={'cmd': 'process', "job": job}, method="GET")
       queue = Queue()
       queue.add(task)
