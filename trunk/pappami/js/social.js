@@ -332,8 +332,14 @@ function initPost(post_root) {
       }
     }
     post_root.find(".s_comment_list").append(data.html);
+    post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
     tinymce.get('comment_content').setContent('');
+    comment = post_root.find(".s_comment_list").find('li:last-child');
+
+    $(document).ready(function(){
+      initComment(comment);
+    });
   
   }, beforeSubmit: function(arr,$form) {
 	  post_root.find(".s_comment_submit").button("loading");
@@ -535,9 +541,10 @@ function onReplyEditSubmit(){
 */
 
 function onPostExpand() {
+  var exp_comments = $(this).hasClass('s_post_comments_c');
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
-  var data = {'cmd':'expand_post', 'post':post_item.attr('data-post-key'), 'comments': true }
+  var data = {'cmd':'expand_post', 'post':post_item.attr('data-post-key'), 'exp_comments': exp_comments }
   
   $.ajax({
 	  type: 'POST',
@@ -557,7 +564,7 @@ function onPostCommentsExpand() {
 
 function onPostCommentExpandEx() {
   var post_key = getPostKeyByElement($(this));
-  var post_comments = $(this).parents('.s_post_comments');
+  var post_comments = $(this).parents('.s_post_comment_num');
   var data = {'cmd':'expand_comments', 'post':post_item.attr('data-post-key') }
   
   $.ajax({
@@ -666,7 +673,9 @@ function onPostVote() {
 
 function onCommentDelete() {
   var comment = getCommentRootByElement($(this)); 
-  var comment_key = comment.attr("data-comment-key"); 
+  var comment_num = getPostRootByElement($(this)).find('.s_post_comment_num')
+  var comment_key = comment.attr("data-comment-key");
+  
   var data= {'cmd': 'delete_comment', 'comment': comment_key}
   if( confirm("Sei sicuro di voler cancellare il commento?") ){
     $.ajax({type: 'POST',
@@ -676,6 +685,7 @@ function onCommentDelete() {
 	    success:function(data){
 	      comment.hide();
 	      comment.remove();
+	      comment_num.text(data.num)
 	      $.pnotify({
 		title: 'Info',
 		text: 'Commento cancellato'

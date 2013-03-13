@@ -395,7 +395,7 @@ class SocialManagePost(SocialAjaxHandler):
             template = jinja_environment.get_template("social/pagination/comment.html")
  
             html=template.render(template_values)
-            response = {'response':'success','html':html,"cursor":''}
+            response = {'response':'success', 'num': str(post.comments), 'html':html,"cursor":''}
             self.output_as_json(response)
             SocialNotificationHandler.startTask()
            
@@ -409,7 +409,7 @@ class SocialManagePost(SocialAjaxHandler):
                 self.error()
                 return
             post_key.get().delete_comment(comment_key)
-            self.success()
+            self.success({'num': str(post_key.get().comments)})
 
         if cmd == "expand_post":
             post = model.Key(urlsafe=self.request.get('post')).get()
@@ -418,9 +418,11 @@ class SocialManagePost(SocialAjaxHandler):
                                'post': post,
                                'user': user,
                                "cmsro":self.getCommissario(user), 
+                               'hide_comments': self.request.get('exp_comments') == 'false',
             }                                    
                 
             template = jinja_environment.get_template("social/post.html")
+            logging.info(self.request.get('exp_comments'))
  
             html=template.render(template_values)
             response = {'response':'success','post':post.key.urlsafe(),'html':html}
@@ -553,8 +555,7 @@ class SocialManagePost(SocialAjaxHandler):
             attach=model.Key(urlsafe=self.request.get('attach'))
             post.remove_attachment(attach)
                             
-            response = {'response':'success'}
-            self.output_as_json(response)             
+            self.success()             
 
         if cmd == "update_comment":
             comment=model.Key(urlsafe=self.request.get('comment')).get()

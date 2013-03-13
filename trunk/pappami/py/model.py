@@ -1971,7 +1971,7 @@ class SocialNodeSubscription(model.Model):
       subs = list()
       for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).fetch():
         #logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
-        if sub.last_ntfy_sent is None or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now():
+        if sub.last_ntfy_sent is None or sub.last_ntfy_sent + timedelta(days=sub.ntfy_period) < datetime.now():
           subs.append(sub)
       return subs
 
