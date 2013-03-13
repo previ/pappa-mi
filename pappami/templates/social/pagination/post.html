@@ -23,7 +23,7 @@
 			<div class="s_post_feedback pull-left">
 			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
 			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> <span class="s_post_reshares">{{post.reshares|count}}</span></span>
-			 <span class="s_post_comments_c post_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comments_c">{{post.comments}}</span></span>
+			 <span class="s_post_comments_c post_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comment_num">{{post.comments}}</span></span>
 			</div>
 				
 			{% if user %} 
