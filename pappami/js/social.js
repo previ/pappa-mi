@@ -856,7 +856,7 @@ function onNodeClick(){
  key=node_item.attr('data-node-key');
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
- $("#node_title").find("span").text(node_item.find(".node_name").text());
+ $("#node_title").find("span").text(node_item.find(".node_name").attr('title'));
  if(key!="all") {
    $("#node_title > a").attr("href", "/social/node/"+key);
    $("#node_title > a").show();

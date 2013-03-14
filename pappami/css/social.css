@@ -98,3 +98,11 @@ margin-left:20px;
 	background-color:grey;
 	
 }
+
+.notification {
+margin-bottom: 4px;
+}
+
+.ntf_unread {
+background-color: #eee;
+}
