@@ -1,0 +1,28 @@
+<form class="s_update_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+	<input type="hidden" name="cmd" value="update_post"/>
+	<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>
+	<div class="s_post_header">			
+		<input class="s_post_edit_title" name="title" value="{{post.title}}">
+	</div>				
+	<div class="s_post_body">
+		<input class="s_post_edit_content" name="content" value="{{post.content}}">
+		{%for resource in post.resource%}
+		<div class="s_post_resource well">
+		{%include "social/resources/"+post.res_type[loop.index-1]+".html"%}
+		</div>			
+		{%endfor%}		
+		<div class="s_post_attachs well">
+		 <div><i class="icon-file"></i> Allegati</div>
+		 <ul class="thumbnails">{%for attach in post.attachments%}
+		  <li class="thumbnail s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path()}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb()}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}<span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Elimina</span>
+		  </li>{%endfor%}
+		  <li class="thumbnail s_attach"><input type="file" name="attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+		  <span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Cancella</span></li>
+		 </ul>
+		</div>			
+	</div>			
+	<div class="s_post_edit_commands btn-group">
+		<button type="submit" class="btn btn-info post_edit_submit">Conferma</button>	
+		<button type="button" class="btn btn-normal post_edit_cancel">Annulla</button>			
+	</div>
+</form>
