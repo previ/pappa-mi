@@ -15,18 +15,18 @@ $(document).ready(function () {
  <div class="row">
   <div class="span3">
    <ul id="node_list" class="nav nav-list well">
-    <li><a data-node-key="all" href="#"><i class="icon-home"></i><span class="node_name">Tutti gli argomenti</span><i class="pull-right icon-chevron-right"></i></a></li>
+    <li><a data-node-key="all" href="#"><i class="icon-home"></i><span title="I tuoi argomenti" class="node_name">I tuoi argomenti</span><i class="pull-right icon-chevron-right"></i></a></li>
     <li class="nav-header"><i class="icon-tags"></i>Argomenti</li>
-    {%for sub in subs%}<li><a data-node-key="{{sub.key.parent().urlsafe()}}" href="#"><span class="node_name">{{sub.key.parent().get().name}}</span><span class="pull-right">{%if sub.ntfy>0%}<span class="sub_ntfy badge badge-warning">{{sub.ntfy}}</span>{%endif%}<i class="icon-chevron-right"></i></span></a></li>
+    {%for sub in subs%}<li><a data-node-key="{{sub.key.parent().urlsafe()}}" href="#"><span title="{{sub.key.parent().get().name}}" class="node_name">{{sub.key.parent().get().name|truncate(length=20, end="...")}}</span><span class="pull-right">{%if sub.ntfy>0%}<span class="sub_ntfy badge badge-warning">{{sub.ntfy}}</span>{%endif%}<i class="icon-chevron-right"></i></span></a></li>
     {%endfor%}
     <li>
      <a href="/social/nodelist"><i class="icon-search"></i>Altre scuole e argomenti</a>
     </li>
     <li class="nav-header"><i class="icon-fire"></i>Più discussi</li>
-    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span class="node_name">{{node.name}}</span><i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
     <li class="nav-header"><i class="icon-asterisk"></i>Nuovi</li>
-    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span class="node_name">{{node.name}}</span><i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
    </ul>    
   </div>
@@ -67,8 +67,6 @@ $(document).ready(function () {
 	 <div class="form_parent post_attachments">       
 	  <label class="control-label" for="e_attach">Allegati</label>
 	  <input type="file" name="attach_file" id="p_attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	  <!--input type="file" name="attach_file" id="p_attach_file_2" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
-	  <input type="file" name="attach_file" id="p_attach_file_3" style="display:none;" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/-->
 	 </div>
 	 
 	 <div class="form-actions">

@@ -1591,7 +1591,6 @@ class SocialPost(model.Model):
     
     rank = model.IntegerProperty(default=0)
     
-    @cached_property
     def extended_date(self):
       delta = datetime.now() - self.created
       if delta.days == 0 and delta.seconds < 3600:
@@ -1599,7 +1598,7 @@ class SocialPost(model.Model):
       elif delta.days == 0 and delta.seconds < 3600*24:
         return str(delta.seconds / 3600) + " ore fa"
       else:
-        return "il " + datetime.strftime(self.creato_il, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+        return "il " + datetime.strftime(self.created, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
       
     @cached_property
     def comment_list(self):
@@ -2061,6 +2060,15 @@ class SocialComment(model.Model):
       Cache.get_cache("UserStream").clear_all()
       future.get_result().get().key.parent().get().reset_comment_list()
               
+    def extended_date(self):
+      delta = datetime.now() - self.created
+      if delta.days == 0 and delta.seconds < 3600:
+        return str(delta.seconds / 60) + " minuti fa"
+      elif delta.days == 0 and delta.seconds < 3600*24:
+        return str(delta.seconds / 3600) + " ore fa"
+      else:
+        return "il " + datetime.strftime(self.created, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
+    
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
@@ -2159,16 +2167,18 @@ class SocialNotification(model.Model):
   @classmethod
   def get_by_user(cls, user, cursor=None):
     cache = Cache.get_cache('SocialNotification')
-    cache_key = "SocialNotification-" + str(user.id) + str(cursor)
+    cache_key = "SocialNotification-" + str(user.id) + "-" + str(cursor)
     ntfs = cache.get(cache_key)
-    next_cursor = None
-    more = None
+    next_cursor = cache.get(cache_key + "-next-cursor")
+    more = cache.get(cache_key + "-more")
     if not ntfs:
       ntfs = list()
       results, next_cursor, more = SocialNotification.query().filter(SocialNotification.user==user).order(-SocialNotification.date).fetch_page(20, start_cursor=cursor)
       for n in results:
         ntfs.append(n)
       cache.put(cache_key, ntfs)
+      cache.put(cache_key + "-next-cursor", next_cursor)
+      cache.put(cache_key + "-more", more)
 
     return ntfs, next_cursor, more
 

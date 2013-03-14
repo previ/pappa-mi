@@ -761,10 +761,13 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 self.output_as_json(response)
                                         
             if cmd=="notifications":
+                start_cursor = None
+                cursor = self.request.get("cursor")
+                logging.info(start_cursor)
+                if cursor != "":
+                    start_cursor = Cursor(urlsafe=cursor)
                 
-                notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=None)
-                for n in notlist:
-                    logging.info(n)
+                notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=start_cursor)
 
                 if not notlist:                 
                     response = {'response':'no_notifications'}
@@ -780,24 +783,32 @@ class SocialPaginationHandler(SocialAjaxHandler):
                                  'user':user.key
                                  }
                 html=template.render(template_values)
-                response = {'response':'success','html':html}
+                response = {'response':'success', 'html':html}
+                logging.info("more " + str(more))
                 if more:
                     response['cursor'] = next_curs.urlsafe()
+                else:
+                    response["eof"] = "true"
                 self.output_as_json(response)
 
             if cmd=="ntfy_summary":
                 start_cursor = None
-                if cursor or cursor != "undefined":
+                cursor = self.request.get("cursor")
+                logging.info(start_cursor)
+                if cursor != "":
                     start_cursor = Cursor(urlsafe=cursor)
                     
                 notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=start_cursor)
-
+                
+                while len(notlist) > 10:
+                    notlist.pop()
+                
                 if not notlist and not next_curs:                    
                     response = {'response':'no_notifications'}
                     self.output_as_json(response)
                     return
                
-                template = jinja_environment.get_template("social/pagination/notifications.html")
+                template = jinja_environment.get_template("social/pagination/notifications_short.html")
                
                 
                 template_values={
@@ -1127,10 +1138,11 @@ class SocialMainHandler(BasePage):
             
         cmsro = self.getCommissario(user)
         last_access = cmsro.ultimo_accesso_notifiche
+        cmsro.ultimo_accesso_notifiche
         if not last_access:
             last_access = datetime.now()
-        cmsro.ultimo_accesso_notifiche = datetime.now()
         if last_access - cmsro.ultimo_accesso_notifiche > timedelta(60):
+            cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
             cmsro.set_cache()
             

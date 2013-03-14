@@ -10,7 +10,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_header">			
 				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1">{{post.title}}</span></div> 
 				<div class="s_post_author">di {{post.commissario.nome}}</div>
-				<div class="s_post_date">{{post.extended_date}}</div>
+				<div class="s_post_date">{{post.extended_date()}}</div>
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>				
 			<div class="s_post_body">
