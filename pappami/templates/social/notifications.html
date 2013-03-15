@@ -4,47 +4,7 @@ $(document).ready(function () {
   $(".empty_errors").hide()
   loadNotifications();
   $("#load_notifications").click(loadNotifications)  
-});
-
-function mark_visited(){
-  $("div.notification").each(function(){
-    date=new Date(this.attr("date"))
-  });
-}
-
-function loadNotifications() {
-  cursor = $("#notifications_list").attr('data-cursor');
-  data = {'cmd': 'notifications',
-	  'cursor': cursor };
-  $.ajax({
-	  type: 'POST',
-          url:"/social/paginate",
-	  data: data,
-          dataType:'json',
-	  success:function(data){
-	    if(data.response=="success"){
-	      $("#notifications_list").attr('data-cursor', data.cursor);
-	      $("#notifications_list").last().append(data.html)
-	      /*mark as visited
-	      $("#notifications_list>div").each(function(){
-	        date=new Date($(this).attr("date"))
-		if(date<last_visit){
-		  $(this).addClass("visited")
-		}
-	      });*/
-	      } 
-	      if(data.eof) {
-	        $("#load_notifications").hide()
-		if($("#notifications_list").children().length>0) {
-		  $(".no_more_data").show()
-		} else {
-		  $(".empty_errors").show()
-		}
-	      }
-	    }})
-}
-
-    
+});    
 </script>
 
 <div id="notifications_list"></div>

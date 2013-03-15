@@ -8,7 +8,10 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">			
-				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1">{{post.title}}</span></div> 
+				<div class="s_post_title">
+					<span class="s_post_title_1 post_expand">{{post.title}}</span>
+					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
+				</div> 
 				<div class="s_post_author">di {{post.commissario.nome}}</div>
 				<div class="s_post_date">{{post.extended_date()}}</div>
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
@@ -38,7 +41,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</div>
 			
 			{% if user %} 
-			<div class="s_post_commands btn-group">
+			<div class="s_post_commands">
 				{%if post.can_admin(user)%}
 				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
 				{%endif%}
@@ -100,7 +103,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<input type="hidden" name="cmd" value="update_comment"/>
 			<input type="hidden" name="comment" value=""/>
 			<input class="s_comment_edit_content" name="content" value="">
-			<div class="s_comment_commands btn-group">
+			<div class="s_comment_commands">
 				<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
 				<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			
 			</div>

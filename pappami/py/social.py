@@ -692,34 +692,28 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 else:
                      postlist, next_curs, more = SocialPost.get_by_node_rank(node=node.key, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
                 
-                #for x in postlist: 
-                #    x.commissario=Commissario.get_by_user(x.author.get())
-                    
-                    
                 template_values = {
                         "postlist":postlist,
                          "cmsro":self.getCommissario(user), 
                          "subscription": node.get_subscription(user),
                          "user": user,
                          "node":node
-                        }
-                if not postlist or not next_curs:
-                    
-                    response = {'response':'no_posts'}
-                    self.output_as_json(response)
-                    return
-                    
+                        }                    
                         
                 template = jinja_environment.get_template("social/pagination/post.html")
 
                 html=template.render(template_values)
-                response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
+                response = {'response':'success','html':html,"cursor":next_curs.urlsafe(), 'eof': 'false'}
+                if not more:
+                    response['eof'] = 'true'
+
                 self.output_as_json(response)
               
             if cmd=="post_main":
                 node=None
                 next_curs_key=None
                 node_urlsafe=self.request.get("node")
+                more = False
                 if node_urlsafe=="all":                                            
                     if not cursor or cursor == "undefined":
                         postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
@@ -747,17 +741,13 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 
                 if node:
                     template_values["subscription"]=node.get().get_subscription(user)
-                    
-                if len(postlist) == 0:
-                    
-                    response = {'response':'no_posts'}
-                    self.output_as_json(response)
-                    return                        
-                        
+                                            
                 template = jinja_environment.get_template("social/pagination/post.html")
 
                 html=template.render(template_values)
-                response = {'response':'success','html':html,"cursor":next_curs_key}
+                response = {'response':'success','html':html,"cursor":next_curs_key, 'eof': 'false'}
+                if not more:
+                    response['eof'] = 'true'
                 self.output_as_json(response)
                                         
             if cmd=="notifications":
@@ -783,7 +773,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                                  'user':user.key
                                  }
                 html=template.render(template_values)
-                response = {'response':'success', 'html':html}
+                response = {'response':'success', 'html':html, 'eof': 'false'}
                 logging.info("more " + str(more))
                 if more:
                     response['cursor'] = next_curs.urlsafe()
