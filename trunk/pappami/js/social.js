@@ -867,6 +867,7 @@ function onNodeClick(){
  node_item.parent().addClass("active");
  //key=node_item.attr('data-node-key');
  $("#main_stream_list").empty();
+ $("#main_stream_list").append('<li><div class="offset3 span2">Loading... <img src="img/loading.gif"></div></li>');
  loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
 }
 
@@ -997,6 +998,7 @@ function loadPosts(node_key,current_cursor) {
    $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
+    $("#main_stream_list").empty();   
     $("#main_stream_list").append(data.html)
     $('.post_del').click(onPostItemDelete);
     $('.post_sub').click(onPostSubscribe);
