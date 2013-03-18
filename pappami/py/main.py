@@ -50,7 +50,7 @@ class MainPage(BasePage):
       return
       #return self.getPrivate(template_values)
           
-    template_values["content"] = "public.html"
+    template_values["main"] = "public.html"
     template_values["contacts"] = ContattiHandler.get_contacts()
     
     geo = model.GeoPt(41.754922,12.502441)
