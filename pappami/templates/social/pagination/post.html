@@ -1,5 +1,5 @@
 {% for post in postlist%}
-<li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
+<li class="s_post_item{%if post.is_pinned()%} s_post_pinned{%endif%}" data-post-key='{{post.key.urlsafe()}}'>
 	<div class=""> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">

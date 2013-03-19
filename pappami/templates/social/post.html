@@ -41,7 +41,18 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</div>
 			
 			{% if user %} 
-			<div class="s_post_commands">
+			<div class="s_post_commands btn-toolbar">
+				{%if post.key.parent().get().subscriptions[user.key].can_admin%}
+				<div class="btn-group">
+				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
+				 <ul class="dropdown-menu">
+				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
+				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
+				  <li><a class="post_pin" data-days="7" href="#">Settimana</a></li>
+				  <li><a class="post_pin" data-days="30" href="#">Mese</a></li>
+				 </ul>
+				</div>
+				{%endif%}
 				{%if post.can_admin(user)%}
 				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
 				{%endif%}

@@ -19,6 +19,10 @@ padding-bottom: 8px;
 width:100%;
 }
 
+.s_post_pinned {
+background-color: #eee;
+}
+
 .s_post_comments {
 margin-left:64px;
 #width:85%;
@@ -89,6 +93,10 @@ font-size: 90%;
 display: inline;
 font-style: italic;
 color: #999;
+}
+
+.s_node_commands {
+margin-bottom:10px;
 }
 
 .s_node_link {

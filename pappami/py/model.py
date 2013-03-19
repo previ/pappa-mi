@@ -1854,6 +1854,14 @@ class SocialPost(model.Model):
       init_rank = datetime.now() - Const.BASE_RANK
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
 
+    def pin(self, days):
+      rank = datetime.now() - Const.BASE_RANK + timedelta(days=days) 
+      self.rank = rank.seconds + (rank.days*Const.DAY_SECONDS)      
+
+    def is_pinned(self):
+      base = datetime.now() - Const.BASE_RANK
+      return self.rank > base.seconds + (base.days * Const.DAY_SECONDS)
+
     def calc_rank(self, activity):
       values = {SocialComment: 7,
                 Vote: 3 }
