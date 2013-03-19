@@ -350,6 +350,7 @@ function initPost(post_root) {
   post_root.find('.post_sub').click(onPostSubscribe);
   post_root.find('.post_unsub').click(onPostUnsubscribe);
   post_root.find('.post_del').click(onPostDelete);
+  post_root.find('.post_pin').click(onPostPin);
   post_root.find('.post_edit').click(onPostEdit);
   post_root.find('.post_reshare').click(onPostReshare);  
   post_root.find('.post_vote').click(onPostVote);  
@@ -694,6 +695,24 @@ function onCommentDelete() {
   }	  	
 }
 
+function onPostPin(){
+  var post = getPostKeyByElement($(this));
+  var days = $(this).attr("data-days")
+  var data = {'cmd':'pin_post', 'post':post, 'days': days};
+  $.ajax({
+    type: 'POST',
+    url:'/social/managepost', 
+    data: data,
+    dataType:'json',
+    success:function(data){
+	$.pnotify({
+	  title: 'Info',
+	  text: 'Post evidenziato'
+	});
+      }
+  });
+}
+
 function onPostDelete(){
   var post = getPostKeyByElement($(this));    
   if( confirm("Sei sicuro di voler cancellare il post?") ){
@@ -929,6 +948,14 @@ function initNode(node_key){
  
  $('input[name="attach_file"]').change(addAttach);
  $('.post_attach_delete').click(onAttachDelete);   
+}
+
+
+function init(){
+
+ $("ul#node_list").find("a").click(onNodeClick);
+ $("#node_list").children().find('a[data-node-key="all"]')[0].click();
+ 
  var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.attr("data-visible", 'false');
 
@@ -947,13 +974,6 @@ function initNode(node_key){
 	  html: true,
 	  trigger: 'manual'
      }).click(function(e) {onOpenNotifications(e);});
-}
-
-
-function init(){
-
- $("ul#node_list").find("a").click(onNodeClick);
- $("#node_list").children().find('a[data-node-key="all"]')[0].click();
   
 }
 
@@ -989,10 +1009,11 @@ function onMoreClick(){
 }
 
 
-function loadNode(node_key) {
+function loadNode(node_key, nodelist) {
  var data = {
   'cmd': 'node_main',
   'node': node_key,
+  'nodelist': nodelist
   };
  $.ajax({
   type: 'POST',

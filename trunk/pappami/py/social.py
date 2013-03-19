@@ -427,6 +427,13 @@ class SocialManagePost(SocialAjaxHandler):
             
             self.success({'url':"/social/node/"+str(node.key.urlsafe())})
 
+        if cmd == "pin_post":
+           post=model.Key(urlsafe=self.request.get('post')).get()
+           post.pin(days=int(self.request.get('days'))) 
+           post.put()
+           response = {'response':'success','post':post.key.urlsafe()}
+           self.output_as_json(response)
+
         if cmd == "edit_post":
            post=model.Key(urlsafe=self.request.get('post')).get()
            node = post.key.parent().get()
@@ -671,10 +678,12 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 self.output_as_json(response)
 
             if cmd=="node_main":
-                subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
-                node_list = []
-                for sub in subs:
-                    node_list.append(sub.key.parent().get())
+                node_list = None
+                if self.request.get("nodelist") != "nolist":
+                    subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
+                    node_list = []
+                    for sub in subs:
+                        node_list.append(sub.key.parent().get())
                 
                 node = None
                 node_key_str = self.request.get("node")
