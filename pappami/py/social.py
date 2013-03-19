@@ -54,35 +54,20 @@ class NodeHandler(BasePage):
       self.response.out.write("");
         
   def get(self,node_id):
-      node_i=model.Key(urlsafe=node_id).get()
-      node=node_i.key
-         #if node does not exist
-      if not node_i or node_i.active==False :
-         
-          self.error()            
+      node=model.Key(urlsafe=node_id).get()
+
+      user=self.get_current_user()
           
-      current_user=self.get_current_user()
-      if current_user is None:
-          logged=False
-          is_sub=False
-      else:
-          logged=True
-          is_sub= node.get().is_user_subscribed(current_user)
-       
-      #check permission
-      can_post=False
-      current_user=self.get_current_user()
-      current_sub=node_i.get_subscription(current_user)
+      subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
+      node_list = []
+      for sub in subs:
+          node_list.append(sub.key.parent().get())
                   
       template_values = {
             'content': 'social/node.html',
-            "user":current_user,
-            "node":node_i,
-            "is_sub":is_sub,
-            "show_sub_button": True if not logged or not is_sub else False,
-            "subscriptions": [Commissario.get_by_user(x) for x in node.get().subscription_list(10)],
-            "citta": Citta.get_all(),
-            "subscription":current_sub
+            "cmsro":self.getCommissario(user), 
+            "user":user,            
+            "node":node,
             }
       
         
@@ -304,7 +289,7 @@ class SocialSubscribeHandler(SocialAjaxHandler):
             node = model.Key(urlsafe=self.request.get('node')).get()
             if node:
                 node.unsubscribe_user(user)
-                self.success()
+                self.success({'subscribed': 'false'})
             else:
                 self.error()
 
@@ -313,7 +298,7 @@ class SocialSubscribeHandler(SocialAjaxHandler):
             post = model.Key(urlsafe=self.request.get('post')).get()
             if post:
                  post.subscribe_user(user)
-                 self.success()
+                 self.success({'subscribed': 'true'})
             else:
                 self.error()
     
@@ -684,6 +669,34 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 html=template.render(template_values)
                 response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
                 self.output_as_json(response)
+
+            if cmd=="node_main":
+                subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
+                node_list = []
+                for sub in subs:
+                    node_list.append(sub.key.parent().get())
+                
+                node = None
+                node_key_str = self.request.get("node")
+                if node_key_str != "all":
+                    node = model.Key(urlsafe=self.request.get("node")).get()
+    
+
+                template_values = {
+                        "node":node,
+                        "cmsro":self.getCommissario(user), 
+                        "user": user,
+                        "node_list": node_list,
+                        }
+                
+                if node:
+                    template_values["subscription"]=node.get_subscription(user)
+                                            
+                template = jinja_environment.get_template("social/node_em.html")
+
+                html=template.render(template_values)
+                response = {'response':'success','html':html}
+                self.output_as_json(response)
              
             if cmd=="post":
                 node=model.Key(urlsafe=self.request.get("node")).get()
@@ -704,7 +717,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
 
                 html=template.render(template_values)
                 response = {'response':'success','html':html,"cursor":next_curs.urlsafe(), 'eof': 'false'}
-                if not more:
+                if more == False:
                     response['eof'] = 'true'
 
                 self.output_as_json(response)

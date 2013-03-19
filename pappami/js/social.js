@@ -354,7 +354,6 @@ function initPost(post_root) {
   post_root.find('.post_reshare').click(onPostReshare);  
   post_root.find('.post_vote').click(onPostVote);  
   post_root.find('.post_unvote').click(onPostVote);  
-  post_root.find('.s_node_link').click(onNodeClick);
   post_root.find('.s_post_votes_c').click(onVotesDetail)
   post_root.find('.s_post_reshares_c').click(onResharesDetail)
   post_root.find('.show_comment_form').click(onPostCommentFormExpand)
@@ -789,15 +788,14 @@ function loadSmallMap(lat,lon) {
 function redraw_node() {
   var subscribed = $('.node_root').attr('data-sub-status');
   var ntfy_period = $('.node_root').attr('data-ntfy-period');
-  
   $('.ntfy_period > i').css('visibility', 'hidden');
   
   if( subscribed == 'true' ) {
 	$('#subscribe_btn').html('Disiscriviti');
-	$('#sub_prop').show();
+	$('#sub_prop').removeAttr("disabled");
 	$('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
   } else {
-	$('#sub_prop').hide();
+	$('#sub_prop').attr("disabled", "true");
 	$('#subscribe_btn').html('Iscriviti');
   }
 }
@@ -814,7 +812,9 @@ function onSubUnsubNode() {
       node_root.attr('data-sub-status', data.subscribed );
       node_root.attr('data-ntfy-period', data.ntfy_period);
       onSuccess(data);
-      redraw_node();
+      $(document).ready(function() {
+	redraw_node();
+      });
     }
   });	 
 }
@@ -866,12 +866,12 @@ function onNodeClick(){
  }
  node_item.parent().addClass("active");
  //key=node_item.attr('data-node-key');
- $("#main_stream_list").empty();
- $("#main_stream_list").append('<li><div class="offset3 span2">Loading... <img src="img/loading.gif"></div></li>');
- loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
+ $("#node_container").empty();
+ //loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
+ loadNode(key);
 }
 
-function init(){
+function initNode(node_key){
  $("#new_post_form").validate({
   errorClass: "error",
   errorPlacement: function(error, element) {
@@ -900,6 +900,7 @@ function init(){
    }
   }
   $("#main_stream_list").prepend(data.html)
+  
   $("#open_post_submit").button("reset");
   var post_root = $("#main_stream_list li:first-child")  
   post_root.find('.post_del').click(onPostItemDelete);
@@ -909,24 +910,23 @@ function init(){
   post_root.find('.post_unvote').click(onPostVote);      
   post_root.find('.post_reshare').click(onPostReshare);
   post_root.find('.post_expand').click(onPostExpand); 
-  post_root.find('.s_node_link').click(onNodeClick);
   post_root.find('.s_post_votes_c').click(onVotesDetail)
   post_root.find('.s_post_reshares_c').click(onResharesDetail)
   post_root.find('.show_comment_form').click(onPostCommentFormExpand)
   post_root.find('.show_comment_form').click(onPostCommentsExpand)
-  post_root.find('.post_comments_expand').click(onPostCommentsExpand)
-  
-
+  post_root.find('.post_comments_expand').click(onPostCommentsExpand)  
   tinymce.get('post_content_text').setContent('');
  }, beforeSubmit: function(arr,$form) {
   $("#open_post_submit").button("loading");
   $('#new_post').slideUp();
  }});
-
- $("ul#node_list").find("a").click(onNodeClick);
+ $('#subscribe_btn').on('click', onSubUnsubNode)
+ $('.ntfy_period').on('click', onNotificationPeriod)
  $("#more_posts").click(onMoreClick);
-
- $("#node_list").children().find('a[data-node-key="all"]')[0].click();
+ if(node_key!="all") {
+  redraw_node();
+ }
+ 
  $('input[name="attach_file"]').change(addAttach);
  $('.post_attach_delete').click(onAttachDelete);   
  var ntfy_pop = $('#ntf_cnt');
@@ -943,13 +943,19 @@ function init(){
   }
  });
 
- var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.popover({
 	  html: true,
 	  trigger: 'manual'
      }).click(function(e) {onOpenNotifications(e);});
+}
+
+
+function init(){
+
+ $("ul#node_list").find("a").click(onNodeClick);
+ $("#node_list").children().find('a[data-node-key="all"]')[0].click();
   
- }
+}
 
 function onOpenNotifications(event) {
   var data = {'cmd': 'ntfy_summary'}
@@ -978,12 +984,35 @@ function addAttach() {
 }
 
 function onMoreClick(){
- key = $('#node_list > li.active a').attr('data-node-key');
+ key = $(this).parents('.node_root').attr('data-node-key');
  loadPosts(key,$("#main_stream").attr('next_cursor'))
 }
 
 
+function loadNode(node_key) {
+ var data = {
+  'cmd': 'node_main',
+  'node': node_key,
+  };
+ $.ajax({
+  type: 'POST',
+  url:'/social/paginate',
+  data: data,
+  dataType:'json',
+  success:function(data) { 
+   if(data.response=="success"){
+    $("#node_container").empty();   
+    $("#node_container").append(data.html)
+    initNode(node_key)
+    loadPosts(node_key, "")
+   } 
+  }
+ });  
+}
+
 function loadPosts(node_key,current_cursor) {
+ $("#main_stream_list").append('<li class="s_loading"><span class="offset3 span2">Loading... <img src="/img/loading.gif"></span></li>');
+
  var data = {
   'cmd': 'post_main',
   'node': node_key,
@@ -998,8 +1027,8 @@ function loadPosts(node_key,current_cursor) {
    $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
-    $("#main_stream_list").empty();   
-    $("#main_stream_list").append(data.html)
+    $('#main_stream_list').find('li.s_loading').remove();   
+    $('#main_stream_list').append(data.html)
     $('.post_del').click(onPostItemDelete);
     $('.post_sub').click(onPostSubscribe);
     $('.post_unsub').click(onPostUnsubscribe);
@@ -1007,10 +1036,9 @@ function loadPosts(node_key,current_cursor) {
     $('.post_unvote').click(onPostVote);      
     $('.post_reshare').click(onPostReshare);
     $('.post_expand').click(onPostExpand); 
-    $('.s_node_link').click(onNodeClick);
     $('.s_post_votes_c').click(onVotesDetail)
     $('.s_post_reshares_c').click(onResharesDetail)
-    if(data.eof){
+    if(data.eof == true){
      $("#more_posts").hide();   
      $("#no_more_posts").show();   
      $("#no_more_posts").alert();
