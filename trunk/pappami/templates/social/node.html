@@ -1,60 +1,29 @@
-<script type="text/javascript">
-$(document).ready(function () {
-  $(".pagination_errors").hide()
-  $(".empty_errors").hide()
-  $('#subscribe_btn').on('click', onSubUnsubNode)
-  $('.ntfy_period').on('click', onNotificationPeriod)
-  redraw_node();
-
-  loadPosts($('.node_root').attr('data-node-key'));
-});
-</script>
-
-<div id="node_name"><h2 style="display:inline">{{node.name}}</h2>
-	{%if user%}
-	<div id="node_commands" class="node_root pull-right" data-node-key='{{node.key.urlsafe()}}' data-sub-status='{%if subscription%}true{%else%}false{%endif%}' data-ntfy-period='{%if subscription%}{{subscription.ntfy_period}}{%endif%}'>
-	 <div class="btn-group">
-	  <div id="subscribe_btn" class="btn"></div>
-	  <button id="sub_prop" class="btn dropdown-toggle" data-toggle="dropdown">
-		<span class="icon-cog"></span>
-	  </button>
-	  <ul id="ntfy_prop" class="dropdown-menu">
-		<li><a id="ntfy_period_-1" class='ntfy_period' data-ntfy-period='-1'><i class="icon-ok" style="visibility:hidden"></i>Nessuna</a></li>
-		<li><a id="ntfy_period_0" class='ntfy_period' data-ntfy-period='0'><i class="icon-ok" style="visibility:hidden"></i>Immediato</a></li>
-		<li><a id="ntfy_period_1" class='ntfy_period' data-ntfy-period='1'><i class="icon-ok" style="visibility:hidden"></i>Quotidiano</a></li>
-		<li><a id="ntfy_period_7" class='ntfy_period' data-ntfy-period='7'><i class="icon-ok" style="visibility:hidden"></i>Settimanale</a></li>
-	  </ul>
-	 </div>
-	</div>
+<style>
+#node_title {
+display:none;
+}
+#node_container {
+margin-top:20px;
+}
+</style>
+<div class="row">
+  <div class="span12">
+    <div id="node_name"><h1>{{node.name}}</h1></div>
+    <div id="node_description"><h4>{{node.description}}</h4></div>
+  </div>
 </div>
-<div id="node_description"><h4>{{node.description}}</h4></div>
-{%endif%}
+<div class="row">
+  <div class="span12">
 {%for resource in node.resource%}
 {%include "social/resources/"+node.res_type[loop.index-1]+".html"%}
 {%endfor%}	
-{%if user and subscription.can_post%}	
-<div id="open_post_button" class="btn btn-primary" type="submit" onclick="onOpenPostForm()">Inizia Nuova Discussione</div>
-<form id="new_post_form" style="display:none">
-	<div id="post_title" class="form_parent">
-		<label id="post_content_label" for="titolo">Titolo</label>
-		<input class="span8 comment_textarea required" name="titolo" id="post_title_text"></input>
-	</div>
-	<div id="post_content" class="form_parent">
-		<label id="post_content_label" for="content">Contenuto</label>
-		<input class="span8 comment_textarea required" name="content" id="post_content_text"></input>
-	</div>
-	<div class="form-actions">
-		<div id="open_post_submit" class="btn btn-primary" type="submit" onclick="onOpenPostSubmitted('{{user.key.urlsafe()}}','{{node.key.urlsafe()}}')" data-loading-text="Invio risposta in corso..."/>Invia</div>	
-		<div id="open_post_cancel_button" class="btn btn-primary" type="submit" onclick="onOpenPostFormCancel()">Annulla</div>
-	</div>
-</form>  
-{%endif%}
-<div id="node_posts span8"> 
-	<ul id="main_stream_list" class="thumbnails">
-	
-	</ul>
+  </div>
 </div>
-	<div id="add_posts" class="btn btn-primary" type="submit">Mostra altri post</div>
-<div class="pagination_errors">Non ci sono altri post</div>
-<div class="empty_errors">Non ci sono post in questo gruppo</div>
-
+<div class="row">
+  <div id="node_container" class="span12"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+  loadNode('{{node.key.urlsafe()}}')
+});
+</script>
