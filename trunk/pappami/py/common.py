@@ -6,6 +6,7 @@ import threading
 import logging
 import datetime
 from HTMLParser import HTMLParser
+from lxml.html.clean import Cleaner
 
 class Const:
   ACTIVITY_TIME_FORMAT = "%H:%M:%S"
@@ -19,6 +20,28 @@ class Const:
   FLOOD_SYSTEM_ACTIVATED = False
   BASE_RANK = datetime.datetime(2008, 1, 1)
   DAY_SECONDS = 86400
+  ALLOWED_TAGS = [
+    'a',
+    'abbr',
+    'acronym',
+    'b',
+    'blockquote',
+    'code',
+    'em',
+    'i',
+    'li',
+    'ol',
+    'strong',
+    'ul',
+    'img',
+]
+  ALLOWED_ATTRIBUTES = {
+      'a': ['href', 'title'],
+      'abbr': ['title'],
+      'acronym': ['title'],
+      'img': ['src'],
+  }  
+
 
 class cached_property(object):
   """A decorator that converts a function into a lazy property.
@@ -138,5 +161,19 @@ class Cache(object):
   
   
   
+class Sanitizer(object):
+  sanitizer = Cleaner(style=True, add_nofollow=True, page_structure=False, safe_attrs_only=True, allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)  
+  texter = Cleaner(allow_tags=[''],remove_unknown_tags=False)  
   
+  @classmethod
+  def sanitize(cls, html):
+    sanitized = cls.sanitizer.clean_html(html) 
+    logging.info(sanitized)
+    return sanitized
+
+  @classmethod
+  def text(cls, html):
+    text = cls.texter.clean_html(html) 
+    logging.info(text)
+    return text
   

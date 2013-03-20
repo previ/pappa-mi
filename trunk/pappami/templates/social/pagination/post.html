@@ -15,7 +15,7 @@
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>
 			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content}}
-			{%else%}<span class="s_post_body_short">{{post.content|truncate(length=1000, end="...")}}
+			{%else%}<span class="s_post_body_short">{{post.content_summary}}...
 			<a class="post_expand" href="#">Espandi post <i class="icon-resize-full"></i></a></span>
 			{%endif%}</div>
 			{%if subscription%}									

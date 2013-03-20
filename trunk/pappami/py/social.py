@@ -9,7 +9,6 @@ import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
-import feedparser
 from google.appengine.ext.ndb import model
 from google.appengine.api.taskqueue import Task, Queue
 
@@ -25,6 +24,7 @@ from py.blob import *
 from form import *
 import base64
 import time
+from common import Const, Cache, Sanitizer
 from base import BasePage, CMCommissioniDataHandler, reguser_required, config, handle_404, handle_500
 import random
 
@@ -338,7 +338,9 @@ class SocialManagePost(SocialAjaxHandler):
             if not node.get_subscription(user).can_post:
                 self.response.out.write("<response>error</response>")
                 return
-            post_key=node.create_open_post(content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),title=feedparser._sanitizeHTML(self.request.get("title"),"UTF-8"),author=user)
+            clean_title = Sanitizer.sanitize(self.request.get("title"))
+            clean_content = Sanitizer.sanitize(self.request.get("content"))
+            post_key=node.create_open_post(content=clean_content,title=clean_title,author=user)
 
             SocialUtils.process_attachments(self.request, post_key)
 
@@ -368,7 +370,8 @@ class SocialManagePost(SocialAjaxHandler):
             post=model.Key(urlsafe=self.request.get('post')).get()
             node=post.key.parent().get()
             logging.info("content:" + self.request.get("content"))
-            comment = post.create_comment(feedparser._sanitizeHTML(self.request.get("content"),"UTF-8"),user)  
+            clean_content = Sanitizer.sanitize(self.request.get("content"))            
+            comment = post.create_comment(clean_content,user)  
              
             template_values = {
                 "post":post,
@@ -452,7 +455,7 @@ class SocialManagePost(SocialAjaxHandler):
            
         if cmd == "update_post":
            post=model.Key(urlsafe=self.request.get('post')).get()
-           post.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
+           post.content = Sanitizer.sanitize(self.request.get("content"))
            post.put()
            node = post.key.parent().get()
                      
@@ -479,10 +482,10 @@ class SocialManagePost(SocialAjaxHandler):
             node=model.Key(urlsafe=self.request.get('node')).get()           
             post=model.Key(urlsafe=self.request.get('post')).get()
                 
-            title=self.request.get('title')
-            content=self.request.get('content')
-            
-            rs_post_key=post.reshare(node.key,user,feedparser._sanitizeHTML(content,"UTF-8"),feedparser._sanitizeHTML(title,"UTF-8"))
+            clean_title = Sanitizer.sanitize(self.request.get("title"))
+            clean_content = Sanitizer.sanitize(self.request.get("content"))
+           
+            rs_post_key=post.reshare(node.key,user,clean_content,clean_title)
             if False:
                 self.success({'url': "/social/post/"+str(rs_post_key.urlsafe())})
             else:
@@ -553,7 +556,7 @@ class SocialManagePost(SocialAjaxHandler):
             comment=model.Key(urlsafe=self.request.get('comment')).get()
             post_key = comment.key.parent()
             node = post_key.parent().get()
-            comment.content=feedparser._sanitizeHTML(self.request.get("content"),"UTF-8")
+            comment.content=Sanitizer.sanitize(self.request.get("content"))
             comment.put()
                       
             template_values = {
@@ -598,8 +601,8 @@ class SocialCreateNodeHandler(BasePage):
     def post(self):
         
         node=SocialNode()
-        node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
-        node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
+        node.name=Sanitizer.sanitize(self.request.get("name"))
+        node.description=Sanitizer.sanitize(self.request.get("description"))
         node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))
@@ -638,8 +641,8 @@ class SocialEditNodeHandler(BasePage):
         self.getBase(template_values)
     def post(self,id):
         node=model.Key(urlsafe=self.request.get("node_id")).get()
-        node.name=feedparser._sanitizeHTML(self.request.get("name"),"UTF-8")
-        node.description=feedparser._sanitizeHTML(self.request.get("description"),"UTF-8")
+        node.name=Sanitizer.sanitize(self.request.get("name"))
+        node.description=Sanitizer.sanitize(self.request.get("description"))
         node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
         node.default_admin=bool(self.request.get("default_admin"))

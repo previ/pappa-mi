@@ -8,15 +8,16 @@ import fpformat
 import google.appengine.api.images
 import threading
 import math
+import jinja2
+import os
 from google.appengine.ext.ndb import model, Cursor
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
+
 import base
-from common import cached_property, Const, Cache
+from common import cached_property, Const, Cache, Sanitizer
 from engineauth import models
-import jinja2
-import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 class Citta(model.Model):
@@ -1591,6 +1592,14 @@ class SocialPost(model.Model):
     
     rank = model.IntegerProperty(default=0)
     
+    @cached_property
+    def content_summary(self):
+      if len(self.content) <= 1000:
+        return self.content
+      else:
+        text_content = Sanitizer.text(self.content)
+        return text_content[:1000]
+      
     def extended_date(self):
       delta = datetime.now() - self.created
       if delta.days == 0 and delta.seconds < 3600:
