@@ -6,7 +6,9 @@ import threading
 import logging
 import datetime
 from HTMLParser import HTMLParser
+import lxml.html
 from lxml.html.clean import Cleaner
+
 
 class Const:
   ACTIVITY_TIME_FORMAT = "%H:%M:%S"
@@ -34,6 +36,9 @@ class Const:
     'strong',
     'ul',
     'img',
+    'p',
+    'div',
+    'br',
 ]
   ALLOWED_ATTRIBUTES = {
       'a': ['href', 'title'],
@@ -162,18 +167,16 @@ class Cache(object):
   
   
 class Sanitizer(object):
-  sanitizer = Cleaner(style=True, add_nofollow=True, page_structure=False, safe_attrs_only=True, allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)  
+  sanitizer = Cleaner(allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)  
   texter = Cleaner(allow_tags=[''],remove_unknown_tags=False)  
   
   @classmethod
   def sanitize(cls, html):
     sanitized = cls.sanitizer.clean_html(html) 
-    logging.info(sanitized)
     return sanitized
 
   @classmethod
   def text(cls, html):
-    text = cls.texter.clean_html(html) 
-    logging.info(text)
+    text = lxml.html.fromstring(html).text_content()
     return text
   

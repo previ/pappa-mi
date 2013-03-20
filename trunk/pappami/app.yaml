@@ -24,7 +24,7 @@ libraries:
 - name: markupsafe
   version: latest
 - name: lxml
-  version: latest
+  version: 2.3
   
 inbound_services:
 - mail
