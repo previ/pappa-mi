@@ -182,7 +182,6 @@ class BasePage(webapp.RequestHandler):
     template_values["admin"] = users.is_current_user_admin()
     template_values["url"] = url
     template_values["shownote"] = True
-    #template_values["comments"] = False   
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
     template_values["version"] = "3.0.0.0 - 2013.03.20"
