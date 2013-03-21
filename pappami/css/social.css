@@ -19,6 +19,10 @@ padding-bottom: 8px;
 width:100%;
 }
 
+.s_post_item {
+padding: 2px 4px 2px 4px;
+}
+
 .s_post_pinned {
 background-color: #eee;
 }

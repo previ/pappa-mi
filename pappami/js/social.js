@@ -351,6 +351,7 @@ function initPost(post_root) {
   post_root.find('.post_unsub').click(onPostUnsubscribe);
   post_root.find('.post_del').click(onPostDelete);
   post_root.find('.post_pin').click(onPostPin);
+  post_root.find('.post_collapse').click(onPostCollapse);
   post_root.find('.post_edit').click(onPostEdit);
   post_root.find('.post_reshare').click(onPostReshare);  
   post_root.find('.post_vote').click(onPostVote);  
@@ -553,6 +554,31 @@ function onPostExpand() {
 	  dataType:'json',
 	  success:function(data){
 	    post_item.html(data.html);
+	  }});
+  
+}
+
+function onPostCollapse() {
+  var post_key = getPostKeyByElement($(this));
+  var post_item = $(this).parents('.s_post_item');
+  var data = {'cmd':'collapse_post', 'post':post_item.attr('data-post-key') }
+  
+  $.ajax({
+	  type: 'POST',
+	  url:'/social/managepost', 
+	  data: data,
+	  dataType:'json',
+	  success:function(data){
+	    post_item.html(data.html);
+	    post_item.find('.post_del').click(onPostItemDelete);
+	    post_item.find('.post_sub').click(onPostSubscribe);
+	    post_item.find('.post_unsub').click(onPostUnsubscribe);
+	    post_item.find('.post_vote').click(onPostVote);
+	    post_item.find('.post_unvote').click(onPostVote);      
+	    post_item.find('.post_reshare').click(onPostReshare);
+	    post_item.find('.post_expand').click(onPostExpand); 
+	    post_item.find('.s_post_votes_c').click(onVotesDetail)
+	    post_item.find('.s_post_reshares_c').click(onResharesDetail)	    
 	  }});
   
 }
