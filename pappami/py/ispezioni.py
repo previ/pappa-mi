@@ -689,11 +689,7 @@ class NotaHandler(BasePage):
           'form_errors': form.errors
         }
       
-    template = jinja_environment.get_template("social/pagination/post.html")
-
-    html=template.render(template_values)
-    response = {'response':'success','html':html,"cursor":''}
-    self.output_as_json(response)
+      self.getBase(template_values) 
         
 app = webapp.WSGIApplication([
     ('/isp/isp', IspezioneHandler),

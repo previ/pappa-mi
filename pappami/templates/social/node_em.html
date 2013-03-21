@@ -8,8 +8,8 @@
    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Aggiungi nuovo...<span class="caret"></span></a>
    <ul class="dropdown-menu">
     <li><a class="open_msg" onclick="onOpenPostForm()" href="#">Messaggio</a></li>
-    {%if commissario%}
-    <li><a class="open_isp" onclick="opennewisp();" href="#">Ispezione</div></li>
+    {%if cmsro.isCommissario() %}
+    <li><a class="open_isp" onclick="opennewisp();" href="#">Ispezione</a></li>
     <li><a class="open_dieta" onclick="opennewdieta();" href="#">Ispezione Diete</a></li>
     <li><a class="open_nc" onclick="opennewnc();" href="#">Non conformit&agrave;</a></li>
    {%endif%}

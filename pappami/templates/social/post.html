@@ -8,6 +8,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">			
+				<div class="post_collapse pull-right"><a href="#">Comprimi post<i class="icon-arrow-up"></i></a></div>
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
 					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
@@ -15,10 +16,10 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				<div class="s_post_author">di {{post.commissario.nome}}</div>
 				<div class="s_post_date">{{post.extended_date()}}</div>
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
-				<div class="post_collapse pull-right"><a href="#">comprimi post</a></div>
 			</div>				
 			<div class="s_post_body">
 				<div class="s_post_content">{{post.content}}</div>
+				<div><a href="#">Comprimi post<i class="icon-arrow-up"></i></a></div>
 				<div class="s_edit_hollow"></div>
 				{%for resource in post.resource%}
 				<div class="s_post_resource well">

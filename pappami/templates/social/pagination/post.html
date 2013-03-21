@@ -5,7 +5,8 @@
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		</div>
 		<div class="s_post_container">
-			<div class="s_post_header">			
+			<div class="s_post_header">		
+				<div class="pull-right"><a class="post_expand" href="#">Espandi post<i class="icon-arrow-down"></i></a></div>
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_expand">{{post.title}}</span>
 					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
@@ -15,8 +16,8 @@
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>
 			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content}}
-			{%else%}<span class="s_post_body_short">{{post.content_summary}}...
-			<a class="post_expand" href="#">Espandi post <i class="icon-resize-full"></i></a></span>
+			{%else%}<span class="s_post_body_short">{{post.content_summary}}
+			<a class="post_expand" href="#">...continua a leggere<i class="icon-arrow-down"></i></a></span>
 			{%endif%}</div>
 			{%if subscription%}									
 			<div class="s_post_commands">
