@@ -237,7 +237,7 @@ class Commissario(model.Model):
   modificato_da = model.KeyProperty(kind=models.User)
   
   ultimo_accesso_il = model.DateTimeProperty()
-  ultimo_accesso_notifiche= model.DateTimeProperty()
+  ultimo_accesso_notifiche= model.DateTimeProperty(auto_now_add=True)
   
   stato = model.IntegerProperty()
   
@@ -1419,8 +1419,7 @@ class SocialNode(model.Model):
                       language='it')
       
      
-      index = search.Index(name='index-nodes',
-                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      index = search.Index(name='index-nodes')
       try:
           index.put(doc)
       
@@ -1429,8 +1428,7 @@ class SocialNode(model.Model):
 
     def _pre_delete_hook_1(cls, key):
         
-        index = search.Index(name='index-nodes',
-                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        index = search.Index(name='index-nodes')
         try:
             index.delete('node-'+key.urlsafe())
         
@@ -1637,6 +1635,7 @@ class SocialPost(model.Model):
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
+      logging.info(str(len(votes)))
       return votes
 
     @cached_property
@@ -1830,6 +1829,7 @@ class SocialPost(model.Model):
       self.put()
 
     def vote(self, vote, user):
+      logging.info(str(vote))
       if vote == 0:
         for p_vote in self.votes:
           if p_vote.c_u == user.key:
@@ -1894,8 +1894,7 @@ class SocialPost(model.Model):
                       language='it')
       
      
-      index = search.Index(name='index-posts',
-                   consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+      index = search.Index(name='index-posts')
       try:
           index.put(doc)
       
@@ -1903,8 +1902,7 @@ class SocialPost(model.Model):
           pass
 
     def _pre_delete_hook(cls, key):
-        index = search.Index(name='index-posts',
-                     consistency=search.Index.PER_DOCUMENT_CONSISTENT)
+        index = search.Index(name='index-posts')
         try:
             index.delete('post-'+key.urlsafe())
         

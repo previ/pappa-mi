@@ -416,6 +416,20 @@ class SocialManagePost(SocialAjaxHandler):
             response = {'response':'success','post':post.key.urlsafe(),'html':html}
             self.output_as_json(response)
 
+        if cmd == "collapse_post":
+            post = model.Key(urlsafe=self.request.get('post')).get()
+            template_values = {
+                               'postlist': [post],
+                               'user': user,
+                               "cmsro":self.getCommissario(user), 
+            }                                    
+                
+            template = jinja_environment.get_template("social/pagination/post.html")
+ 
+            html=template.render(template_values)
+            response = {'response':'success','post':post.key.urlsafe(),'html':html}
+            self.output_as_json(response)
+
         if cmd == "delete_open_post":
             post=model.Key(urlsafe=self.request.get('post')).get()
                
@@ -1152,11 +1166,13 @@ class SocialMainHandler(BasePage):
                 break
             
         cmsro = self.getCommissario(user)
-        last_access = cmsro.ultimo_accesso_notifiche
-        cmsro.ultimo_accesso_notifiche
-        if not last_access:
-            last_access = datetime.now()
-        if last_access - cmsro.ultimo_accesso_notifiche > timedelta(60):
+        
+        if not cmsro.ultimo_accesso_notifiche:
+            cmsro.ultimo_accesso_notifiche = datetime.now()
+            cmsro.put()
+
+        
+        if datetime.now() - cmsro.ultimo_accesso_notifiche > timedelta(60):
             cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
             cmsro.set_cache()
@@ -1177,7 +1193,7 @@ class SocialMainHandler(BasePage):
                         'node_active': node_active,
                         'node_recent': node_recent,
                         'user':user,
-                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, last_access)))
+                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche)))
         }
         self.getBase(template_values)
 
