@@ -8,7 +8,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">			
-				<div class="post_collapse pull-right"><a href="#">Comprimi post<i class="icon-arrow-up"></i></a></div>
+				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
 					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
@@ -19,7 +19,6 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</div>				
 			<div class="s_post_body">
 				<div class="s_post_content">{{post.content}}</div>
-				<div><a href="#">Comprimi post<i class="icon-arrow-up"></i></a></div>
 				<div class="s_edit_hollow"></div>
 				{%for resource in post.resource%}
 				<div class="s_post_resource well">
@@ -35,6 +34,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				 </ul>
 				</div>			
 				{% endif %}  
+				{%if not fullscreen%}<div class="post_collapse btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{% endif %}
 			</div>		
 			<div class="s_post_feedback pull-left">
 			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
@@ -46,7 +46,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_commands btn-toolbar">
 				{%if post.key.parent().get().subscriptions[user.key].can_admin%}
 				<div class="btn-group">
-				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
+				 <span class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></span>
 				 <ul class="dropdown-menu">
 				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
 				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
