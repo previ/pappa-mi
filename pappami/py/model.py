@@ -1472,17 +1472,24 @@ class SocialNode(model.Model):
         
         
     def delete_post(self,post):
-        sub=SocialPostSubscription.query(ancestor=post.key).get()
-        if sub:
-            sub.key.delete()
-        #delete comment notifications
-        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key)))
-        #delete post notifications
-        model.delete_multi(model.put_multi(SocialNotification.query(ancestor=post.key.parent()).filter(SocialNotification.source_key==post.key)))
-        #delete comments
-        model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
-        post.key.delete()
-           
+      #delete subscriptions to post
+      model.delete_multi(model.put_multi(SocialPostSubscription.query(ancestor=post.key)))
+      
+      for e in SocialEvent.get_keys_by_source(post.key):
+        for n in SocialNotification.get_keys_by_event(e):
+          n.delete()
+        e.delete()
+      for e in SocialEvent.get_keys_by_target(post.key):
+        for n in SocialNotification.get_keys_by_event(e):
+          n.delete()
+        e.delete()
+      
+      #delete comments
+      model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
+
+      #delete post
+      post.key.delete()           
+      logging.info("delete_post")
         
     def set_position(self,lat,lon):
         self.geo=model.GeoPt(lat,lon)
@@ -1521,13 +1528,10 @@ class SocialNode(model.Model):
              raise users.UserNotFoundError
             
     def is_user_subscribed(self,user_t):
-        if SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).count()>0:
-            return True
-        else:
-            return False
+        return self.get_subscription(user_t.key) is not None
           
-    def get_subscription(self,user_t):
-        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_t.key).get()
+    def get_subscription(self,user_key):
+        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_key).get()
         
         
     def subscription_list(self,amount):
@@ -1713,10 +1717,10 @@ class SocialPost(model.Model):
         stream = list()        
         next_cursor = int(start_cursor if start_cursor else 0) + 1
         #logging.info("next_cursor:" + str(next_cursor))
-        for node in SocialNodeSubscription.get_nodes_keys_by_user(user):
+        for node in SocialNodeSubscription.get_nodes_by_user(user):
           next_cursor_rank = None
           for x in range(0, next_cursor):
-            postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node, page=page, start_cursor=next_cursor_rank)
+            postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node.key, page=page, start_cursor=next_cursor_rank)
             #logging.info("node: " + node.get().name + " offset: " + str(x) + " postlist: " + str(len(postlist)) + " more: " + str(more))       
             stream.extend(postlist)
             if not more:
@@ -1881,6 +1885,7 @@ class SocialPost(model.Model):
       delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
       self.rank += ((delta_rank * values[activity]) / 10)
 
+    @classmethod
     def _post_put_hook(cls, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
@@ -1901,13 +1906,17 @@ class SocialPost(model.Model):
       except search.Error, e:
           pass
 
+    @classmethod
     def _pre_delete_hook(cls, key):
-        index = search.Index(name='index-posts')
-        try:
-            index.delete('post-'+key.urlsafe())
-        
-        except search.Error, e:
-            pass
+      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      
+      index = search.Index(name='index-posts')
+      try:
+          index.delete('post-'+key.urlsafe())
+      
+      except search.Error, e:
+          pass
 
 class SocialPostSubscription(model.Model):
     user = model.KeyProperty(kind=models.User)
@@ -1961,15 +1970,16 @@ class SocialNodeSubscription(model.Model):
           
         #node_list=[i.key.parent().get() for i in subscriptions_list]
         return subs
+
     
     @classmethod
-    def get_nodes_keys_by_user(cls,user):
-      cache = Cache.get_cache("UserNodeSubscription")
-      cache_key = "UserNodeSubscription-" + str(user.key.id)
+    def get_nodes_by_user(cls,user):
+      cache = Cache.get_cache("UserNode")
+      cache_key = "UserNode-" + str(user.key.id)
       nodes = cache.get(cache_key)
       if not nodes:        
         sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(SocialNodeSubscription.starting_date).fetch(keys_only=True)
-        nodes = [i.parent() for i in sub_list]
+        nodes = [i.parent().get() for i in sub_list]
         cache.put(cache_key, nodes)
       return nodes
 
@@ -2157,6 +2167,14 @@ class SocialEvent(model.Model):
   @classmethod
   def get_by_status(cls, status, cursor):
     return SocialEvent.query().filter(SocialEvent.status==status).order(SocialEvent.date).fetch_page(20, start_cursor=cursor)
+
+  @classmethod
+  def get_keys_by_source(cls, source_key):
+    return SocialEvent.query().filter(SocialEvent.source==source_key).fetch(keys_only=True)
+
+  @classmethod
+  def get_keys_by_target(cls, target_key):
+    return SocialEvent.query().filter(SocialEvent.target==target_key).fetch(keys_only=True)
           
   status_created = 0
   status_processed = 1
@@ -2210,6 +2228,10 @@ class SocialNotification(model.Model):
         else:
           more = False
     return nns
+
+  @classmethod
+  def get_keys_by_event(cls, event_key):
+    return SocialNotification.query().filter(SocialNotification.event==event_key).fetch(keys_only=True)
   
   @classmethod
   def get_by_date(cls, date, cursor=None):

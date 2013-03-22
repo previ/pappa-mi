@@ -6,7 +6,7 @@
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">		
-				<div class="pull-right"><a class="post_expand" href="#">Espandi post<i class="icon-arrow-down"></i></a></div>
+				<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-arrow-down"></i></span></div>
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_expand">{{post.title}}</span>
 					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
@@ -17,7 +17,7 @@
 			</div>
 			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content}}
 			{%else%}<span class="s_post_body_short">{{post.content_summary}}
-			<a class="post_expand" href="#">...continua a leggere<i class="icon-arrow-down"></i></a></span>
+			<span class="link post_expand">...continua a leggere<i class="icon-arrow-down"></i></span></span>
 			{%endif%}</div>
 			{%if subscription%}									
 			<div class="s_post_commands">
