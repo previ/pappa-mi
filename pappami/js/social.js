@@ -886,10 +886,12 @@ function onNotificationPeriod() {
 function init_search(){
   $('#search_text').typeahead({minLength:2,
     source: function (query, process) {
+      $("#search_node_list").empty()
       return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
 	data=jQuery.parseJSON(data)
 	if(data.html) {
-	  $("#node_list").empty().hide().html(data.html).show(200)
+	  $("#search").tab('show')
+	  $("#search_node_list").html(data.html)
 	}
       });
     }

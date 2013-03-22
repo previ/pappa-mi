@@ -87,12 +87,19 @@ class SocialTest(BasePage):
         
           
 class NodeListHandler(BasePage):
+  
   def get(self):
-    #geo = model.GeoPt(41.754922,12.502441)
+    user = self.get_current_user()
+    subs = SocialNodeSubscription.get_by_user(user,-SocialNodeSubscription.starting_date)
+    node_list = []
+    for sub in subs:
+        node_list.append(sub.key.parent().get())
+    
     template_values = {
       'content': 'social/nodelist.html',
-      'nodelist': SocialNode.get_most_active()
-      #'citta': Citta.get_all(),
+      'subs_nodes': node_list,
+      'active_nodes': SocialNode.get_most_active(),
+      'recent_nodes': SocialNode.get_most_recent(),     
       }
         
     self.getBase(template_values)
