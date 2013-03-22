@@ -84,16 +84,26 @@ function getPrevIspData() {
   $.ajax({url:"/isp/getispdata?cm="+commissione, success: function(data){ 
     var ispdata = data.split("|");
       if(ispdata.length > 1) {
-	$($('[name="aaRispettoCapitolato"]')[ispdata[0]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="aaTavoliApparecchiati"]')[ispdata[1]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="aaTermichePulite"]')[ispdata[2]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="aaAcqua"]')[ispdata[3]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="aaScaldaVivande"]')[ispdata[4]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaRispettoCapitolato"]')[ispdata[0]==0 ? 1 : 0]).parent().click();	
+	$($('[name="aaRispettoCapitolato"]')[ispdata[0]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="aaTavoliApparecchiati"]')[ispdata[1]==0 ? 1 : 0]).parent().click();
+	$($('[name="aaTavoliApparecchiati"]')[ispdata[1]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="aaTermichePulite"]')[ispdata[2]==0 ? 1 : 0]).parent().click();	
+	$($('[name="aaTermichePulite"]')[ispdata[2]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="aaAcqua"]')[ispdata[3]==0 ? 1 : 0]).parent().click();
+	$($('[name="aaAcqua"]')[ispdata[3]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="aaScaldaVivande"]')[ispdata[4]==0 ? 1 : 0]).parent().click();
+	$($('[name="aaScaldaVivande"]')[ispdata[4]==0 ? 1 : 0]).attr('checked', true)
 	$($('[name="aaSelfService"]')[ispdata[5]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="aaTabellaEsposta"]')[ispdata[6]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="ricicloStoviglie"]')[ispdata[7]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="ricicloPosate"]')[ispdata[8]==0 ? 1 : 0]).parent().click();	  
-	$($('[name="ricicloBicchieri"]')[ispdata[9]==0 ? 1 : 0]).parent().click();	  
+	$($('[name="aaSelfService"]')[ispdata[5]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="aaTabellaEsposta"]')[ispdata[6]==0 ? 1 : 0]).parent().click();
+	$($('[name="aaTabellaEsposta"]')[ispdata[6]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="ricicloStoviglie"]')[ispdata[7]==0 ? 1 : 0]).parent().click();	
+	$($('[name="ricicloStoviglie"]')[ispdata[7]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="ricicloPosate"]')[ispdata[8]==0 ? 1 : 0]).parent().click();	
+	$($('[name="ricicloPosate"]')[ispdata[8]==0 ? 1 : 0]).attr('checked', true)
+	$($('[name="ricicloBicchieri"]')[ispdata[9]==0 ? 1 : 0]).parent().click();
+	$($('[name="ricicloBicchieri"]')[ispdata[9]==0 ? 1 : 0]).attr('checked', true)
       }
     }
   });

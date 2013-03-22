@@ -45,7 +45,7 @@ class CMMenuDataHandler(CMMenuHandler):
       
       json.dump(menu.to_dict(), self.response.out)
 
-    if( self.request.get("cmd") == "getdetails" ):
+    elif( self.request.get("cmd") == "getdetails" ):
       details = dict()
       factors = {'Materna': 0.625,
                  'Primaria': 0.875,

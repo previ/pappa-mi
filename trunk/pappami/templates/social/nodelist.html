@@ -15,17 +15,38 @@ $(document).ready(function () {
  </div>
 </div>
 {%endif%}
-<h3>Elenco Argomenti</h3>
+<h3>Argomenti</h3>
 <div class="row">
  <div class="span12">
-  <div class="well">
-   <form>
-    <label for="search_text">Cerca per nome:</label>
-    <input id="search_text" type="text">
-   </form>
-  </div>
-  <ul id="node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
+  <ul class="nav nav-tabs">
+   <li class=""><a href="#subs" data-toggle="tab">A cui sei iscritto</a></li>
+   <li class=""><a href="#active" data-toggle="tab">Più attivi</a></li>
+   <li class=""><a href="#recent" data-toggle="tab">Più recenti</a></li>
+   <li class=""><a href="#search" data-toggle="tab">Cerca...</a></li>{%if admin%}
+   <li class=""><a href="/social/createnode">Aggiungi Nodo</a></li>{%endif%}
+  </ul>
  </div>
+</div>
+<div id="myTabContent" class="tab-content">
+ <div class="tab-pane fade" id="subs">
+  <h4>Argomenti a cui sei iscritto</h4>{%set nodelist = subs_nodes %}
+  <ul id="subs_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
+ </div>
+  <div class="tab-pane fade active in" id="active">
+   <h4>Più attivi</h4>{%set nodelist = active_nodes %}
+   <ul id="active_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
+  </div>
+  <div class="tab-pane fade" id="recent">
+   <h4>Più recenti</h4>{%set nodelist = recent_nodes %}
+   <ul id="recent_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
+  </div>
+  <div class="tab-pane fade" id="search">
+   <h4>Ricerca</h4>
+   <div class="form">
+    <label for="search_text">Cerca argomento per nome: </label><input type="text" name="query" id="search_text" class="input-medium search-query">  
+   </div>{%set nodelist = search_nodes %}
+   <ul id="search_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
+  </div>
 </div>
 <button id="add_nodes" class="btn btn-normal" type="submit" style="display:none;">Mostra altri nodi</button>
 <div id="pagination_errors" style="display:none;">Non ci sono altri nodi</div>
