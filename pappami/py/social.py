@@ -131,7 +131,7 @@ class SocialPostHandler(BasePage):
         post=node.get().create_open_post(user, title, content, resources, res_types)
         
         if attachments:
-            for attach in nc.attachments:
+            for attach in attachments:
                 attach.obj = post
                 attach.put()
         
@@ -376,6 +376,7 @@ class SocialManagePost(SocialAjaxHandler):
            
         if cmd == "update_post":
            post=model.Key(urlsafe=self.request.get('post')).get()
+           post.title = Sanitizer.text(self.request.get("title"))
            post.content = Sanitizer.sanitize(self.request.get("content"))
            post.put()
            node = post.key.parent().get()
@@ -403,7 +404,7 @@ class SocialManagePost(SocialAjaxHandler):
             node=model.Key(urlsafe=self.request.get('node')).get()           
             post=model.Key(urlsafe=self.request.get('post')).get()
                 
-            clean_title = Sanitizer.sanitize(self.request.get("title"))
+            clean_title = Sanitizer.text(self.request.get("title"))
             clean_content = Sanitizer.sanitize(self.request.get("content"))
            
             rs_post_key=post.reshare(node.key,user,clean_content,clean_title)
@@ -522,7 +523,7 @@ class SocialCreateNodeHandler(BasePage):
     def post(self):
         
         node=SocialNode()
-        node.name=Sanitizer.sanitize(self.request.get("name"))
+        node.name=Sanitizer.text(self.request.get("name"))
         node.description=Sanitizer.sanitize(self.request.get("description"))
         node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
@@ -562,7 +563,7 @@ class SocialEditNodeHandler(BasePage):
         self.getBase(template_values)
     def post(self,id):
         node=model.Key(urlsafe=self.request.get("node_id")).get()
-        node.name=Sanitizer.sanitize(self.request.get("name"))
+        node.name=Sanitizer.text(self.request.get("name"))
         node.description=Sanitizer.sanitize(self.request.get("description"))
         node.default_comment=bool(self.request.get("default_comment"))
         node.default_post=bool(self.request.get("default_post"))
@@ -728,6 +729,11 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     start_cursor = Cursor(urlsafe=cursor)
                     
                 notlist, next_curs, more = SocialNotificationHandler.retrieve_notifications(user.key, start_cursor=start_cursor)
+               
+                cmsro = self.getCommissario(user)
+                cmsro.ultimo_accesso_notifiche = datetime.now()
+                cmsro.put()
+                cmsro.set_cache()
                 
                 while len(notlist) > 10:
                     notlist.pop()
@@ -1005,23 +1011,46 @@ class SocialNotificationHandler(SocialAjaxHandler):
             
         
 class SocialSearchHandler(SocialAjaxHandler):
-    def get(self):
+    def post(self):
         postlist = list()
         try:
-            results = search.Index(name="index-posts").search(search.Query(query_string=self.request.get("query")))
+            query = self.request.get("query")
+            if self.request.get("author"):
+                query += " author:" + self.request.get("author")
+            if self.request.get("node"):
+                query += " node:" + self.request.get("node") 
+            if self.request.get("resources"):
+                query += " resources:" + self.request.get("resources") 
+            if self.request.get("attach"):
+                query += " attach:" + self.request.get("attach")
+                
+            results = search.Index(name="index-posts").search(search.Query(query_string=query))
         
             for scored_document in results:
                 post = model.Key(urlsafe=scored_document.doc_id[5:]).get()
-                post.commissario=Commissario.get_by_user(post.author.get())                
                 postlist.append(post)
                 
                 
         except search.Error:
                 logging.exception('Search failed' )
+
+        template_values = {
+            "content": "social/search.html",
+            "query": self.request.get("query"),
+            "author": self.request.get("author"),
+            "node": self.request.get("node"),
+            "resources": self.request.get("resources"),            
+            "attach": self.request.get("query"),
+            "advanced": self.request.get("advanced"),
+            "postlist": postlist,
+                 }
+    
+        self.getBase(template_values)
+
+    def get(self):
         
         template_values = {
             "content": "social/search.html",
-            "postlist": postlist,
                  }
     
         self.getBase(template_values)
@@ -1069,13 +1098,8 @@ class SocialMainHandler(BasePage):
         if not cmsro.ultimo_accesso_notifiche:
             cmsro.ultimo_accesso_notifiche = datetime.now()
             cmsro.put()
-
-        
-        if datetime.now() - cmsro.ultimo_accesso_notifiche > timedelta(60):
-            cmsro.ultimo_accesso_notifiche = datetime.now()
-            cmsro.put()
             cmsro.set_cache()
-            
+                    
         logging.info("node_list")
         for n in node_list:
             logging.info(n.name)

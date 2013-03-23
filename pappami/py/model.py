@@ -1889,13 +1889,24 @@ class SocialPost(model.Model):
     def _post_put_hook(cls, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
-      
+            
       post=future.get_result().get()
+
+      resource = ""
+      for r in post.res_type:
+        resource += r + " "
+
+      logging.info(resource)
+
       doc=search.Document(
                       doc_id='post-'+post.key.urlsafe(),
-                      fields=[search.TextField(name='title', value=post.title),
+                      fields=[search.TextField(name='node', value=post.key.parent().get().name),
+                              search.TextField(name='author', value=post.commissario.nomecompleto(cmsro=None, myself=True)),
+                              search.TextField(name='title', value=post.title),
                               search.HtmlField(name='content', value=post.content),
-                              search.HtmlField(name='comments', value=post.get_comments_text())],
+                              search.HtmlField(name='comments', value=post.get_comments_text()),
+                              search.TextField(name='resources', value=resource),
+                              search.TextField(name='attach', value=str(len(post.attachments)>0))],
                       language='it')
       
      

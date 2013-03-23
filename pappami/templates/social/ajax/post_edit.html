@@ -2,10 +2,10 @@
 	<input type="hidden" name="cmd" value="update_post"/>
 	<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>
 	<div class="s_post_header">			
-		<input class="s_post_edit_title" name="title" value="{{post.title}}">
+		<input class="s_post_edit_title" type="text" name="title" value="{{post.title}}">
 	</div>				
 	<div class="s_post_body">
-		<input class="s_post_edit_content" name="content" value="{{post.content}}">
+		<textarea class="s_post_edit_content" name="content">{{post.content}}</textarea>
 		{%for resource in post.resource%}
 		<div class="s_post_resource well">
 		{%include "social/resources/"+post.res_type[loop.index-1]+".html"%}
@@ -21,8 +21,8 @@
 		 </ul>
 		</div>			
 	</div>			
-	<div class="s_post_edit_commands btn-group">
-		<button type="submit" class="btn btn-info post_edit_submit">Conferma</button>	
+	<div class="s_post_edit_commands">
+		<button type="submit" class="btn btn-primary post_edit_submit">Conferma</button>	
 		<button type="button" class="btn btn-normal post_edit_cancel">Annulla</button>			
 	</div>
 </form>
