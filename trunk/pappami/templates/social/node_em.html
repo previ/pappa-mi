@@ -31,7 +31,7 @@
   </div>
    {%endif%}
  </div>
-{%endif%}  
+{%endif%} 
  <div id="new_post" style="display:none" class="well">
   <form id="new_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
    <input type="hidden" name="cmd" value="create_open_post"/>
@@ -45,13 +45,13 @@
     {%endfor%}
     </select>
    </div>{%endif%}
-   <div id="post_title" class="form_parent">
-	   <label id="post_content_label" for="titolo">Titolo</label>
-	   <input class="span8 required" name="title" id="post_title_text"></input>
+   <div id="post_title" class="">
+	   <label id="post_content_label" for="post_title_text">Titolo</label>
+	   <input class="span8 required" type="text" name="title" id="post_title_text">
    </div>
-   <div id="post_content" class="form_parent">
+   <div id="post_content" class="">
 	   <label id="post_content_label" for="content">Contenuto</label>
-	   <input id="post_content_text" class="span8 comment_textarea required" name="content"></input>
+	   <textarea id="post_content_text" class="span8 comment_textarea required" name="content"></textarea>
    </div>
    <div class="form_parent post_attachments">       
     <label class="control-label" for="e_attach">Allegati</label>

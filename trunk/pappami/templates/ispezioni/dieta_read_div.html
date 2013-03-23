@@ -76,16 +76,6 @@
  </div>
 {% endif %}  
 {% if preview %}
- <div class="row">
-  <div class="span2">
-  <div><i class="icon-tags"></i> Categorie</div>
-  </div>
- </div>
- <div class="row">
-  <div class="span8">
- {%for tag in dieta.tags%}{{tag}}&nbsp;{%endfor%}
-  </div>
- </div>
 <div class="modal-footer modal-actions">
  <form action="/isp/dieta" method="post" id="form1">
  <input type="hidden" name="preview" value="{{preview}}">

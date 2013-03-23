@@ -63,7 +63,7 @@ function onFloodError(data,callback){
 
 // Post
 function getPostRootByElement(element) {
-  return element.parents('[data-post-key]');
+  return element.parents('.s_post_root');
 }
 
 function getCommentRootByElement(element) {
@@ -172,6 +172,7 @@ function onPostEdit(){
 	edit_post.find('.post_attach_delete').click(onAttachDelete);  
 	edit_post.find('.post_edit_cancel').click(onEditCancel);
       });
+      
     }});
 }
 
@@ -319,7 +320,7 @@ function onPostExpand() {
   var exp_comments = $(this).hasClass('s_post_comments_c');
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
-  var data = {'cmd':'expand_post', 'post':post_item.attr('data-post-key'), 'exp_comments': exp_comments }
+  var data = {'cmd':'expand_post', 'post':post_key, 'exp_comments': exp_comments }
   
   $.ajax({
 	  type: 'POST',
@@ -335,7 +336,7 @@ function onPostExpand() {
 function onPostCollapse() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
-  var data = {'cmd':'collapse_post', 'post':post_item.attr('data-post-key') }
+  var data = {'cmd':'collapse_post', 'post':post_key }
   
   $.ajax({
 	  type: 'POST',
@@ -365,7 +366,7 @@ function onPostCommentsExpand() {
 function onPostCommentExpandEx() {
   var post_key = getPostKeyByElement($(this));
   var post_comments = $(this).parents('.s_post_comment_num');
-  var data = {'cmd':'expand_comments', 'post':post_item.attr('data-post-key') }
+  var data = {'cmd':'expand_comments', 'post':post_key }
   
   $.ajax({
 	  type: 'POST',

@@ -1,22 +1,65 @@
 <script type="text/javascript">
 $(document).ready(function () {
 });
-
 </script>
 {#%set tab_node="active"%#}
 {#%include "navigation.html"%#}
-<!--div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div-->
-<h3>Ricerca</h3>
+<h3>Cerca</h3>
 <div class="row">
  <div class="span12">
-  <div class="well">
-   <form>
-    <label for="search_text">Cerca una discussione o ispezione:</label>
-    <input name="query" id="search_text" type="text">
-   </form>
-  </div>
-  <ul id="search_result" class="thumbnails">
-  {%include "social/pagination/post.html"%}
+  <ul class="nav nav-tabs">
+   <li class="{%if not advanced%}active{%endif%}"><a href="#normal" data-toggle="tab">Ricerca semplice</a></li>
+   <li class="{%if advanced%} active{%endif%}"><a href="#advanced" data-toggle="tab">Ricerca avanzata</a></li>
   </ul>
+ </div>
+</div>
+<div id="myTabContent" class="tab-content">
+ <div class="tab-pane{%if not advanced%} active{%endif%} fade in" id="normal">
+   <form action="/social/search" method="post" class="form">
+    <div class="input-append">
+     <label for="search_text">Cerca una discussione o ispezione:</label>
+     <input type="text" name="query" value="{{query}}" id="search_text" class="span4">
+     <button class="btn" type="button">Cerca</button>
+    </div>
+   </form>
+   <ul id="search_result" class="thumbnails">
+   {%include "social/pagination/post.html"%}
+   </ul>
+ </div>
+  <div class="tab-pane{%if advanced%} active{%endif%} fade in" id="advanced">
+   <form action="/social/search" method="post" class="form">
+    <input type="hidden" name="advanced" value="true" id="a_s_adv">
+    <fieldset>
+    <div class="row span4">
+     <label for="a_s_text">Testo:</label>
+     <input type="text" name="query" value="{{query}}" id="a_s_text">
+     <label for="a_s_author">Autore:</label>
+     <input type="text" name="author" value="{{author}}" id="a_s_author">
+    </div>    
+    <div class="row span4"> 
+     <label for="a_s_node">Argomento / Scuola:</label>
+     <input type="text" name="node" value="{{node}}" id="a_s_node">
+     <label for="a_s_resource">Tipo:</label>
+     <select name="resources" id="a_s_resource">
+      <option value="">Tutti</option>
+      <option value="isp"{%if resources=='isp'%} selected{%endif%}>Ispezione</option>
+      <option value="nc"{%if resources=='nc'%} selected{%endif%}>Non conformità</option>
+      <option value="nota"{%if resources=='nota'%} selected{%endif%}>Nota</option>
+      <option value="dieta"{%if resources=='dieta'%} selected{%endif%}>Ispezione dieta</option>
+     </select>
+    </div>    
+    <div class="span4">
+     <label for="a_s_attach">Con allegati</label>
+     <input type="checkbox" name="attach" value="True" {%if attach%} checked {%endif%}id="a_s_attach">
+    </div>    
+    </fieldset>
+    <div class="form-actions">
+     <input class="btn btn-normal" value="Cerca" id="a_s_submit" type="submit">
+    </div>
+   </form>
+   <ul id="search_result" class="thumbnails">
+   {%include "social/pagination/post.html"%}
+   </ul>
+  </div>
  </div>
 </div>
