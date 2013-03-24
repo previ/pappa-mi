@@ -243,7 +243,7 @@ class SocialManagePost(SocialAjaxHandler):
             if not node.get_subscription(user.key).can_post:
                 self.response.out.write("<response>error</response>")
                 return
-            clean_title = Sanitizer.sanitize(self.request.get("title"))
+            clean_title = Sanitizer.text(self.request.get("title"))
             clean_content = Sanitizer.sanitize(self.request.get("content"))
             post_key=node.create_open_post(content=clean_content,title=clean_title,author=user)
 
@@ -1013,8 +1013,12 @@ class SocialNotificationHandler(SocialAjaxHandler):
 class SocialSearchHandler(SocialAjaxHandler):
     def post(self):
         postlist = list()
+        found = 0
+        offset = 0
+        limit = Const.SEARCH_LIMIT
         try:
             query = self.request.get("query")
+            
             if self.request.get("author"):
                 query += " author:" + self.request.get("author")
             if self.request.get("node"):
@@ -1023,9 +1027,17 @@ class SocialSearchHandler(SocialAjaxHandler):
                 query += " resources:" + self.request.get("resources") 
             if self.request.get("attach"):
                 query += " attach:" + self.request.get("attach")
-                
-            results = search.Index(name="index-posts").search(search.Query(query_string=query))
-        
+            if self.request.get("offset"):
+                offset = int(self.request.get('offset'))
+
+            logging.info("offset: " + str(offset))
+            options = search.QueryOptions(
+                limit=limit,
+                offset=offset)                
+
+            results = search.Index(name="index-posts").search(search.Query(query_string=query, options=options))
+            found = results.number_found
+            
             for scored_document in results:
                 post = model.Key(urlsafe=scored_document.doc_id[5:]).get()
                 postlist.append(post)
@@ -1040,17 +1052,21 @@ class SocialSearchHandler(SocialAjaxHandler):
             "author": self.request.get("author"),
             "node": self.request.get("node"),
             "resources": self.request.get("resources"),            
-            "attach": self.request.get("query"),
+            "attach": self.request.get("attach"),
             "advanced": self.request.get("advanced"),
+            "offset": offset,
+            "lim": limit,
+            "found": found,
             "postlist": postlist,
                  }
     
         self.getBase(template_values)
 
     def get(self):
-        
+        limit = Const.SEARCH_LIMIT
         template_values = {
             "content": "social/search.html",
+            "lim": limit,
                  }
     
         self.getBase(template_values)

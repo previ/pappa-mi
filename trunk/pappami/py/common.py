@@ -40,12 +40,7 @@ class Const:
     'div',
     'br',
 ]
-  ALLOWED_ATTRIBUTES = {
-      'a': ['href', 'title'],
-      'abbr': ['title'],
-      'acronym': ['title'],
-      'img': ['src'],
-  }  
+  SEARCH_LIMIT = 20
 
 
 class cached_property(object):

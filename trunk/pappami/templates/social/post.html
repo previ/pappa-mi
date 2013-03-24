@@ -107,19 +107,19 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			{%endif%}
 		</div> <!-- s_post_comments -->		
 	</div> <!-- s_post -->		
-</div> <!-- s_post_root -->		
-<div id="tools" class="s_tools">
-	<div class="s_modal_reshare"></div>
-	<div class="s_post_edit_form" style="display:none;"></div>
-	<div class="s_comment_edit_form" style="display:none;">
-		<form class="s_update_comment_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
-			<input type="hidden" name="cmd" value="update_comment"/>
-			<input type="hidden" name="comment" value=""/>
-			<input class="s_comment_edit_content" name="content" value="">
-			<div class="s_comment_commands">
-				<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
-				<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			
-			</div>
-		</form>
+	<div class="s_post_tools">
+		<div class="s_modal_reshare"></div>
+		<div class="s_post_edit_form" style="display:none;"></div>
+		<div class="s_comment_edit_form" style="display:none;">
+			<form class="s_update_comment_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+				<input type="hidden" name="cmd" value="update_comment"/>
+				<input type="hidden" name="comment" value=""/>
+				<input class="s_comment_edit_content" name="content" value="">
+				<div class="s_comment_commands">
+					<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
+					<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			
+				</div>
+			</form>
+		</div>
 	</div>
-</div>
+</div> <!-- s_post_root -->		
