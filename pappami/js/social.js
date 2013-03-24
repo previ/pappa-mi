@@ -148,7 +148,7 @@ function onPostEdit(){
   var post_key = getPostKeyByElement($(this));
   var post_root = getPostRootByElement($(this));
   var post_container = $(this).parents('.s_post_container')
-  var edit_post = $("#tools > .s_post_edit_form").clone();
+  var edit_post = post_root.find(".s_post_tools > .s_post_edit_form").clone();
   $.ajax({
     type: 'POST',
     url:'/social/managepost', 
@@ -166,7 +166,7 @@ function onPostEdit(){
 	post_container.empty();
 	post_container.append(edit_post);
 	edit_post.find(".s_post_edit_content").tinymce(tiny_mce_opts);
-	$(".s_post_commands").hide()
+	post_root.find(".s_post_commands").hide()
 	edit_post.show()
 	edit_post.find('input[name="attach_file"]').change(addAttach);
 	edit_post.find('.post_attach_delete').click(onAttachDelete);  
@@ -199,9 +199,10 @@ function onEditSubmit(data){
 }
 
 function onCommentEdit(){
+  var post_root = getPostRootByElement($(this))
   var comment_root = getCommentRootByElement($(this))
   var comment_key = comment_root.attr('data-comment-key');   
-  var edit_post = $("#tools > .s_comment_edit_form").clone();
+  var edit_post = post_root.find(".s_post_tools > .s_comment_edit_form").clone();
   var edit_form = edit_post.find("form");
   edit_form.find('[name="comment"]').attr('value', comment_key)
   edit_form.ajaxForm({clearForm: true, dataType:'json', success:onCommentSubmit});
@@ -398,16 +399,17 @@ function onOpenPostFormCancel() {
 	
 function onPostReshare() {
   var post = getPostKeyByElement($(this));    
+  var post_root = getPostRootByElement($(this))
   $.ajax({
     type: 'POST',
     url:'/social/dload', 
     data: {'cmd': 'modal_reshare'},
     dataType:'json',
     success:function(data){
-      modal_reshare = $("#tools").find(".s_modal_reshare");
+      modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
       $(document).ready(function () {
-	modal_reshare = $("#tools").find("#post_reshare")
+	//modal_reshare = $("#tools").find("#post_reshare")
 	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
 	modal_reshare.find('input[name="post"]').attr("value", post);
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
@@ -671,6 +673,13 @@ function init_search(){
       });
     }
   });
+}
+
+function onSearchPaginate() {
+  var offset = $(this).attr('data-offset')
+  $('input[name="offset"]').attr('value', offset);
+  alert($('div.active > form').html())
+  $('div.active > form').submit()
 }
 
 function onNodeClick(){
