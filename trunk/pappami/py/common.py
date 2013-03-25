@@ -8,6 +8,7 @@ import datetime
 from HTMLParser import HTMLParser
 import lxml.html
 from lxml.html.clean import Cleaner
+from google.appengine.api import channel
 
 
 class Const:
@@ -175,3 +176,20 @@ class Sanitizer(object):
     text = lxml.html.fromstring(html).text_content()
     return text
   
+
+class Channel(object):
+  
+  @classmethod
+  def get_by_user(cls, user):
+    #channel_key = 'pappa-mi.' + str(user.key.id())
+    #channel = memcache.get(channel_key)
+    #if not channel:
+      #channel = channel.create_channel('pappa-mi.' + str(user.key.id()), duration_minutes=30)
+      #memcache.add('pappa-mi.' + str(user.key.id(), channel), 1800)
+    if not hasattr(user, "channel"):
+      user.channel = channel.create_channel('pappa-mi.' + str(user.key.id()))
+    return user.channel
+  
+  @classmethod  
+  def send_message(cls, user, message):
+    channel.send_message('pappa-mi.' + str(user.key.id()), message)

@@ -11,7 +11,6 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 from google.appengine.ext.ndb import model
 from google.appengine.api.taskqueue import Task, Queue
-from google.appengine.api import channel
 
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -25,7 +24,7 @@ from py.blob import *
 from form import *
 import base64
 import time
-from common import Const, Cache, Sanitizer
+from common import Const, Cache, Sanitizer, Channel
 from base import BasePage, CMCommissioniDataHandler, reguser_required, config, handle_404, handle_500
 import random
 
@@ -1012,7 +1011,7 @@ class SocialNotificationHandler(SocialAjaxHandler):
             
             json_msg = json.dumps(message)
             
-            channel.send_message('pappa-mi.' + str(user.id()), json_msg)
+            Channel.send_message(user.get(), json_msg)
             
         
     @classmethod

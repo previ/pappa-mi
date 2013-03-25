@@ -23,7 +23,7 @@ import fixpath
 
 from google.appengine.ext.ndb import model, toplevel
 from google.appengine.api import users
-from google.appengine.api import channel
+
 
 import webapp2 as webapp
 import traceback
@@ -41,7 +41,7 @@ import httpagentparser
 from py.gviz_api import *
 from py.model import *
 from py.modelMsg import *
-from common import Const
+from common import Const, Channel
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
@@ -169,9 +169,8 @@ class BasePage(webapp.RequestHandler):
         commissario.set_cache()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
-      if not hasattr( user, "channel"):
-        user.channel = channel.create_channel('pappa-mi.' + str(user.key.id()))
-      template_values["channel"] = user.channel
+      
+      template_values["channel"] = Channel.get_by_user(user)
       
       #user.fullname = commissario.nomecompleto(commissario)
       #user.title = commissario.titolo(commissario)
