@@ -23,6 +23,8 @@ import fixpath
 
 from google.appengine.ext.ndb import model, toplevel
 from google.appengine.api import users
+from google.appengine.api import channel
+
 import webapp2 as webapp
 import traceback
 #from webapp2_extras import jinja2
@@ -167,6 +169,10 @@ class BasePage(webapp.RequestHandler):
         commissario.set_cache()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
+      if not hasattr( user, "channel"):
+        user.channel = channel.create_channel('pappa-mi.' + str(user.key.id()))
+      template_values["channel"] = user.channel
+      
       #user.fullname = commissario.nomecompleto(commissario)
       #user.title = commissario.titolo(commissario)
       #user.avatar = commissario.avatar()
@@ -186,6 +192,7 @@ class BasePage(webapp.RequestHandler):
     template_values["host"] = self.getHost()
     template_values["version"] = "3.0.0.0 - 2013.03.20"
     template_values["ctx"] = self.get_context()
+        
     
     #logging.info("content: " + template_values["content"])
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))

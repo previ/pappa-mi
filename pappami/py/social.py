@@ -11,6 +11,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 from google.appengine.ext.ndb import model
 from google.appengine.api.taskqueue import Task, Queue
+from google.appengine.api import channel
 
 import webapp2 as webapp
 from google.appengine.api import memcache
@@ -984,10 +985,35 @@ class SocialNotificationHandler(SocialAjaxHandler):
         for user in user_ntfy:
             notifications = user_ntfy.get(user)
             if len(notifications) > 0:
+                cls.send_notifications_channel(user, notifications)
                 cls.send_notifications_email(user, notifications)
             else:
                 logging.info("user: " + user.get().email + " has no notifications")
                 
+
+    @classmethod
+    def send_notifications_channel(cls, user, notifications):
+        logging.info("Sending channel notification to user: " + user.get().email)
+        for n in notifications:
+            event = n.event.get()
+            message = { 'type': event.type,
+                        'user': event.source.get().commissario.nomecompleto(Commissario.get_by_user(user.get())),
+                        'source_id': event.source.urlsafe(),
+                        'target_id': event.target.urlsafe(),
+                        }
+            
+            logging.info("Notification: " + str(event.type))
+            if event.type == "post":
+                message['source_desc'] = "messaggio"
+                message['target_desc'] = event.target.get().name
+            if event.type == "comment":
+                message['source_desc'] = "commento"
+                message['target_desc'] = event.target.get().title
+            
+            json_msg = json.dumps(message)
+            
+            channel.send_message('pappa-mi.' + str(user.id()), json_msg)
+            
         
     @classmethod
     def send_notifications_email(cls, user, notifications):

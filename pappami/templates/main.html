@@ -43,7 +43,7 @@
     <!-- Le javascript -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.js"></script>
-
+    <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <!--[if IE]>
 <script src="/js/ieresizefix.js" type="text/javascript"></script>
 <![endif]-->	
@@ -88,10 +88,9 @@
     <script type="text/javascript" src="/js/main.js"></script>
     <script type="text/javascript" src="/js/jform.js"></script>
     <script type="text/javascript" src="/js/activity.js"></script>
-    
   </head>
 
-  <body>
+  <body data-channel-id="{{channel}}">
   <div> 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -120,7 +119,7 @@
 	    <ul class="nav pull-right">{% if not commissario and not genitore %}
 	      <li><a class="" href="/signup">Registrati &raquo;</a></li>
 	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
-	      <li><a id="ntf_cnt" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" href="#"><span class="badge {%if notifications!="0"%}badge-warning{%endif%}">{{notifications}}</span></a></li>
+	      <li><a id="ntf_cnt" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" href="#"><span class="s_glob_ntfy badge {%if notifications!="0"%}badge-warning{%endif%}">{{notifications}}</span></a></li>
 	      <li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
 		<ul class="dropdown-menu">

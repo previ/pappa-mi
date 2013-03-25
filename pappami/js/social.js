@@ -1,3 +1,33 @@
+var channel = "";
+
+$(document).ready(function(){
+  if(channel == "") {
+    channel = openChannel($('body').attr('data-channel-id'));
+  }
+});
+
+function openChannel(channel_id) {
+    channel = new goog.appengine.Channel(channel_id);
+    socket = channel.open();
+    socket.onopen = function (){/*alert("channel opened")*/};
+    socket.onmessage = onChannelMessage;
+    socket.onerror = function (){/*alert("error")*/};
+    socket.onclose = function (){/*alert("channel closed")*/};
+    return socket;
+}
+
+function onChannelMessage(m) {
+  m=jQuery.parseJSON(m.data)
+  $('.s_glob_ntfy').text(m.ntfy_num);
+  if(!$('.s_glob_ntfy').hasClass('badge-warning')) {
+    $('.s_glob_ntfy').addClass('badge-warning')
+  }
+  var textmessage = m.user + ' ha aggiunto un <a href="/social/post/' + m.source_id +'">' + m.source_desc + '</a> su <a href=/social/node/' + m.target_id + '">' + m.target_desc + '</a>';
+  $.pnotify({
+    title: 'Notifica',
+    text: textmessage
+  });
+}
 
 var tiny_mce_opts = {
   // Location of TinyMCE script
