@@ -909,36 +909,9 @@ class SocialNotificationHandler(SocialAjaxHandler):
         
         
     @classmethod
-    def retrieve_new_notifications_(cls,user_t, date):
-        nodes_list=SocialNodeSubscription.get_nodes_by_user(user_t)
-        posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
-        
-        sources_list=nodes_list+posts_list
-        logging.info(sources_list)
-        c = 0
-        for n in SocialNotification.query().filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(SocialNotification.author_key).order(-SocialNotification.date).fetch():
-            if n.date < date:
-                break;
-            c += 1
-        return c
-
-    @classmethod
     def retrieve_new_notifications(cls, user_t, date):
         return SocialNotification.get_by_user_date(user_t, date)
                    
-
-    @classmethod
-    def retrieve_notifications_(self,user_t,cursor):
-      nodes_list=SocialNodeSubscription.get_nodes_by_user(user_t)
-      posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
-      
-      
-      sources_list=nodes_list+posts_list
-      logging.info(sources_list)
-      if not cursor or cursor == "undefined":
-          return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10)
-      else:
-          return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
 
     @classmethod
     def retrieve_notifications(cls, user_t, start_cursor):
@@ -993,12 +966,14 @@ class SocialNotificationHandler(SocialAjaxHandler):
     @classmethod
     def send_notifications_channel(cls, user, notifications):
         logging.info("Sending channel notification to user: " + user.get().email)
+        
         for n in notifications:
             event = n.event.get()
             message = { 'type': event.type,
                         'user': event.source.get().commissario.nomecompleto(Commissario.get_by_user(user.get())),
                         'source_id': event.source.urlsafe(),
                         'target_id': event.target.urlsafe(),
+                        'ntfy_num': len(notifications)
                         }
             
             logging.info("Notification: " + str(event.type))
@@ -1097,22 +1072,32 @@ class SocialSearchHandler(SocialAjaxHandler):
         self.getBase(template_values)
          
 class SocialNotificationsListHandler(BasePage):
-        @reguser_required
-        def get(self):
-            user=self.get_current_user()
-            cmsro = self.getCommissario(user)
-            
-            template_values = {
-                           'content': 'social/notifications.html',
-                           'user':user,
-                           'last_visit': cmsro.ultimo_accesso_notifiche,
-                           'notify_list': SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche)
-                           
-                          }
-            cmsro.ultimo_accesso_notifiche = datetime.now()
-            cmsro.put()
-            cmsro.set_cache()
-            self.getBase(template_values)
+    
+    @reguser_required
+    def get(self):
+        user=self.get_current_user()
+        cmsro = self.getCommissario(user)
+        
+        template_values = {
+                       'content': 'social/notifications.html',
+                       'user':user,
+                       'last_visit': cmsro.ultimo_accesso_notifiche,
+                       'notify_list': SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche)
+                       
+                      }
+        cmsro.ultimo_accesso_notifiche = datetime.now()
+        cmsro.put()
+        cmsro.set_cache()
+        self.getBase(template_values)
+
+    @reguser_required
+    def post(self):
+        user=self.get_current_user()
+        cmsro = self.getCommissario(user)
+        
+        response = {'response': 'success', 
+                    'ntfy_num': len(SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche))}
+        self.output_as_json(response)
             
 class SocialMainHandler(BasePage):
     @reguser_required
@@ -1156,8 +1141,7 @@ class SocialMainHandler(BasePage):
                         'node_list':node_list,
                         'node_active': node_active,
                         'node_recent': node_recent,
-                        'user':user,
-                        'notifications': str(len(SocialNotificationHandler.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche)))
+                        'user':user
         }
         self.getBase(template_values)
 

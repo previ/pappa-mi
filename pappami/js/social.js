@@ -4,6 +4,7 @@ $(document).ready(function(){
   if(channel == "") {
     channel = openChannel($('body').attr('data-channel-id'));
   }
+  getNotificationsNum()
 });
 
 function openChannel(channel_id) {
@@ -16,12 +17,26 @@ function openChannel(channel_id) {
     return socket;
 }
 
+function getNotificationsNum() {
+  $.ajax({
+    type: 'POST',
+    url:'/social/notifications', 
+    data: {'cmd': 'get_num'},
+    dataType:'json',
+    success:function(data){
+      $('.s_glob_ntfy').text(data.ntfy_num);
+      if(parseInt(data.ntfy_num) > 0 && !$('.s_glob_ntfy').hasClass('badge-warning')) {
+	  $('.s_glob_ntfy').addClass('badge-warning')
+      } else if(parseInt(data.ntfy_num) == 0 && $('.s_glob_ntfy').hasClass('badge-warning')) {
+	  $('.s_glob_ntfy').removeClass('badge-warning')
+      }
+    }});
+  
+}
+
 function onChannelMessage(m) {
   m=jQuery.parseJSON(m.data)
-  $('.s_glob_ntfy').text(m.ntfy_num);
-  if(!$('.s_glob_ntfy').hasClass('badge-warning')) {
-    $('.s_glob_ntfy').addClass('badge-warning')
-  }
+  getNotificationsNum();
   var textmessage = m.user + ' ha aggiunto un <a href="/social/post/' + m.source_id +'">' + m.source_desc + '</a> su <a href=/social/node/' + m.target_id + '">' + m.target_desc + '</a>';
   $.pnotify({
     title: 'Notifica',
@@ -637,18 +652,19 @@ function loadSmallMap(lat,lon) {
 }  
 
 
-function redraw_node() {
-  var subscribed = $('.node_root').attr('data-sub-status');
-  var ntfy_period = $('.node_root').attr('data-ntfy-period');
-  $('.ntfy_period > i').css('visibility', 'hidden');
+function redraw_node(node_root) {
+  
+  var subscribed = node_root.attr('data-sub-status');
+  var ntfy_period = node_root.attr('data-ntfy-period');
+  node_root.find('.ntfy_period > i').css('visibility', 'hidden');
   
   if( subscribed == 'true' ) {
-	$('#subscribe_btn').html('Disiscriviti');
-	$('#sub_prop').removeAttr("disabled");
-	$('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
+	node_root.find('#subscribe_btn').html('Disiscriviti');
+	node_root.find('#sub_prop').removeAttr("disabled");
+	node_root.find('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
   } else {
-	$('#sub_prop').attr("disabled", "true");
-	$('#subscribe_btn').html('Iscriviti');
+	node_root.find('#sub_prop').attr("disabled", "true");
+	node_root.find('#subscribe_btn').html('Iscriviti');
   }
 }
 
@@ -665,7 +681,7 @@ function onSubUnsubNode() {
       node_root.attr('data-ntfy-period', data.ntfy_period);
       onSuccess(data);
       $(document).ready(function() {
-	redraw_node();
+	redraw_node(node_root);
       });
     }
   });	 
@@ -685,7 +701,27 @@ function onNotificationPeriod() {
 	  success:function(data){ 
 	    node_root.attr('data-ntfy-period', ntfy_period);
   	    onSuccess(data)
-            redraw_node();
+            redraw_node(node_root);
+	  }
+  });	 
+}
+
+function onNotificationPeriodProfile() {
+  var node_root = $(this).parents('.node_root');
+  var node_key = node_root.attr('data-node-key');
+  var ntfy_period = $(this).attr('data-ntfy-period');
+  var data = {'cmd': 'set_ntfy_period',
+	      'node': node_key,
+	      'ntfy_period': ntfy_period};
+
+  $.ajax({url:'/social/subscribe',
+	  data: data,
+	  dataType:"JSON", 
+	  success:function(data){ 
+	    node_root.attr('data-ntfy-period', ntfy_period);
+            node_root.find('.ntfy_period').removeClass('btn-primary');
+	    node_root.find('[data-ntfy-period="'+ ntfy_period +'"]').addClass('btn-primary');
+  	    onSuccess(data)
 	  }
   });	 
 }
@@ -785,7 +821,7 @@ function initNode(node_key){
  $('.ntfy_period').on('click', onNotificationPeriod)
  $("#more_posts").click(onMoreClick);
  if(node_key!="all") {
-  redraw_node();
+  redraw_node($('.node_root'));
  }
  
  $('input[name="attach_file"]').change(addAttach);
@@ -833,6 +869,8 @@ function onOpenNotifications(event) {
        ntfy_pop.attr('data-content', data.html);
        ntfy_pop.popover('show');
        ntfy_pop.attr("data-visible", 'true');
+       $('.s_glob_ntfy').text("0");
+       $('.s_glob_ntfy').removeClass('badge-warning')
        event.preventDefault();
      }});
   }

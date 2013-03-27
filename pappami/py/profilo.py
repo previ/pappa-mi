@@ -35,7 +35,8 @@ class CMProfiloHandler(BasePage):
       'cmsro': commissario,
       'form': form,
       'citta': Citta.get_all(),
-      'newsletter':commissario.newsletter      
+      'newsletter':commissario.newsletter,
+      'subscriptions': SocialNodeSubscription.get_by_user(commissario.usera.get())
     }
     self.getBase(template_values)
     

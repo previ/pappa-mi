@@ -2219,6 +2219,9 @@ class SocialNotification(model.Model):
       ntfs = list()
       results, next_cursor, more = SocialNotification.query().filter(SocialNotification.user==user).order(-SocialNotification.date).fetch_page(20, start_cursor=cursor)
       for n in results:
+        n.event.get()
+        n.event.get().source.get()
+        n.event.get().target.get()
         ntfs.append(n)
       cache.put(cache_key, ntfs)
       cache.put(cache_key + "-next-cursor", next_cursor)

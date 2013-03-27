@@ -15,9 +15,9 @@ var combo_config = {
 
 // wait for the DOM to be loaded 
 $(document).ready(function() { 
-	var parts = window.location.href.slice(window.location.href.indexOf('?') + 1).split('#');
-	
-	$('a[href=#'+parts[1]+"]").tab('show');
+    var parts = window.location.href.slice(window.location.href.indexOf('?') + 1).split('#');
+    
+    $('a[href=#'+parts[1]+"]").tab('show');
 	
     $("#avatar_dialog").dialog({ title:"Immagine", modal: true, width: "30em", zIndex: 3, autoOpen: false });
     $("#avatar").click(function() {
@@ -79,6 +79,7 @@ $(document).ready(function() {
     if($('#citta').val() != "") oncitychanged();
     
     $("[data-content]").popover({delay: { show: 500, hide: 2000 }, title:"Informazioni"});    
+    $('.ntfy_period').click(onNotificationPeriodProfile)
 });     
 
 function oncitychanged() {
