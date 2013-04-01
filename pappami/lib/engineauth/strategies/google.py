@@ -49,4 +49,5 @@ class GoogleStrategy(OAuth2Strategy):
                 'raw_info': user,
                 } 
             }
+
         return uinfo        

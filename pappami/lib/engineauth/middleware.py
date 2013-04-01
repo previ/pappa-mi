@@ -64,6 +64,7 @@ class EngineAuthRequest(Request):
         return self
 
     def _load_user_by_profile(self, profile):
+        #logging.info("_load_user_by_profile.1")
         # if the user is logged in update that user with the profile details
         if self.user:
             self.user.add_profile(profile)
@@ -72,6 +73,8 @@ class EngineAuthRequest(Request):
             self.user = models.User.get_or_create_by_profile(profile)
         # Add user to session
         self.session.user_id = self.user.get_id()
+        #logging.info("_load_user_by_profile.1")
+        
     load_user_by_profile = _load_user_by_profile
 
     def _add_message(self, message, level=None, key='_messages'):

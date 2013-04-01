@@ -84,22 +84,16 @@ class CMProfiloHandler(BasePage):
       for cm_key in todel:
         commissione = cm_key.get()
         commissario.unregister(commissione)
-        if commissione.calendario :
-          pass
-          #calendario = Calendario();        
-          #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-          #calendario.load(commissione.calendario)
-          #calendario.unShare(commissario.user.email())
+        node = SocialNode.get_by_resource(cm_key)[0]
+        if node:
+          node.unsubscribe_user(commissario.usera.get())
         
       for cm_key in toadd:
         commissione = cm_key.get()
         commissario.register(commissione)
-        if commissione.calendario :
-          pass
-          #calendario = Calendario();        
-          #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-          #calendario.load(cc.commissione.calendario)
-          #calendario.share(commissario.user.email())
+        node = SocialNode.get_by_resource(cm_key)[0]
+        if node:
+          node.subscribe_user(commissario.usera.get())
 
       commissario.setCMDefault()
         
@@ -118,7 +112,7 @@ class CMAvatarHandler(BasePage):
           avatar = images.resize(self.request.get("avatar_file"), 128,128)
           #logging.info(commissario.avatar_data)
           commissario.avatar_data = avatar
-          logging.info("len: " + str(len(commissario.avatar_data)))
+          #logging.info("len: " + str(len(commissario.avatar_data)))
           #logging.info(commissario.avatar_data)          
           commissario.avatar_url = "/public/avatar?id="+str(commissario.usera.id())
           commissario.put()

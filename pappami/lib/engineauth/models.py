@@ -36,10 +36,10 @@ class UserProfile(ndb.Expando):
     credentials = ndb.PickleProperty(indexed=False)
 
     @classmethod
-    def get_or_create(cls, auth_id, user_info, **kwargs):        
-        
+    def get_or_create(cls, auth_id, user_info, **kwargs):               
         profile = cls.get_by_id(auth_id)
         if profile is None:
+            #logging.info("profile not found")
             profile = cls(id=auth_id)
             profile.user_info = user_info
             profile.populate(**kwargs)
@@ -431,14 +431,16 @@ class User(ndb.Expando):
                 user.put()
                 #logging.info(user.email)
                 #logging.info("5: " + str(user.key))
+        #logging.info("user: " + str(user))
         return user
 
     @classmethod
     def get_or_create_by_profile(cls, profile):
-        #logging.info("get_or_create_by_profile")
+        #logging.info("get_or_create_by_profile.1")
         assert isinstance(profile, UserProfile), \
             'You must pass an instance of type engineauth.models.UserProfile.'
         emails = profile.user_info.get('info').get('emails') or []
+        #logging.info("get_or_create_by_profile.2")
         return cls._get_or_create(profile.key.id(), emails)
 
 

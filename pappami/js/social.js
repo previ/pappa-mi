@@ -447,8 +447,8 @@ function onPostReshare() {
   var post_root = getPostRootByElement($(this))
   $.ajax({
     type: 'POST',
-    url:'/social/dload', 
-    data: {'cmd': 'modal_reshare'},
+    url:'/social/managepost', 
+    data: {'cmd': 'reshare_modal'},
     dataType:'json',
     success:function(data){
       modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");

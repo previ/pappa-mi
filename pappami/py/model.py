@@ -451,15 +451,15 @@ class Piatto(model.Model):
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None
-    if str(menu.key.id) + "-" + str(settimana) not in cls._pi_gi_cache:
+    if str(menu.key.id()) + "-" + str(settimana) not in cls._pi_gi_cache:
       pi_gi = dict()
       for pg in PiattoGiorno.query().filter(PiattoGiorno.menu == menu.key).filter(PiattoGiorno.settimana == settimana ):
         if not pg.giorno in pi_gi:
           pi_gi[pg.giorno] = dict()
         pi_gi[pg.giorno][pg.tipo] = pg.piatto.get()
-      cls._pi_gi_cache[str(menu.key.id) + "-" + str(settimana)] = pi_gi
+      cls._pi_gi_cache[str(menu.key.id()) + "-" + str(settimana)] = pi_gi
     else:
-      pi_gi = cls._pi_gi_cache[str(menu.key.id) + "-" + str(settimana)]
+      pi_gi = cls._pi_gi_cache[str(menu.key.id()) + "-" + str(settimana)]
     return pi_gi
         
   @classmethod
@@ -1385,6 +1385,10 @@ class SocialNode(model.Model):
       
       return nodes
 
+    @classmethod
+    def get_by_resource(cls, res):
+      return SocialNode.query().filter(SocialNode.resource==res).fetch()
+
     @cached_property
     def subscriptions(self):
       subs = dict()
@@ -1406,16 +1410,27 @@ class SocialNode(model.Model):
       delta = now - self.last_act
       delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
       self.rank += ((delta_rank * values[activity]) / 10)
+      
+    @cached_property  
+    def geo(self):
+      if len(self.resource) > 0 and hasattr(self.resource[0].get(), "geo"):
+        return self.resource[0].get().geo
+      else:
+        return None
         
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
       
       node=future.get_result().get()
+      fields = [search.TextField(name='name', value=node.name),
+       search.HtmlField(name='description', value=node.description)]      
+      if node.geo:
+        fields.append(search.GeoField(name='geo', value=search.GeoPoint(node.geo.lat, node.geo.lon)))
+        
       doc=search.Document(
-                      doc_id='node-'+node.key.urlsafe(),
-                      fields=[search.TextField(name='name', value=node.name),
-                              search.HtmlField(name='description', value=node.description)],
+                      doc_id='node-'+str(node.key.id()),
+                      fields=fields,
                       language='it')
       
      
@@ -1444,10 +1459,11 @@ class SocialNode(model.Model):
         super(SocialNode, self).__init__(*args, **kwargs) 
         
     def create_open_post(self, author, title, content, resources=[], res_types=[]):
-        floodControl=memcache.get("FloodControl-"+str(author.key))
-        if floodControl:
-          raise base.FloodControlException
-        
+        if Const.FLOOD_SYSTEM_ACTIVATED:
+          floodControl=memcache.get("FloodControl-"+str(author.key))
+          if floodControl:
+            raise base.FloodControlException
+          
         new_post= SocialPost(parent=self.key)
         new_post.author=author.key
         new_post.content=content
@@ -1462,9 +1478,8 @@ class SocialNode(model.Model):
         comm=Commissario.get_by_user(author)
         new_post.subscribe_user(author)
         
-        #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_post",target_key=new_post.key,author=comm.nome+" "+comm.cognome)
-        
-        SocialEvent.create(type="post", target_key=self.key, source_key=new_post.key, user_key=author.key)
+        if Const.EVENT:
+          SocialEvent.create(type="post", target_key=self.key, source_key=new_post.key, user_key=author.key)
         
         if Const.FLOOD_SYSTEM_ACTIVATED:       
           memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
@@ -1500,29 +1515,28 @@ class SocialNode(model.Model):
         posts= SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(amount)
         return posts    
         
-    def subscribe_user(self,current_user):
-        #user has already subscribed to this node
-        if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).count()>0:
-            return
-        
-        user1 = SocialNodeSubscription(parent=self.key)
-        if current_user:
-            user1.user=current_user.key
-        else:
-            raise users.UserNotFoundError
-        
-        #user1.put()
-               
-        user1.init_perm()
-    
-        Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
-        return user1
+    def subscribe_user(self, current_user, ntfy_period=0):
+      #user has already subscribed to this node    
+      if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).count()>0:
+          return
+      
+      sub = SocialNodeSubscription(parent=self.key, ntfy_period=ntfy_period)
+      if current_user:
+          sub.user=current_user.key
+      else:
+          raise users.UserNotFoundError
+                     
+      sub.init_perm()
+      sub.put()
+      
+      Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+      return sub
     
     def unsubscribe_user(self, current_user):
          subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
          if subscription is not None:
             subscription.key.delete()
-            Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id))
+            Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
                     
          else:
              raise users.UserNotFoundError
@@ -1627,7 +1641,8 @@ class SocialPost(model.Model):
         text += c.content + " "
       return text
     
-    def get_by_resource(self, res):
+    @classmethod   
+    def get_by_resource(cls, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
           
     @cached_property
@@ -1658,7 +1673,7 @@ class SocialPost(model.Model):
     
     def can_admin(self, user):
       sub_cache = Cache.get_cache('SocialNodeSubscription')
-      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      cache_key = str(self.key.parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
@@ -1667,7 +1682,7 @@ class SocialPost(model.Model):
 
     def can_comment(self, user):
       sub_cache = Cache.get_cache('SocialNodeSubscription')
-      cache_key = str(self.key.parent().id) + "-" + str(user.key.id)
+      cache_key = str(self.key.parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
@@ -1694,7 +1709,7 @@ class SocialPost(model.Model):
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
       cache = Cache.get_cache("SocialPost")
-      cache_key = "SocialPost-" + str(node.id) + "-" + str(start_cursor)
+      cache_key = "SocialPost-" + str(node.id()) + "-" + str(start_cursor)
       postlist = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       more = cache.get(cache_key + "-more")
@@ -1710,7 +1725,7 @@ class SocialPost(model.Model):
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
       cache =  Cache.get_cache("UserStream")
-      cache_key = "UserStream-" + str(user.key.id) + "-" + str(start_cursor)
+      cache_key = "UserStream-" + str(user.key.id()) + "-" + str(start_cursor)
       stream = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       if not stream:
@@ -1819,8 +1834,8 @@ class SocialPost(model.Model):
       
       self.subscribe_user(author)
       
-      #SocialNotification.create(source_key=self.key,author_key=author.key,type="new_comment",target_key=new_comment.key,author=comm.nome+" "+comm.cognome)
-      SocialEvent.create(type="comment", target_key=self.key, source_key=new_comment.key, user_key=author.key)
+      if Const.EVENT:
+        SocialEvent.create(type="comment", target_key=self.key, source_key=new_comment.key, user_key=author.key)
       
       if Const.FLOOD_SYSTEM_ACTIVATED:
         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
@@ -1897,7 +1912,15 @@ class SocialPost(model.Model):
         resource += r + " "
 
       logging.info(resource)
-
+      ref_date = post.created
+      if len(post.res_type) > 0:
+        if post.res_type[0] in ["isp","dieta"]:
+          ref_date = post.resource[0].get().dataIspezione
+        elif post.res_type[0] == ["nc"]:
+          ref_date = post.resource[0].get().dataNonconf
+        elif post.res_type[0] == ["nota"]:
+          ref_date = post.resource[0].get().dataNota
+          
       doc=search.Document(
                       doc_id='post-'+post.key.urlsafe(),
                       fields=[search.TextField(name='node', value=post.key.parent().get().name),
@@ -1906,7 +1929,9 @@ class SocialPost(model.Model):
                               search.HtmlField(name='content', value=post.content),
                               search.HtmlField(name='comments', value=post.get_comments_text()),
                               search.TextField(name='resources', value=resource),
-                              search.TextField(name='attach', value=str(len(post.attachments)>0))],
+                              search.TextField(name='attach', value=str(len(post.attachments)>0)),
+                              search.DateField(name='date', value=ref_date)
+                              ],
                       language='it')
       
      
@@ -1965,7 +1990,6 @@ class SocialNodeSubscription(model.Model):
         self.can_comment=parent.default_comment
         self.can_post=parent.default_post
         self.can_admin=parent.default_admin
-        self.put()
         
     def reset_ntfy(self):
       self.ntfy = 0
@@ -1986,7 +2010,7 @@ class SocialNodeSubscription(model.Model):
     @classmethod
     def get_nodes_by_user(cls,user):
       cache = Cache.get_cache("UserNode")
-      cache_key = "UserNode-" + str(user.key.id)
+      cache_key = "UserNode-" + str(user.key.id())
       nodes = cache.get(cache_key)
       if not nodes:        
         sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(SocialNodeSubscription.starting_date).fetch(keys_only=True)
@@ -2111,7 +2135,7 @@ class SocialComment(model.Model):
 
     def can_admin(self, user):
       sub_cache = Cache.get_cache('SocialNodeSubscription')
-      cache_key = str(self.key.parent().parent().id) + "-" + str(user.key.id)
+      cache_key = str(self.key.parent().parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
@@ -2211,7 +2235,7 @@ class SocialNotification(model.Model):
   @classmethod
   def get_by_user(cls, user, cursor=None):
     cache = Cache.get_cache('SocialNotification')
-    cache_key = "SocialNotification-" + str(user.id) + "-" + str(cursor)
+    cache_key = "SocialNotification-" + str(user.id()) + "-" + str(cursor)
     ntfs = cache.get(cache_key)
     next_cursor = cache.get(cache_key + "-next-cursor")
     more = cache.get(cache_key + "-more")

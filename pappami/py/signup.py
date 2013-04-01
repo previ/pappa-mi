@@ -114,12 +114,9 @@ class SignupHandler(BasePage):
     for cm in new:
       commissione = model.Key("Commissione", cm).get()
       commissario.register(commissione)
-      if commissione.calendario :
-        pass
-        #calendario = Calendario();        
-        #calendario.logon(user=Configurazione.get_value_by_name("calendar_user"), password=Configurazione.get_value_by_name("calendar_password"))
-        #calendario.load(commissione.calendario)
-        #calendario.share(commissario.usera.get().email)
+      node = SocialNode.get_by_resource(commissione.get)[0]
+      if node:
+        node.subscribe_user(commissario.usera.get())
 
     commissario.setCMDefault()
     #logging.info(commissario.usera)
