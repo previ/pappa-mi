@@ -20,6 +20,7 @@ from datetime import date, datetime, time, timedelta
 from gviz_api import *
 from py.model import *
 from py.blob import *
+from py.modelMsg import *
 
 from form import *
 import base64
@@ -72,14 +73,31 @@ class NodeHandler(BasePage):
        
     
     
-class SocialTest(BasePage):
+class SocialAdmin(BasePage):
   def get(self):
-      
-      SocialUtils.generate_nodes()
-    # for i in SocialComment.query().fetch(keys_only=True):
-     #   i.delete()
-    #  SocialUtils.generate_random_contents(self.get_current_user())
-        
+    cmd = self.request.get("cmd")
+    logging.info("cmd: " + cmd)
+    if cmd == "vacuum_index":
+      index = search.Index(name="index-nodes")
+      while True:
+        doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
+        if not doc_ids:
+          break
+        index.delete(doc_ids)        
+
+      index = search.Index(name="index-posts")
+      while True:
+        doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
+        if not doc_ids:
+          break
+        index.delete(doc_ids)        
+
+    if cmd == "migrate":
+        SocialUtils.migrate()              
+    
+    logging.info("done")
+    self.output_as_json({})
+          
           
 class NodeListHandler(BasePage):
   
@@ -399,6 +417,16 @@ class SocialManagePost(SocialAjaxHandler):
            response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
            self.output_as_json(response)
            
+        if cmd=="reshare_modal":
+            template_values = {
+                "subs":SocialNodeSubscription.get_by_user(user) ,
+                "post":self.request.get("post")
+            }
+            
+            template = jinja_environment.get_template("social/ajax/modal_reshare.html")
+            html=template.render(template_values)
+            response = {'response':'success','html':html}
+            self.output_as_json(response)
 
         if cmd== "reshare_open_post":          
             node=model.Key(urlsafe=self.request.get('node')).get()           
@@ -997,14 +1025,12 @@ class SocialNotificationHandler(SocialAjaxHandler):
             
         template = jinja_environment.get_template("social/notifications_email.html")
         html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications})
-        mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
+        """mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
         to=user.get().email,
         subject="[Pappa-Mi] Novità",
         body="",
         html=html
-        )
-        #self.response.headers.add_header('content-type', 'text/html', charset='utf-8')
-        #self.response.out.write(html)
+        )"""
         #logging.info(html)
     
         
@@ -1149,26 +1175,6 @@ class SocialMainHandler(BasePage):
     def post(self):
         return self.get()
         
-class SocialDLoadHandler(SocialAjaxHandler):
-    @reguser_required
-    def get(self):
-        self.post()
-
-    @reguser_required
-    def post(self):
-        cmd=self.request.get("cmd")
-        user=self.request.user
-        
-        if cmd=="modal_reshare":
-            template_values = {
-                "subs":SocialNodeSubscription.get_by_user(user) ,
-                "post":self.request.get("post")
-            }
-            
-            template = jinja_environment.get_template("social/ajax/modal_reshare.html")
-            html=template.render(template_values)
-            response = {'response':'success','html':html}
-            self.output_as_json(response)
         
 class SocialUtils:
     
@@ -1222,7 +1228,6 @@ class SocialUtils:
  
     @classmethod
     def locations_to_nodes(cls):
-        
         for c in Commissario.get_all():
             for node in SocialNode.query().filter(SocialNode.resource==c.citta).fetch():
                 node.subscribe_user(c.usera.get())
@@ -1231,59 +1236,116 @@ class SocialUtils:
                     node.subscribe_user(c.usera.get())
                     
     @classmethod
-    def generate_nodes(cls):  
+    def migrate(cls):  
+        """
         logging.info("generate_nodes.city")
         citta=Citta.get_all()
         for i in citta:
-            if len(SocialNode.get_nodes_by_resource(i.key)) == 0:
-                node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
-                node.init_rank()
-                node.put()
+            node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
+            node.init_rank()
+            node.put()
         
         logging.info("generate_nodes.cm")
         commissioni=Commissione.query().fetch()
         for i in commissioni:
-            if len(SocialNode.get_nodes_by_resource(i.key)) == 0:
-                logging.info(i.nome)
-                c=i.citta.get()
-                node=SocialNode(name=i.tipoScuola + " " + i.nome,
-                                description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["commission"])
+            logging.info("node: " + i.nome)
+            c = i.citta.get()
+            node = SocialNode(name = i.nome + " " + i.tipoScuola,
+                            description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["cm"])
+            node.init_rank()
+            node.put()
+        """
+        logging.info("generate_nodes.tag")
+        tags_mapping = {"salute": "Salute",
+                        "educazione alimentare": "Educazione alimentare",
+                        "commissioni mensa": "Commissioni Mensa",
+                        "dieta": "Nutrizione",
+                        "nutrizione": "Nutrizione",
+                        "milano ristorazione": "Milano",
+                        "eventi": "Eventi",
+                        "assemblea cittadina": "Commissioni Mensa",
+                        "mozzarella blu": "Commissioni Mensa",
+                        "dieta mediterranea": "Nutrizione",
+                        "commercio equo e solidale": "Generale",
+                        "celiaci": "Nutrizione",
+                        "centro cucina": "Commissioni Mensa",
+                        "tip of the week": "Commissioni Mensa",
+                        "rassegna stampa": "Generale",
+                        "": "Generale",
+                        }
+        for tag in tags_mapping:
+            logging.info("tag: " + tag)
+            node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
+            if not node:                
+                node = SocialNode(name = tags_mapping[tag],
+                            description="Gruppo di discussione su " + tags_mapping[tag] )
                 node.init_rank()
                 node.put()
-
-    @classmethod
-    def msg_to_post(cls):
-        tags_mapping = {"salute", "Salute",
-                        "educazione alimentare", "Educazione alimentare",
-                        "commissioni mensa", "Commissioni Mensa",
-                        "rassegna stampa", "Generale"}
-        for tag, node_name in tags_mapping:
-            node = SoacialNode.get_by_name(node_name)
             tags_mapping[tag] = node
-        for m in Messaggio.get_all():
+
+        node_default = tags_mapping["rassegna stampa"]
+        """
+        #subscriptions
+        logging.info("subscriptions.city")
+        for co in Commissario.get_all():
+            Cache.clear_all_caches()
+            logging.info("subscriptions: " + co.user_email_lower)
+            logging.info("subscriptions.city")
+            node_citta = SocialNode.get_by_resource(co.citta)[0]
+            node_citta.subscribe_user(co.usera.get(), ntfy_period=1)
+
+            logging.info("subscriptions.tags")
+            for tag in tags_mapping:
+                node_tag = tags_mapping[tag]
+                node_tag.subscribe_user(co.usera.get(), ntfy_period=1)
+        
+            logging.info("subscriptions.cm")
+            for cm in co.commissioni():
+                logging.info("subscriptions.cm: " + cm.nome)
+                node_cm = SocialNode.get_by_resource(cm.key)[0]
+                node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
+        """
+        for m in Messaggio.query().filter(Messaggio.livello == 0).filter(Messaggio.creato_il>datetime(year=2013,month=1, day=24)).order(Messaggio.creato_il):
+            logging.info("msg: " + m.title)
             post = None
             if m.tipo in [101,102,103,104]:
-                #dati
-                node = SocialNode.query().filter(SocialNode.resource==m.grp).fetch().get()
-                post=node.create_open_post(m.c_ua, m.title, m.body, [m.par], [m.par.get().restype])
+                #dati: get node by cm (resource)
+                node = SocialNode.get_by_resource(m.grp)[0]
+                post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par], res_types=[m.par.get().restype]).get()
             elif m.tipo == 201:
                 #messaggi
                 node = None
                 if len(m.tags) > 0:
-                    node = tags_mapping(m.tags[0])
-                if not tag:
+                    node = tags_mapping[m.tags[0].nome]
+                if not node:
                     node = node_default
-                post=node.create_open_post(m.c_ua, m.title, m.body, [], [])
-            if m.commenti:
-                for mc in Messaggio.get_by_parent(m.key):
-                    post.create_comment(mc.body, mc.c_ua)
+                post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
                 
-            for a in m.get_allegati(m.key):
+            post.created = m.creato_il
+            init_rank = post.created - Const.BASE_RANK
+            post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
+            post.put()
+            
+            #commenti
+            if m.commenti:
+                logging.info("msg.commenti")
+                for mc in Messaggio.get_by_parent(m.key):
+                    post.create_comment(mc.body, mc.c_ua.get())
+            
+            #allegati    
+            for a in m.get_allegati:
+                logging.info("msg.allegati")
                 a.obj = post.key
                 a.put()
-            for v in Voto.get_by_msg(m):
-                v.obj = post.key
-                v.put()             
+            
+            #voti    
+            for v in m.votes:
+                logging.info("msg.voti")
+                vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
+                vote.put()
+                
+        logging.info("migrate.end")
+            
             
 
 class SocialNewsLetter(BasePage):
@@ -1337,20 +1399,18 @@ class SocialNewsLetter(BasePage):
 app = webapp.WSGIApplication([
     ('/social/node/(.*)', NodeHandler),
     ('/social/nodelist', NodeListHandler),
-    ('/social/post/(.*)', SocialPostHandler),
-    ('/social/managepost',SocialManagePost),
-    ('/social/test', SocialTest),
-    ('/social/subscribe', SocialSubscribeHandler),
     ('/social/createnode', SocialCreateNodeHandler),
     ('/social/editnode/(.*)', SocialEditNodeHandler),
+    ('/social/post/(.*)', SocialPostHandler),
+    ('/social/managepost',SocialManagePost),
+    ('/social/subscribe', SocialSubscribeHandler),
     ('/social/paginate', SocialPaginationHandler),
     ('/social/search', SocialSearchHandler),
-    ('/social/dload', SocialDLoadHandler),
     ('/social/notifications', SocialNotificationsListHandler),
     ('/social/event', SocialNotificationHandler),
+    ('/social/admin', SocialAdmin),    
     ('/social', SocialMainHandler),
-    ],
-                             
+    ],                             
     debug = True, config=config)
 
 
