@@ -448,7 +448,8 @@ function onPostReshare() {
   $.ajax({
     type: 'POST',
     url:'/social/managepost', 
-    data: {'cmd': 'reshare_modal'},
+    data: {'cmd': 'reshare_modal',
+	   'post': post },
     dataType:'json',
     success:function(data){
       modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
@@ -461,9 +462,9 @@ function onPostReshare() {
 	modal_reshare.find('form').ajaxForm({clearForm: true, dataType:'json', success:function(data){
 	  if(data.response!="success") {
 	    if(data.response=="flooderror") {
-	      $("#reshare_"+post).modal('hide');
+	      modal_reshare.modal('hide');
 	      onFloodError(data, function(){
-		$("#reshare_"+post).modal('show')
+		modal_reshare.modal('show')
 	      });
 	      return
 	    }
@@ -799,7 +800,8 @@ function initNode(node_key){
   $("#main_stream_list").prepend(data.html)
   
   $("#open_post_submit").button("reset");
-  var post_root = $("#main_stream_list li:first-child")  
+  var post_root = $("#main_stream_list li:first-child");
+  alert(post_root.html())
   post_root.find('.post_del').click(onPostItemDelete);
   post_root.find('.post_sub').click(onPostSubscribe);
   post_root.find('.post_unsub').click(onPostUnsubscribe);
@@ -930,15 +932,7 @@ function loadPosts(node_key,current_cursor) {
    if(data.response=="success"){
     $('#main_stream_list').find('li.s_loading').remove();   
     $('#main_stream_list').append(data.html)
-    $('.post_del').click(onPostItemDelete);
-    $('.post_sub').click(onPostSubscribe);
-    $('.post_unsub').click(onPostUnsubscribe);
-    $('.post_vote').click(onPostVote);
-    $('.post_unvote').click(onPostVote);      
-    $('.post_reshare').click(onPostReshare);
-    $('.post_expand').click(onPostExpand); 
-    $('.s_post_votes_c').click(onVotesDetail)
-    $('.s_post_reshares_c').click(onResharesDetail)
+    initPostList($('#main_stream_list'));
     if(data.eof == true){
      $("#more_posts").hide();   
      $("#no_more_posts").show();   
@@ -955,6 +949,18 @@ function loadPosts(node_key,current_cursor) {
   //$("#node_stream_"+key).siblings().hide()
   //$("div#node_stream_"+key).show()
  //}
+}
+
+function initPostList(list) {
+  list.find('.post_del').click(onPostItemDelete);
+  list.find('.post_sub').click(onPostSubscribe);
+  list.find('.post_unsub').click(onPostUnsubscribe);
+  list.find('.post_vote').click(onPostVote);
+  list.find('.post_unvote').click(onPostVote);      
+  list.find('.post_reshare').click(onPostReshare);
+  list.find('.post_expand').click(onPostExpand); 
+  list.find('.s_post_votes_c').click(onVotesDetail)
+  list.find('.s_post_reshares_c').click(onResharesDetail)
 }
 
 function onVotesDetail() {

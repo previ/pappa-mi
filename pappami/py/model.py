@@ -1600,8 +1600,8 @@ class SocialPost(model.Model):
     resource=model.KeyProperty(repeated=True)
     res_type=model.StringProperty(repeated=True)
     
-    created = model.DateTimeProperty(auto_now=True)
-    modified = model.DateTimeProperty(auto_now=True)
+    created = model.DateTimeProperty(auto_now_add=True)
+    modified = model.DateTimeProperty(auto_now_add=True)
     
     comments = model.IntegerProperty(default=0)
     last_act = model.DateTimeProperty(auto_now=True)
@@ -1686,8 +1686,9 @@ class SocialPost(model.Model):
       sub = sub_cache.get(cache_key)
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
-        sub_cache.put(cache_key, sub)
-      return sub.can_comment or self.author == user.key
+        if sub:
+          sub_cache.put(cache_key, sub)
+      return (sub and sub.can_comment) or self.author == user.key
 
     @cached_property
     def subscriptions(self):

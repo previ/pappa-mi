@@ -44,7 +44,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			
 			{% if user %} 
 			<div class="s_post_commands btn-toolbar">
-				{%if post.key.parent().get().subscriptions[user.key].can_admin%}
+				{%if post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin%}
 				<div class="btn-group">
 				 <span class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></span>
 				 <ul class="dropdown-menu">
@@ -106,7 +106,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</ul>
 			{%endif%}
 		</div> <!-- s_post_comments -->		
-	</div> <!-- s_post -->		
+	</div> <!-- s_post -->	
 	<div class="s_post_tools">
 		<div class="s_modal_reshare"></div>
 		<div class="s_post_edit_form" style="display:none;"></div>
