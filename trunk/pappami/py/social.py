@@ -68,10 +68,7 @@ class NodeHandler(BasePage):
       
         
       self.getBase(template_values)
- 
 
-       
-    
     
 class SocialAdmin(BasePage):
   def get(self):
@@ -93,10 +90,13 @@ class SocialAdmin(BasePage):
         index.delete(doc_ids)        
 
     if cmd == "migrate":
-        SocialUtils.migrate()              
+        what = self.request.get("what")
+        limit = self.request.get("limit")
+        offset = self.request.get("offset")
+        SocialUtils.migrate(what, offset, limit)              
     
     logging.info("done")
-    self.output_as_json({})
+    self.output_as_json({'result':'success'})
           
           
 class NodeListHandler(BasePage):
@@ -418,9 +418,10 @@ class SocialManagePost(SocialAjaxHandler):
            self.output_as_json(response)
            
         if cmd=="reshare_modal":
+            post=model.Key(urlsafe=self.request.get('post')).get()
             template_values = {
                 "subs":SocialNodeSubscription.get_by_user(user) ,
-                "post":self.request.get("post")
+                "post":post
             }
             
             template = jinja_environment.get_template("social/ajax/modal_reshare.html")
@@ -1236,25 +1237,25 @@ class SocialUtils:
                     node.subscribe_user(c.usera.get())
                     
     @classmethod
-    def migrate(cls):  
-        """
-        logging.info("generate_nodes.city")
-        citta=Citta.get_all()
-        for i in citta:
-            node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
-            node.init_rank()
-            node.put()
+    def migrate(cls, what, offset, limit):  
+        if what == "nodes":
+            logging.info("generate_nodes.city")
+            citta=Citta.get_all()
+            for i in citta:
+                node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
+                node.init_rank()
+                node.put()
+            
+            logging.info("generate_nodes.cm")
+            commissioni=Commissione.query().fetch()
+            for i in commissioni:
+                logging.info("node: " + i.nome)
+                c = i.citta.get()
+                node = SocialNode(name = i.nome + " " + i.tipoScuola,
+                                description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["cm"])
+                node.init_rank()
+                node.put()
         
-        logging.info("generate_nodes.cm")
-        commissioni=Commissione.query().fetch()
-        for i in commissioni:
-            logging.info("node: " + i.nome)
-            c = i.citta.get()
-            node = SocialNode(name = i.nome + " " + i.tipoScuola,
-                            description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["cm"])
-            node.init_rank()
-            node.put()
-        """
         logging.info("generate_nodes.tag")
         tags_mapping = {"salute": "Salute",
                         "educazione alimentare": "Educazione alimentare",
@@ -1284,65 +1285,69 @@ class SocialUtils:
             tags_mapping[tag] = node
 
         node_default = tags_mapping["rassegna stampa"]
-        """
-        #subscriptions
-        logging.info("subscriptions.city")
-        for co in Commissario.get_all():
-            Cache.clear_all_caches()
-            logging.info("subscriptions: " + co.user_email_lower)
-            logging.info("subscriptions.city")
-            node_citta = SocialNode.get_by_resource(co.citta)[0]
-            node_citta.subscribe_user(co.usera.get(), ntfy_period=1)
-
-            logging.info("subscriptions.tags")
-            for tag in tags_mapping:
-                node_tag = tags_mapping[tag]
-                node_tag.subscribe_user(co.usera.get(), ntfy_period=1)
         
-            logging.info("subscriptions.cm")
-            for cm in co.commissioni():
-                logging.info("subscriptions.cm: " + cm.nome)
-                node_cm = SocialNode.get_by_resource(cm.key)[0]
-                node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
-        """
-        for m in Messaggio.query().filter(Messaggio.livello == 0).filter(Messaggio.creato_il>datetime(year=2013,month=1, day=24)).order(Messaggio.creato_il):
-            logging.info("msg: " + m.title)
-            post = None
-            if m.tipo in [101,102,103,104]:
-                #dati: get node by cm (resource)
-                node = SocialNode.get_by_resource(m.grp)[0]
-                post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par], res_types=[m.par.get().restype]).get()
-            elif m.tipo == 201:
-                #messaggi
-                node = None
-                if len(m.tags) > 0:
-                    node = tags_mapping[m.tags[0].nome]
-                if not node:
-                    node = node_default
-                post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
+        if what == "subscriptions":
+            #subscriptions
+            logging.info("subscriptions.city")
+            for co in Commissario.get_all():
+                Cache.clear_all_caches()
+                logging.info("subscriptions: " + co.user_email_lower)
+                logging.info("subscriptions.city")
+                node_citta = SocialNode.get_by_resource(co.citta)[0]
+                node_citta.subscribe_user(co.usera.get(), ntfy_period=1)
+    
+                logging.info("subscriptions.tags")
+                for tag in tags_mapping:
+                    node_tag = tags_mapping[tag]
+                    node_tag.subscribe_user(co.usera.get(), ntfy_period=1)
+            
+                logging.info("subscriptions.cm")
+                for cm in co.commissioni():
+                    logging.info("subscriptions.cm: " + cm.nome)
+                    node_cm = SocialNode.get_by_resource(cm.key)[0]
+                    node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
+        
+        if what == "messages":
+            for m in Messaggio.query().filter(Messaggio.livello == 0).filter().order(Messaggio.creato_il).fetch(limit=limit, offset=offset):
+                logging.info("msg: " + m.title)
+                post = None
+                if m.tipo in [101,102,103,104]:
+                    #dati: get node by cm (resource)
+                    node = SocialNode.get_by_resource(m.grp)[0]
+                    post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par], res_types=[m.par.get().restype]).get()
+                elif m.tipo == 201:
+                    #messaggi
+                    node = None
+                    if len(m.tags) > 0:
+                        node = tags_mapping[m.tags[0].nome]
+                    if not node:
+                        node = node_default
+                    post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
+                    
+                post.created = m.creato_il
+                init_rank = post.created - Const.BASE_RANK
+                post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
+                post.put()
                 
-            post.created = m.creato_il
-            init_rank = post.created - Const.BASE_RANK
-            post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
-            post.put()
-            
-            #commenti
-            if m.commenti:
-                logging.info("msg.commenti")
-                for mc in Messaggio.get_by_parent(m.key):
-                    post.create_comment(mc.body, mc.c_ua.get())
-            
-            #allegati    
-            for a in m.get_allegati:
-                logging.info("msg.allegati")
-                a.obj = post.key
-                a.put()
-            
-            #voti    
-            for v in m.votes:
-                logging.info("msg.voti")
-                vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
-                vote.put()
+                #commenti
+                if m.commenti:
+                    logging.info("msg.commenti")
+                    for mc in Messaggio.get_by_parent(m.key):
+                        comment = post.create_comment(mc.body, mc.c_ua.get())
+                        comment.created = mc.creato_il
+                        comment.put()
+                                    
+                #allegati    
+                for a in m.get_allegati:
+                    logging.info("msg.allegati")
+                    a.obj = post.key
+                    a.put()
+                
+                #voti    
+                for v in m.votes:
+                    logging.info("msg.voti")
+                    vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
+                    vote.put()
                 
         logging.info("migrate.end")
             
