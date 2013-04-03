@@ -176,6 +176,14 @@ class Sanitizer(object):
   def text(cls, html):
     text = lxml.html.fromstring(html).text_content()
     return text
+
+  @classmethod
+  def images(cls, html):
+    images = list()
+    for img in lxml.html.fromstring(html).iter('img'):
+      logging.info(str(img))
+      images.append(img.get('src'))
+    return images
   
 
 class Channel(object):

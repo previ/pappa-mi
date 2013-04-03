@@ -80,6 +80,23 @@ padding-left: 3pt;
 .s_post_body {
 }
 
+.s_post_body_short_img {
+float:left;
+background-size:128px;
+background-clip:content-box;
+background-repeat:no-repeat;
+width:128px;
+height:128px;
+margin:2px 6px 6px 2px;
+cursor:pointer;
+}
+
+.s_post_body_short_cnt {
+}
+
+.s_post_image {
+}
+
 .s_post_commands {
 float:right;
 }

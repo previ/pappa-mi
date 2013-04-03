@@ -1,8 +1,9 @@
 var channel = "";
 
-$(document).ready(function(){
-  if(channel == "") {
-    channel = openChannel($('body').attr('data-channel-id'));
+$(document).ready(function() {
+  channel_id = $('body').attr('data-channel-id');
+  if(channel == "" && channel_id != "") {
+    channel = openChannel(channel_id);
   }
   getNotificationsNum()
 });
@@ -801,7 +802,6 @@ function initNode(node_key){
   
   $("#open_post_submit").button("reset");
   var post_root = $("#main_stream_list li:first-child");
-  alert(post_root.html())
   post_root.find('.post_del').click(onPostItemDelete);
   post_root.find('.post_sub').click(onPostSubscribe);
   post_root.find('.post_unsub').click(onPostUnsubscribe);
@@ -834,7 +834,7 @@ function initNode(node_key){
 function init(){
 
  $("ul#node_list").find("a").click(onNodeClick);
- $("#node_list").children().find('a[data-node-key="all"]')[0].click();
+ $("#node_list").children().find('a[data-node-key]').first().click();
  
  var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.attr("data-visible", 'false');

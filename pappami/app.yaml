@@ -28,6 +28,7 @@ libraries:
   
 inbound_services:
 - mail
+- channel_presence
 
 skip_files: |
  ^(.*/)?(
@@ -195,6 +196,9 @@ handlers:
 - url: /mobile/*
   script: py.mobile.app
 
+- url: /_ah/channel/.*
+  script: py.channel.app
+  
 - url: .*
   script: py.main.app
 
