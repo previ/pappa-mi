@@ -36,7 +36,7 @@
   <form id="new_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
    <input type="hidden" name="cmd" value="create_open_post"/>
    <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
-   <a class="pull-right close" onclick="onOpenPostForm()" href="#">&times;</a>{%if not node_list%} 	   
+   <a class="pull-right close" onclick="onOpenPostForm()" href="#">&times;</a>{%if node%} 	   
    <input type="hidden" id="form_node" name="node" value="{{node.key.urlsafe()}}"/>{%else%}
    <div id="post_title" class="form_parent">
     <label id="post_content_label" for="titolo">Argomento</label>

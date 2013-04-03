@@ -42,7 +42,7 @@ class Const:
     'br',
 ]
   SEARCH_LIMIT = 20
-  EVENT = False
+  EVENT = True
 
 
 class cached_property(object):
