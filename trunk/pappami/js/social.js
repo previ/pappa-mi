@@ -746,7 +746,6 @@ function init_search(){
 function onSearchPaginate() {
   var offset = $(this).attr('data-offset')
   $('input[name="offset"]').attr('value', offset);
-  alert($('div.active > form').html())
   $('div.active > form').submit()
 }
 
