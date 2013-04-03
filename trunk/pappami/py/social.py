@@ -103,10 +103,13 @@ class NodeListHandler(BasePage):
   
   def get(self):
     user = self.get_current_user()
+    subs = list()
+    if user:
+        subs = SocialNodeSubscription.get_nodes_by_user(user)
     
     template_values = {
       'content': 'social/nodelist.html',
-      'subs_nodes': SocialNodeSubscription.get_nodes_by_user(user),
+      'subs_nodes': subs,
       'active_nodes': SocialNode.get_most_active(),
       'recent_nodes': SocialNode.get_most_recent(),     
       }
@@ -137,8 +140,6 @@ class SocialPostHandler(BasePage):
                            'post': post,
                            'user':current_user,
                            'fullscreen': True,
-                           'subscription': node.get_subscription(current_user.key),
-                           'postsub': post.subscriptions.get(current_user.key)                           
         }                                
             
         self.getBase(template_values)
@@ -611,6 +612,9 @@ class SocialPaginationHandler(SocialAjaxHandler):
             cmd=self.request.get("cmd")
             user=self.request.user
             cursor=self.request.get("cursor")
+            cmsro = None
+            cmsro = self.getCommissario(user)
+                
             if cmd=="node":
                 if not cursor or cursor == "undefined":
                     nodelist, next_curs, more = SocialNode.query().order(-SocialNode.latest_post_date).fetch_page(10) 
@@ -640,12 +644,11 @@ class SocialPaginationHandler(SocialAjaxHandler):
 
                 template_values = {
                         "node":node,
-                        "cmsro":self.getCommissario(user), 
                         "user": user,
-                        "node_list": SocialNodeSubscription.get_nodes_by_user(user),
+                        "cmsro": cmsro,
                         }
                 
-                if node:
+                if node and user:
                     template_values["subscription"]=node.get_subscription(user.key)
                                             
                 template = jinja_environment.get_template("social/node_em.html")
@@ -699,16 +702,16 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     if next_curs:
                         next_curs_key = next_curs.urlsafe()
                     
-                    if node.get().get_subscription(user.key):
+                    if user and node.get().get_subscription(user.key):
                         node.get().get_subscription(user.key).reset_ntfy()
                     
                 template_values = {
                         "postlist":postlist,
-                        "cmsro":self.getCommissario(user), 
+                        "cmsro":cmsro, 
                         "user": user
                         }
                 
-                if node:
+                if user and node:
                     template_values["subscription"]=node.get().get_subscription(user.key)
                                             
                 template = jinja_environment.get_template("social/pagination/post.html")
@@ -1127,11 +1130,22 @@ class SocialNotificationsListHandler(BasePage):
         self.output_as_json(response)
             
 class SocialMainHandler(BasePage):
-    @reguser_required
+    
     def get(self):
+        node_list = list()
+        subs = list()
         user=self.get_current_user()
-        node_list = SocialNodeSubscription.get_nodes_by_user(user)
-        
+        cmsro = None
+
+        if user:
+            node_list = SocialNodeSubscription.get_nodes_by_user(user)
+            subs = SocialNodeSubscription.get_by_user(user)
+            cmsro = self.getCommissario(user)            
+            if not cmsro.ultimo_accesso_notifiche:
+                cmsro.ultimo_accesso_notifiche = datetime.now()
+                cmsro.put()
+                cmsro.set_cache()
+
         node_recent=[]
         for node in SocialNode.get_most_recent():
             if node not in node_list:
@@ -1145,14 +1159,7 @@ class SocialMainHandler(BasePage):
                 node_active.append(node)
             if len(node_active) >= 5:
                 break
-            
-        cmsro = self.getCommissario(user)
-        
-        if not cmsro.ultimo_accesso_notifiche:
-            cmsro.ultimo_accesso_notifiche = datetime.now()
-            cmsro.put()
-            cmsro.set_cache()
-                    
+                                
         logging.info("node_list")
         for n in node_list:
             logging.info(n.name)
@@ -1164,11 +1171,10 @@ class SocialMainHandler(BasePage):
             logging.info(n.name)
         template_values = {
                         'content': 'social/main_social.html',
-                        'subs':SocialNodeSubscription.get_by_user(user),
+                        'subs':subs,
                         'node_list':node_list,
                         'node_active': node_active,
                         'node_recent': node_recent,
-                        'user':user
         }
         self.getBase(template_values)
 

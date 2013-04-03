@@ -44,7 +44,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			
 			{% if user %} 
 			<div class="s_post_commands btn-toolbar">
-				{%if post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin%}
+				{%if user and post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin%}
 				<div class="btn-group">
 				 <span class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></span>
 				 <ul class="dropdown-menu">
@@ -73,8 +73,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				{%for comment in post.comment_list%}
 				{%include "social/pagination/comment.html"%}
 				{%endfor%}
-				{%if post.can_comment(user)%}	
 			</ul>
+			{%if post.can_comment(user)%}	
 			<ul class="unstyled s_comment_form"> <!--comment_form-->
 				<li class="s_comment s_comment_placeholder">
 				 <input type="text" class="span6 show_comment_form" placeholder="Scrivi un commento"/>
@@ -104,7 +104,9 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				  </div>
 				</li>
 			</ul>
-			{%endif%}
+			{%endif%}{%if not user %} 
+   <div><a class="btn btn-primary" href="{{url}}">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a> per inserire un commento.</div>
+   {%endif%}
 		</div> <!-- s_post_comments -->		
 	</div> <!-- s_post -->	
 	<div class="s_post_tools">

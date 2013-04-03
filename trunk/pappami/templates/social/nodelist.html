@@ -17,8 +17,8 @@ $(document).ready(function () {
 <div class="row">
  <div class="span12">
   <ul class="nav nav-tabs">
-   <li class="active"><a href="#subs" data-toggle="tab">A cui sei iscritto</a></li>
-   <li class=""><a href="#active" data-toggle="tab">Più attivi</a></li>
+   {%if user%}<li class="active"><a href="#subs" data-toggle="tab">A cui sei iscritto</a></li>{%endif%}
+   <li class="{%if not user%}active{%endif%}"><a href="#active" data-toggle="tab">Più attivi</a></li>
    <li class=""><a href="#recent" data-toggle="tab">Più recenti</a></li>
    <li class=""><a href="#search" data-toggle="tab">Cerca...</a></li>{%if admin%}
    <li class=""><a href="/social/createnode">Aggiungi Nodo</a></li>{%endif%}
@@ -26,11 +26,11 @@ $(document).ready(function () {
  </div>
 </div>
 <div id="myTabContent" class="tab-content">
- <div class="tab-pane active fade in" id="subs">
+ {%if user%}<div class="tab-pane active fade in" id="subs">
   <h4>Argomenti a cui sei iscritto</h4>{%set nodelist = subs_nodes %}
   <ul id="subs_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
- </div>
-  <div class="tab-pane fade in" id="active">
+ </div>{%endif%}
+  <div class="tab-pane {%if not user%}active {%endif%}fade in" id="active">
    <h4>Più attivi</h4>{%set nodelist = active_nodes %}
    <ul id="active_node_list" class="thumbnails">{%include "social/pagination/node.html"%}</ul>
   </div>

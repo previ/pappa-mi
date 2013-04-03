@@ -40,7 +40,7 @@ import httpagentparser
 
 from py.gviz_api import *
 from py.model import *
-from py.modelMsg import *
+#from py.modelMsg import *
 from common import Const, Channel
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))

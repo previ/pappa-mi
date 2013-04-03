@@ -1615,6 +1615,15 @@ class SocialPost(model.Model):
       else:
         text_content = Sanitizer.text(self.content)
         return text_content[:1000]
+
+    @cached_property
+    def images(self):
+      imgs = list()
+      for a in self.attachments:
+        if a.isImage():
+          imgs.append(a.imgthumb())
+      imgs.extend(Sanitizer.images(self.content))
+      return imgs
       
     def extended_date(self):
       delta = datetime.now() - self.created
@@ -1672,6 +1681,8 @@ class SocialPost(model.Model):
       return attachments
     
     def can_admin(self, user):
+      if not user:
+        return False
       sub_cache = Cache.get_cache('SocialNodeSubscription')
       cache_key = str(self.key.parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
@@ -1681,6 +1692,8 @@ class SocialPost(model.Model):
       return sub and (sub.can_admin or self.author == user.key)
 
     def can_comment(self, user):
+      if not user:
+        return False
       sub_cache = Cache.get_cache('SocialNodeSubscription')
       cache_key = str(self.key.parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
@@ -1698,6 +1711,8 @@ class SocialPost(model.Model):
       return subs
       
     def can_sub(self, user):
+      if not user:
+        return False
       return (self.subscriptions.get(user.key) is None)
           
     def remove_attachment(self, attach_key):
@@ -2135,6 +2150,8 @@ class SocialComment(model.Model):
       return Commissario.get_by_user(self.author.get())
 
     def can_admin(self, user):
+      if not user:
+        return False
       sub_cache = Cache.get_cache('SocialNodeSubscription')
       cache_key = str(self.key.parent().parent().id()) + "-" + str(user.key.id())
       sub = sub_cache.get(cache_key)
