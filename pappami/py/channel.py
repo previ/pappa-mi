@@ -15,7 +15,7 @@ class ChannelHandler(BasePage):
 
 app = webapp.WSGIApplication([
     ('/_ah/channel/connected/', ChannelHandler),
-    ('/_ah/channel/connected/', ChannelHandler),
+    ('/_ah/channel/disconnected/', ChannelHandler),
     ],                             
     debug = True, config=config)
 
