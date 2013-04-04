@@ -638,18 +638,24 @@ class SocialPaginationHandler(SocialAjaxHandler):
             if cmd=="node_main":                
                 node = None
                 node_key_str = self.request.get("node")
-                if node_key_str != "all":
+                node_name = self.request.get("node_name")
+                if node_key_str != "all" and node_key_str != "news":
                     node = model.Key(urlsafe=self.request.get("node")).get()
+                    node_name = node.name
     
 
                 template_values = {
                         "node":node,
+                        "node_key":node_key_str,
+                        "node_name":node_name,
                         "user": user,
                         "cmsro": cmsro,
                         }
                 
                 if node and user:
                     template_values["subscription"]=node.get_subscription(user.key)
+                if user:
+                    template_values["node_list"]=SocialNodeSubscription.get_nodes_by_user(user)
                                             
                 template = jinja_environment.get_template("social/node_em.html")
 
@@ -686,7 +692,14 @@ class SocialPaginationHandler(SocialAjaxHandler):
                 next_curs_key=None
                 node_urlsafe=self.request.get("node")
                 more = False
-                if node_urlsafe=="all":                                            
+                if node_urlsafe=="news":                                            
+                    if not cursor or cursor == "undefined":
+                        postlist, next_curs, more = SocialPost.get_news_stream(page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+                    else:
+                        postlist, next_curs, more = SocialPost.get_news_stream(page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+                    if next_curs:
+                        next_curs_key = next_curs.urlsafe()
+                elif node_urlsafe=="all":                                            
                     if not cursor or cursor == "undefined":
                         postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
                     else:
