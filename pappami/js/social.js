@@ -625,35 +625,6 @@ function onPostUnsubscribe(post){
 	});	
 }
 
-function loadSmallMap(lat,lon) {
-  var myOptions = {
-    zoom: 4,
-    center: new google.maps.LatLng(lat,lon),
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    mapTypeControl: false
-  }    
-  var map = new google.maps.Map(document.getElementById("map"), myOptions);
-  fluster = new Fluster2(map); 
-  
-  var image = new google.maps.MarkerImage('/img/school.png',
-        new google.maps.Size(16, 18),
-        new google.maps.Point(0,0),
-        new google.maps.Point(8, 0));
-  var shadow = new google.maps.MarkerImage('/img/shadow.png',
-        new google.maps.Size(26, 19),
-        new google.maps.Point(0,0),
-        new google.maps.Point(8, 0));
-
-  fluster = new Fluster2(map);
-
-  // Set styles
-  // These are the same styles as default, assignment is only for demonstration ...
-  fluster.styles = fstyles;
-  
-  jQuery.get("/social/socialmap", {}, drawSmallMap );
-}  
-
-
 function redraw_node(node_root) {
   
   var subscribed = node_root.attr('data-sub-status');
@@ -750,12 +721,13 @@ function onSearchPaginate() {
 }
 
 function onNodeClick(){
- node_item = $(this);
+ var node_item = $(this);
  key=node_item.attr('data-node-key');
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
- $("#node_title").find("span").text(node_item.find(".node_name").attr('title'));
- if(key!="all") {
+ var node_name = node_item.find(".node_name").attr('title');
+ $("#node_title").find("span").text(node_name);
+ if(key!="all" && key!="news") {
    $("#node_title > a").attr("href", "/social/node/"+key);
    $("#node_title > a").show();
    node_item.find(".sub_ntfy").hide();
@@ -766,7 +738,7 @@ function onNodeClick(){
  //key=node_item.attr('data-node-key');
  $("#node_container").empty();
  //loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
- loadNode(key);
+ loadNode(key, node_name);
 }
 
 function initNode(node_key){
@@ -821,7 +793,7 @@ function initNode(node_key){
  $('#subscribe_btn').on('click', onSubUnsubNode)
  $('.ntfy_period').on('click', onNotificationPeriod)
  $("#more_posts").click(onMoreClick);
- if(node_key!="all") {
+ if(node_key!="all"&&node_key!="news") {
   redraw_node($('.node_root'));
  }
  
@@ -890,11 +862,11 @@ function onMoreClick(){
 }
 
 
-function loadNode(node_key, nodelist) {
+function loadNode(node_key, node_name) {
  var data = {
   'cmd': 'node_main',
   'node': node_key,
-  'nodelist': nodelist
+  'node_name': node_name,
   };
  $.ajax({
   type: 'POST',

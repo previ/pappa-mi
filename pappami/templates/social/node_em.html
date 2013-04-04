@@ -1,4 +1,4 @@
-<div class="node_root" data-node-key='{%if node%}{{node.key.urlsafe()}}{%else%}all{%endif%}' data-sub-status='{%if subscription%}true{%else%}false{%endif%}' data-ntfy-period='{%if subscription%}{{subscription.ntfy_period}}{%endif%}'>
+<div class="node_root" data-node-key='{{node_key}}' data-sub-status='{%if subscription%}true{%else%}false{%endif%}' data-ntfy-period='{%if subscription%}{{subscription.ntfy_period}}{%endif%}'>
 {%if user %}
  <div class="s_node_commands btn-toolbar">
   <div class="btn-group" style="display:inline;">
@@ -30,7 +30,7 @@
  </div>
 {%endif%} 
  <div id="node_title">
-  <h3 style="display:inline;">{%if node%}{{node.name}}{%else%}News{%endif%}</h3>{%if node%}<a class="pull-right s_node_link" target="_new" href="/social/node/{{node.key.urlsafe()}}">link a questo argomento</a>{%endif%}
+  <h3 style="display:inline;">{{node_name}}</h3>{%if node%}<a class="pull-right s_node_link" target="_new" href="/social/node/{{node.key.urlsafe()}}">link a questo argomento</a>{%endif%}
  </div>{%if user %}
  <div id="new_post" style="display:none" class="well">
   <form id="new_post_form" action="/social/managepost" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
@@ -51,7 +51,7 @@
    </div>
    <div id="post_content" class="">
 	   <label id="post_content_label" for="content">Contenuto</label>
-	   <textarea id="post_content_text" class="span8 comment_textarea required" name="content"></textarea>
+	   <textarea id="post_content_text" class="required span8 comment_textarea" required name="content"></textarea>
    </div>
    <div class="form_parent post_attachments">       
     <label class="control-label" for="e_attach">Allegati</label>

@@ -1504,7 +1504,7 @@ class SocialNode(model.Model):
 
       #delete post
       post.key.delete()           
-      logging.info("delete_post")
+      #logging.info("delete_post")
         
     def set_position(self,lat,lon):
         self.geo=model.GeoPt(lat,lon)
@@ -1663,7 +1663,7 @@ class SocialPost(model.Model):
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
-      logging.info(str(len(votes)))
+      #logging.info(str(len(votes)))
       return votes
 
     @cached_property
@@ -1737,6 +1737,23 @@ class SocialPost(model.Model):
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
       return postlist, next_cursor, more
+
+    @classmethod
+    def get_by_rank(cls, page, start_cursor=None):
+      cache = Cache.get_cache("SocialPost")
+      cache_key = "SocialPost-" + "news" + "-" + str(start_cursor)
+      postlist = cache.get(cache_key)
+      next_cursor = cache.get(cache_key + "-next_cursor")
+      more = cache.get(cache_key + "-more")
+      if not postlist:
+        postlist = list()
+        posts, next_cursor, more = SocialPost.query().order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        postlist = [p for p in posts]
+        cache.put(cache_key, postlist)
+        cache.put(cache_key + "-next_cursor", next_cursor)
+        cache.put(cache_key + "-more", more)
+        logging.info("next_cursor: " + str(next_cursor))
+      return postlist, next_cursor, more
     
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
@@ -1764,6 +1781,10 @@ class SocialPost(model.Model):
         cache.put(cache_key, stream)
         cache.put(cache_key + "-next_cursor", next_cursor)
       return stream, next_cursor, True
+
+    @classmethod
+    def get_news_stream(cls, page, start_cursor=None):
+      return SocialPost.get_by_rank(page=page, start_cursor=start_cursor)
 
     def reshare(self,target_node,new_author,new_content, new_title):
       new_post = None
@@ -1864,7 +1885,7 @@ class SocialPost(model.Model):
       self.put()
 
     def vote(self, vote, user):
-      logging.info(str(vote))
+      #logging.info(str(vote))
       if vote == 0:
         for p_vote in self.votes:
           if p_vote.c_u == user.key:
@@ -1927,7 +1948,7 @@ class SocialPost(model.Model):
       for r in post.res_type:
         resource += r + " "
 
-      logging.info(resource)
+      #logging.info(resource)
       ref_date = post.created
       if len(post.res_type) > 0:
         if post.res_type[0] in ["isp","dieta"]:

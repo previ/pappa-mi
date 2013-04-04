@@ -169,12 +169,16 @@ class Sanitizer(object):
   
   @classmethod
   def sanitize(cls, html):
-    sanitized = cls.sanitizer.clean_html(html) 
+    sanitized = ""
+    if html and len(html) > 0:
+      sanitized = cls.sanitizer.clean_html(html) 
     return sanitized
 
   @classmethod
   def text(cls, html):
-    text = lxml.html.fromstring(html).text_content()
+    text = ""
+    if html and len(html) > 0:
+      text = lxml.html.fromstring(html).text_content()
     return text
 
   @classmethod
