@@ -1610,11 +1610,19 @@ class SocialPost(model.Model):
     
     @cached_property
     def content_summary(self):
+      summary = ""
+      if len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota"]:
+        summary = self.resource[0].get().sommario()
+        
       if len(self.content) <= 1000:
-        return self.content
+        summary += ("<div>" + self.content + "</div>")
       else:
         text_content = Sanitizer.text(self.content)
-        return text_content[:1000]
+        limit = len(text_content)
+        if limit > 1000:
+          limit = 1000
+        summary += ("<div>" + text_content[:limit] + "</div>")
+      return summary
 
     @cached_property
     def images(self):

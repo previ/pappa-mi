@@ -89,6 +89,10 @@ class SocialAdmin(BasePage):
           break
         index.delete(doc_ids)        
 
+    if cmd == "rebuild_index_node":
+      for n in SocialNode.get_most_recent():
+        n.put()
+
     if cmd == "migrate":
         what = self.request.get("what")
         limit = self.request.get("limit")
@@ -810,7 +814,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                         results = search.Index(name="index-nodes").search(search.Query(query_string=self.request.get("query")))
                     
                         for scored_document in results:
-                            nodes.append(model.Key(urlsafe=scored_document.doc_id[5:]).get())
+                            nodes.append(model.Key("SocialNode", int(scored_document.doc_id[5:])).get())
                             
                     except search.Error:
                             logging.exception('Search failed' )
