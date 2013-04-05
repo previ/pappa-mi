@@ -15,7 +15,7 @@
 				<div class="s_post_date">{{post.extended_date()}}</div>
 				<div class="s_post_link"><a target="_new" href="/social/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 			</div>
-			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content}}
+			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content_summary}}
 			{%else%}{%if post.images%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
 			<span class="btn-link post_expand">...continua a leggere »</span></div>
 			{%endif%}</div>
