@@ -17,6 +17,7 @@ from google.appengine.ext.webapp.util import login_required
 import py.feedparser
 
 from py.model import *
+from py.modelMsg import *
 from py.base import *
 
 TIME_FORMAT = "T%H:%M:%S"
@@ -166,10 +167,9 @@ class WidgetListitem:
     
   def url(self):
     u = "#"
-    msgs = Messaggio.get_by_parent(self.item.key)
-    if len(msgs) > 0:
-      msg = msgs[0]
-      u = "/public/act?key="+str(msg.key.id())
+    post = SocialPost.get_by_resource(self.item.key)[0]
+    if post > 0:
+      u = "/social/post/"+post.key.urlsafe()
     return u
 
   
@@ -199,7 +199,7 @@ class CMListWidgetHandler(BasePage):
 
       isps = Ispezione.get_by_cm(c.key)
       for isp in isps:
-        items.append(WidgetListitem(isp, isp.dataIspezione))
+        items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
       
       ncs = Nonconformita.get_by_cm(c.key)
       for nc in ncs:
