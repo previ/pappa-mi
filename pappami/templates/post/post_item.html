@@ -1,0 +1,45 @@
+{% for post in postlist%}
+<li class="s_post_item{%if post.is_pinned()%} s_post_pinned{%endif%}">
+	<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}'> 
+		<div class="s_post_avatar s_popover" data-original-title="Informazioni" data-placement="right" data-trigger="manual" data-html="true" data-visible="false" data-container="body">
+			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_container">
+			<div class="s_post_header">		
+				<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-arrow-down"></i></span></div>
+				<div class="s_post_title">
+					<span class="s_post_title_1 post_expand">{{post.title}}</span>
+					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
+				</div> 
+				<div class="s_post_author">di {{post.commissario.nome}}</div>
+				<div class="s_post_date">{{post.extended_date()}}</div>
+				<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+			</div>
+			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content_summary}}
+			{%else%}{%if post.images%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
+			<span class="btn-link post_expand">...continua a leggere »</span></div>
+			{%endif%}</div>
+			{%if subscription%}									
+			<div class="s_post_commands">
+				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}
+			</div>		
+			{%endif%}
+			<div class="s_post_feedback pull-left">
+			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> <span class="s_post_reshares">{{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c post_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comment_num">{{post.comments}}</span></span>
+			</div>				
+			{% if user %} 
+			<div class="s_post_commands">
+				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
+				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+			</div>
+			{% endif%}			
+		</div>				
+		<div class="s_post_tools">
+			<div class="s_modal_reshare"></div>
+		</div>
+	</div>
+</li>			
+{%endfor%}
