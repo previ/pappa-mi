@@ -46,7 +46,7 @@ class MainPage(BasePage):
         
     commissario = self.getCommissario(self.get_current_user())
     if commissario:
-      self.redirect("/social")
+      self.redirect("/stream")
       return
       #return self.getPrivate(template_values)
           

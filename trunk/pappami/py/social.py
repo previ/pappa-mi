@@ -198,7 +198,7 @@ class SocialPostHandler(BasePage):
         return template_values
             
      
-class SocialSubscribeHandler(SocialAjaxHandler):
+class SocialSubscribeHandler(BaseHandler):
     def get(self):
         user = self.get_current_user()
         
@@ -250,7 +250,7 @@ class SocialSubscribeHandler(SocialAjaxHandler):
             else:
                 self.error()
               
-class SocialManagePost(SocialAjaxHandler):
+class SocialManagePost(BaseHandler):
    
     def post(self):             
         user=self.request.user
@@ -608,7 +608,7 @@ class SocialEditNodeHandler(BasePage):
         
         self.redirect("/social/node/"+str(node.key.id()))
 
-class SocialPaginationHandler(SocialAjaxHandler):
+class SocialPaginationHandler(BaseHandler):
 
     def get(self):
         return self.post()
@@ -868,7 +868,7 @@ class SocialPaginationHandler(SocialAjaxHandler):
                     self.output_as_json(response)
     
 
-class SocialNotificationHandler(SocialAjaxHandler):
+class SocialNotificationHandler(BaseHandler):
     def get(self):
         logging.info("SocialNotificationHandler")
         if self.request.get("cmd") == "clear":
@@ -1052,72 +1052,9 @@ class SocialNotificationHandler(SocialAjaxHandler):
         body="",
         html=html
         )"""
-        #logging.info(html)
-    
-        
+        #logging.info(html)        
             
-        
-class SocialSearchHandler(SocialAjaxHandler):
-    def post(self):
-        postlist = list()
-        found = 0
-        offset = 0
-        limit = Const.SEARCH_LIMIT
-        try:
-            query = self.request.get("query")
-            
-            if self.request.get("author"):
-                query += " author:" + self.request.get("author")
-            if self.request.get("node"):
-                query += " node:" + self.request.get("node") 
-            if self.request.get("resources"):
-                query += " resources:" + self.request.get("resources") 
-            if self.request.get("attach"):
-                query += " attach:" + self.request.get("attach")
-            if self.request.get("offset"):
-                offset = int(self.request.get('offset'))
-
-            logging.info("offset: " + str(offset))
-            options = search.QueryOptions(
-                limit=limit,
-                offset=offset)                
-
-            results = search.Index(name="index-posts").search(search.Query(query_string=query, options=options))
-            found = results.number_found
-            
-            for scored_document in results:
-                post = model.Key(urlsafe=scored_document.doc_id[5:]).get()
-                postlist.append(post)
-                
-                
-        except search.Error:
-                logging.exception('Search failed' )
-
-        template_values = {
-            "content": "social/search.html",
-            "query": self.request.get("query"),
-            "author": self.request.get("author"),
-            "node": self.request.get("node"),
-            "resources": self.request.get("resources"),            
-            "attach": self.request.get("attach"),
-            "advanced": self.request.get("advanced"),
-            "offset": offset,
-            "lim": limit,
-            "found": found,
-            "postlist": postlist,
-                 }
-    
-        self.getBase(template_values)
-
-    def get(self):
-        limit = Const.SEARCH_LIMIT
-        template_values = {
-            "content": "social/search.html",
-            "lim": limit,
-                 }
-    
-        self.getBase(template_values)
-         
+                 
 class SocialNotificationsListHandler(BasePage):
     
     @reguser_required
@@ -1433,7 +1370,6 @@ app = webapp.WSGIApplication([
     ('/social/managepost',SocialManagePost),
     ('/social/subscribe', SocialSubscribeHandler),
     ('/social/paginate', SocialPaginationHandler),
-    ('/social/search', SocialSearchHandler),
     ('/social/notifications', SocialNotificationsListHandler),
     ('/social/event', SocialNotificationHandler),
     ('/social/admin', SocialAdmin),    

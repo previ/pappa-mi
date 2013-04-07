@@ -169,7 +169,7 @@ class WidgetListitem:
     u = "#"
     post = SocialPost.get_by_resource(self.item.key)[0]
     if post > 0:
-      u = "/social/post/"+post.key.urlsafe()
+      u = "/post/"+post.key.urlsafe()
     return u
 
   
