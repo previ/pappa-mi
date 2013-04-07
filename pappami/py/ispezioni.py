@@ -23,9 +23,7 @@ from py.model import *
 from py.blob import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
-from py.modelMsg import *
-from py.comments import CMCommentHandler
-from py.social import *
+from py.post import PostHandler
 
          
 class CMGetIspDataHandler(BasePage):
@@ -100,34 +98,14 @@ class IspezioneHandler(BasePage):
   def get(self): 
     commissario = self.getCommissario()
 
-    if( self.request.get("cmd") == "open" ):
-      isp = Ispezione.get(self.request.get("key"))
-  
-      cancopy = None;
-      if( isp.commissario.key == commissario.key):
-        cancopy = True
-      
-      comment_root = CMCommentHandler.getRoot(isp.key)
-        
-      template_values = {
-        'content': 'commissario/ispezione_read.html',
-        'content_left': 'commissario/leftbar.html',
-        'isp': isp,
-        'cancopy': cancopy,
-        "public_url": "http://" + self.getHost() + "/public/isp?key=" + str(isp.key.id()),
-        "comments": True,
-        "comment_root": comment_root
-        }
-                
-    else:       
-      isp = Ispezione(commissario = commissario.key) 
-      form = IspezioneForm(self.request.POST,isp)
+    isp = Ispezione(commissario = commissario.key) 
+    form = IspezioneForm(self.request.POST,isp)
 
-      template_values = {
-        'main': 'ispezioni/ispezione_div.html',
-        'form': form,
-        'commissioni': commissario.commissioni()
-        }
+    template_values = {
+      'main': 'ispezioni/ispezione_div.html',
+      'form': form,
+      'commissioni': commissario.commissioni()
+      }
 
 
     self.getBase(template_values)
@@ -184,18 +162,15 @@ class IspezioneHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
         
-        #template_values = CMCommentHandler.initActivity(isp.key, isp.commissione, 101, last_msg_key, tags=isp.tags, user=self.request.user)
-        #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(isp.commissione)[0]
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
         
 
       else:
         pass
-        #template_values = CMCommentHandler.loadActivity(last_msg_key, isp.key)
       
 
-      template = jinja_environment.get_template("social/pagination/post.html")
+      template = jinja_environment.get_template("post/post_item.html")
 
       html=template.render(template_values)
       response = {'response':'success','html':html,"cursor":''}
@@ -256,22 +231,7 @@ class NonconfHandler(BasePage):
   def get(self): 
     commissario = self.getCommissario()
 
-    if( self.request.get("cmd") == "open" ):
-      nc = Nonconformita.get(self.request.get("key"))
-
-      comment_root = CMCommentHandler.getRoot(nc.key)
-      
-      template_values = {
-        'main': 'ispezioni/nonconf_read.html',
-        'nc': nc,
-        "public_url": "http://" + self.getHost() + "/public/nc?key=" + str(nc.key.id()),
-        "comments": True,
-        "comment_root": comment_root
-        }
-
-      self.getBase(template_values)
-
-    elif( self.request.get("cmd") == "edit" ):
+    if( self.request.get("cmd") == "edit" ):
    
       nc = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("preview"))
@@ -337,17 +297,11 @@ class NonconfHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        #template_values = CMCommentHandler.initActivity(nc.key, nc.commissione, 102, last_msg_key, nc.tags, user=self.request.user)
-        #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
         
-
-      else:
-        pass
-        #template_values = CMCommentHandler.loadActivity(last_msg_key, nc.key)
       
-      template = jinja_environment.get_template("social/pagination/post.html")
+      template = jinja_environment.get_template("post/post_item.html")
 
       html=template.render(template_values)
       response = {'response':'success','html':html,"cursor":''}
@@ -402,23 +356,7 @@ class DietaHandler(BasePage):
   def get(self): 
     commissario = self.getCommissario()
 
-    if( self.request.get("cmd") == "open" ):
-      dieta = Dieta.get(self.request.get("key"))
-  
-      comment_root = CMCommentHandler.getRoot(dieta.key)
-
-      template_values = {
-        'content': 'commissario/dieta_read.html',
-        'content_left': 'commissario/leftbar.html',
-        'dieta': dieta,
-        "public_url": "http://" + self.getHost() + "/public/dieta?key=" + str(dieta.key.id()),
-        "comments": True,
-        "comment_root": comment_root
-        }
-
-      self.getBase(template_values)
-
-    elif( self.request.get("cmd") == "edit" ):
+    if( self.request.get("cmd") == "edit" ):
    
       dieta = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("dieta"))
@@ -485,16 +423,10 @@ class DietaHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        #template_values = CMCommentHandler.initActivity(dieta.key, dieta.commissione, 103, last_msg_key, tags=dieta.tags, user=self.request.user)
-        #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]       
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
         
-      else:
-        pass
-        #template_values = CMCommentHandler.loadActivity(last_msg_key, dieta.key)
-
-      template = jinja_environment.get_template("social/pagination/post.html")
+      template = jinja_environment.get_template("post/post_item.html")
 
       html=template.render(template_values)
       response = {'response':'success','html':html,"cursor":''}
@@ -547,26 +479,7 @@ class NotaHandler(BasePage):
   def get(self): 
     commissario = self.getCommissario()
 
-    if( self.request.get("cmd") == "open" ):
-      nota = Nota.get(self.request.get("key"))
-      allegati = None
-      if nota.allegato_set.count():
-        allegati = nota.allegato_set
-  
-      comment_root = CMCommentHandler.getRoot(nota.key)
-      
-      template_values = {
-        'content': 'commissario/nota_read.html',
-        'content_left': 'commissario/leftbar.html',
-        'nota': nota,
-        "public_url": "http://" + self.getHost() + "/public/nota?key=" + str(nota.key.id()),
-        "comments": True,
-        "comment_root": comment_root
-        }
-
-      self.getBase(template_values)
-
-    elif( self.request.get("cmd") == "edit" ):
+    if( self.request.get("cmd") == "edit" ):
    
       nota = memcache.get(self.request.get("preview"))
       memcache.delete(self.request.get("nota"))
@@ -633,16 +546,11 @@ class NotaHandler(BasePage):
         memcache.delete("stats")
         memcache.delete("statsMese")
   
-        #template_values = CMCommentHandler.initActivity(nota.key, nota.commissione, 104, last_msg_key, nota.tags, user=self.request.user)
-        #node = model.Key(urlsafe=self.request.get("node"))
         node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-        template_values = SocialPostHandler().create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
 
-      else:
-        pass
-        #template_values = CMCommentHandler.loadActivity(last_msg_key, nota.key)
         
-      template = jinja_environment.get_template("social/pagination/post.html")
+      template = jinja_environment.get_template("post/post_item.html")
 
       html=template.render(template_values)
       response = {'response':'success','html':html,"cursor":''}

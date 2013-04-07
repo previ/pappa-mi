@@ -57,9 +57,8 @@ class ActivityFilter():
   msgtypes = None
   users = None
   group = None
-
             
-class BasePage(webapp.RequestHandler):  
+class BaseHandler(webapp.RequestHandler):  
   
   #@webapp.cached_property
   #def jinja2(self):
@@ -80,6 +79,37 @@ class BasePage(webapp.RequestHandler):
         self.set_context()
         self.session_store.save_sessions(self.response)
     
+  def handle_exception(self,exception,debug_mode=False):
+      
+    if type(exception).__name__== FloodControlException.__name__:
+      template = jinja_environment.get_template("flooderror.html")
+      template_values={
+                       'flood_time':Const.SOCIAL_FLOOD_TIME,
+                       
+                       }     
+      html=template.render(template_values) 
+      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+     
+      time=Const.SOCIAL_FLOOD_TIME-time.seconds
+      response = {'response':'flooderror','time':time,'html':html}
+     
+      self.output_as_json(response)
+      return
+    else:
+      super(BaseHandler,self).handle_exception(exception,debug_mode)      
+
+
+  def success(self,data=None):
+      
+      response = {'response':'success'}
+      if data:
+        response.update(data.items()) 
+        
+      self.output_as_json(response)
+  
+  def error(self):     
+      response = {'response':'error'}      
+      self.output_as_json(response)
 
   
   @webapp.cached_property
@@ -309,39 +339,8 @@ class BasePage(webapp.RequestHandler):
       memcache.add(name,news)
     return news
   
-class SocialAjaxHandler(BasePage):
-        
-  def handle_exception(self,exception,debug_mode=False):
-      
-    if type(exception).__name__== FloodControlException.__name__:
-      template = jinja_environment.get_template("social/ajax/flooderror.html")
-      template_values={
-                       'flood_time':Const.SOCIAL_FLOOD_TIME,
-                       
-                       }     
-      html=template.render(template_values) 
-      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
-     
-      time=Const.SOCIAL_FLOOD_TIME-time.seconds
-      response = {'response':'flooderror','time':time,'html':html}
-     
-      self.output_as_json(response)
-      return
-    else:
-      super(SocialAjaxHandler,self).handle_exception(exception,debug_mode)      
-
-
-  def success(self,data=None):
-      
-      response = {'response':'success'}
-      if data:
-        response.update(data.items()) 
-        
-      self.output_as_json(response)
-  
-  def error(self):     
-      response = {'response':'error'}      
-      self.output_as_json(response)
+class BasePage(BaseHandler):  
+  pass
   
 class CMCommissioniDataHandler(BasePage):
 
