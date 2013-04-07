@@ -153,3 +153,12 @@ margin-bottom: 4px;
 .ntf_unread {
 background-color: #eee;
 }
+
+.s_author_name {
+font-weight:bold;
+font-size:120%;
+}
+
+.s_author_title {
+font-style:italic;
+}

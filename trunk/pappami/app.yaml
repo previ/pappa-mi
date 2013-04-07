@@ -74,11 +74,7 @@ handlers:
 - url: /_ah/login_required
   script: py.login.app
   
-- url: /admin/stats/*
-  script: py.stats.app
-  login: admin
-
-- url: /admin/stats/.*
+- url: /admin/stats.*
   script: py.stats.app
   login: admin
 
@@ -86,11 +82,7 @@ handlers:
   script: py.admin.app
   login: admin
   
-- url: /admin/.*
-  script: py.admin.app
-  login: admin
-
-- url: /admin/*
+- url: /admin.*
   script: py.admin.app
   login: admin
   
@@ -100,43 +92,22 @@ handlers:
 - url: /isp/.*
   script: py.ispezioni.app   
   
-- url: /stats/.*
+- url: /stats.*
   script: py.stats.app
 
-- url: /stats/*
-  script: py.stats.app
-
-- url: /feed/.*
+- url: /feed.*
   script: py.feed.app
 
-- url: /feed/*
-  script: py.feed.app
-
-- url: /widget/.*
+- url: /widget.*
   script: py.widget.app
-  
-- url: /widget/*
-  script: py.widget.app
- 
-- url: /fb
+   
+- url: /fb.*
   script: py.fb.app
 
-- url: /fb/*
-  script: py.fb.app
-
-- url: /fb/.*
-  script: py.fb.app
-
-- url: /comments/*
+- url: /comments.*
   script: py.comments.app
 
-- url: /comments/.*
-  script: py.comments.app
-
-- url: /profilo/*
-  script: py.profilo.app
-
-- url: /profilo/.*
+- url: /profilo.*
   script: py.profilo.app
 
 - url: /signup
@@ -151,52 +122,50 @@ handlers:
 - url: /blob/.*
   script: py.blob.app
 
-- url: /commissioni/.*
-  script: py.commissioni.app
-
-- url: /commissioni/*
+- url: /commissioni.*
   script: py.commissioni.app
   
-- url: /contatti/.*
+- url: /contatti.*
   script: py.commissioni.app
 
-- url: /contatti/*
-  script: py.commissioni.app
-  
-- url: /eauth/*
-  script: py.login.app
-
-- url: /eauth/.*
+- url: /eauth.*
   script: py.login.app
   
-- url: /menu/.*
-  script: py.menu.app
-
-- url: /menu/*
+- url: /menu.*
   script: py.menu.app
   
-- url: /menuslide/.*
+- url: /menuslide.*
   script: py.menu.app
 
-- url: /menuslide/*
-  script: py.menu.app
+- url: /search
+  script: py.search.app
 
-- url: /social/.*
-  script: py.social.app
+- url: /event.*
+  script: py.event.app
+  login: admin
 
-- url: /social/*
-  script: py.social.app
+- url: /ntfctn.*
+  script: py.event.app
+
+- url: /node.*
+  script: py.node.app
+
+- url: /post.*
+  script: py.post.app
+
+- url: /search
+  script: py.search.app
+
+- url: /stream.*
+  script: py.stream.app
 
 - url: /api/.*
   script: py.api.app
 
-- url: /mobile/.*
+- url: /mobile.*
   script: py.mobile.app
 
-- url: /mobile/*
-  script: py.mobile.app
-
-- url: /_ah/channel/.*
+- url: /_ah/channel.*
   script: py.channel.app
   
 - url: .*
