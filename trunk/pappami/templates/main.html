@@ -32,7 +32,7 @@
     <link type="text/css" href="/css/jquery.ajaxComboBox.css" rel="stylesheet"/>
     
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="/css/social.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/css/stream.css" type="text/css" media="all" />
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="apple-touch-icon" href="/img/logo_57.png">
@@ -48,7 +48,6 @@
 <script src="/js/ieresizefix.js" type="text/javascript"></script>
 <![endif]-->	
     <script type="text/javascript" src="/js/jquery.tools.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.taghandler.js"></script> 
     <script type="text/javascript" src="/js/jquery.autogrow-textarea.js"></script> 
     <script type="text/javascript" src="/js/jquery.form.js"></script> 
     <script type="text/javascript" src="/js/jquery.timers.js"></script> 
@@ -70,12 +69,11 @@
     
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 	
-    <script type="text/javascript" src="/js/social.js"></script> 
-    <script type="text/javascript" src="/js/comments.js"></script> 
+    <script type="text/javascript" src="/js/stream.js"></script> 
+    <script type="text/javascript" src="/js/activity.js"></script> 
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
     <script type="text/javascript" src="/js/jform.js"></script>
-    <script type="text/javascript" src="/js/activity.js"></script>
   </head>
 
   <body data-channel-id="{{channel}}">
@@ -98,17 +96,17 @@
 	      <li><a href="http://blog.pappa-mi.it">Blog</a></li>
 	      <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>
 	      <li><a href="http://www.youtube.com/pappamitube">Video</a></li>{% if admin %}
-	      <li><a href="/admin">Gestione Sistema</a></li>{% endif %}	    
+	      <li><a href="/admin">Gestione Sistema</a></li>{% endif %}{% if cmsro %}	    
 	      <li>
 	       <form class="navbar-search pull-left" action="/social/search" method="post">
 	        <input type="text" name="query" class="search-query span2" placeholder="Cerca">
 	       </form>
-	      </li>
+	      </li>{% endif %}
 	     </ul>
 	    <ul class="nav pull-right">{% if not commissario and not genitore %}
 	      <li><a class="" href="/signup">Registrati &raquo;</a></li>
 	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
-	      <li><a id="ntf_cnt" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" href="#"><span class="s_glob_ntfy badge">0</span></a></li>
+	      <li><a id="ntf_cnt" class="s_popover" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" href="#"><span class="s_glob_ntfy badge">0</span></a></li>
 	      <li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
 		<ul class="dropdown-menu">
