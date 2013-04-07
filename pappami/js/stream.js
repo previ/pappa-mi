@@ -21,7 +21,7 @@ function openChannel(channel_id) {
 function getNotificationsNum() {
   $.ajax({
     type: 'POST',
-    url:'/social/notifications', 
+    url:'/ntfctn', 
     data: {'cmd': 'get_num'},
     dataType:'json',
     success:function(data){
@@ -38,7 +38,7 @@ function getNotificationsNum() {
 function onChannelMessage(m) {
   m=jQuery.parseJSON(m.data)
   getNotificationsNum();
-  var textmessage = m.user + ' ha aggiunto un <a href="/social/post/' + m.source_id +'">' + m.source_desc + '</a> su <a href=/social/node/' + m.target_id + '">' + m.target_desc + '</a>';
+  var textmessage = m.user + ' ha aggiunto un <a href="/post/' + m.source_id +'">' + m.source_desc + '</a> su <a href=/node/' + m.target_id + '">' + m.target_desc + '</a>';
   $.pnotify({
     title: 'Notifica',
     text: textmessage
@@ -167,6 +167,7 @@ function initPost(post_root) {
   }});	
   
   post_root.find('.s_post_comment').tinymce(tiny_mce_opts);
+  post_root.find('.s_post_avatar').click(onAuthorDetail);
   post_root.find('.post_sub').click(onPostSubscribe);
   post_root.find('.post_unsub').click(onPostUnsubscribe);
   post_root.find('.post_del').click(onPostDelete);
@@ -197,7 +198,7 @@ function onPostEdit(){
   var edit_post = post_root.find(".s_post_tools > .s_post_edit_form").clone();
   $.ajax({
     type: 'POST',
-    url:'/social/managepost', 
+    url:'/post/manage', 
     data: {'cmd': 'edit_post',
 	   'post': post_key},
     dataType:'json',
@@ -300,7 +301,7 @@ function onPostEditSubmit(){
   
   $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost', 
+	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
@@ -345,7 +346,7 @@ function onReplyEditSubmit(){
   
   $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost', 
+	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
@@ -371,7 +372,7 @@ function onPostExpand() {
   
   $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost', 
+	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
@@ -387,7 +388,7 @@ function onPostCollapse() {
   
   $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost', 
+	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
@@ -400,6 +401,7 @@ function onPostCollapse() {
 	    post_item.find('.post_reshare').click(onPostReshare);
 	    post_item.find('.post_expand').click(onPostExpand); 
 	    post_item.find('.s_post_votes_c').click(onVotesDetail)
+	    post_item.find('.s_post_avatar').click(onAuthorDetail);
 	    post_item.find('.s_post_reshares_c').click(onResharesDetail)	    
 	  }});
   
@@ -417,7 +419,7 @@ function onPostCommentExpandEx() {
   
   $.ajax({
 	  type: 'POST',
-	  url:'/social/managepost', 
+	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
 	  success:function(data){
@@ -448,7 +450,7 @@ function onPostReshare() {
   var post_root = getPostRootByElement($(this))
   $.ajax({
     type: 'POST',
-    url:'/social/managepost', 
+    url:'/post/manage', 
     data: {'cmd': 'reshare_modal',
 	   'post': post },
     dataType:'json',
@@ -490,7 +492,7 @@ function onPostVote() {
   var vote = $(this).attr("data-vote");  
   $.ajax({
     type: 'POST',
-    url:'/social/managepost', 
+    url:'/post/manage', 
     data: {'cmd': 'vote_post',
 	   'post': post,
 	   'vote': vote },
@@ -529,7 +531,7 @@ function onCommentDelete() {
   var data= {'cmd': 'delete_comment', 'comment': comment_key}
   if( confirm("Sei sicuro di voler cancellare il commento?") ){
     $.ajax({type: 'POST',
-	    url:'/social/managepost', 
+	    url:'/post/manage', 
 	    data: data,
 	    dataType:'json',
 	    success:function(data){
@@ -551,7 +553,7 @@ function onPostPin(){
   var data = {'cmd':'pin_post', 'post':post, 'days': days};
   $.ajax({
     type: 'POST',
-    url:'/social/managepost', 
+    url:'/post/manage', 
     data: data,
     dataType:'json',
     success:function(data){
@@ -569,10 +571,10 @@ function onPostDelete(){
     var data = {'cmd':'delete_open_post', 'post':post};
     $.ajax({
       type: 'POST',
-      url:'/social/managepost', 
+      url:'/post/manage', 
       data: data,
       dataType:'json',
-      success:function(data){ window.location.href = "/social"; }});
+      success:function(data){ window.location.href = "/stream"; }});
   }	  	
 }
 
@@ -582,7 +584,7 @@ function onPostItemDelete(){
     var data = {'cmd':'delete_open_post', 'post':post };
     $.ajax({
       type: 'POST',
-      url:'/social/managepost', 
+      url:'/post/manage', 
       data: data,
       dataType:'json',
       success:function(data){
@@ -594,7 +596,7 @@ function onPostItemDelete(){
 function onPostSubscribe(){
   var post = getPostKeyByElement($(this));    
   var data = {'cmd':'subscribepost', 'post':post};
-  $.ajax({url:'/social/subscribe',
+  $.ajax({url:'/post/subscribe',
 	  data: data,
           dataType:'json',
 	  success:function(data){
@@ -611,7 +613,7 @@ function onPostSubscribe(){
 function onPostUnsubscribe(post){
   var post = getPostKeyByElement($(this));    
   var data = {'cmd':'unsubscribepost', 'post':post};
-  $.ajax({url:'/social/subscribe',
+  $.ajax({url:'/post/subscribe',
 	  data: data,
           dataType:'json',
 	  success:function(data){
@@ -649,7 +651,7 @@ function onSubUnsubNode() {
     'node': node_key,
     'cmd': sub_status == 'true' ? 'unsubscribe' : 'subscribe'
   };
-  $.ajax({url:'/social/subscribe', data: data, dataType:"JSON", success:function(data){
+  $.ajax({url:'/node/subscribe', data: data, dataType:"JSON", success:function(data){
       node_root.attr('data-sub-status', data.subscribed );
       node_root.attr('data-ntfy-period', data.ntfy_period);
       onSuccess(data);
@@ -668,7 +670,7 @@ function onNotificationPeriod() {
 	      'node': node_key,
 	      'ntfy_period': ntfy_period};
 
-  $.ajax({url:'/social/subscribe',
+  $.ajax({url:'/node/subscribe',
 	  data: data,
 	  dataType:"JSON", 
 	  success:function(data){ 
@@ -687,7 +689,7 @@ function onNotificationPeriodProfile() {
 	      'node': node_key,
 	      'ntfy_period': ntfy_period};
 
-  $.ajax({url:'/social/subscribe',
+  $.ajax({url:'/node/subscribe',
 	  data: data,
 	  dataType:"JSON", 
 	  success:function(data){ 
@@ -703,7 +705,9 @@ function init_search(){
   $('#search_text').typeahead({minLength:2,
     source: function (query, process) {
       $("#search_node_list").empty()
-      return $.post('/social/paginate', { query: query,cmd:"search_nodes"}, function (data) {
+      $("#loading").show();
+      return $.post('/node/paginate', { query: query,cmd:"search_nodes"}, function (data) {
+	$("#loading").hide();
 	data=jQuery.parseJSON(data)
 	if(data.html) {
 	  $("#search").tab('show')
@@ -728,7 +732,7 @@ function onNodeClick(){
  var node_name = node_item.find(".node_name").attr('title');
  $("#node_title").find("span").text(node_name);
  if(key!="all" && key!="news") {
-   $("#node_title > a").attr("href", "/social/node/"+key);
+   $("#node_title > a").attr("href", "/node/"+key);
    $("#node_title > a").show();
    node_item.find(".sub_ntfy").hide();
  } else {
@@ -781,6 +785,7 @@ function initNode(node_key){
   post_root.find('.post_reshare').click(onPostReshare);
   post_root.find('.post_expand').click(onPostExpand); 
   post_root.find('.s_post_votes_c').click(onVotesDetail)
+  post_root.find('.s_post_avatar').click(onAuthorDetail);
   post_root.find('.s_post_reshares_c').click(onResharesDetail)
   post_root.find('.show_comment_form').click(onPostCommentFormExpand)
   post_root.find('.show_comment_form').click(onPostCommentsExpand)
@@ -809,23 +814,19 @@ function init(){
  
  var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.attr("data-visible", 'false');
-
- $(document).click(function(e) {
-  var ntfy_pop = $('#ntf_cnt');
-  if(ntfy_pop.attr("data-visible") == 'true') {
-    ntfy_pop.popover('hide');
-    ntfy_pop.attr("data-visible", 'false');
-    e.preventDefault()
-  } else {
-    clickedAway = true;
-  }
- });
-
  ntfy_pop.popover({
 	  html: true,
 	  trigger: 'manual'
      }).click(function(e) {onOpenNotifications(e);});
-  
+
+ $(document).click(function(e) {
+  $('[data-visible="true"].s_popover').each(function(){
+      $(this).popover('hide');
+      $(this).attr("data-visible", 'false');
+      //e.preventDefault()
+    });
+  clickedAway = true;
+ });  
 }
 
 function onOpenNotifications(event) {
@@ -834,7 +835,7 @@ function onOpenNotifications(event) {
   if(ntfy_pop.attr("data-visible") == 'false') {
     $.ajax({
      type: 'POST',
-     url:'/social/paginate', 
+     url:'/ntfctn/paginate', 
      data: data,
      dataType:'json',
      success:function(data) {
@@ -870,7 +871,7 @@ function loadNode(node_key, node_name) {
   };
  $.ajax({
   type: 'POST',
-  url:'/social/paginate',
+  url:'/node/paginate',
   data: data,
   dataType:'json',
   success:function(data) { 
@@ -894,7 +895,7 @@ function loadPosts(node_key,current_cursor) {
   };
  $.ajax({
   type: 'POST',
-  url:'/social/paginate',
+  url:'/post/paginate',
   data: data,
   dataType:'json',
   success:function(data) { 
@@ -930,6 +931,7 @@ function initPostList(list) {
   list.find('.post_unvote').click(onPostVote);      
   list.find('.post_reshare').click(onPostReshare);
   list.find('.post_expand').click(onPostExpand); 
+  list.find('.s_post_avatar').click(onAuthorDetail)  
   list.find('.s_post_votes_c').click(onVotesDetail)
   list.find('.s_post_reshares_c').click(onResharesDetail)
 }
@@ -943,7 +945,7 @@ function onVotesDetail() {
   };
  $.ajax({
   type: 'POST',
-  url:'/social/managepost',
+  url:'/post/manage',
   data: data,
   dataType:'json',
   success:function(data) { 
@@ -952,6 +954,7 @@ function onVotesDetail() {
   }
   });
 }
+
 
 function onResharesDetail() {
  var post = getPostKeyByElement($(this));    
@@ -962,12 +965,33 @@ function onResharesDetail() {
   };
  $.ajax({
   type: 'POST',
-  url:'/social/managepost',
+  url:'//post/manage/managepost',
   data: data,
   dataType:'json',
   success:function(data) { 
    $('body').append(data.html);
    $('#reshares_modal').modal()
+  }
+  });
+}
+
+function onAuthorDetail() {
+  var author_pop = $(this);
+  var post_key = getPostKeyByElement($(this));
+
+ var data = {
+  'cmd': 'author_detail',
+  'post': post_key,
+  };
+ $.ajax({
+  type: 'POST',
+  url:'/post/manage',
+  data: data,
+  dataType:'json',
+  success:function(data) { 
+    author_pop.attr('data-content', data.html);
+    author_pop.popover('show');
+    author_pop.attr("data-visible", 'true');
   }
   });
 }
@@ -978,7 +1002,7 @@ function loadNotifications() {
 	  'cursor': cursor };
   $.ajax({
 	  type: 'POST',
-          url:"/social/paginate",
+          url:"/ntfctn/paginate",
 	  data: data,
           dataType:'json',
 	  success:function(data){

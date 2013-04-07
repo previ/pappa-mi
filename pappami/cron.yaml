@@ -5,6 +5,7 @@ cron:
   timezone: Europe/Rome
 
 - description: process events
-  url: /social/event
-  schedule: every 60 mins
+  url: /event
+  schedule: every day 08:00
+  timezone: Europe/Rome
  
