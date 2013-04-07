@@ -1,0 +1,29 @@
+<style>
+#node_title {
+display:none;
+}
+#node_container {
+margin-top:20px;
+}
+</style>
+<div class="row">
+  <div class="span12">
+    <div id="node_name"><h1>{{node.name}}</h1></div>
+    <div id="node_description"><h4>{{node.description}}</h4></div>
+  </div>
+</div>
+{#<div class="row">
+  <div class="span12">
+{%for resource in node.resource%}
+{%include "resources/"+node.res_type[loop.index-1]+".html"%}
+{%endfor%}	
+  </div>
+</div>#}
+<div class="row">
+  <div id="node_container" class="span12"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+  loadNode('{{node.key.urlsafe()}}', 'nolist')
+});
+</script>
