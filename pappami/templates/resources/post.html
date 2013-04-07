@@ -1,0 +1,24 @@
+{%set post = resource.get() %}
+<div class="s_post_root">
+	<div class="s_post"> 
+		<div class="s_post_avatar">
+			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_content">
+			<div class="s_post_header">			
+				<div class="s_post_title"><a href="/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+				<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
+				<div class="s_post_date">&nbsp;- il {{post.created.strftime('%d/%m/%Y %H:%M:%S')}}</div>
+			</div>				
+			<div class="s_post_body">
+				<div class="post_content" id="post_content_{{post.key.urlsafe()}}">{{post.content}}</div>
+				<div class="edit_hollow" id="edit_hollow_{{post.key.urlsafe()}}"></div>
+				{%for resource in post.resource%}
+				<div class="post_resource well">
+				{%include "resources/"+post.res_type[loop.index-1]+".html"%}
+				</div>			
+				{%endfor%}	
+			</div>									
+		</div>			
+	</div>			
+</div>
