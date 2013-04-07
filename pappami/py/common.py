@@ -8,7 +8,7 @@ import datetime
 from HTMLParser import HTMLParser
 import lxml.html
 from lxml.html.clean import Cleaner
-from google.appengine.api import channel
+from google.appengine.api import channel, memcache
 
 
 class Const:
@@ -120,9 +120,11 @@ class Cache(object):
   _all_lock = threading.RLock()
   
   def __init__(self, cache_name, *args, **kwargs):
+    self.name=cache_name
     self._lock = threading.RLock()
     self._cache = dict()
-    self.name=cache_name
+    self._version = 0
+    memcache.incr(self.name + "-version", 0)
     Cache.put_cache(self.name, self)
     super(Cache, self).__init__(*args, **kwargs) 
     
@@ -132,20 +134,30 @@ class Cache(object):
   def put(self, name, obj):
     with self._lock:    
       self._cache[name] = obj
+      self._version += 1
+      memcache.incr(self.name + "-version")
     
   def clear(self, name):
     with self._lock:    
       if self._cache.get(name):
         del self._cache[name]
+        self._version += 1
+        memcache.incr(self.name + "-version")
 
   def clear_all(self):
     with self._lock:    
       self._cache.clear()
+      self._version += 1
+      memcache.incr(self.name + "-version")
+ 
+  def check_version(self):
+    global_version = memcache.get(self.name + "-version")
+    return self._version != global_version
     
   @classmethod
   def get_cache(cls,name):
     cache=cls._all_caches.get(name)
-    if not cache:
+    if not cache or cache.check_version():
       cache = Cache(name)
       cls.put_cache(name, cache)
     return cache
