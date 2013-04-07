@@ -1,0 +1,127 @@
+<script type="text/javascript">
+$(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
+</script>
+<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
+	<div class="s_post"> 
+		<div class="s_post_avatar">
+			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_container">
+			<div class="s_post_header">			
+				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{%endif%}
+				<div class="s_post_title">
+					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
+					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
+				</div> 
+				<div class="s_post_author">di {{post.commissario.nome}}</div>
+				<div class="s_post_date">{{post.extended_date()}}</div>
+				<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+			</div>				
+			<div class="s_post_body">
+				<div class="s_post_content">{{post.content}}</div>
+				<div class="s_edit_hollow"></div>
+				{%for resource in post.resource%}
+				<div class="s_post_resource well">
+				{%include "resources/"+post.res_type[loop.index-1]+".html"%}
+				</div>			
+				{%endfor%}	
+				{% if post.attachments|count > 0 %}
+				<div class="s_post_attachs well">
+				 <div><i class="icon-file"></i> Allegati</div>
+				 <ul class="thumbnails">{%for attach in post.attachments%}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path()}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb()}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  </li>{%endfor%}
+				 </ul>
+				</div>			
+				{% endif %}  
+				{%if not fullscreen%}<div class="post_collapse btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{% endif %}
+			</div>		
+			<div class="s_post_feedback pull-left">
+			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i><span class="s_post_reshares"> {{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c post_comments_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comment_num">{{post.comments}}</span></span>
+			</div>
+			
+			{% if user %} 
+			<div class="s_post_commands btn-toolbar">
+				{%if user and post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin%}
+				<div class="btn-group">
+				 <span class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></span>
+				 <ul class="dropdown-menu">
+				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
+				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
+				  <li><a class="post_pin" data-days="7" href="#">Settimana</a></li>
+				  <li><a class="post_pin" data-days="30" href="#">Mese</a></li>
+				 </ul>
+				</div>
+				{%endif%}
+				{%if post.can_admin(user)%}
+				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
+				{%endif%}
+				{%if post.can_admin(user)%}
+				<button class="btn btn-normal btn-mini post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
+				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Reshare</button>
+				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+			</div><!-- s_post_commands -->		
+			{% endif%}			
+		</div>	<!-- s_post_container -->		
+		<div class="s_post_comments">
+			<ul class="s_comment_list unstyled"{%if hide_comments%} style="display:none;"{%endif%}>
+				{%for comment in post.comment_list%}
+				{%include "post/comment.html"%}
+				{%endfor%}
+			</ul>
+			{%if post.can_comment(user)%}	
+			<ul class="unstyled s_comment_form"> <!--comment_form-->
+				<li class="s_comment s_comment_placeholder">
+				 <input type="text" class="span6 show_comment_form" placeholder="Scrivi un commento"/>
+				</li>
+				<li class="s_comment s_comment_form thumbnail" style="display:none;">
+				  <div class="s_post_avatar">
+				   <img class="avatar" src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.avatar(cmsro)}}">
+				  </div>
+				  <div class="s_post_container">
+				   <div class="s_post_header">			
+				    <div class="s_post_title"></div> 
+				    <div class="s_post_author">{{cmsro.nomecompleto(cmsro)}}</div>
+				    <div class="s_post_date"></div>
+				   </div>				
+				   <div class="s_post_body">
+				    <div class="s_post_content">		
+					<form class="s_new_comment_form" action="/post/manage" method="post">
+						<input type="hidden" name="cmd" value="create_comment"/>	
+						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
+						<div class="">
+							<textarea id="comment_content" class="s_post_comment required" name="content"></textarea>
+							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
+						</div>
+					</form>
+				    </div>
+				   </div>
+				  </div>
+				</li>
+			</ul>
+			{%endif%}{%if not user %} 
+   <div><a class="btn btn-primary" href="{{url}}">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a> per inserire un commento.</div>
+   {%endif%}
+		</div> <!-- s_post_comments -->		
+	</div> <!-- s_post -->	
+	<div class="s_post_tools">
+		<div class="s_modal_reshare"></div>
+		<div class="s_post_edit_form" style="display:none;"></div>
+		<div class="s_comment_edit_form" style="display:none;">
+			<form class="s_update_comment_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+				<input type="hidden" name="cmd" value="update_comment"/>
+				<input type="hidden" name="comment" value=""/>
+				<input class="s_comment_edit_content" name="content" value="">
+				<div class="s_comment_commands">
+					<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
+					<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			
+				</div>
+			</form>
+		</div>
+	</div>
+</div> <!-- s_post_root -->		
