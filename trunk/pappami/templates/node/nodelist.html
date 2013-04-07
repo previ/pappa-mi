@@ -1,0 +1,51 @@
+<script type="text/javascript">
+$(document).ready(function () {
+  init_search()
+});    
+</script>
+{%set tab_node="active"%}
+{%include "navigation.html"%}
+<!--div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div-->
+{%if user and admin%}
+<div class="well" style="padding: 10px;">
+ <div class="btn-toolbar">
+  <a class="btn btn-primary" href="/node/create">Aggiungi Nodo</a>
+ </div>
+</div>
+{%endif%}
+<h3>Argomenti</h3>
+<div class="row">
+ <div class="span12">
+  <ul class="nav nav-tabs">
+   {%if user%}<li class="active"><a href="#subs" data-toggle="tab">A cui sei iscritto</a></li>{%endif%}
+   <li class="{%if not user%}active{%endif%}"><a href="#active" data-toggle="tab">Più attivi</a></li>
+   <li class=""><a href="#recent" data-toggle="tab">Più recenti</a></li>
+   <li class=""><a href="#search" data-toggle="tab">Cerca...</a></li>{%if admin%}
+   <li class=""><a href="/node/create">Aggiungi Nodo</a></li>{%endif%}
+  </ul>
+ </div>
+</div>
+<div id="myTabContent" class="tab-content">
+ {%if user%}<div class="tab-pane active fade in" id="subs">
+  <h4>Argomenti a cui sei iscritto</h4>{%set nodelist = subs_nodes %}
+  <ul id="subs_node_list" class="thumbnails">{%include "node/node_item.html"%}</ul>
+ </div>{%endif%}
+  <div class="tab-pane {%if not user%}active {%endif%}fade in" id="active">
+   <h4>Più attivi</h4>{%set nodelist = active_nodes %}
+   <ul id="active_node_list" class="thumbnails">{%include "node/node_item.html"%}</ul>
+  </div>
+  <div class="tab-pane fade in" id="recent">
+   <h4>Più recenti</h4>{%set nodelist = recent_nodes %}
+   <ul id="recent_node_list" class="thumbnails">{%include "node/node_item.html"%}</ul>
+  </div>
+  <div class="tab-pane fade in" id="search">
+   <h4>Ricerca</h4>
+   <div class="form-inline" style="margin-bottom:16px;">
+    <label for="search_text">Cerca argomento per nome: </label>
+    <input type="text" name="query" id="search_text" class="input-medium search-query"><img id="loading" src="/img/loading.gif" style="display:none;">
+   </div>{%set nodelist = search_nodes %}
+   <ul id="search_node_list" class="thumbnails">{%include "node/node_item.html"%}</ul>
+  </div>
+</div>
+<button id="add_nodes" class="btn btn-normal" type="submit" style="display:none;">Mostra altri nodi</button>
+<div id="pagination_errors" style="display:none;">Non ci sono altri nodi</div>

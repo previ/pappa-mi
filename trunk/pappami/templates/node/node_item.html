@@ -1,0 +1,12 @@
+{%for node in nodelist%}
+<li class="span3">
+  <div class="thumbnail">
+    <img alt="node" style="width: 240px; height: 180px;" src="/img/node_school_1.jpg">
+    <div class="node_caption">
+      <h4><a href="/node/{{node.key.urlsafe()}}">{{ node.name }}</a></h4>{#
+      <p><a href="#" class="btn btn-small btn-primary node_subscribe">Iscriviti</a></p>#}
+      <p>{{node.description|truncate(length=200, end="...")}}</p>
+    </div>
+  </div>	
+</li>
+{% endfor %}
