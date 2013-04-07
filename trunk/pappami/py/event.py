@@ -300,7 +300,7 @@ class NotificationPaginationHandler(BaseHandler):
                     self.output_as_json(response)
                     return
                
-                template = jinja_environment.get_template("ntfctn/notification_item_short.html")
+                template = jinja_environment.get_template("ntfctn/notification_short_item.html")
                
                 
                 template_values={
