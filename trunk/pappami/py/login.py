@@ -39,8 +39,9 @@ class LoginPage(BasePage):
   def get(self):
     user = self.request.user if self.request.user else None
     profiles = None
-
-    if not self.getCommissario(self.request.user):
+    logging.info(self.request.user)
+    commissario = self.getCommissario()
+    if not commissario:
       template_values = dict()
       template_values["main"] = 'eauth/main.html'
       template_values["content"] = 'eauth/login.html'
@@ -50,6 +51,8 @@ class LoginPage(BasePage):
         template_values.update({'messages': messages})
 
       self.getBase(template_values)
+    elif commissario and commissario.is_deactivated:
+      self.redirect("/signup")
     else:
       nxt = self.request.get("nxt") if self.request.get("nxt") else "/"
       self.redirect(nxt)

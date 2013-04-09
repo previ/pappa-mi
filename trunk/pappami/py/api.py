@@ -26,15 +26,12 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import webapp2 as webapp
 
-
 from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
-from google.appengine.api import mail
 
 from py.gviz_api import *
 from py.model import *
-from py.modelMsg import *
 from py.form import IspezioneForm, NonconformitaForm
 from py.base import BasePage, CMMenuHandler, config, handle_404, handle_500
 
@@ -81,7 +78,6 @@ class MenuApiHandler(CMMenuHandler):
           'desc2': 'dessert' }];
 
     self.output_as_json(menu_api)
-
  
     
 app = webapp.WSGIApplication([

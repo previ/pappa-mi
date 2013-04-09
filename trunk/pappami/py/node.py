@@ -181,9 +181,9 @@ class NodePaginationHandler(BaseHandler):
                 
             if cmd=="node":
                 if not cursor or cursor == "undefined":
-                    nodelist, next_curs, more = SocialNode.query().order(-SocialNode.latest_post_date).fetch_page(10) 
+                  nodelist, next_curs, more = SocialNode.query().order(-SocialNode.latest_post_date).fetch_page(10) 
                 else:
-                     nodelist, next_curs, more = SocialNode.query().order(-SocialNode.latest_post_date).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
+                  nodelist, next_curs, more = SocialNode.query().order(-SocialNode.latest_post_date).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
                 template_values = {
                         "nodelist":nodelist,
                          }

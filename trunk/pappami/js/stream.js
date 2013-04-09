@@ -5,7 +5,9 @@ $(document).ready(function() {
   if(channel == "" && channel_id != "") {
     channel = openChannel(channel_id);
   }
-  getNotificationsNum()
+  if(channel_id != "") { //only if user
+    getNotificationsNum()
+  }
 });
 
 function openChannel(channel_id) {
@@ -78,6 +80,10 @@ function onSuccess(data){
   }
 }
 
+function onError(data){
+  window.location.href="/";
+}
+
 function floodUpdate(){	
   time_left -=1
   if(time_left==0) {	  
@@ -144,13 +150,16 @@ function initPost(post_root) {
   rules: {}
   });
   
-  post_root.find('form.s_new_comment_form').ajaxForm({clearForm: true, dataType:'json', success: function(data) { 
+  post_root.find('form.s_new_comment_form').ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
     if (data.response!="success") {
       if(data.response=="flooderror"){
 	onFloodError(data, function(){} )
-	return			  
+	return	;		  
+      } else {
+        onError();
+	return;
       }
-    }
+    } 
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
@@ -202,11 +211,12 @@ function onPostEdit(){
     data: {'cmd': 'edit_post',
 	   'post': post_key},
     dataType:'json',
+    error: onError,
     success:function(data){
       edit_post.html(data.html)
       $(document).ready(function(){
 	var edit_form = edit_post.find("form");
-	edit_form.ajaxForm({clearForm: true, dataType:'json', success:onEditSubmit});	
+	edit_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success:onEditSubmit});	
 	var edit_undo = $('<div class="s_edit_undo" style="display:none;"></div>');
 	edit_undo.append(post_container.contents());
 	post_root.append(edit_undo);
@@ -252,7 +262,7 @@ function onCommentEdit(){
   var edit_post = post_root.find(".s_post_tools > .s_comment_edit_form").clone();
   var edit_form = edit_post.find("form");
   edit_form.find('[name="comment"]').attr('value', comment_key)
-  edit_form.ajaxForm({clearForm: true, dataType:'json', success:onCommentSubmit});
+  edit_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success:onCommentSubmit});
   
   edit_post.find('.s_comment_edit_content').attr('value', $(this).parents(".s_post_container").find('.s_post_content').html())
   comment_root.find(".s_edit_hollow").append(edit_post);
@@ -375,6 +385,7 @@ function onPostExpand() {
 	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    post_item.html(data.html);
 	  }});
@@ -391,6 +402,7 @@ function onPostCollapse() {
 	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    post_item.html(data.html);
 	    post_item.find('.post_del').click(onPostItemDelete);
@@ -422,6 +434,7 @@ function onPostCommentExpandEx() {
 	  url:'/post/manage', 
 	  data: data,
 	  dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    post_comments.html(data.html);
 	  }});
@@ -454,6 +467,7 @@ function onPostReshare() {
     data: {'cmd': 'reshare_modal',
 	   'post': post },
     dataType:'json',
+    error: onError,
     success:function(data){
       modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
@@ -462,7 +476,7 @@ function onPostReshare() {
 	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
 	modal_reshare.find('input[name="post"]').attr("value", post);
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
-	modal_reshare.find('form').ajaxForm({clearForm: true, dataType:'json', success:function(data){
+	modal_reshare.find('form').ajaxForm({clearForm: true, dataType:'json', error: onError, success:function(data){
 	  if(data.response!="success") {
 	    if(data.response=="flooderror") {
 	      modal_reshare.modal('hide');
@@ -497,6 +511,7 @@ function onPostVote() {
 	   'post': post,
 	   'vote': vote },
     dataType:'json',
+    error: onError,
     success:function(data){
       if(data.response!="success") {
 	if(data.response=="flooderror") {
@@ -534,6 +549,7 @@ function onCommentDelete() {
 	    url:'/post/manage', 
 	    data: data,
 	    dataType:'json',
+	    error: onError,
 	    success:function(data){
 	      comment.hide();
 	      comment.remove();
@@ -556,6 +572,7 @@ function onPostPin(){
     url:'/post/manage', 
     data: data,
     dataType:'json',
+    error: onError,
     success:function(data){
 	$.pnotify({
 	  title: 'Info',
@@ -574,6 +591,7 @@ function onPostDelete(){
       url:'/post/manage', 
       data: data,
       dataType:'json',
+      error: onError,
       success:function(data){ window.location.href = "/stream"; }});
   }	  	
 }
@@ -587,6 +605,7 @@ function onPostItemDelete(){
       url:'/post/manage', 
       data: data,
       dataType:'json',
+      error: onError,
       success:function(data){
 	      $('[data-post-key="'+post+'"]').remove();
       }});
@@ -599,6 +618,7 @@ function onPostSubscribe(){
   $.ajax({url:'/post/subscribe',
 	  data: data,
           dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    $("#postsub").hide();
 	    $("#postunsub").show();
@@ -616,6 +636,7 @@ function onPostUnsubscribe(post){
   $.ajax({url:'/post/subscribe',
 	  data: data,
           dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    $("#postsub").show();
 	    $("#postunsub").hide();
@@ -651,7 +672,7 @@ function onSubUnsubNode() {
     'node': node_key,
     'cmd': sub_status == 'true' ? 'unsubscribe' : 'subscribe'
   };
-  $.ajax({url:'/node/subscribe', data: data, dataType:"JSON", success:function(data){
+  $.ajax({url:'/node/subscribe', data: data, dataType:"JSON", error: onError, success:function(data){
       node_root.attr('data-sub-status', data.subscribed );
       node_root.attr('data-ntfy-period', data.ntfy_period);
       onSuccess(data);
@@ -673,6 +694,7 @@ function onNotificationPeriod() {
   $.ajax({url:'/node/subscribe',
 	  data: data,
 	  dataType:"JSON", 
+	  error: onError,
 	  success:function(data){ 
 	    node_root.attr('data-ntfy-period', ntfy_period);
   	    onSuccess(data)
@@ -692,6 +714,7 @@ function onNotificationPeriodProfile() {
   $.ajax({url:'/node/subscribe',
 	  data: data,
 	  dataType:"JSON", 
+	  error: onError,
 	  success:function(data){ 
 	    node_root.attr('data-ntfy-period', ntfy_period);
             node_root.find('.ntfy_period').removeClass('btn-primary');
@@ -766,7 +789,7 @@ function initNode(node_key){
   }
  });
  $("#post_content_text").tinymce(tiny_mce_opts);
- $('#new_post_form').ajaxForm({clearForm: true, dataType:'json',success: function(data) { 
+ $('#new_post_form').ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
   if (data.response!="success") {
    if(data.response=="flooderror"){
     onFloodError(data)
@@ -838,6 +861,7 @@ function onOpenNotifications(event) {
      url:'/ntfctn/paginate', 
      data: data,
      dataType:'json',
+     error: onError,
      success:function(data) {
        ntfy_pop = $('#ntf_cnt');
        ntfy_pop.attr('data-content', data.html);
@@ -874,6 +898,7 @@ function loadNode(node_key, node_name) {
   url:'/node/paginate',
   data: data,
   dataType:'json',
+  error: onError,
   success:function(data) { 
    if(data.response=="success"){
     $("#node_container").empty();   
@@ -898,6 +923,7 @@ function loadPosts(node_key,current_cursor) {
   url:'/post/paginate',
   data: data,
   dataType:'json',
+  error: onError,
   success:function(data) { 
    $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
@@ -948,6 +974,7 @@ function onVotesDetail() {
   url:'/post/manage',
   data: data,
   dataType:'json',
+  error: onError,
   success:function(data) { 
    $('body').append(data.html);
    $('#votes_modal').modal()
@@ -968,6 +995,7 @@ function onResharesDetail() {
   url:'//post/manage/managepost',
   data: data,
   dataType:'json',
+  error: onError,
   success:function(data) { 
    $('body').append(data.html);
    $('#reshares_modal').modal()
@@ -988,6 +1016,7 @@ function onAuthorDetail() {
   url:'/post/manage',
   data: data,
   dataType:'json',
+  error: onError,
   success:function(data) { 
     author_pop.attr('data-content', data.html);
     author_pop.popover('show');
@@ -1005,6 +1034,7 @@ function loadNotifications() {
           url:"/ntfctn/paginate",
 	  data: data,
           dataType:'json',
+	  error: onError,
 	  success:function(data){
 	    if(data.response=="success"){
 	      $("#notifications_list").attr('data-cursor', data.cursor);

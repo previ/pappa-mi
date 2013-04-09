@@ -299,6 +299,10 @@ class Commissario(model.Model):
     return self.stato == 0
   def isRegGenitore(self):
     return self.stato == 10
+  def is_deactivated(self):
+    return self.stato == 99
+  def is_active(self):
+    return not self.is_deactivated()
   
   def commissioni(self):
     if len(self._commissioni) == 0:
@@ -2003,6 +2007,11 @@ class SocialPostSubscription(model.Model):
     user = model.KeyProperty(kind=models.User)
     has_ntfy = model.BooleanProperty(default=False)
     
+    @classmethod
+    def get_by_user(cls,user):
+      sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key)
+      return sub_list 
+
     @classmethod
     def get_posts_keys_by_user(cls,user):
       sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key).fetch(keys_only=True)

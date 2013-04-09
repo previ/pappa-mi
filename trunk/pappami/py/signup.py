@@ -30,7 +30,7 @@ class SignupPreHandler(BasePage):
   
   @user_required
   def get(self):   
-    if self.getCommissario():
+    if self.getCommissario() and self.getCommissario().is_active():
       self.redirect("/")
     form = CommissarioForm()
     form.nome.data=""
@@ -80,8 +80,10 @@ class SignupHandler(BasePage):
       user.put()
       models.UserEmail.create(user.email, user.get_id())
     
-    SocialProfile.create(user.key)
-    commissario = Commissario()
+    #SocialProfile.create(user.key)
+    commissario = self.getCommissario()
+    if not commissario:
+      commissario = Commissario()
     
     form.populate_obj(commissario)
     commissario.usera = user.key
@@ -103,6 +105,7 @@ class SignupHandler(BasePage):
     commissario.notify = notify
     
     commissario.put()
+    commissario.set_cache()
 
 
     new = list()
@@ -114,7 +117,7 @@ class SignupHandler(BasePage):
     for cm in new:
       commissione = model.Key("Commissione", cm).get()
       commissario.register(commissione)
-      node = SocialNode.get_by_resource(commissione.get)[0]
+      node = SocialNode.get_by_resource(commissione.key)[0]
       if node:
         node.subscribe_user(commissario.usera.get())
 

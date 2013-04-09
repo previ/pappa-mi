@@ -79,8 +79,24 @@ $(document).ready(function() {
     if($('#citta').val() != "") oncitychanged();
     
     $("[data-content]").popover({delay: { show: 500, hide: 2000 }, title:"Informazioni"});    
-    $('.ntfy_period').click(onNotificationPeriodProfile)
+    $('.ntfy_period').click(onNotificationPeriodProfile);
+    
+    $('.profile_deactivate').click(onProfileDeactivateModal);
 });     
+
+function onProfileDeactivateModal(e) {
+  $.ajax({
+    type: 'GET',
+    url:'/profilo/deactivate', 
+    data: {'cmd': 'deactivate_modal' },
+    dataType:'json',
+    success:function(data){
+      var dialog = $("#dialog");
+      dialog.html(data.html);
+      dialog.show();
+      dialog.modal();
+    }});
+}
 
 function oncitychanged() {
   if( $("#citta").val() != "" && $("#citta").val() != city) {        
