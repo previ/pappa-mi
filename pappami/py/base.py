@@ -174,6 +174,7 @@ class BaseHandler(webapp.RequestHandler):
     else:
       url = "/eauth/login?next=" + self.request.uri
       url_linktext = 'Entra'
+      
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
@@ -192,7 +193,7 @@ class BaseHandler(webapp.RequestHandler):
             template_values["main"] = 'unsupported.html'
       
     commissario = self.getCommissario(user)
-    if( commissario is not None ) :
+    if( commissario and commissario.is_active()) :
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
@@ -209,6 +210,7 @@ class BaseHandler(webapp.RequestHandler):
        
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
+    
     template_values["cmsro"] = commissario
     
     if "main" not in template_values:
@@ -396,7 +398,7 @@ class CMMenuHandler(BasePage):
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
       
-    logging.info("offset: " + str(offset))
+    #logging.info("offset: " + str(offset))
     menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
       menu = list()
@@ -406,7 +408,7 @@ class CMMenuHandler(BasePage):
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
               
       memcache.set("menu-" + str(offset) + "-" + str(data), menu)    
-    logging.info(str(menu))
+    #logging.info(str(menu))
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):    
@@ -443,14 +445,14 @@ class CMMenuHandler(BasePage):
 
   def getMenuWeek(self, data, cm): 
 
-    logging.info(str(cm.key))
-    logging.info(str(data))
+    #logging.info(str(cm.key))
+    #logging.info(str(data))
     offset = cm.getCentroCucina(data).getMenuOffset(data)
 
     if offset == None:
       offset = 0
 
-    logging.info("offset: " + str(offset))
+    #logging.info("offset: " + str(offset))
     
     # settimana corrente
     menu = MenuNew.get_by(cm.citta, data)
@@ -555,7 +557,7 @@ def reguser_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(user)
-    if commissario == None:
+    if commissario == None or commissario.is_deactivated():
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)

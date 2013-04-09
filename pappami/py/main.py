@@ -45,8 +45,11 @@ class MainPage(BasePage):
     template_values["host"] = self.getHost()
         
     commissario = self.getCommissario(self.get_current_user())
-    if commissario:
+    if commissario and commissario.is_active():
       self.redirect("/stream")
+      return
+    if commissario and commissario.is_deactivated():
+      self.redirect("/signup")
       return
       #return self.getPrivate(template_values)
           

@@ -20,7 +20,54 @@ from google.appengine.api import mail
 from gviz_api import *
 from model import *
 from form import CommissarioForm
-from base import BasePage, CMCommissioniDataHandler, user_required, config, handle_404, handle_500
+from base import BasePage, CMCommissioniDataHandler, reguser_required, user_required, config, handle_404, handle_500
+
+class DeactivateProfileHandler(BaseHandler):
+  
+  @reguser_required
+  def get(self):
+   
+    commissario = self.getCommissario()
+    form = CommissarioForm(obj=commissario)
+    form.email = commissario.usera.get().email
+    template_values = {
+      'cmsro': commissario,
+    }
+    template = jinja_environment.get_template("deactivate_profile_modal.html")    
+    html=template.render(template_values)
+    
+    self.output_as_json({'response':'success','html':html})
+    
+  @reguser_required
+  def post(self):
+   
+    if self.request.get("cmd") == "deactivate":
+      commissario = self.getCommissario()
+              
+      #commissario.privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+      
+      for commissione in commissario.commissioni():
+        commissario.unregister(commissione)
+        node = SocialNode.get_by_resource(commissione.key)[0]
+        if node:
+          node.unsubscribe_user(commissario.usera.get())
+      
+      for sp in SocialPostSubscription.get_by_user(commissario.usera.get()):
+        sp.key.delete()
+        
+      commissario.stato = 99
+      commissario.put()
+      commissario.set_cache()
+      
+      for ue in models.UserEmail.get_by_user(commissario.usera.id()):
+        ue.key.delete()
+    
+      template_values = {
+      'content': 'profile_deactivated.html',
+      }
+      
+      self.response.delete_cookie('_eauth')      
+      self.getBase(template_values)
 
 class CMProfiloHandler(BasePage):
   
@@ -134,10 +181,11 @@ class CMAvatarHandler(BasePage):
       
     
 app = webapp.WSGIApplication([
-    ('/profilo', CMProfiloHandler),
-    ('/profilo/avatar', CMAvatarHandler),
-    ('/profilo/getcm', CMCommissioniDataHandler)],
-    debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+  ('/profilo/deactivate', DeactivateProfileHandler),
+  ('/profilo/avatar', CMAvatarHandler),
+  ('/profilo/getcm', CMCommissioniDataHandler),
+  ('/profilo', CMProfiloHandler)],
+  debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
