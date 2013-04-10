@@ -91,11 +91,11 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				   </div>				
 				   <div class="s_post_body">
 				    <div class="s_post_content">		
-					<form class="s_new_comment_form" action="/post/manage" method="post">
+					<form class="s_new_comment_form" action="/post/manage" method="post" novalidate="true">
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
-						<div class="">
-							<textarea id="comment_content" class="s_post_comment required" name="content"></textarea>
+						<div class="form_parent">
+							<textarea id="comment_content" class="s_post_comment" name="content"></textarea>
 							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
 						</div>
 					</form>
@@ -116,7 +116,9 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<form class="s_update_comment_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
 				<input type="hidden" name="cmd" value="update_comment"/>
 				<input type="hidden" name="comment" value=""/>
-				<input class="s_comment_edit_content" name="content" value="">
+				<div class="form_parent">
+					<input class="s_comment_edit_content required" name="content" value="">
+				</div>
 				<div class="s_comment_commands">
 					<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
 					<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			

@@ -39,7 +39,7 @@ from form import CommissioneForm
 from gviz_api import *
 from base import BasePage, config
 #from gcalendar import *
-from social import *
+from stream import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -728,32 +728,8 @@ class CMAdminHandler(BasePage):
       self.response.out.write(buff)
       return
 
-    if self.request.get("cmd") == "resetSocial":
-      SocialUtils.unsubscribe_all()
-      logging.info("resetSocial.1")
-      SocialUtils.delete_nodes()
-      logging.info("resetSocial.2")
-      
-      self.response.out.write("resetSocial Ok")
-      return
-    
-    if self.request.get("cmd") == "resetIndex":
-      self.delete_all_in_index("index-posts")
-      logging.info("resetIndex.posts")
-      self.delete_all_in_index("index-nodes")
-      logging.info("resetIndex.nodes")
-      
-    if self.request.get("cmd") == "initSocial":
-      SocialUtils.generate_nodes()
-      logging.info("initSocial.1")
-      SocialUtils.locations_to_nodes()
-      logging.info("initSocial.2")
-      
-      self.response.out.write("initSocial Ok")
-      return
-
     if self.request.get("cmd") == "migSocial":
-      SocialUtils.msg_to_post()     
+      #SocialUtils.msg_to_post()     
       self.response.out.write("migSocial Ok")
       return
 

@@ -12,7 +12,7 @@ $(document).ready(function () {
 
 <div id="node_selector">	
  <div class="row">
-  <div class="span3">
+  <div class="span3 s_node_panel">
    <ul id="node_list" class="nav nav-list well">{%if user%}
     <li><a data-node-key="all" href="#"><i class="icon-home"></i><span title="I tuoi argomenti" class="node_name">I tuoi argomenti</span><i class="pull-right icon-chevron-right"></i></a></li>{%endif%}
     <li><a data-node-key="news" href="#"><i class="icon-list"></i><span title="Tutte le novità" class="node_name">Tutte le novità</span><i class="pull-right icon-chevron-right"></i></a></li>
@@ -22,15 +22,15 @@ $(document).ready(function () {
     <li>
      <a href="/node/list"><i class="icon-search"></i>Altre scuole e argomenti</a>
     </li>
-    <li class="nav-header"><i class="icon-fire"></i>Più discussi</li>
+    <li class="nav-header hidden-phone"><i class="icon-fire"></i>Più discussi</li>
     {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
-    <li class="nav-header"><i class="icon-asterisk"></i>Nuovi</li>
+    <li class="nav-header hidden-phone"><i class="icon-asterisk"></i>Nuovi</li>
     {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
    </ul>    
   </div>
-  <div id="node_container" class="span9">
+  <div id="node_container" class="span9 s_node_container">
   </div>
  </div>
 </div>	

@@ -1,8 +1,8 @@
 @media (max-width: 979px) and (min-width: 768px){
-.span3 {
+.s_node_panel {
 width: 220px;
 }
-.span9 {
+.s_node_container {
 width: 484px;
 }
 }
@@ -10,13 +10,14 @@ width: 484px;
 .node_description {
 float:right
 }
+
 .node {
 width:400px
 }
 
 .s_post {
 padding-bottom: 8px;
-width:100%;
+zoom:1;
 }
 
 .s_post_item {
@@ -29,25 +30,25 @@ background-color: #eee;
 
 .s_post_comments {
 margin-left:64px;
-#width:85%;
 }
 
 .s_comment {
 margin-top: 8px;
 margin-bottom: 8px;
-width:100%;
+zoom:1;
 }
 
 .s_post_avatar {
-display: table-cell;
+float: left;
 padding-left: 5px;
 padding-right: 5px;
 cursor: pointer;
 }
 
 .s_post_container {
-display: table-cell;
-width:100%;
+display: block;
+overflow: hidden;
+zoom:1;
 }
 
 .s_post_header {
