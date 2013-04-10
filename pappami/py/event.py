@@ -192,12 +192,18 @@ class EventHandler(BaseHandler):
             
         template = jinja_environment.get_template("ntfctn/notifications_email.html")
         html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications})
-        """mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
-        to=user.get().email,
-        subject="[Pappa-Mi] Novità",
-        body="",
-        html=html
-        )"""
+        test_emails = ['roberto.previtera@gmail.com',
+                       'aiuto@pappa-mi.it',
+                       'bob_previ@tahoo.com',
+                       'muriel.verweij@gmail.com',
+                       'roberto@pvri.com']
+        if user.get().email in test_emails:
+            mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
+            to=user.get().email,
+            subject="[Pappa-Mi] Novità",
+            body="",
+            html=html
+            )
         #logging.info(html)        
 
 class NotificationHandler(BasePage):

@@ -1,11 +1,11 @@
 <form class="s_update_post_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
 	<input type="hidden" name="cmd" value="update_post"/>
 	<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>
-	<div class="s_post_header">			
-		<input class="s_post_edit_title" type="text" name="title" value="{{post.title}}">
+	<div class="s_post_header form_parent">			
+		<input class="s_post_edit_title required" type="text" name="title" value="{{post.title}}">
 	</div>				
-	<div class="s_post_body">
-		<textarea class="s_post_edit_content" name="content">{{post.content}}</textarea>
+	<div class="s_post_body form_parent">
+		<textarea class="s_post_edit_content required" name="content">{{post.content}}</textarea>
 		{%for resource in post.resource%}
 		<div class="s_post_resource well">
 		{%include "resources/"+post.res_type[loop.index-1]+".html"%}

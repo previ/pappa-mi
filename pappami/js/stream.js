@@ -1,7 +1,9 @@
+"use strict";
+
 var channel = "";
 
 $(document).ready(function() {
-  channel_id = $('body').attr('data-channel-id');
+  var channel_id = $('body').attr('data-channel-id');
   if(channel == "" && channel_id != "") {
     channel = openChannel(channel_id);
   }
@@ -12,7 +14,7 @@ $(document).ready(function() {
 
 function openChannel(channel_id) {
     channel = new goog.appengine.Channel(channel_id);
-    socket = channel.open();
+    var socket = channel.open();
     socket.onopen = function (){/*alert("channel opened")*/};
     socket.onmessage = onChannelMessage;
     socket.onerror = function (){/*alert("error")*/};
@@ -38,7 +40,7 @@ function getNotificationsNum() {
 }
 
 function onChannelMessage(m) {
-  m=jQuery.parseJSON(m.data)
+  var m = jQuery.parseJSON(m.data)
   getNotificationsNum();
   var textmessage = m.user + ' ha aggiunto un <a href="/post/' + m.source_id +'">' + m.source_desc + '</a> su <a href=/node/' + m.target_id + '">' + m.target_desc + '</a>';
   $.pnotify({
@@ -131,26 +133,33 @@ function getPostKeyByElement(element) {
 }
 
 function initPost(post_root) {
-  post_root.find("form.s_new_comment_form").validate({
+  var comment_form = post_root.find('form.s_new_comment_form');
+  comment_form.validate({
+	  ignore: "",
 	  errorClass: "error",
 	  errorPlacement: function(error, element) {
-	  var item = $(element);
-	  item.tooltip({title:error.text(), trigger:'manual'});
-	  item.tooltip('show');
-  },
-  highlight: function(element, errorClass, validClass) {
-	  var item = $(element).parents(".form_parent");
-	  item.addClass(errorClass); 
-  },
-  unhighlight: function(element, errorClass, validClass) {
-	  var item = $(element).parents(".form_parent");
-	  item.removeClass(errorClass); 
-	  $(element).tooltip('hide');
-  },  
-  rules: {}
+	    var item = $(element).parents(".form_parent");
+	    item.tooltip({title:error.text(), trigger:'manual'});
+	    item.tooltip('show');
+    },
+    highlight: function(element, errorClass, validClass) {
+	    var item = $(element).parents(".form_parent");
+	    item.addClass(errorClass);
+    },
+    unhighlight: function(element, errorClass, validClass) {
+	    var item = $(element).parents(".form_parent");
+	    item.removeClass(errorClass); 
+	    $(element).tooltip('hide');
+    },  
+    rules: {
+      content: {
+	  required: true,	
+	  minlength: 8
+	}
+    }
   });
-  
-  post_root.find('form.s_new_comment_form').ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
+    
+  comment_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
     if (data.response!="success") {
       if(data.response=="flooderror"){
 	onFloodError(data, function(){} )
@@ -164,15 +173,12 @@ function initPost(post_root) {
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
     tinymce.get('comment_content').setContent('');
-    comment = post_root.find(".s_comment_list").find('li:last-child');
+    var comment = post_root.find('.s_comment_list > li:last-child');
 
-    $(document).ready(function(){
-      initComment(comment);
-    });
+    initComment(comment);
   
   }, beforeSubmit: function(arr,$form) {
-	  post_root.find(".s_comment_submit").button("loading");
-	  //$('#new_comment').slideUp();
+      post_root.find(".s_comment_submit").button("loading");
   }});	
   
   post_root.find('.s_post_comment').tinymce(tiny_mce_opts);
@@ -216,6 +222,31 @@ function onPostEdit(){
       edit_post.html(data.html)
       $(document).ready(function(){
 	var edit_form = edit_post.find("form");
+	edit_form.validate({
+	  ignore: "",
+	  errorClass: "error",
+	  errorPlacement: function(error, element) {
+	    var item = $(element).parents(".form_parent");
+	    item.tooltip({title:error.text(), trigger:'manual'});
+	    item.tooltip('show');
+	  },
+	  highlight: function(element, errorClass, validClass) {
+	    var item = $(element).parents(".form_parent");
+	    item.addClass(errorClass); 
+	  },
+	  unhighlight: function(element, errorClass, validClass) {
+	    var item = $(element).parents(".form_parent");
+	    item.removeClass(errorClass); 
+	    $(element).tooltip('hide');
+	  },  
+	  rules: {
+	    content: {
+		required: true,	
+		minlength: 8
+	      }
+	  }
+	});
+
 	edit_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success:onEditSubmit});	
 	var edit_undo = $('<div class="s_edit_undo" style="display:none;"></div>');
 	edit_undo.append(post_container.contents());
@@ -261,6 +292,30 @@ function onCommentEdit(){
   var comment_key = comment_root.attr('data-comment-key');   
   var edit_post = post_root.find(".s_post_tools > .s_comment_edit_form").clone();
   var edit_form = edit_post.find("form");
+  edit_form.validate({
+    ignore: "",
+    errorClass: "error",
+    errorPlacement: function(error, element) {
+      var item = $(element).parents(".form_parent");
+      item.tooltip({title:error.text(), trigger:'manual'});
+      item.tooltip('show');
+    },
+    highlight: function(element, errorClass, validClass) {
+      var item = $(element).parents(".form_parent");
+      item.addClass(errorClass); 
+    },
+    unhighlight: function(element, errorClass, validClass) {
+      var item = $(element).parents(".form_parent");
+      item.removeClass(errorClass); 
+      $(element).tooltip('hide');
+    },  
+    rules: {
+      content: {
+	  required: true,	
+	  minlength: 8
+	}
+    }
+   });
   edit_form.find('[name="comment"]').attr('value', comment_key)
   edit_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success:onCommentSubmit});
   
@@ -281,7 +336,7 @@ function onCommentSubmit(data){
       return
     }
   }
-  comment_root = $('[data-comment-key="'+ data.comment +'"]');
+  var comment_root = $('[data-comment-key="'+ data.comment +'"]');
   comment_root.html(data.html);
 
   $(document).ready(function(){
@@ -469,7 +524,7 @@ function onPostReshare() {
     dataType:'json',
     error: onError,
     success:function(data){
-      modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
+      var modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
       $(document).ready(function () {
 	//modal_reshare = $("#tools").find("#post_reshare")
@@ -749,7 +804,7 @@ function onSearchPaginate() {
 
 function onNodeClick(){
  var node_item = $(this);
- key=node_item.attr('data-node-key');
+ var key=node_item.attr('data-node-key');
  node_item.parent().siblings(".active").removeClass("active");
  node_item.parent().addClass("active");
  var node_name = node_item.find(".node_name").attr('title');
@@ -770,9 +825,10 @@ function onNodeClick(){
 
 function initNode(node_key){
  $("#new_post_form").validate({
+  ignore: "",
   errorClass: "error",
   errorPlacement: function(error, element) {
-    var item = $(element);
+    var item = $(element).parents(".form_parent");
     item.tooltip({title:error.text(), trigger:'manual'});
     item.tooltip('show');
   },
@@ -786,6 +842,10 @@ function initNode(node_key){
     $(element).tooltip('hide');
   },  
   rules: {
+    content: {
+	required: true,	
+	minlength: 8
+      }
   }
  });
  $("#post_content_text").tinymce(tiny_mce_opts);
@@ -848,7 +908,6 @@ function init(){
       $(this).attr("data-visible", 'false');
       //e.preventDefault()
     });
-  clickedAway = true;
  });  
 }
 
@@ -863,7 +922,7 @@ function onOpenNotifications(event) {
      dataType:'json',
      error: onError,
      success:function(data) {
-       ntfy_pop = $('#ntf_cnt');
+       var ntfy_pop = $('#ntf_cnt');
        ntfy_pop.attr('data-content', data.html);
        ntfy_pop.popover('show');
        ntfy_pop.attr("data-visible", 'true');
@@ -875,15 +934,15 @@ function onOpenNotifications(event) {
 }
 
 function addAttach() {
-  attach = $(this)
-  att_clone = attach.clone();
-  att_clone.appendTo(attach.parent())
+  var attach = $(this);
+  var att_clone = attach.clone();
+  att_clone.appendTo(attach.parent());
   //att_clone.change(addAttach);
 }
 
 function onMoreClick(){
- key = $(this).parents('.node_root').attr('data-node-key');
- loadPosts(key,$("#main_stream").attr('next_cursor'))
+ var key = $(this).parents('.node_root').attr('data-node-key');
+ loadPosts(key,$("#main_stream").attr('next_cursor'));
 }
 
 
@@ -891,7 +950,7 @@ function loadNode(node_key, node_name) {
  var data = {
   'cmd': 'node_main',
   'node': node_key,
-  'node_name': node_name,
+  'node_name': node_name
   };
  $.ajax({
   type: 'POST',
@@ -902,9 +961,9 @@ function loadNode(node_key, node_name) {
   success:function(data) { 
    if(data.response=="success"){
     $("#node_container").empty();   
-    $("#node_container").append(data.html)
-    initNode(node_key)
-    loadPosts(node_key, "")
+    $("#node_container").append(data.html);
+    initNode(node_key);
+    loadPosts(node_key, "");
    } 
   }
  });  
@@ -1009,7 +1068,7 @@ function onAuthorDetail() {
 
  var data = {
   'cmd': 'author_detail',
-  'post': post_key,
+  'post': post_key
   };
  $.ajax({
   type: 'POST',
@@ -1026,8 +1085,8 @@ function onAuthorDetail() {
 }
 
 function loadNotifications() {
-  cursor = $("#notifications_list").attr('data-cursor');
-  data = {'cmd': 'notifications',
+  var cursor = $("#notifications_list").attr('data-cursor');
+  var data = {'cmd': 'notifications',
 	  'cursor': cursor };
   $.ajax({
 	  type: 'POST',

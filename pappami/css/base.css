@@ -35,7 +35,13 @@ cursor: pointer;
 /* SETUP */
 
 /*body {background: url('/img/background.jpg') no-repeat fixed top center; background-color:#3986c8; color:#303030;}*/
-.main { background:url('/img/back_transp.png'); }
+.main { background:url('/img/back_transp.png'); padding-top:60px;}
+@media (max-width: 979px) {
+.main {padding-top:0px;}
+}
+@media (max-width: 1280px) {
+.s_navbar_search {display:none;}
+}
 
 .list-item {
   background-color: #eeeeee;

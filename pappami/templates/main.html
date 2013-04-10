@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/> 
+    {#<meta http-equiv="X-UA-Compatible" content="IE=edge"/>#} 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Content-Language" content="it-it"/>
     <title>Pappa-Mi Raccolta dati Commissioni Mensa</title>
@@ -87,17 +87,16 @@
 	    <span class="icon-bar"></span>
 	  </a>
       
-	  <a class="brand" style="padding:8px 20px 0px" href="/"><img class="avatar" style="width:24px;height:24px;" src="/img/pappa-mi-logo.png"></img><img class="" src="/img/pappa-mi-logo-text_24.png"></img></a>
+	  <a class="brand" style="padding:8px 20px 0px;" href="/"><img class="avatar" style="width:24px;height:24px; float:left;" src="/img/pappa-mi-logo.png"></img><img style=" float:left;" src="/img/pappa-mi-logo-text_24.png"></img></a>
 	  <div class="nav-collapse">
 	    <ul class="nav">
-	      <li><a href="/">Home</a></li>
 	      <li><a href="/chi">Chi siamo</a></li>
 	      <li><a href="/contattaci" target="new">Contattaci</a></li>
 	      <li><a href="http://blog.pappa-mi.it">Blog</a></li>
 	      <li><a href="http://pappapedia.pappa-mi.it">Pedia</a></li>
 	      <li><a href="http://www.youtube.com/pappamitube">Video</a></li>{% if admin %}
-	      <li><a href="/admin">Gestione Sistema</a></li>{% endif %}{% if cmsro %}	    
-	      <li>
+	      <li><a href="/admin">Admin</a></li>{% endif %}{% if cmsro %}	    
+	      <li class="s_navbar_search">
 	       <form class="navbar-search pull-left" action="/social/search" method="post">
 	        <input type="text" name="query" class="search-query span2" placeholder="Cerca">
 	       </form>
@@ -108,7 +107,7 @@
 	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
 	      <li><a id="ntf_cnt" class="s_popover" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" data-container="body" href="#"><span class="s_glob_ntfy badge">0</span></a></li>
 	      <li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"style="float:left;"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
 		<ul class="dropdown-menu">
 		  <li><a href="/profilo">Profilo</a></li>
 		  <li class="divider"></li>
@@ -121,7 +120,7 @@
       </div>
     </div>
   </div>
-  <div class="container main" style="padding-top: 60px;">
+  <div class="container main">
 {% include content %}  
     <div class="row span12">
       <p>Pappa-Mi versione {{version}} - <a href="/condizioni">Condizioni del Servizio</a> - <a href="/widget/get">Widget di Pappa-Mi per il mio sito</a> - <a href="/citta" target="new">Pappa-Mi per la mia Città</a></p>
