@@ -82,7 +82,7 @@ function onSuccess(data){
   }
 }
 
-function onError(data){
+function onError(jqXHR, textStatus, errorThrown){
   window.location.href="/";
 }
 
@@ -247,7 +247,7 @@ function onPostEdit(){
 	  }
 	});
 
-	edit_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success:onEditSubmit});	
+	edit_form.ajaxForm({clearForm: true, dataType:'html', error: onError, success:onEditSubmit});	
 	var edit_undo = $('<div class="s_edit_undo" style="display:none;"></div>');
 	edit_undo.append(post_container.contents());
 	post_root.append(edit_undo);
@@ -276,7 +276,8 @@ var onEditCancel = function (){
   return false;
 }
 
-function onEditSubmit(data){
+function onEditSubmit(data) {
+  /*
   if (data.response!="success") {
     if(data.response=="flooderror") {
       onFloodError(data, function(){})
@@ -284,6 +285,8 @@ function onEditSubmit(data){
     }
   }
   getPostElementByKey(data.post).parent().html(data.html);
+  */
+  getPostElementByKey(data.post).parent().html(data);
 }
 
 function onCommentEdit(){
@@ -354,39 +357,6 @@ var onCommentEditCancel = function (){
   return false;
 }
 
-/*
-function onPostEditSubmit(){
-  var post = $(this).parents('.s_post_root').attr("data-post-key");    
-  var reply = $(this).parents('.s_comment').attr("data-reply-key");    
-  
-  if(reply) post = reply;
-
-  var content = $(this).parents('.s_post_edit_form').find(".s_post_edit_content").attr("value");
-  var data = {'cmd':'edit_open_post', 'post':post, 'content': content}
-  
-  $.ajax({
-	  type: 'POST',
-	  url:'/post/manage', 
-	  data: data,
-	  dataType:'json',
-	  success:function(data){
-	    if (data.response!="success") {
-	      if(data.response=="flooderror") {
-		onFloodError(data, function(){})
-		return
-  	      }
-	    }
-	    $("#post_content_"+post).html(data.content)
-	    $("#edit_hollow_"+post).empty()
-	    $("#post_content_"+post).show()		   
-	    $(".s_post_edit_form").hide()
-	    $(".s_post_commands").show()
-	    $(".s_post_commands").show()
-	    $(".s_post_attachs").show()
-	    }})
-}
-*/
-
 function onAttachDelete(){
   var form = getPostRootByElement($(this)).find('form.s_update_post_form');
   var attach = $(this).parents('.s_attach');  
@@ -402,32 +372,6 @@ function onAttachDelete(){
     input.attr('value', '')
   }
 }
-
-/*
-function onReplyEditSubmit(){
-  var post = $(this).parents('.s_post_root').attr("data-post-key");    
-  var reply = $(this).parents('.s_comment').attr("data-reply-key");    
-  var data = {'cmd':'edit_open_post', 'node':node, 'post':reply, 'content': $(this).parents('.edit_post').find(".edit_content").attr("value")}
-  
-  $.ajax({
-	  type: 'POST',
-	  url:'/post/manage', 
-	  data: data,
-	  dataType:'json',
-	  success:function(data){
-	    if (data.response!="success") {
-	      if(data.response=="flooderror") {
-		onFloodError(data, function(){})
-		return
-  	      }
-	    }
-	    $("#post_content_"+post).html(data.content)
-	    $("#edit_hollow_"+post).empty()
-	    $("#post_content_"+post).show()		   
-	    $(".s_post_commands").show()
-	    }})
-}
-*/
 
 function onPostExpand() {
   var exp_comments = $(this).hasClass('s_post_comments_c');
@@ -849,15 +793,17 @@ function initNode(node_key){
   }
  });
  $("#post_content_text").tinymce(tiny_mce_opts);
- $('#new_post_form').ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
+ $('#new_post_form').ajaxForm({clearForm: true, dataType:'html', error: onError, success: function(data) { 
+  /*
   if (data.response!="success") {
    if(data.response=="flooderror"){
-    onFloodError(data)
+    onFloodError(data);
     return			  
    }
   }
-  $("#main_stream_list").prepend(data.html)
-  
+  $("#main_stream_list").prepend(data.html);
+  */
+  $("#main_stream_list").prepend(data)
   $("#open_post_submit").button("reset");
   var post_root = $("#main_stream_list li:first-child");
   post_root.find('.post_del').click(onPostItemDelete);

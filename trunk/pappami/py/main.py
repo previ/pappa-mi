@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, reguser_required, config, handle_404, handle_500
+from base import BasePage, CMMenuHandler, Const, commissario_required, user_required, reguser_required, config, handle_404, handle_500
 from commissioni import ContattiHandler
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
@@ -81,15 +81,10 @@ class MainPage(BasePage):
     template_values = dict()
     template_values["bgcolor"] = "eeeeff"
     template_values["fgcolor"] = "000000"    
-    template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
-    #template_values["act_last"] = activities[0]
     template_values["geo"] = geo
     template_values["billboard"] = "navigation.html"
-    template_values["content"] = "activities.html"
     template_values["host"] = self.getHost()
-    
-    template_values["tags"] = self.getTopTags()
-   
+       
     self.getBase(template_values)
     
   def getStats(self):
@@ -115,35 +110,6 @@ class MainPage(BasePage):
       memcache.add("stats", stats)
       
     return stats
-
-class ActivityHandler(BasePage):
-  def get(self):
-    template_values = dict()
-    template_values["host"] = self.getHost()
-        
-    c = None
-    geo = model.GeoPt(45.463681,9.188171)
-
-    offset = 0
-    if self.request.get("offset") != "":
-      offset = int(self.request.get("offset"))
-
-    self.get_or_set_ctx("tag", self.request.get("tag", None))
-    self.get_or_set_ctx("cm", self.request.get("cm", None))
-      
-    template_values = dict()
-    template_values["citta"] = Citta.get_all()    
-    template_values["bgcolor"] = "eeeeff"
-    template_values["fgcolor"] = "000000"    
-    template_values["act_offset"] = Const.ACTIVITY_FETCH_LIMIT
-    template_values["geo"] = geo
-    template_values["content"] = "activities.html"
-    template_values["host"] = self.getHost()
-    template_values["tags"] = self.getTopTags()
-   
-    self.getBase(template_values)
-  def post(self):
-    return self.get()
         
 class CMSupportoHandler(BasePage):
   
@@ -305,8 +271,6 @@ class ContactusHandler(BasePage):
   
 app = webapp.WSGIApplication([
   ('/', MainPage),
-  ('/a', ActivityHandler),
-  ('/tags', TagsPage),
   ('/chi', ChiSiamoPage),
   ('/map', MapDataHandler),  
   ('/calendario', CalendarioHandler),

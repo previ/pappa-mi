@@ -109,18 +109,20 @@ function opennewwiz(url) {
 	    if( $('#activity_list li:first-child').attr('id') ) {	    
 	      $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	    }
-	    $('#form1').ajaxForm( {beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {
-	      data=jQuery.parseJSON(data)
+	    $('#form1').ajaxForm({ error: onError, dataType: "html", beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {
 	      $('#new-data').dialog('close');
 	      $('#new-data-form').html('');
 	      $('#new-data-preview').html('');
+	      /*
 	      if (data.response!="success") {
 	       if(data.response=="flooderror"){
 		onFloodError(data)
 		return			  
 	       }
 	      }
-	      $("#main_stream_list").prepend(data.html)	      
+	      $("#main_stream_list").prepend(data.html)
+	      */
+	      $("#main_stream_list").prepend(data)	      
 	      if(auto_open_nc) {
 		$('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
 		$('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
@@ -186,7 +188,7 @@ function opennewitem(url) {
        }
     });
     
-    $('#form0').ajaxForm({clearForm: false, success: function(data) { 
+    $('#form0').ajaxForm({error: onError, clearForm: false, success: function(data) { 
       $('#new-data-preview').html(data);
       if($('#new-data-preview').find('#form-error').html()) {
 	var err = $('#new-data-preview').find('#form-error');
@@ -201,18 +203,20 @@ function opennewitem(url) {
 	if( $('#activity_list li:first-child').attr('id') ) {
   	  $('#form1').find('#act_last').val($('#activity_list li:first-child').attr('id').substring('activity_'.length)); 
 	}
-	$('#form1').ajaxForm( { beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {
-	  data=jQuery.parseJSON(data)
+	$('#form1').ajaxForm({ error: onError, dataType: "html", beforeSubmit: function() {$('#form1').find("#e_submit").button("loading");}, success: function(data) {
 	  $('#new-data').dialog('close');	
 	  $('#new-data-form').html('');
 	  $('#new-data-preview').html('');
+	  /*
 	  if (data.response!="success") {
 	    if(data.response=="flooderror"){
-	      onFloodError(data)
+	      onFloodError(data);
 	      return			  
 	    }
 	  }
-	  $("#main_stream_list").prepend(data.html)	      
+	  $("#main_stream_list").prepend(data.html);
+	  */
+	  $("#main_stream_list").prepend(data);
 	  if(auto_open_nc) {
 	    $('#new-nc').html("Inserire altra Non conformit&agrave; ?")
 	    $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
@@ -221,9 +225,9 @@ function opennewitem(url) {
 	      { text: "No",
 		click: function() { $(this).dialog("close"); auto_open_nc = false;} } ] });
 	    $('#new-nc').dialog('open');
-	  } else if( $.browser.msie && ($.browser.version == "7.0" || $.browser.version == "8.0") ) {
+	  }/* else if( $.browser.msie && ($.browser.version == "7.0" || $.browser.version == "8.0") ) {
 	    window.location.href = "/a";
-	  }	
+	  }*/	
 	}});
       }
 	

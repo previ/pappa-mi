@@ -2023,7 +2023,7 @@ class SocialPostSubscription(model.Model):
     
     @classmethod
     def get_by_ntfy(cls):
-      return SocialPostSubscription.query().filter(SocialPostSubscription.has_ntfy==True).fetch()    
+      return SocialPostSubscription.query().filter(SocialPostSubscription.has_ntfy==True)   
         
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
@@ -2073,9 +2073,9 @@ class SocialNodeSubscription(model.Model):
       return nodes
 
     @classmethod
-    def get_by_node(cls, node_key, cursor):
+    def get_by_node(cls, node_key, cursor, limit=20):
       if cursor:
-        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20, start_cursor=cursor)
+        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=limit, start_cursor=cursor)
       else:
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20)
     
@@ -2256,8 +2256,8 @@ class SocialEvent(model.Model):
     event.put()
 
   @classmethod
-  def get_by_status(cls, status, cursor):
-    return SocialEvent.query().filter(SocialEvent.status==status).order(SocialEvent.date).fetch_page(20, start_cursor=cursor)
+  def get_by_status(cls, status, cursor, limit=20):
+    return SocialEvent.query().filter(SocialEvent.status==status).order(SocialEvent.date).fetch_page(page_size=limit, start_cursor=cursor)
 
   @classmethod
   def get_keys_by_source(cls, source_key):

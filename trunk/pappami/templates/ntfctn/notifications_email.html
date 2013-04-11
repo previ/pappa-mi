@@ -12,59 +12,55 @@ display: block;
 font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 20px;
-margin-left: 86px;
-margin-right: 86px;
-padding-top: 60px;
+margin-left: 8px;
+margin-right: 8px;
+padding-top: 6px;
 ">
    <div class="row">
     <div class="span12">
-     <h1><img src="http://www.pappa-mi.it/img/logo_48.png"/>Pappa-Mi</h1>
+     <h1><img src="http://www.pappa-mi.it/img/pappa-mi-logo.png" width="32"/>Pappa-Mi</h1>
      <h3>Notifica</h3>
     </div>
    </div>
-   <div class="row">
-    <div class="span9">
-     <ul class="unstyled">
-  {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
-<li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
 	<div class="">
-	{{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
-	</div>
-	<div class=""> 
-		<div class="s_post_avatar">
-			<img class="avatar" style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
-		</div>
-		<div class="s_post_container">
-			<div class="s_post_header">			
-				<div class="s_post_title"><span class="s_node_link" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand"><a target="_new" href="/post/{{post.key.urlsafe()}}">{{post.title}}</a></span></div> 
-				<div style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" class="s_post_author">scritto da {{post.commissario.nome}}</div>
-				<div class="s_post_date" style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" >&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
-			</div>				
-			<div class="s_post_body">{{post.content|truncate(length=200, end="...")}}</div>
-		</div>				
-	</div>
-</li>			
-   {%elif ntfy.event.get().type == "comment"%}{%set post = ntfy.event.get().target.get()%}{%set cmnt = ntfy.event.get().source.get()%}
-   <li class="s_post_item" data-post-key='{{post.key.urlsafe()}}'>
-	<div class="">
-	{{cmnt.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">commento</a> al <a href="/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
-	</div>
-	<div class=""> 
-		<div class="s_post_avatar">
-			<img class="avatar" style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{{cmnt.commissario.avatar(cmsro)}}" title="{{cmnt.commissario.nomecompleto(cmsro)}}">
-		</div>
-		<div class="s_post_container">
-			<div class="s_post_body">{{cmnt.content|truncate(length=200, end="...")}}</div>
-		</div>				
-	</div>
-</li>			
-{%endif%}{%endfor%}
-    </div>
+	 <ul style="list-style-type: none;padding-left:0px;">
+      {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
+    <li style="list-style-type: none;">
+	    <div class="">
+	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    </div>
+	    <div class=""> 
+		    <div style="float:left;padding-right:5px;">
+			    <img style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{%if 'http' not in post.commissario.nomecompleto(cmsro)%}http://{{host}}/{%endif%}{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		    </div>
+		    <div style="overflow:hidden;zoom:1;">
+			    <div>			
+				    <div class="s_post_title"><span class="s_node_link">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand"><a target="_new" href="http://{{host}}/post/{{post.key.urlsafe()}}">{{post.title}}</a></span></div> 
+				    <div style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" class="s_post_author">scritto da {{post.commissario.nome}}</div>
+				    <div class="s_post_date" style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" >&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
+			    </div>				
+			    <div class="s_post_body">{{post.content_summary}}</div>
+		    </div>				
+	    </div>
+    </li>			
+       {%elif ntfy.event.get().type == "comment"%}{%set post = ntfy.event.get().target.get()%}{%set cmnt = ntfy.event.get().source.get()%}
+       <li>
+	    <div class="">
+	    {{cmnt.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">commento</a> al <a href="http://{{host}}/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    </div>
+	    <div class=""> 
+		    <div style="float:left;padding-right:5px;">
+			    <img class="avatar" style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{%if 'http' not in cmnt.commissario.avatar(cmsro)%}http://{{host}}/{%endif%}{{cmnt.commissario.avatar(cmsro)}}" title="{{cmnt.commissario.nomecompleto(cmsro)}}">
+		    </div>
+		    <div style="overflow:hidden;zoom:1;">
+			    <div class="s_post_body">{{cmnt.content|truncate(length=200, end="...")}}</div>
+		    </div>				
+	    </div>
+    </li>			
+    {%endif%}{%endfor%}
    </div>   
    <div class="row">
-    <div class="span6">
-     <a href="http://www.pappa-mi.it/profilo#newsletter">Modifica impostazioni notifiche email</a>
-    </div>
+     <a href="http://www.pappa-mi.it/profilo#notifiche">Modifica impostazioni notifiche email</a>
    </div>
   </div>
  </body>

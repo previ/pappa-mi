@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from py.base import BasePage, CMMenuHandler, Const, ActivityFilter, commissario_required, user_required, config, handle_404, handle_500
+from py.base import BasePage, CMMenuHandler, Const, commissario_required, user_required, config, handle_404, handle_500
 import cgi, logging, os
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
@@ -29,7 +29,6 @@ import webapp2 as webapp
 from google.appengine.api import memcache
 
 from py.model import *
-from py.modelMsg import *
 from py.comments import *
 
 class CMMenuDataHandler(CMMenuHandler):
