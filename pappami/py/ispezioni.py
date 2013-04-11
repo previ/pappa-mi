@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #
 
-
 from py.base import *
 
 import os
@@ -134,12 +133,7 @@ class IspezioneHandler(BasePage):
       self.getBase(template_values) 
 
     elif( preview ):
-      
-      if self.request.get("last"):
-        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
-      else:
-        last_msg_key = None
-            
+                  
       isp = self.session.get("pw_obj")
       isp.allegati = self.session.get("pw_att")
       isp.tags = self.session.get("pw_tags")
@@ -166,15 +160,12 @@ class IspezioneHandler(BasePage):
         template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
         
 
-      else:
-        pass
+      #template = jinja_environment.get_template("post/post_item.html")
+      #html=template.render(template_values)
+      #response = {'response':'success','html':html,"cursor":''}
+      #self.output_as_json(response)
+      self.getBase(template_values)
       
-
-      template = jinja_environment.get_template("post/post_item.html")
-
-      html=template.render(template_values)
-      response = {'response':'success','html':html,"cursor":''}
-      self.output_as_json(response)
       
     else:
       key = self.request.get("key")
@@ -270,10 +261,6 @@ class NonconfHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      if self.request.get("last"):
-        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
-      else:
-        last_msg_key = None
       
       nc = self.session.get("pw_obj")
       nc.allegati = self.session.get("pw_att")
@@ -301,11 +288,11 @@ class NonconfHandler(BasePage):
         template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
         
       
-      template = jinja_environment.get_template("post/post_item.html")
-
-      html=template.render(template_values)
-      response = {'response':'success','html':html,"cursor":''}
-      self.output_as_json(response)
+      #template = jinja_environment.get_template("post/post_item.html")
+      #html=template.render(template_values)
+      #response = {'response':'success','html':html,"cursor":''}
+      #self.output_as_json(response)
+      self.getBase(template_values)      
       
     else:
       key = self.request.get("key")
@@ -396,10 +383,6 @@ class DietaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      if self.request.get("last"):
-        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
-      else:
-        last_msg_key = None
 
       dieta = self.session.get("pw_obj")
       dieta.allegati = self.session.get("pw_att")
@@ -426,11 +409,11 @@ class DietaHandler(BasePage):
         node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]       
         template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
         
-      template = jinja_environment.get_template("post/post_item.html")
-
-      html=template.render(template_values)
-      response = {'response':'success','html':html,"cursor":''}
-      self.output_as_json(response)
+      #template = jinja_environment.get_template("post/post_item.html")
+      #html=template.render(template_values)
+      #response = {'response':'success','html':html,"cursor":''}
+      #self.output_as_json(response)
+      self.getBase(template_values)      
       
     else:
       key = self.request.get("key")
@@ -518,10 +501,6 @@ class NotaHandler(BasePage):
     preview = self.request.get("preview")
    
     if( preview ):
-      if self.request.get("last"):
-        last_msg_key = model.Key("Messaggio",int(self.request.get("last")))
-      else:
-        last_msg_key = None
 
       nota = self.session.get("pw_obj")
       nota.allegati = self.session.get("pw_att")
@@ -550,11 +529,11 @@ class NotaHandler(BasePage):
         template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
 
         
-      template = jinja_environment.get_template("post/post_item.html")
-
-      html=template.render(template_values)
-      response = {'response':'success','html':html,"cursor":''}
-      self.output_as_json(response)
+      #template = jinja_environment.get_template("post/post_item.html")
+      #html=template.render(template_values)
+      #response = {'response':'success','html':html,"cursor":''}
+      #self.output_as_json(response)
+      self.getBase(template_values)
       
     else:
       key = self.request.get("key")

@@ -108,7 +108,6 @@ class PostManageHandler(BaseHandler):
         # parameters: 'title'
         # parameters: 'content'
         if cmd == "create_open_post":
-            self.response.headers["Content-Type"] = "text/xml"
             node=model.Key(urlsafe=self.request.get('node')).get()
             if not node.get_subscription(user.key).can_post:
                 self.response.out.write("<response>error</response>")
@@ -123,18 +122,19 @@ class PostManageHandler(BaseHandler):
             postlist.append(post_key.get())
             
             template_values = {
-                "postlist":postlist,
-                "cmsro":self.getCommissario(user), 
+                "main": "post/post_item.html",
+                "postlist": postlist,
+                "cmsro": self.getCommissario(user), 
                 "subscription": node.get_subscription(user.key),
                 "user": user,
-                "node":node
+                "node": node
              }
            
-            template = jinja_environment.get_template("post/post_item.html")
- 
-            html=template.render(template_values)
-            response = {'response':'success','html':html,"cursor":''}
-            self.output_as_json(response)
+            #template = jinja_environment.get_template("post/post_item.html") 
+            #html=template.render(template_values)
+            #response = {'response':'success','html':html,"cursor":''}
+            #self.output_as_json(response)
+            self.getBase(template_values)
             EventHandler.startTask()
            
            
@@ -255,18 +255,19 @@ class PostManageHandler(BaseHandler):
            post.clear_attachments()
 
            template_values = {
-               "post":post,
-               "node":node,
-               "cmsro":self.getCommissario(user), 
+               "main": "post/post.html",
+               "post": post,
+               "node": node,
+               "cmsro": self.getCommissario(user), 
                "subscription": node.get_subscription(user.key),
                "user": user
             }
           
-           template = jinja_environment.get_template("post/post.html")
-
-           html=template.render(template_values)
-           response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
-           self.output_as_json(response)
+           #template = jinja_environment.get_template("post/post.html")
+           #html=template.render(template_values)
+           #response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
+           #self.output_as_json(response)
+           self.getBase(template_values)
            
         if cmd=="reshare_modal":
             post=model.Key(urlsafe=self.request.get('post')).get()

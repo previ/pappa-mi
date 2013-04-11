@@ -33,13 +33,19 @@ class EventHandler(BaseHandler):
                 if not cursor:
                     break;
         elif self.request.get("cmd") == "process":
-            job = {'event_cursor':None}
+            job = {}
+            if self.request.get("event_cursor"):
+                job.update(self.request.GET.items())
+            else:
+                job = {'event_cursor':None}
             job = self.process_events(job)
-            logging.info("event_cursor: " + str(job["event_cursor"]))
-            if job["event_more"]:
+            logging.info("event_cursor: " + str(job.get("event_cursor")))
+            if job.get("event_more"):
                 self.putTask('/event', job=job)
             else:
-                self.process_notifications()
+                if self.process_notifications():
+                    #more notifications to process
+                    self.putTask('/event', job=job)
  
         else:
             self.startTask()
@@ -54,7 +60,9 @@ class EventHandler(BaseHandler):
         
     @classmethod    
     def putTask(cls, aurl, job):
-      task = Task(url=aurl, params={'cmd': 'process', "job": job}, method="GET")
+      params = {'cmd': 'process'}
+      params.update(job)
+      task = Task(url=aurl, params=params, method="GET")
       queue = Queue()
       queue.add(task)
             
@@ -69,13 +77,19 @@ class EventHandler(BaseHandler):
     """
     @classmethod
     def process_events(cls, job):
-        event_cursor = job['event_cursor']
-        events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor)
+        logging.info("process events: " + str(job))
+        event_cursor = None
+        if job.get('event_cursor'):
+            event_cursor = Cursor(urlsafe=job['event_cursor'])
+
+        events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor, limit=2)
         for e in events:
             logging.info("event: " + e.type)
             if e.type==SocialEvent.new_post:
-                node_cursor = job.get('node_cursor_' + str(e.target.id()))
-                ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor)
+                node_cursor = None
+                if job.get('node_cursor_' + str(e.target.id())):    
+                    node_cursor = Cursor(urlsafe=job.get('node_cursor_' + str(e.target.id())))
+                ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor, limit=10)
                 for s in ns:
                     logging.info("subs.user: " + s.user.get().email + " e.user: " + e.user.get().email)
                     if e.user != s.user:
@@ -85,8 +99,12 @@ class EventHandler(BaseHandler):
                         s.ntfy += 1
                         s.put()
                 if ns_more:
-                    job['node_cursor_' + str(e.target.id())] = ns_next_cursor
+                    logging.info("node_cursor " + str(e.target.id()) + " more")
+                    job['node_cursor_' + str(e.target.id())] = ns_next_cursor.urlsafe()
                 else:
+                    logging.info("node_cursor " + str(e.target.id()) + " no more")
+                    if job.get('node_cursor_' + str(e.target.id())):
+                        del job['node_cursor_' + str(e.target.id())]
                     e.status = 1
                     e.put()
             if e.type==SocialEvent.new_comment:
@@ -101,7 +119,13 @@ class EventHandler(BaseHandler):
                 e.status = 1
                 e.put()
         job['event_more'] = event_more 
-        job['event_cursor'] = event_next_cursor
+        if event_more:
+            logging.info("event_cursor more")
+            job['event_cursor'] = event_next_cursor.urlsafe()
+        elif job.get('event_cursor'):
+            logging.info("event_cursor no more")
+            del job['event_cursor']
+            
         return job
 
     @classmethod
@@ -116,8 +140,10 @@ class EventHandler(BaseHandler):
     def process_notifications(cls):
         logging.info("process_notifications")
         user_ntfy = dict()
-        
         #Node Subscription
+        count = 0
+        limit = 50
+        more = False
         for sub in SocialNodeSubscription.get_by_ntfy():
             logging.info("SocialNodeSub")
             notifications = user_ntfy.get(sub.user)
@@ -132,6 +158,10 @@ class EventHandler(BaseHandler):
             sub.has_ntfy = False
             sub.last_ntfy_sent = datetime.now()
             sub.put()
+            count += 1
+            if count > limit:
+                more = True
+                break
 
         #Post Subscriptions
         for sub in SocialPostSubscription.get_by_ntfy():
@@ -147,6 +177,10 @@ class EventHandler(BaseHandler):
                 logging.info("SocialNotification")
             sub.has_ntfy = False
             sub.put()
+            count += 1
+            if count > limit:
+                more = True
+                break
         
         logging.info("user_ntfy.len: " + str(len(user_ntfy)))
         for user in user_ntfy:
@@ -156,6 +190,8 @@ class EventHandler(BaseHandler):
                 cls.send_notifications_email(user, notifications)
             else:
                 logging.info("user: " + user.get().email + " has no notifications")
+        return more
+            
                 
 
     @classmethod

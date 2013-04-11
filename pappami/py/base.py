@@ -46,17 +46,6 @@ from common import Const, Channel
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 unsupported_browsers = {"Microsoft Internet Explorer": ["5.0", "6.0"]}
-
-class ActivityFilter():
-  def __init__(self, tagnames = list(), msgtypes = list(), users = list(), groups = list()):
-    self.tagnames=tagnames
-    self.msgtypes=msgtypes
-    self.users=users
-    self.groups=groups    
-  tagnames = None
-  msgtypes = None
-  users = None
-  group = None
             
 class BaseHandler(webapp.RequestHandler):  
   
@@ -249,73 +238,7 @@ class BaseHandler(webapp.RequestHandler):
       return Commissario.get_by_user(user)
     else:
       return None
-  
-  #def getCommissioni(self):
-    #return Commissioni.get_all()
     
-  @classmethod
-  def getTopTags(cls):
-    return Tag.get_top_referenced(40)
-  
-
-  """
-  Algo A: 
-  1.read N activities, starting from M offset
-  2.cache the read
-  3.filter activities by tag, type, user, group
-  4.if activities < N and activities availables then loop 1
-  5.return activities
-
-  Algo B: 
-  1.detect filter category
-  2.read N activities, starting from M offset
-  3.cache the read  
-  4.return activities
-  """
-  
-  def get_activities(self, offset=0):
-    #logging.info("get_activities")
-    
-    activities = None
-
-    #logging.info("tag: " + self.request.get("tag") + " type: " + self.request.get("type") + " user: " + self.request.get("user"))
-
-    tag = self.get_or_set_ctx("tag", self.request.get("tag", None))
-    msgtype = self.get_or_set_ctx("type", self.request.get("type", None))   
-    user = self.get_or_set_ctx("user", self.request.get("user", None))
-    cm = self.get_or_set_ctx("cm", self.request.get("cm", None))
-          
-    if tag:
-      activities = Messaggio.get_by_tagname(tag,offset)
-    elif msgtype:
-      activities = Messaggio.get_by_msgtype(int(msgtype),offset)
-    elif user:
-      activities = Messaggio.get_by_user(int(user),offset)
-    elif cm:
-      activities = Messaggio.get_by_grp(model.Key("Commissione", int(cm)),offset)
-    else:
-      activities = Messaggio.get_all(offset)
-    
-    return activities
-  
-  #def get_activities_by_filter(self, activity_filter):
-    #activities = list()    
-    #for tagname in activity_filter.tagnames:
-      #activities.extend(Messaggio.get_by_tagname(tagname))
-    #for msgtype in activity_filter.msgtypes:
-      #activities.extend(Messaggio.get_by_msgtype(msgtype))
-    #for user in activity_filter.users:
-      #activities.extend(Messaggio.get_by_user(user))
-    #for group in activity_filter.groups:
-      #activities.extend(Messaggio.get_by_group(model.Key(group)))
-
-    #activities = sorted(activities, key=lambda activity: activity.creato_il, reverse=True)
-      
-    #return activities
-
-  def get_activities_by_group(self, user):
-    return list()
-  
   def getHost(self):
     host = self.request.url[len("http://"):]
     host = host[:host.find("/")]
