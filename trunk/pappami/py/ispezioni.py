@@ -231,7 +231,7 @@ class NonconfHandler(BasePage):
       form.commissione = nc.commissione
 
       template_values = {
-        'content': 'commissario/nonconf_div.html',
+        'content': 'ispezioni/nonconf_div.html',
         'form': form,
         'commissioni': commissario.commissioni()
       }
