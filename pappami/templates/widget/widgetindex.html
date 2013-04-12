@@ -15,10 +15,19 @@ function genWidget() {
       type = "stat";
       t = "c";
     }
-    
-    text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
-    $("#e_text").val(text);
-    $("#e_widget").html(text);
+    if(type == "node") {
+     var node = "";
+     $.ajax({datatype: 'json', url:"/widget/node?cmd=get_by_cm&cm="+cm, success:function(data){
+     node = data.node_key;
+     text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/node/' + node + '?bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';     
+     $("#e_text").val(text);
+     $("#e_widget").html(text);
+     }});
+    } else {
+     text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
+     $("#e_text").val(text);
+     $("#e_widget").html(text);
+    }
 }
 </script>
 <div class="row">
@@ -44,6 +53,7 @@ function genWidget() {
      <option value="stat_c">Qualit&agrave; dei pasti - riepilogo</option>
      <option value="stat">Qualit&agrave; dei pasti - completo</option>
      <option value="list">Lista ispezioni</option>
+     <option value="node">Messagi su un argomento</option>
     </select>
    </div>
    <div class="controls">
