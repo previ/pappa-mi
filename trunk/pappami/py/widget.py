@@ -254,7 +254,7 @@ class CMGadgetHandler(BasePage):
     template_values = dict()
     template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
-    template_values["nodes"] = SocialNode.query().order(Social.name).fetch()
+    template_values["nodes"] = SocialNode.query().order(SocialNode.name).fetch()
     self.getBase(template_values)
     
         
