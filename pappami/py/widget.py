@@ -226,23 +226,27 @@ class CMListWidgetHandler(BasePage):
 class NodeWidgetHandler(BasePage):
   
   def get(self, node_key):
-    logging.info(node_key)
-    template_values = dict()
-
-    bgcolor = self.request.get("bc")
-    if(bgcolor is None): 
-      bgcolor = "eeeeff"
-    fcolor = self.request.get("fc")
-    if(fcolor is None): 
-      fcolor = "000000"
-
-    template_values["bgcolor"] = bgcolor
-    template_values["fcolor"] = fcolor
-    
-    template_values["node_key"] = node_key
-    template_values["main"] = 'widget/node.html'
-
-    self.getBase(template_values)
+    if self.request.get("cmd") == "get_by_cm":
+      node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
+      self.output_as_json({'node_key': node_key.urlsafe()})
+    elif node_key:
+      logging.info(node_key)
+      template_values = dict()
+  
+      bgcolor = self.request.get("bc")
+      if(bgcolor is None): 
+        bgcolor = "eeeeff"
+      fcolor = self.request.get("fc")
+      if(fcolor is None): 
+        fcolor = "000000"
+  
+      template_values["bgcolor"] = bgcolor
+      template_values["fcolor"] = fcolor
+      
+      template_values["node_key"] = node_key
+      template_values["main"] = 'widget/node.html'
+  
+      self.getBase(template_values)
 
 class CMGadgetHandler(BasePage):
   
@@ -250,7 +254,7 @@ class CMGadgetHandler(BasePage):
     template_values = dict()
     template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
-    template_values["nodes"] = SocialNode.query().order(SocialNode.name).fetch()
+    template_values["nodes"] = SocialNode.query().order(Social.name).fetch()
     self.getBase(template_values)
     
         
@@ -269,6 +273,7 @@ app = webapp.WSGIApplication([
   ('/widget/stat', CMStatWidgetHandler),
   ('/widget/list', CMListWidgetHandler),
   ('/widget/node/(.*)', NodeWidgetHandler),
+  ('/widget/node(.*)', NodeWidgetHandler),
   ('/widget/gadget', CMGadgetHandler),
   ('/widget/getcm', CMCommissioniDataHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))

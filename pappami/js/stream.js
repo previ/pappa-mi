@@ -936,7 +936,7 @@ function loadPosts(node_key,current_cursor) {
     $('#main_stream_list').find('li.s_loading').remove();   
     $('#main_stream_list').append(data.html)
     initPostList($('#main_stream_list'));
-    if(data.eof == true){
+    if(data.eof){
      $("#more_posts").hide();   
      $("#no_more_posts").show();   
      $("#no_more_posts").alert();
