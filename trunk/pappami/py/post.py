@@ -458,7 +458,7 @@ class PostPaginationHandler(BaseHandler):
             template = jinja_environment.get_template("post/post_item.html")
 
             html=template.render(template_values)
-            response = {'response':'success','html':html,"cursor":next_curs.urlsafe(), 'eof': 'false'}
+            response = {'response':'success','html':html,"cursor":next_curs.urlsafe()}
             if more == False:
                 response['eof'] = 'true'
 
@@ -507,7 +507,7 @@ class PostPaginationHandler(BaseHandler):
             template = jinja_environment.get_template("post/post_item.html")
 
             html=template.render(template_values)
-            response = {'response':'success','html':html,"cursor":next_curs_key, 'eof': 'false'}
+            response = {'response':'success','html':html,"cursor":next_curs_key}
             if not more:
                 response['eof'] = 'true'
             self.output_as_json(response)

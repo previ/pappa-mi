@@ -2227,20 +2227,7 @@ class SocialProfile(model.Model):
               return
           else:
              SocialProfile(parent=user).put()
-      
-      #@classmethod
-      #def retrieve_notifications(self,user_t,cursor):
-        #nodes_list=SocialNodeSubscription.get_nodes_keys_by_user(user_t)
-        #posts_list=SocialPostSubscription.get_posts_keys_by_user(user_t)
-        
-        
-        #sources_list=nodes_list+posts_list
-        #logging.info(sources_list)
-        #if not cursor or cursor == "undefined":
-               #return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10) 
-        #else:
-               #return SocialNotification.query().order(SocialNotification.author_key).filter(SocialNotification.author_key!=user_t.key,SocialNotification.source_key.IN(sources_list)).order(-SocialNotification.date).order(SocialNotification._key).fetch_page(10, start_cursor=Cursor(urlsafe=cursor))
-                    
+                         
 
 class SocialEvent(model.Model):
   type = model.StringProperty()

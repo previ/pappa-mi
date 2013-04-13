@@ -15,13 +15,12 @@ function genWidget() {
       type = "stat";
       t = "c";
     }
+    text="";
     if(type == "node") {
-     var node = "";
-     $.ajax({datatype: 'json', url:"/widget/node?cmd=get_by_cm&cm="+cm, success:function(data){
-     node = data.node_key;
-     text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/node/' + node + '?bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';     
-     $("#e_text").val(text);
-     $("#e_widget").html(text);
+     $.ajax({dataType:'json', url:"/widget/node?cmd=get_by_cm&cm="+cm, success:function(data){
+      text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/node/' + data.node_key + '?bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';     
+      $("#e_text").val(text);
+      $("#e_widget").html(text);
      }});
     } else {
      text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
