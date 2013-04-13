@@ -79,9 +79,10 @@ class EventHandler(BaseHandler):
     def process_events(cls, job):
         logging.info("process events: " + str(job))
         event_cursor = None
-        if job.get('event_cursor'):
+        if job.get('event_cursor') and job.get('event_cursor') != "None":
             event_cursor = Cursor(urlsafe=job['event_cursor'])
 
+        event_batch_processed = True
         events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor, limit=2)
         for e in events:
             logging.info("event: " + e.type)
@@ -89,18 +90,19 @@ class EventHandler(BaseHandler):
                 node_cursor = None
                 if job.get('node_cursor_' + str(e.target.id())):    
                     node_cursor = Cursor(urlsafe=job.get('node_cursor_' + str(e.target.id())))
-                ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor, limit=10)
+                ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor, limit=50)
                 for s in ns:
-                    logging.info("subs.user: " + s.user.get().email + " e.user: " + e.user.get().email)
+                    #logging.info("subs.user: " + s.user.get().email + " e.user: " + e.user.get().email)
                     if e.user != s.user:
-                        logging.info("new_post.created")
+                        #logging.info("new_post.created")
                         SocialNotification.create(e.key, s.user)
                         s.has_ntfy = True
                         s.ntfy += 1
                         s.put()
                 if ns_more:
-                    logging.info("node_cursor " + str(e.target.id()) + " more")
+                    logging.info("node_cursor " + str(e.target.id()) + " " + str(ns_next_cursor) + " more")
                     job['node_cursor_' + str(e.target.id())] = ns_next_cursor.urlsafe()
+                    event_batch_processed = False
                 else:
                     logging.info("node_cursor " + str(e.target.id()) + " no more")
                     if job.get('node_cursor_' + str(e.target.id())):
@@ -108,21 +110,20 @@ class EventHandler(BaseHandler):
                     e.status = 1
                     e.put()
             if e.type==SocialEvent.new_comment:
-                logging.info("new_comment")
+                #logging.info("new_comment")
                 for s in SocialPostSubscription.get_by_post(e.target):
-                    logging.info("s: " + str(s))
                     if e.user != s.user:
-                        logging.info("new_comment.created")
+                        #logging.info("new_comment.created")
                         SocialNotification.create(e.key, s.user)
                         s.has_ntfy = True
                         s.put()
                 e.status = 1
                 e.put()
-        job['event_more'] = event_more 
-        if event_more:
+        job['event_more'] = event_more or not event_batch_processed
+        if event_batch_processed and event_more:
             logging.info("event_cursor more")
             job['event_cursor'] = event_next_cursor.urlsafe()
-        elif job.get('event_cursor'):
+        if event_batch_processed and not event_more and job.get('event_cursor'):
             logging.info("event_cursor no more")
             del job['event_cursor']
             
@@ -145,7 +146,7 @@ class EventHandler(BaseHandler):
         limit = 50
         more = False
         for sub in SocialNodeSubscription.get_by_ntfy():
-            logging.info("SocialNodeSub")
+            #logging.info("SocialNodeSub")
             notifications = user_ntfy.get(sub.user)
             if notifications is None:
                 notifications = list()
@@ -154,7 +155,7 @@ class EventHandler(BaseHandler):
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
-                logging.info("SocialNotification")
+                #logging.info("SocialNotification")
             sub.has_ntfy = False
             sub.last_ntfy_sent = datetime.now()
             sub.put()
@@ -165,7 +166,7 @@ class EventHandler(BaseHandler):
 
         #Post Subscriptions
         for sub in SocialPostSubscription.get_by_ntfy():
-            logging.info("SocialPostSub")
+            #logging.info("SocialPostSub")
             notifications = user_ntfy.get(sub.user)
             if notifications is None:
                 notifications = list()
@@ -174,7 +175,7 @@ class EventHandler(BaseHandler):
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
-                logging.info("SocialNotification")
+                #logging.info("SocialNotification")
             sub.has_ntfy = False
             sub.put()
             count += 1
@@ -207,7 +208,7 @@ class EventHandler(BaseHandler):
                         'ntfy_num': len(notifications)
                         }
             
-            logging.info("Notification: " + str(event.type))
+            #logging.info("Notification: " + str(event.type))
             if event.type == "post":
                 message['source_desc'] = "messaggio"
                 message['target_desc'] = event.target.get().name
@@ -222,7 +223,7 @@ class EventHandler(BaseHandler):
         
     @classmethod
     def send_notifications_email(cls, user, notifications):
-        logging.info("Sending notification to user: " + user.get().email)
+        logging.info("Sending mail notification to user: " + user.get().email)
         for n in notifications:
             logging.info("Notification: " + str(n.event.get().type))
             

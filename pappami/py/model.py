@@ -2077,7 +2077,7 @@ class SocialNodeSubscription(model.Model):
       if cursor:
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=limit, start_cursor=cursor)
       else:
-        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=20)
+        return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=limit)
     
     @classmethod
     def get_by_ntfy(cls):
