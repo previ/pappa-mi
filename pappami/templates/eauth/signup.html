@@ -1,6 +1,9 @@
 <script type="text/javascript">
 $(document).ready(function() { 
   $("#form0").validate({
+       errorPlacement: function(error, element) {	      
+	 $('#do_submit').button("reset");
+       },
     rules: {
       email: {
         required: true,
@@ -20,6 +23,7 @@ $(document).ready(function() {
       }
     }
   });
+  $("#form0").submit(function(){$('#do_submit').button('loading')});
 });
 </script>
 {% set providers = [
@@ -61,7 +65,7 @@ $(document).ready(function() {
             <div class="controls"><input type="input" name="c" class="span1 required" /></div>
           </fieldset>
           <fieldset class="">
-            <button type="submit" class="btn btn-primary">Registrati</button>
+            <button type="submit" id="do_submit" class="btn btn-primary" data-loading-text="Attendi...">Registrati</button>
           </fieldset>
           {% if messages %}
             <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">

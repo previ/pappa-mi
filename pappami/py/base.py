@@ -142,7 +142,10 @@ class BaseHandler(webapp.RequestHandler):
     return value
 
   def get_current_user(self):
-    return self.request.user
+    user = None
+    if hasattr(self.request, 'user'):
+      user = self.request.user
+    return user
     
   def getBase(self, template_values):
     
@@ -232,7 +235,7 @@ class BaseHandler(webapp.RequestHandler):
     
   def getCommissario(self, user = None):
     if user is None:
-      user = self.request.user
+      user = self.get_current_user()
     if user :
       #logging.info("userid: " + str(user.key.id()))
       return Commissario.get_by_user(user)

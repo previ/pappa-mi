@@ -21,6 +21,11 @@
     <label id="post_content_label" for="content">Contenuto</label>
     <textarea id="reshare_post_content_text" class="comment_textarea required" name="content"></textarea>
    </div>
+   <div class="s_post_resource well s_reshare_preview">
+   {%set postlist = [post]%}
+   {%set reshare = True%}
+   {%include "post/post_item.html"%}
+   </div>
   </div>  
   <div class="modal-footer">  
    <button class="btn btn-primary">Inoltra</button>  
