@@ -204,6 +204,8 @@ function initPost(post_root) {
 function initComment(element) {
   element.find('.post_comment_del').click(onCommentDelete);    
   element.find('.post_comment_edit').click(onCommentEdit);  
+  element.find('.post_comment_vote').click(onCommentVote);    
+  element.find('.post_comment_unvote').click(onCommentVote);  
 }
 
 function onPostEdit(){
@@ -506,8 +508,8 @@ function onPostVote() {
   $.ajax({
     type: 'POST',
     url:'/post/manage', 
-    data: {'cmd': 'vote_post',
-	   'post': post,
+    data: {'cmd': 'vote',
+	   'key': post,
 	   'vote': vote },
     dataType:'json',
     error: onError,
@@ -536,6 +538,42 @@ function onPostVote() {
     }});
 }
 
+function onCommentVote() {
+  var comment = getCommentRootByElement($(this)); 
+  var comment_key = comment.attr("data-comment-key");
+  var vote = $(this).attr("data-vote");  
+  $.ajax({
+    type: 'POST',
+    url:'/post/manage', 
+    data: {'cmd': 'vote',
+	   'key':  comment_key,
+	   'vote': vote },
+    dataType:'json',
+    error: onError,
+    success:function(data){
+      if(data.response!="success") {
+	if(data.response=="flooderror") {
+	  onFloodError(data, function(){
+	    $("#reshare_"+post).modal('show')
+	  });
+	  return
+	}
+      }
+      comment.find('.s_post_votes').html(data.votes);
+      if(parseInt(data.votes) > 0) {
+	comment.find('.s_post_votes_c').show();
+      } else {
+	comment.find('.s_post_votes_c').hide();
+      }      
+      if(parseInt(vote) == 1) {
+	comment.find('.post_comment_vote').hide();
+	comment.find('.post_comment_unvote').show();
+      } else {
+	comment.find('.post_comment_vote').show();
+	comment.find('.post_comment_unvote').hide();
+      }
+    }});
+}
 
 function onCommentDelete() {
   var comment = getCommentRootByElement($(this)); 

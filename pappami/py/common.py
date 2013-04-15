@@ -79,7 +79,6 @@ class cached_property(object):
     with self.lock:
       value = obj.cache.get(self.__name__, self._default_value)
       if value is self._default_value:
-        #logging.info("cache.miss")
         value = self.func(obj)
         obj.cache[self.__name__] = value
   
@@ -92,7 +91,7 @@ class cached_property(object):
       obj.cache = dict()
   
     with self.lock:
-      if value is None and obj.cache.get(self.__name__):
+      if value is None and obj.cache.get(self.__name__) is not None:
         del obj.cache[self.__name__]
   
       return value

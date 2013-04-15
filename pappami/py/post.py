@@ -287,20 +287,20 @@ class PostManageHandler(BaseHandler):
                 self.output_as_json(response)
                 
         
-        if cmd== "vote_post":          
-            post=model.Key(urlsafe=self.request.get('post')).get()
+        if cmd== "vote":          
+            post_or_comment = model.Key(urlsafe=self.request.get('key')).get()
             vote = int(self.request.get('vote'))
-            post.vote(vote, self.get_current_user())
-                            
-            response = {'response':'success', 'post': post.key.urlsafe(), 'votes':str(len(post.votes))}
+            post_or_comment.vote(vote, self.get_current_user())
+            logging.info(str(len(post_or_comment.votes)))
+            response = {'response':'success', 'key': post_or_comment.key.urlsafe(), 'votes':str(len(post_or_comment.votes))}
             self.output_as_json(response)             
 
         if cmd== "vote_list":          
-            post=model.Key(urlsafe=self.request.get('post')).get()
+            post_or_comment=model.Key(urlsafe=self.request.get('key')).get()
 
             template_values = {
                 "cmsro":self.getCommissario(user), 
-                "votes":post.votes
+                "votes":post_or_comment.votes
              }
            
             template = jinja_environment.get_template("post/voters.html")
