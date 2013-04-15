@@ -72,30 +72,6 @@ class PostHandler(BasePage):
         
         return template_values
 
-    def create_resource(self, node, user, type, url, title, content=None, res_key=None ):
-        resource = SocialResource(parent=node,
-                                 title=title,
-                                 type=type,
-                                 obj=res_key,                                
-                                 )
-        resource.put()
-        post = resource.publish(node,content,title,user)
-        
-        postlist = list()
-        postlist.append(post.get())
-        #for x in postlist: 
-        #    x.commissario=Commissario.get_by_user(x.author.get())
-        
-        template_values = {
-          "main":"post/post_item.html",
-          "postlist":postlist,          
-          "cmsro":self.getCommissario(user), 
-          "subscription": node.get().get_subscription(user.key),
-          "user": user,
-          "node":node.get()
-         }
-        
-        return template_values
 
 class PostManageHandler(BaseHandler):
    

@@ -38,25 +38,7 @@ class Citta(model.Model):
   @classmethod
   def get_first(cls):
     return cls.query().get()
-  
-  def create_resource(self):
-      
-      resource=self.get_resource()
-      if not resource:
-        resource=SocialResource(parent=self.key,
-                                        name=self.nome,
-                                        type="city",
-                                        geo=self.geo,
-                                        )
-        resource.put()
-      return resource
-  
-  def get_resource(self):
-      resource=SocialResource.query(ancestor=self.key).get()
-      if resource:
-          assert resource.type=="city"
-      return resource
-  
+    
 class Configurazione(model.Model):
   nome = model.StringProperty()
   valore = model.StringProperty()
@@ -65,10 +47,6 @@ class Configurazione(model.Model):
   def get_value_by_name(cls, name):
     return Configurazione.query(Configurazione.nome == name).get().valore
   
-  
-      
-  
-      
 class CentroCucina(model.Model):  
   def __init__(self, *args, **kwargs):
     self._ce_cu_zo_cache = None
@@ -169,26 +147,7 @@ class Commissione(model.Model):
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
-  
-  def create_resource(self):
-      
-      resource=self.get_resource()
-      if not resource:
-        resource=SocialResource(parent=self.key,
-                                        name=self.nome,                                        
-                                        type="cm",
-                                        geo=self.geo,
-                                        )
-        resource.put()
-      return resource
-        
-        
-  def get_resource(self):
-      resource=SocialResource.query(ancestor=self.key).get()
-      if resource:
-          assert resource.type=="commission"
-      return resource
-  
+    
   
   def commissari(self):
     if not self._commissari:
@@ -1598,8 +1557,8 @@ class SocialPost(model.Model):
       super(SocialPost, self).__init__(*args, **kwargs)  
   
     author = model.KeyProperty(kind=models.User)
-    title = model.StringProperty(default="")
-    content = model.TextProperty(default="")
+    title = model.StringProperty(default="", indexed=False)
+    content = model.TextProperty(default="", indexed=False)
     #public_reference=model.StringProperty(default="")
     resource=model.KeyProperty(repeated=True)
     res_type=model.StringProperty(repeated=True)
@@ -1807,36 +1766,6 @@ class SocialPost(model.Model):
         new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key], res_types=["post"])
       return new_post
       
-    def reshare_old(self,target_node,new_author,new_content, new_title):
-      resource=None
-  
-      #reshare of a reshare
-      if self.resource is not None:
-          resource_key=self.resource
-          resource=resource_key.get()
-      #reshare of a post
-      else:
-          #reshare of an already reshared post
-          resource=SocialResource.query(ancestor=self.key).get()
-          #reshare of a never reshared post
-          if resource is None:
-              resource=SocialResource(parent=self.key,
-                                      title=self.title,
-                                      type="post",
-                                      author=self.author,
-                                      content=self.content,
-                                      created=self.created
-                                      
-                                      )
-              resource.put()
-              resource_key=resource.key
-          else:
-              resource_key=resource.key
-              
-      new_post=resource.publish(target_node,new_content,new_title,new_author)
-      if new_post:
-                    
-          return new_post
     
     def subscribe_user(self, user):
       #user has already subscribed to this post
@@ -2029,9 +1958,9 @@ class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty(kind=models.User)
 
-    can_comment = model.BooleanProperty(default=False)
-    can_post = model.BooleanProperty(default=False)
-    can_admin = model.BooleanProperty(default=False)
+    can_comment = model.BooleanProperty(default=False, indexed=False)
+    can_post = model.BooleanProperty(default=False, indexed=False)
+    can_admin = model.BooleanProperty(default=False, indexed=False)
 
     ntfy_period = model.IntegerProperty(default=0)
     has_ntfy = model.BooleanProperty(default=False)
@@ -2088,84 +2017,10 @@ class SocialNodeSubscription(model.Model):
           subs.append(sub)
       return subs
 
-class SocialResource(model.Expando):
-    url=model.StringProperty()
-    type=model.StringProperty()
-    
-#    def _post_put_hook(self,future):
-#        assert self.key.parent()
-#        count=SocialResource.query(ancestor=self.key.parent()).count()
-#        logging.info(self.key.parent().get())
-#        assert count==1
-#        assert False
-#        logging.info("aaaaaaaaaaaaaaaaaaaaaaaaa")
-#           
-    @staticmethod
-    def get_resource(key):
-        return SocialResource.query(ancestor=key).get()
-    #rompo l'MVC, possano gli Dei antichi e nuovi perdonare il mio sacrilegio    
-    #deprecated
-    #def render(self):
-        #render_method = getattr(self,'render_'+self.type)
-        #return render_method()
-    
-    
-    #def render_post(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/post.html")
-       
-        #return template.render(template_values)  
-    
-    #def render_ispezione(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/ispezione.html")
-        #return template.render(template_values)  
-
-    #def render_nonconf(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/nonconf.html")
-        #return template.render(template_values)  
-    #def render_dieta(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/dieta.html")
-        #return template.render(template_values)  
-    #def render_nota(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/nota.html")
-        #return template.render(template_values)  
-    
-    #def render_city(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/city.html")
-        #return template.render(template_values)  
-    #def render_commission(self):
-        #template_values = {
-                 #"resource":self
-        #}
-        #template = jinja_environment.get_template("social/resources/commission.html")
-                
-        #return template.render(template_values)  
-    
-    
-    def publish(self,target_node,new_content, new_title,new_author):
-        new_post=target_node.get().create_open_post(content=new_content,title=new_title,author=new_author,resources=[self.key], res_types=["generic"])
-        return new_post
     
 class SocialComment(model.Model):
     author=model.KeyProperty(kind=models.User)
-    content=model.TextProperty(default="")
+    content=model.TextProperty(default="",indexed=False)
     #public_reference=model.StringProperty(default="")
     created=model.DateTimeProperty(auto_now_add=True)
 
@@ -2216,18 +2071,7 @@ class Vote(model.Model):
 
   @classmethod
   def get_by_ref(cls, ref):
-    return Vote.query().filter(Vote.ref==ref)
-
-class SocialProfile(model.Model):
-      ultimo_accesso_notifiche= model.DateTimeProperty(auto_now=True)
-      
-      @classmethod
-      def create(cls,user):
-          if cls.query(ancestor=user).get():
-              return
-          else:
-             SocialProfile(parent=user).put()
-                         
+    return Vote.query().filter(Vote.ref==ref)                         
 
 class SocialEvent(model.Model):
   type = model.StringProperty()

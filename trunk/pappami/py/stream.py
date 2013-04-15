@@ -46,15 +46,6 @@ class StreamMainHandler(BasePage):
             if len(node_active) >= 5:
                 break
                                 
-        logging.info("node_list")
-        for n in node_list:
-            logging.info(n.name)
-        logging.info("node_recent")
-        for n in node_recent:
-            logging.info(n.name)
-        logging.info("node_active")
-        for n in node_active:
-            logging.info(n.name)
         template_values = {
                         'content': 'stream.html',
                         'subs':subs,

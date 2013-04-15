@@ -553,6 +553,7 @@ font-weight: bold;
 .carousel-control {
   top:50%;
 }
+
 .carousel-control.left{
   left: -26px;
 }
