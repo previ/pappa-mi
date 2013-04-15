@@ -2052,6 +2052,39 @@ class SocialComment(model.Model):
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
       return sub and (sub.can_admin or self.author == user.key)
+    
+    @cached_property
+    def votes(self):
+      votes = list()
+      for v in Vote.get_by_ref(self.key):
+        votes.append(v)
+      return votes
+    
+    def vote(self, vote, user):
+      if vote == 0:
+        for p_vote in self.votes:
+          if p_vote.c_u == user.key:
+            if p_vote.vote == 1:
+              p_vote.key.delete()
+            break;
+      else :
+        vote = Vote(ref = self.key, vote = vote, c_u = user.key)
+        vote.put()
+    
+      self.votes = None
+          
+      #Cache.get_cache("SocialPost").clear_all()
+      #Cache.get_cache("UserStream").clear_all()
+
+    def can_vote(self, user):
+      if not user:
+        return False
+      canvote = True
+      for p_vote in self.votes:
+        if p_vote.c_u == user.key:
+          canvote = False
+          break;
+      return canvote
 
 
 class Vote(model.Model):
