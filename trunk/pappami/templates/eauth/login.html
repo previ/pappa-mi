@@ -1,6 +1,7 @@
 <script type="text/javascript">
 $(document).ready(function() { 
   $("#form0").validate({});
+  $("#form0").submit(function(){$('#do_submit').button('loading')});
 });
 </script>
 {% set providers = [
@@ -36,7 +37,7 @@ $(document).ready(function() {
             <div class="controls"><input type="password" name="password" class="span3 required password" /></div><a href="/eauth/pwdrecrq">Ho dimenticato la password</a>
           </fieldset>
           <fieldset class="">
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn" id="do_submit" data-loading-text="Attendi...">Login</button>
           </fieldset>
           {% if messages %}
             <div data-dismiss="alert" class="alert alert-block alert-{{ messages[0]['level'] }}">

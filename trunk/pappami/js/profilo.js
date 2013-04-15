@@ -29,6 +29,7 @@ $(document).ready(function() {
 	var item = $(element);
 	item.tooltip({title:error.text(), trigger:'manual'});
 	item.tooltip('show');
+	$('#do_submit').button('reset');
       },
       highlight: function(element, errorClass, validClass) {
 	var item = $(element).parents(".control-group");
@@ -48,7 +49,11 @@ $(document).ready(function() {
       }
     });
     
-    $('#form0').ajaxForm({success: function(data) {
+    $('#form0').ajaxForm({
+      beforeSubmit: function() {
+	$("#do_submit").button('loading');
+      },
+      success: function(data) {
       var message = data;
       if($('#form0').attr("action") == "/signup2") {
 	$("#message").find(".alert-actions").show();
@@ -57,10 +62,11 @@ $(document).ready(function() {
       }
       $("#message").hide();      
       $("#message_body").text(message);
-      $("#message").fadeIn(300);	  
+      $("#message").fadeIn(300);
       if($('#form0').attr("action") == "/signup2") {	
 	setTimeout(function(){location.href="/";}, 2000);
       } else {
+        $("#do_submit").button('reset');
 	setTimeout(function(){$("#message").fadeOut(1000, function(){$("#message_body").text('');});}, 2000);
       }
     }});

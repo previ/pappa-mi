@@ -163,3 +163,8 @@ font-size:120%;
 .s_author_title {
 font-style:italic;
 }
+
+.s_reshare_preview {
+height: 100px;
+overflow: auto;
+}

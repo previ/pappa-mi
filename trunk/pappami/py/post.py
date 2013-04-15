@@ -249,7 +249,8 @@ class PostManageHandler(BaseHandler):
             post=model.Key(urlsafe=self.request.get('post')).get()
             template_values = {
                 "subs":SocialNodeSubscription.get_by_user(user) ,
-                "post":post
+                "post":post,
+                "cmsro": self.getCommissario()
             }
             
             template = jinja_environment.get_template("post/modal_reshare.html")
