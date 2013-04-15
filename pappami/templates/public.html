@@ -16,6 +16,7 @@
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <meta http-equiv="X-UA-Compatible" content="IE=7.5"/>
+      link type="text/css" href="/css/ie.css" rel=stylesheet"/>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
@@ -33,6 +34,11 @@
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
     <link rel="stylesheet" href="/css/stream.css" type="text/css" media="all" />
     <link type="text/css" href="/css/public.css" rel="stylesheet" media="screen"/>		
+
+    <!--[if lt IE 9]>
+      link type="text/css" href="/css/ie.css" rel=stylesheet"/>
+    <![endif]-->
+
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="apple-touch-icon" href="/img/logo_57.png">
@@ -91,7 +97,10 @@ $(document).ready(function(){
 	    <span class="icon-bar"></span>
 	  </a>
       
-	  <a class="brand" style="padding:14px 20px 0px" href="/"><img class="avatar" style="width:24px;height:24px; display:inline;" src="/img/pappa-mi-logo.png"></img><img class="" src="/img/pappa-mi-logo-text_24.png" style="display:inline;"></img></a>
+	  <a class="brand" href="/">
+	    <img class="logo" src="/img/pappa-mi-logo.png">
+	    <img class="logo" src="/img/pappa-mi-logo-text_24.png">
+	  </a>
 	  <div class="nav-collapse">
 	    <ul class="nav">
 	      <li><a href="/chi">Chi siamo</a></li>
@@ -128,6 +137,7 @@ $(document).ready(function(){
       <div class="carousel-inner">
         <div class="item active">
           <img src="img/slider/slide1.jpg" alt="">
+	  <div class="carousel-background"></div>
 	  <div class="carousel-caption">
 	    <div class="container">
               <h1>Benvenuti in Pappa-Mi</h1>

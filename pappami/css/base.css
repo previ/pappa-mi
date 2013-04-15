@@ -22,7 +22,7 @@ cursor: pointer;
 }
 
 img.avatar-big {
-display: inline-block;
+display: inline;
 width: 128px;
 height: 128px;
 vertical-align: top;
@@ -30,6 +30,18 @@ margin-right: 6px;
 border-radius: 8px;
 border: none;
 cursor: pointer;
+float:left;
+}
+
+.brand {
+padding:14px 20px 0px
+}
+
+img.logo {
+display: inline;
+float:left;
+height: 24px;
+margin-right:6px;
 }
 
 /* SETUP */
