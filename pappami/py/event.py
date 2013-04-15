@@ -138,31 +138,34 @@ class EventHandler(BaseHandler):
         
             
     @classmethod
-    def process_notifications(cls):
+    def process_notifications(cls, job={}):
         logging.info("process_notifications")
         user_ntfy = dict()
         #Node Subscription
         count = 0
         limit = 50
         more = False
-        for sub in SocialNodeSubscription.get_by_ntfy():
+        ns = SocialNodeSubscription.get_by_ntfy()
+        for sub in ns:
             #logging.info("SocialNodeSub")
             notifications = user_ntfy.get(sub.user)
             if notifications is None:
                 notifications = list()
                 user_ntfy[sub.user] = notifications
-            for ntfy in SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created):
+            nt = SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created)
+            for ntfy in nt:
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
-                #logging.info("SocialNotification")
+                count += 1
+                if count > limit:
+                    more = True
+                    break
+            if count > limit:
+                break
             sub.has_ntfy = False
             sub.last_ntfy_sent = datetime.now()
             sub.put()
-            count += 1
-            if count > limit:
-                more = True
-                break
 
         #Post Subscriptions
         for sub in SocialPostSubscription.get_by_ntfy():
@@ -175,14 +178,15 @@ class EventHandler(BaseHandler):
                 notifications.append(ntfy)
                 ntfy.status = SocialNotification.status_notified
                 ntfy.put()
-                #logging.info("SocialNotification")
+                count += 1
+                if count > limit:
+                    more = True
+                    break
+            if count > limit:
+                break
             sub.has_ntfy = False
             sub.put()
-            count += 1
-            if count > limit:
-                more = True
-                break
-        
+
         logging.info("user_ntfy.len: " + str(len(user_ntfy)))
         for user in user_ntfy:
             notifications = user_ntfy.get(user)

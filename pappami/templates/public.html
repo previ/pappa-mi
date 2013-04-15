@@ -27,12 +27,12 @@
     <link type="text/css" href="/css/jquery.pnotify.default.css" rel="stylesheet">
     <link type="text/css" href="/css/comments.css" rel="stylesheet" media="screen"/>
     <link type="text/css" href="/css/activity.css" rel="stylesheet" media="screen"/>		
-    <link type="text/css" href="/css/public.css" rel="stylesheet" media="screen"/>		
 
     <link type="text/css" href="/css/jquery.taghandler.css" rel="stylesheet" type="text/css" media="screen"/>
     
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
     <link rel="stylesheet" href="/css/stream.css" type="text/css" media="all" />
+    <link type="text/css" href="/css/public.css" rel="stylesheet" media="screen"/>		
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="/img/favicon.ico">
     <link rel="apple-touch-icon" href="/img/logo_57.png">
@@ -128,33 +128,35 @@ $(document).ready(function(){
       <div class="carousel-inner">
         <div class="item active">
           <img src="img/slider/slide1.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
+	  <div class="carousel-caption">
+	    <div class="container">
               <h1>Benvenuti in Pappa-Mi</h1>
-	      <h2>Cosa e Come si mangia nelle mense scolastiche</h2>
-	      <p><a class="btn btn-primary btn-large" href="/eauth/login">Accedi &raquo;</a> oppure <a class="btn btn-large btn-success" href="/signup">Registrati &raquo;</a></p>
+	      <div class="lead">Cosa e Come si mangia nelle mense scolastiche</div>
+	      <a class="btn btn-primary btn-large" href="/eauth/login">Accedi &raquo;</a> oppure <a class="btn btn-large btn-success" href="/signup">Registrati &raquo;</a>
             </div>
           </div>
         </div>
         <div class="item">
           <img src="img/slider/slide2.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
-	      <h1>A cosa serve ?</h1>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>1.Guarda cosa si mangia</h3>Consulta il menu di oggi nella scuola dei tuoi figli.</span>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>2.Controlla come si mangia</h3>Consulta le segnalazioni delle Commissioni Mensa, guarda le statistiche sul servizio.</span>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>3.Partecipa</h3>Commenta le segnalazioni delle Commissioni Mensa, chiedi informazioni, suggerisci soluzioni.</span>
+	  <div class="carousel-caption">
+            <div class="container">
+  	      <h1>A cosa serve ?</h1>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>1.Guarda cosa si mangia</h2>Consulta il menu di oggi nella scuola dei tuoi figli.</div>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>2.Controlla come si mangia</h2>Consulta le segnalazioni delle Commissioni Mensa, guarda le statistiche sul servizio.</div>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>3.Partecipa</h2>Commenta le segnalazioni delle Commissioni Mensa, chiedi informazioni, suggerisci soluzioni.</div>
+	      <div class="lead hidden-desktop">Controlla cosa si mangia, consultando il menù e controllando i resoconti delle commissioni mensa e dei genitori. Partecipa, raccontando cosa succede a scuola</div>
             </div>
           </div>
         </div>
         <div class="item">
           <img src="img/slider/slide3.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption">
+	  <div class="carousel-caption">
+            <div class="container">
 	      <h1>Come si usa ?</h1>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>1.Registrati</h3>Bastano pochi minuti !</span>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>2.Inserisci i dati</h3><p>Se fai parte di una Commissione Mensa puoi inserire i dati dei questionari di ispezion e non conformit&agrave;, oppure anche solo le tue impressioni come note a testo libero.</p></span>
-	      <span class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>3.Partecipa</h3>Se sei un genitore puoi inserire commenti, richieste di informazioni, suggerimenti.</span>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>1.Registrati</h2>Bastano pochi minuti !</div>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>2.Inserisci i dati</h2>Se fai parte di una Commissione Mensa puoi inserire i dati dei questionari di ispezion e non conformit&agrave;, oppure anche solo le tue impressioni come note a testo libero.</div>
+	      <div class="step span4 hidden-phone hidden-tablet"><h2>3.Partecipa</h2>Se sei un genitore puoi inserire commenti, richieste di informazioni, suggerimenti.</div>
+	      <div class="lead hidden-desktop">Registrati come Genitore o Commissione mensa, potrai consultare i dati fare domande e contribuire raccontando cosa succede nella scuola dei tuoi figli.</div>
             </div>
           </div>
         </div>
@@ -174,26 +176,23 @@ $(document).ready(function(){
       <!-- Three columns of text below the carousel -->
       <div class="row">
         <div class="span3">
-          <h2>Scuole registrate</h2>
-	  <div id="map" class="img-rounded" style="height: 240px; overflow:hidden;"></div>
-          <p><a class="btn" href="/commissioni">Vai alle Scuole &raquo;</a></p>
+          <h2><a class="" href="/commissioni">Scuole registrate &raquo;</a></h2>
+	  <div id="map" class="tile img-rounded"></div>
         </div><!-- /.span4 -->
         <div class="span6">
-          <h2>Ultimi dati raccolti</h2>
-	  <div id="main_stream" style="height:240px; overflow:auto;">
+          <h2><a class="" href="/stream">Ultimi dati raccolti &raquo;</a></h2>
+	  <div id="main_stream" class="tile">
 	   <ul id="main_stream_list" class="unstyled">
 	   </ul>
 	  </div>
-          <p><a class="btn" href="/stream">Vai ai messaggi &raquo;</a></p>
         </div><!-- /.span4 -->
         <div class="span3">
-          <h2>Utenti iscritti</h2>
-	    <ul class="thumbnails">  
+          <h2><a class="" href="/contatti">Utenti iscritti &raquo;</A></h2>
+	    <ul class="thumbnails tile tile-user">  
 	  {%for c in contacts%}
-	     <li><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(	cmsro)}}"></li>
+	     <li class="user"><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(	cmsro)}}"></li>
 	  {%endfor%}
 	    </ul>
-          <p><a class="btn" href="/contatti">Vai ai contatti &raquo;</a></p>
         </div><!-- /.span4 -->
       </div><!-- /.row -->
 
@@ -206,7 +205,7 @@ $(document).ready(function(){
         <img class="featurette-image pull-right img-circle" src="/img/pappa-mi-home-1.jpg">
         <h2 class="featurette-heading">Perché Pappa-Mi?</h2>
 	<h3 class="featurette-sub-heading">Perché la pappa è importante.</h3>
-        <p class="lead">L'alimentazione è una componente fondamentale di un corretto stile di vita, salutare e rispettoso dell'ambiente. I bambini in età scolare consumano oltre un terzo de pasti a Scuola, è importante che l'alimentazione scolastica sia accompagni il bambino lungo un percorso di apprendimento di una sana e gradevole alimentazione che lo accompagnerà per tutta la vita.</p>
+        <p class="lead">L'alimentazione è una componente fondamentale di un corretto stile di vita, salutare e rispettoso dell'ambiente. I bambini in età scolare consumano oltre un terzo dei pasti a Scuola, ed è importante che con l'alimentazione scolastica si accompagni il bambino lungo un percorso di apprendimento di una sana e gradevole alimentazione che lo accompagnerà per tutta la vita.</p>
       </div>
 
       <hr class="featurette-divider">
@@ -214,8 +213,8 @@ $(document).ready(function(){
       <div class="featurette">
         <img class="featurette-image pull-left img-circle" src="/img/pappa-mi-home-2.jpg">
         <h2 class="featurette-heading">A cosa serve?</h2>
-	<h3 class="featurette-sub-heading">Tieniti informato, valuta il servizio.</h3>
-        <p class="lead">Pappa-Mi permette ai genitori dei bambini di conoscere e contribuire al miglioramento del servizio di refezione scolastica. Entrando a far parte delle Commissioni Mensa nelle Scuole, i genitori possono verificare puntualmente la qualità dei pasti serviti a Scuola e fornire utili indicazioni per il miglioramento continuo del servizio stesso.</p>
+	<h3 class="featurette-sub-heading">A tenersi informati e a valutare un servizio pubblico.</h3>
+        <p class="lead">Pappa-Mi permette ai genitori dei bambini di conoscere le mense scolastiche e contribuire al miglioramento del servizio di refezione scolastica. Entrando a far parte delle Commissioni Mensa nelle Scuole, i genitori possono verificare puntualmente la qualità dei pasti serviti a Scuola e fornire utili indicazioni per il miglioramento continuo del servizio stesso.</p>
       </div>
 
       <hr class="featurette-divider">
@@ -239,83 +238,3 @@ $(document).ready(function(){
   </body>
 </html>
         
-{#<div class="row">
- <div class="span12">
-  <div id="carousel" class="carousel slide">
-   <div class="carousel-inner">
-    <div class="active item">
-     <div style="background:url('img/slider/slide1.jpg'); height:270px;"> 
-      <div>
-       <div style="padding:20px; background:url('img/back_transp.png');">
-        <h1>Benvenuti in Pappa-Mi</h1>
-        <h2>Cosa e Come si mangia nelle mense scolastiche</h2>
-        <p><a class="btn btn-primary" href="/eauth/login">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a></p>
-       </div>      
-      </div>
-     </div> 
-    </div>
-    <div class="item">
-     <div style="background:url('img/slider/slide2.jpg'); height:270px;"> 
-      <div>
-       <div style="padding:20px; background:url('img/back_transp.png');">
-        <h1>A cosa serve ?</h1>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>1.Guarda cosa si mangia</h3>Consulta il menu di oggi nella scuola dei tuoi figli.</div>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>2.Controlla come si mangia</h3>Consulta le segnalazioni delle Commissioni Mensa, guarda le statistiche sul servizio.</div>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>3.Partecipa</h3>Commenta le segnalazioni delle Commissioni Mensa, chiedi informazioni, suggerisci soluzioni.</div>
-       </div> 
-      </div>
-     </div>
-    </div>
-    <div class="item">
-     <div class="" style="background:url('img/slider/slide3.jpg'); height:270px;"> 
-      <div class="">
-       <div style="padding:20px; background:url('img/back_transp.png');">
-        <h1>Come si usa ?</h1>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>1.Registrati</h3>Bastano pochi minuti !</div>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>2.Inserisci i dati</h3><p>Se fai parte di una Commissione Mensa puoi inserire i dati dei questionari di ispezion e non conformit&agrave;, oppure anche solo le tue impressioni come note a testo libero.</p></div>
-        <div class="alert alert-info span3 hidden-phone hidden-tablet" style="height:180px;"><h3>3.Partecipa</h3>Se sei un genitore puoi inserire commenti, richieste di informazioni, suggerimenti.</div>
-       </div>
-       <div class="carousel-caption"> 
-        <p>Partecipa ! <a class="btn btn-success" href="/signup">Registrati &raquo;</a></p> 					
-       </div> 
-      </div>
-     </div>
-    </div>
-   </div>
-   <a class="carousel-control left" href="#carousel" data-slide="prev">&lsaquo;</a>
-   <a class="carousel-control right" href="#carousel" data-slide="next">&rsaquo;</a>
-  </div>
- </div>
-</div> 
-
-<div class="row">
- <div class="span3" style="margin-left:22px;">
-  <h3>Scuole iscritte</h3>
-  <div id="map" style="height: 240px; border: 1px solid black; overflow:hidden;"></div>
-  <p><a class="btn" href="/commissioni">Dettagli &raquo;</a></p>
- </div>
- <div class="span6" style="margin-left:18px;">
-  <h3>Ultime segnalazioni</h3>
-  <div id="act_loading" style="text-align:center;">Loading...</div>
-  <ul class="activity_list scroll" id="activity_list" style="height:300px; overflow:auto"></ul>
-  <p><a class="btn" href="/a">Dettagli &raquo;</a></p>
- </div>
- <div id="contacts" class="span3">
-  <h3>Iscritti</h3>
-  <div>
-   <ul class="thumbnails">  
-  {%for c in contacts%}
-    <li><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(cmsro)}}"></li>
-  {%endfor%}
-   </ul>
-  </div>
-  <div id="fb-root"></div>
-  <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:like-box href="http://www.facebook.com/pappami" width="280" show_faces="false" border_color="" stream="false" header="false"></fb:like-box>
-  <div id="follow">
-   <a href="http://twitter.com/pappa_mi"target="_new"><img src="/img/twitter-icon.png" alt="Twitter" title="Twitter" width="32" height="32"/></a>
-   <a href="//plus.google.com/110770353259380281779?prsrc=3" rel="publisher" style="text-decoration:none;">
-<img src="//ssl.gstatic.com/images/icons/gplus-32.png" alt="Google+" style="border:0;width:32px;height:32px;"/></a>
-   <a href="/feed"><img src="/img/rss.png" alt="RSS" title="Feed RSS" width="32" height="32"/></a>	    
-  </div>
- </div>
-</div>#}
