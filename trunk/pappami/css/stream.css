@@ -1,9 +1,17 @@
 @media (max-width: 979px) and (min-width: 768px){
 .s_node_panel {
-width: 220px;
+width: 230px;
 }
 .s_node_container {
-width: 484px;
+width: 474px;
+}
+}
+@media (min-width: 980px) and (max-width: 1199px){
+.s_node_panel {
+width: 270px;
+}
+.s_node_container {
+width: 640px;
 }
 }
 
@@ -18,10 +26,13 @@ width:400px
 .s_post {
 padding-bottom: 8px;
 zoom:1;
+overflow:hidden;
 }
 
 .s_post_item {
 padding: 2px 4px 2px 4px;
+zoom:1;
+overflow:hidden;
 }
 
 .s_post_pinned {
@@ -57,6 +68,10 @@ zoom:1;
 .s_post_title {
 display: block;
 }
+.s_post_subtitle {
+display: block;
+clear:right;
+}
 
 .s_post_title_1 {
 cursor: pointer;
@@ -66,13 +81,15 @@ font-weight: bold;
 }
 
 .s_post_author {
-display: table-cell;
+display: inline;
+float: left;
 font-style: italic;
 color: #999;
 }
 
 .s_post_date {
-display: table-cell;
+display: inline;
+float: left;
 font-style: italic;
 color: #999;
 padding-left: 3pt;
@@ -103,7 +120,8 @@ float:right;
 }
 
 .s_post_link, .s_post_link > a {
-display: table-cell;
+display: inline;
+#float: left;
 font-style: italic;
 color: #999;
 padding-left: 3pt;
@@ -111,10 +129,8 @@ cursor: pointer;
 }
 
 .s_node_title_node {
-font-size: 90%;
-display: inline;
-font-style: italic;
-color: #999;
+display:inline;
+float:left;
 }
 
 .s_node_commands {

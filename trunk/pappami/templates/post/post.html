@@ -11,11 +11,13 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
-					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
 				</div> 
-				<div class="s_post_author">di {{post.commissario.nome}}</div>
-				<div class="s_post_date">{{post.extended_date()}}</div>
-				<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+				<div class="s_post_subtitle">
+					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
+					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
+					<div class="s_post_date">{{post.extended_date()}}</div>
+					<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+				</div> 
 			</div>				
 			<div class="s_post_body">
 				<div class="s_post_content">{{post.content}}</div>

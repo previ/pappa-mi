@@ -16,7 +16,6 @@
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <meta http-equiv="X-UA-Compatible" content="IE=7.5"/>
-      link type="text/css" href="/css/ie.css" rel=stylesheet"/>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
@@ -36,7 +35,7 @@
     <link type="text/css" href="/css/public.css" rel="stylesheet" media="screen"/>		
 
     <!--[if lt IE 9]>
-      link type="text/css" href="/css/ie.css" rel=stylesheet"/>
+      <link type="text/css" href="/css/ie.css" rel=stylesheet"/>
     <![endif]-->
 
     <!-- Le fav and touch icons -->
@@ -136,8 +135,7 @@ $(document).ready(function(){
     <div id="myCarousel" class="carousel slide">
       <div class="carousel-inner">
         <div class="item active">
-          <img src="img/slider/slide1.jpg" alt="">
-	  <div class="carousel-background"></div>
+	  <div class="carousel-background carousel-slide-1"></div>
 	  <div class="carousel-caption">
 	    <div class="container">
               <h1>Benvenuti in Pappa-Mi</h1>
@@ -147,7 +145,7 @@ $(document).ready(function(){
           </div>
         </div>
         <div class="item">
-          <img src="img/slider/slide2.jpg" alt="">
+	  <div class="carousel-background carousel-slide-2"></div>
 	  <div class="carousel-caption">
             <div class="container">
   	      <h1>A cosa serve ?</h1>
@@ -159,7 +157,7 @@ $(document).ready(function(){
           </div>
         </div>
         <div class="item">
-          <img src="img/slider/slide3.jpg" alt="">
+	  <div class="carousel-background carousel-slide-3"></div>
 	  <div class="carousel-caption">
             <div class="container">
 	      <h1>Come si usa ?</h1>
@@ -181,23 +179,23 @@ $(document).ready(function(){
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
 
-    <div class="container marketing">
+    <div class="container marketing main">
 
       <!-- Three columns of text below the carousel -->
       <div class="row">
         <div class="span3">
           <h2><a class="" href="/commissioni">Scuole registrate &raquo;</a></h2>
-	  <div id="map" class="tile img-rounded"></div>
+	  <div id="map" class="tile img-rounded" onclick="location.href='/commissioni';"></div>
         </div><!-- /.span4 -->
         <div class="span6">
           <h2><a class="" href="/stream">Ultimi dati raccolti &raquo;</a></h2>
-	  <div id="main_stream" class="tile">
+	  <div id="main_stream" class="tile" onclick="location.href='/stream'">
 	   <ul id="main_stream_list" class="unstyled">
 	   </ul>
 	  </div>
         </div><!-- /.span4 -->
         <div class="span3">
-          <h2><a class="" href="/contatti">Utenti iscritti &raquo;</A></h2>
+          <h2><a class="" href="/contatti">Utenti iscritti &raquo;</a></h2>
 	    <ul class="thumbnails tile tile-user">  
 	  {%for c in contacts%}
 	     <li class="user"><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(	cmsro)}}"></li>

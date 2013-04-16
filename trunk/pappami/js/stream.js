@@ -380,6 +380,7 @@ function onPostExpand() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
   var data = {'cmd':'expand_post', 'post':post_key, 'exp_comments': exp_comments }
+  post_item.append('<div class="s_loading"><span class="offset3 span2">Loading... <img src="/img/loading.gif"></span></div>');
   
   $.ajax({
 	  type: 'POST',
@@ -397,7 +398,7 @@ function onPostCollapse() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
   var data = {'cmd':'collapse_post', 'post':post_key }
-  
+
   $.ajax({
 	  type: 'POST',
 	  url:'/post/manage', 
@@ -405,7 +406,9 @@ function onPostCollapse() {
 	  dataType:'json',
 	  error: onError,
 	  success:function(data){
-	    post_item.html(data.html);
+	    var new_item = $(data.html);
+	    post_item.replaceWith(new_item);
+	    post_item = new_item;
 	    post_item.find('.post_del').click(onPostItemDelete);
 	    post_item.find('.post_sub').click(onPostSubscribe);
 	    post_item.find('.post_unsub').click(onPostUnsubscribe);
@@ -1006,11 +1009,17 @@ function initPostList(list) {
 }
 
 function onVotesDetail() {
- var post = getPostKeyByElement($(this));    
+ var key = ""
+ var comment_root = getCommentRootByElement($(this));
+ if(comment_root.length > 0) {
+  key = comment_root.attr('data-comment-key');   
+ } else {
+  key = getPostKeyByElement($(this));
+ }
 
  var data = {
   'cmd': 'vote_list',
-  'post': post
+  'key': key
   };
  $.ajax({
   type: 'POST',
