@@ -9,11 +9,13 @@
 				{%if not reshare%}<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-arrow-down"></i></span></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_expand">{{post.title}}</span>
-					<span class="s_node_title_node" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</span>
-				</div> 
-				<div class="s_post_author">di {{post.commissario.nome}}</div>
-				<div class="s_post_date">{{post.extended_date()}}</div>
-				<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+				</div>
+				<div class="s_post_subtitle">
+					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
+					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
+					<div class="s_post_date">{{post.extended_date()}}</div>
+					<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+				</div>
 			</div>
 			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content_summary}}
 			{%else%}{%if post.images%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}

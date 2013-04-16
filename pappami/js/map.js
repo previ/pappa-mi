@@ -177,7 +177,11 @@ function loadSmallMap(lat,lon) {
     zoom: 4,
     center: new google.maps.LatLng(lat,lon),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
-    mapTypeControl: false
+    mapTypeControl: false,
+    scrollwheel: false,
+    navigationControl: false,
+    scaleControl: false,
+    draggable: false
   }    
   var map = new google.maps.Map(document.getElementById("map"), myOptions);
   fluster = new Fluster2(map); 
