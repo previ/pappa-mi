@@ -399,6 +399,16 @@
       </div>
      </div>
      <div class="control-group">
+      <label class="control-label" for="e_pc_1">Cottura <i class="icon-info-sign" data-content="In caso di piatti che non necessitano cottura indicare il valore centrale ('giusta')."></i></label>
+      <div class="controls">
+       <div class="radio-group btn-group" data-toggle="buttons-radio">
+        <label class="btn"><input type="radio" name="contornoCottura" value="1" class="required" id="e_sc_1" {%if form.data.contornoCottura == "1" %}CHECKED{%endif%}/>Scarsa</label>
+        <label class="btn"><input type="radio" name="contornoCottura" value="2" class="required" id="e_sc_2" {%if form.data.contornoCottura == "2" %}CHECKED{%endif%}/>Giusta</label>   
+        <label class="btn"><input type="radio" name="contornoCottura" value="3" class="required" id="e_sc_3" {%if form.data.contornoCottura == "3" %}CHECKED{%endif%}/>Eccessiva</label>   
+       </div>
+      </div>
+     </div>
+     <div class="control-group">
       <label class="control-label" for="entry_42">Temperatura <i class="icon-info-sign" data-content="In caso di piatti serviti 'freddi' (come insalata o roast-beef) indicare il valore centrale ('giusta')."></i></label>
       <div class="controls">
        <div class="radio-group btn-group" data-toggle="buttons-radio">

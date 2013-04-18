@@ -20,7 +20,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				</div> 
 			</div>				
 			<div class="s_post_body">
-				<div class="s_post_content">{{post.content}}</div>
+				{%if post.display_content()%}<div class="s_post_content">{{post.content}}</div>{%endif%}
 				<div class="s_edit_hollow"></div>
 				{%for resource in post.resource%}
 				<div class="s_post_resource well">

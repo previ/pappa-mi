@@ -409,16 +409,7 @@ function onPostCollapse() {
 	    var new_item = $(data.html);
 	    post_item.replaceWith(new_item);
 	    post_item = new_item;
-	    post_item.find('.post_del').click(onPostItemDelete);
-	    post_item.find('.post_sub').click(onPostSubscribe);
-	    post_item.find('.post_unsub').click(onPostUnsubscribe);
-	    post_item.find('.post_vote').click(onPostVote);
-	    post_item.find('.post_unvote').click(onPostVote);      
-	    post_item.find('.post_reshare').click(onPostReshare);
-	    post_item.find('.post_expand').click(onPostExpand); 
-	    post_item.find('.s_post_votes_c').click(onVotesDetail)
-	    post_item.find('.s_post_avatar').click(onAuthorDetail);
-	    post_item.find('.s_post_reshares_c').click(onResharesDetail)	    
+	    initPostList(post_item);
 	  }});
   
 }
@@ -492,6 +483,8 @@ function onPostReshare() {
 	  }
 	  if( $("#main_stream_list") ) {
 	      $("#main_stream_list").prepend(data.html);
+	      var post_root = $("#main_stream_list li:first-child");
+	      initPostList(post_root);
 	      modal_reshare.modal('hide');
 	      modal_reshare.empty();
 	  } else {
@@ -847,19 +840,7 @@ function initNode(node_key){
   $("#main_stream_list").prepend(data)
   $("#open_post_submit").button("reset");
   var post_root = $("#main_stream_list li:first-child");
-  post_root.find('.post_del').click(onPostItemDelete);
-  post_root.find('.post_sub').click(onPostSubscribe);
-  post_root.find('.post_unsub').click(onPostUnsubscribe);
-  post_root.find('.post_vote').click(onPostVote);
-  post_root.find('.post_unvote').click(onPostVote);      
-  post_root.find('.post_reshare').click(onPostReshare);
-  post_root.find('.post_expand').click(onPostExpand); 
-  post_root.find('.s_post_votes_c').click(onVotesDetail)
-  post_root.find('.s_post_avatar').click(onAuthorDetail);
-  post_root.find('.s_post_reshares_c').click(onResharesDetail)
-  post_root.find('.show_comment_form').click(onPostCommentFormExpand)
-  post_root.find('.show_comment_form').click(onPostCommentsExpand)
-  post_root.find('.post_comments_expand').click(onPostCommentsExpand)  
+  initPostList(post_root);
   tinymce.get('post_content_text').setContent('');
  }, beforeSubmit: function(arr,$form) {
   $("#open_post_submit").button("loading");

@@ -128,6 +128,11 @@ padding-left: 3pt;
 cursor: pointer;
 }
 
+.s_post_resource .s_post_title_1 a, a:hover {
+color: #000;
+
+}
+
 .s_node_title_node {
 display:inline;
 float:left;

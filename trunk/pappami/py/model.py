@@ -734,7 +734,7 @@ class Nonconformita(model.Model):
     return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)  
 
   def sommario(self):
-    return self.tipoNome()
+    return u"Non conformità: <strong>" + self.tipoNome() + "</strong> Richiesta campionatura: <strong>" + ("Si" if self.richiestaCampionatura == 1 else "No") + "</strong>" 
 
   @property
   def restype(self):
@@ -827,7 +827,7 @@ class Dieta(model.Model):
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
 
   def sommario(self):
-    return self.tipoNome()
+    return "Dieta sanitaria: <strong>" + self.tipoNome() + "</strong>"
   
   @property
   def restype(self):
@@ -936,7 +936,7 @@ class Nota(model.Model):
     return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)  
 
   def sommario(self):
-    return self.titolo
+    return ""
 
   @property
   def restype(self):
@@ -1576,14 +1576,17 @@ class SocialPost(model.Model):
       summary = ""
       if len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota"]:
         summary = self.resource[0].get().sommario()
+      elif len(self.res_type) > 0 and self.res_type[0] in ["post"]:
+        summary = self.resource[0].get().content_summary
+        logging.info(summary)
         
       if len(self.content) <= 1000:
         summary += ("<div>" + self.content + "</div>")
       else:
         text_content = Sanitizer.text(self.content)
         limit = len(text_content)
-        if limit > 1000:
-          limit = 1000
+        if limit > 500:
+          limit = 500
         summary += ("<div>" + text_content[:limit] + "</div>")
       return summary
 
@@ -1595,7 +1598,13 @@ class SocialPost(model.Model):
           imgs.append(a.imgthumb())
       imgs.extend(Sanitizer.images(self.content))
       return imgs
-      
+    
+    def has_summary(self):
+      return len(self.content) > 1000 or (len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota", "post"])
+
+    def display_content(self):
+      return not(len(self.res_type) > 0 and self.res_type[0] in ['isp', 'nc', 'dieta', 'nota'])
+    
     def extended_date(self):
       delta = datetime.now() - self.created
       if delta.days == 0 and delta.seconds < 3600:
