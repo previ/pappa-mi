@@ -6,7 +6,7 @@
 		</div>
 		<div class="s_post_container">
 			<div class="s_post_header">		
-				{%if not reshare%}<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-arrow-down"></i></span></div>{%endif%}
+				{%if not reshare %}<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-arrow-down"></i></span></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_expand">{{post.title}}</span>
 				</div>
@@ -17,10 +17,10 @@
 					<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
 				</div>
 			</div>
-			<div class="s_post_body">{%if post.content|length < 1000%}{{post.content_summary}}
-			{%else%}{%if post.images%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
+			<div class="s_post_body">{%if post.has_summary()%}
+			{%if post.images|length>0%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
 			<span class="btn-link post_expand">...continua a leggere »</span></div>
-			{%endif%}</div>
+			{%else%}{{post.content}}{%endif%}</div>
 			{%if subscription%}									
 			<div class="s_post_commands">
 				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}

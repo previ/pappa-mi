@@ -195,9 +195,13 @@ class Sanitizer(object):
   @classmethod
   def images(cls, html):
     images = list()
-    for img in lxml.html.fromstring(html).iter('img'):
-      logging.info(str(img))
-      images.append(img.get('src'))
+    try:
+      for img in lxml.html.fromstring(html).iter('img'):
+        logging.info(str(img))
+        images.append(img.get('src'))
+    except Exception:
+      pass
+      
     return images
   
 

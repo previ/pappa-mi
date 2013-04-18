@@ -285,7 +285,7 @@ class NonconfHandler(BasePage):
         memcache.delete("statsMese")
   
         node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nonconf"])
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nc"])
         
       
       #template = jinja_environment.get_template("post/post_item.html")

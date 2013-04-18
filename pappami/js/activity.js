@@ -122,7 +122,10 @@ function opennewwiz(url) {
 	      }
 	      $("#main_stream_list").prepend(data.html)
 	      */
-	      $("#main_stream_list").prepend(data)	      
+	      $("#main_stream_list").prepend(data)	
+	      var post_root = $("#main_stream_list li:first-child");
+	      initPostList(post_root);
+	      
 	      if(auto_open_nc) {
 		$('#new-nc').html("Inserire anche una Non conformit&agrave; ?")
 		$('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
@@ -217,6 +220,9 @@ function opennewitem(url) {
 	  $("#main_stream_list").prepend(data.html);
 	  */
 	  $("#main_stream_list").prepend(data);
+	  var post_root = $("#main_stream_list li:first-child");
+	  initPostList(post_root);
+	  
 	  if(auto_open_nc) {
 	    $('#new-nc').html("Inserire altra Non conformit&agrave; ?")
 	    $('#new-nc').dialog({ title: "Nuova Non conformit&agrave;", modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
