@@ -221,7 +221,7 @@ function onPostEdit(){
     dataType:'json',
     error: onError,
     success:function(data){
-      edit_post.html(data.html)
+      edit_post.html(data.html);
       $(document).ready(function(){
 	var edit_form = edit_post.find("form");
 	edit_form.validate({

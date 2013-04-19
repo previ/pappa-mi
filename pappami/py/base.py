@@ -159,13 +159,6 @@ class BaseHandler(webapp.RequestHandler):
       self.redirect("/mobile")      
       
     user = self.get_current_user()
-    url = None
-    if user:
-      url = "/eauth/logout"
-      url_linktext = 'Esci'
-    else:
-      url = "/eauth/login?next=" + self.request.uri
-      url_linktext = 'Entra'
       
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
@@ -186,6 +179,11 @@ class BaseHandler(webapp.RequestHandler):
       
     commissario = self.getCommissario(user)
     if( commissario and commissario.is_active()) :
+      if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
+        template_values["welcome"] = "new"
+      if commissario.ultimo_accesso_il and commissario.ultimo_accesso_il < datetime(year=2013, month=4, day=20) and self.request.url.find("/stream") != -1:
+        logging.info(str(self.request.url.find("/stream")))
+        template_values["welcome"] = "returning"
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
         commissario.put()
@@ -204,16 +202,17 @@ class BaseHandler(webapp.RequestHandler):
       #logging.info("genitore: " + str(commissario.isGenitore()))
     
     template_values["cmsro"] = commissario
+    url, url_linktext = self.get_login_url_text()
     
     if "main" not in template_values:
       template_values["main"] = 'main.html'
     template_values["user"] = user
     template_values["admin"] = users.is_current_user_admin()
-    template_values["url"] = url
     template_values["shownote"] = True
+    template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.0.0 - 2013.03.20"
+    template_values["version"] = "3.0.0.0 - 2013.04.19"
     template_values["ctx"] = self.get_context()
         
     
@@ -248,7 +247,18 @@ class BaseHandler(webapp.RequestHandler):
     #logging.info("host: " + host)
     return host
 
-  
+
+  def get_login_url_text(self):
+    url = None
+    url_linktext = None
+    if self.get_current_user():
+      url = "/eauth/logout"
+      url_linktext = 'Esci'
+    else:
+      url = "/eauth/login?next=" + self.request.uri
+      url_linktext = 'Entra'
+    return url, url_linktext
+    
   @classmethod
   def getNews(self,name):
     news = memcache.get(name)

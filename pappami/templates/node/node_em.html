@@ -2,7 +2,7 @@
 {%if user %}
  <div class="s_node_commands btn-toolbar">
   <div class="btn-group" style="display:inline;">
-   <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Aggiungi nuovo...<span class="caret"></span></a>
+   <a class="btn btn-primary dropdown-toggle" id="add_new" data-toggle="dropdown" href="#">Aggiungi nuovo...<span class="caret"></span></a>
    <ul class="dropdown-menu">
     <li><a class="open_msg" onclick="onOpenPostForm()" href="#">Messaggio</a></li>
     {%if cmsro.isCommissario() %}
@@ -14,7 +14,7 @@
    </ul>
   </div>
   {%if node%}
-  <div class="btn-group pull-right" style="display:inline;">
+  <div class="btn-group pull-right" style="display:inline;" id="node_subscription">
    <div id="subscribe_btn" class="btn"></div>
    <a id="sub_prop" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 	 <span class="icon-cog"></span>

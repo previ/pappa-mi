@@ -95,11 +95,6 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
       
     nota.put()
 
-    #logging.info('before initActivity')
-    msg = CMCommentHandler.init(nota.key, nota.commissione, 104, nota.tags, user=nota.creato_da.get())
-        
-    #logging.info('parsing attachments')
-         
     #allegati
     if hasattr(message, 'attachments'):
       for attach in message.attachments :
@@ -118,13 +113,14 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
           blob = Blob()
           blob.create(allegato.nome)
           allegato.blob_key = blob.write(allegato_decode)
-          allegato.put()
-         
    
+    node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
+    template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
+            
     feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
          
 Link pubblico:
-""" + "http://" + self.host + "/public/act?key="+str(msg.key.id()) + """
+""" + "http://" + self.host + "/post/" + str(temlate_values["postlist"][0].urlsafe()/ + """
     
 ---
 Pappa-Mi staff """)
