@@ -155,7 +155,8 @@ class PostManageHandler(BaseHandler):
             template_values = {
                                'post': post,
                                'user': user,
-                               "cmsro":self.getCommissario(user), 
+                               'cmsro':self.getCommissario(user), 
+                               'url': self.get_login_url_text()[0],
                                'hide_comments': self.request.get('exp_comments') == 'false',
             }                                    
                 

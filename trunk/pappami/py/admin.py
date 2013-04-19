@@ -986,6 +986,12 @@ class CMAdminCommissarioHandler(BasePage):
                   #dati: get node by cm (resource)
                   node = SocialNode.get_by_resource(m.grp)[0]
                   post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par], res_types=[m.par.get().restype]).get()
+                  #allegati a ispezioni e note
+                  for a in m.par.get().get_allegati:
+                      logging.info("msg.par.allegati")
+                      a.obj = post.key
+                      a.put()
+                  
               elif m.tipo == 201:
                   #messaggi
                   node = None
@@ -994,6 +1000,12 @@ class CMAdminCommissarioHandler(BasePage):
                   if not node:
                       node = node_default
                   post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
+                  #allegati a messaggi
+                  for a in m.get_allegati:
+                      logging.info("msg.allegati")
+                      a.obj = post.key
+                      a.put()
+                  
                   
               post.created = m.creato_il
               init_rank = post.created - Const.BASE_RANK
@@ -1007,13 +1019,11 @@ class CMAdminCommissarioHandler(BasePage):
                       comment = post.create_comment(mc.body, mc.c_ua.get())
                       comment.created = mc.creato_il
                       comment.put()
-                                  
-              #allegati    
-              for a in m.get_allegati:
-                  logging.info("msg.allegati")
-                  a.obj = post.key
-                  a.put()
-              
+                      for v in comment.votes:
+                          logging.info("msg.voti")
+                          vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=post.key, vote = v.voto)
+                          vote.put()
+                                                
               #voti    
               for v in m.votes:
                   logging.info("msg.voti")

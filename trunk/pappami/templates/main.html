@@ -28,6 +28,7 @@
     <link type="text/css" href="/css/comments.css" rel="stylesheet" media="screen"/>
     <link type="text/css" href="/css/activity.css" rel="stylesheet" media="screen"/>		
     <link type="text/css" href="/css/jquery.ajaxComboBox.css" rel="stylesheet"/>
+    <link href="/css/bootstrap-tour.css" rel="stylesheet">
     
     <link rel="stylesheet" href="/css/base.css" type="text/css" media="all" />
     <link rel="stylesheet" href="/css/stream.css" type="text/css" media="all" />
@@ -72,12 +73,16 @@
     
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap-button.js"></script>
+    
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/bootstrap-tour.min.js"></script>
 	
     <script type="text/javascript" src="/js/stream.js"></script> 
     <script type="text/javascript" src="/js/activity.js"></script> 
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
     <script type="text/javascript" src="/js/jform.js"></script>
+    <script type="text/javascript" src="/js/help.js"></script>
   </head>
 
   <body data-channel-id="{{channel}}">
@@ -112,6 +117,7 @@
 	    <ul class="nav pull-right">{% if not commissario and not genitore %}
 	      <li><a class="" href="/signup">Registrati &raquo;</a></li>
 	      <li><a href="{{url}}">{{url_linktext}}</a></li>{% endif %}{% if commissario or genitore %}
+	      <li><a id="start_tour" href="javascript:start_tour();">?</a></li>
 	      <li><a id="ntf_cnt" class="s_popover" data-original-title="Notifiche" data-placement="bottom" data-trigger="manual" data-html="true" data-container="body" href="#"><span class="s_glob_ntfy badge">0</span></a></li>
 	      <li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{cmsro.avatar(cmsro, myself=True)}}" class="avatar-mini"> <span>{{cmsro.nomecompleto(cmsro, myself=True)}}</span><b class="caret"></b></a>
@@ -135,6 +141,9 @@
   </div>
   <footer>
 {%include "footer.inc"%}
-  </footer>  
+  </footer>  {{welcome}}
+{%if welcome%}  
+{%include "welcome_dialog.html"%}
+{% endif %}
   </body>
 </html>
