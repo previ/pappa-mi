@@ -61,12 +61,8 @@ class ContattiHandler(BasePage):
     if not cls._contacts:
       with cls._contacts_lock:     
         cls._contacts = list()
-        i = 0
-        for c in Commissario.get_all().order(-Commissario.creato_il):
-          i +=1
+        for c in Commissario.get_all_reverse(limit=num):
           cls._contacts.append(c)
-          if i >= num:
-            break
     return cls._contacts
   
   def post(self):

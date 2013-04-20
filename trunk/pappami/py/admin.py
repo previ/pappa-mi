@@ -755,10 +755,25 @@ class CMAdminHandler(BasePage):
           cc.put()
       
     if self.request.get("cmd") == "migrate":
-      what = self.request.get("what")
-      limit = self.request.get("limit")
-      offset = self.request.get("offset")
-      SocialUtils.migrate(what, offset, limit)    
+      what = self.request.get("kind")
+      limit = int(self.request.get("limit"))
+      offset = int(self.request.get("offset"))
+      SocialAdmin.migrate(what, offset, limit)    
+
+    if self.request.get("cmd") == "vacuum_index":
+      index = search.Index(name="index-nodes")
+      while True:
+        doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
+        if not doc_ids:
+          break
+        index.delete(doc_ids)        
+
+      index = search.Index(name="index-posts")
+      while True:
+        doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
+        if not doc_ids:
+          break
+        index.delete(doc_ids)        
 
     template_values = {
       'content': 'admin/admin.html',
@@ -907,6 +922,7 @@ class CMAdminCommissarioHandler(BasePage):
       }
       self.getBase(template_values)
 
+class SocialAdmin(object):
   @classmethod
   def migrate(cls, what, offset, limit):  
       if what == "nodes":
@@ -960,7 +976,7 @@ class CMAdminCommissarioHandler(BasePage):
       if what == "subscriptions":
           #subscriptions
           logging.info("subscriptions.city")
-          for co in Commissario.get_all():
+          for co in Commissario.get_all(limit=limit, offset=offset):
               Cache.clear_all_caches()
               logging.info("subscriptions: " + co.user_email_lower)
               logging.info("subscriptions.city")
@@ -975,8 +991,12 @@ class CMAdminCommissarioHandler(BasePage):
               logging.info("subscriptions.cm")
               for cm in co.commissioni():
                   logging.info("subscriptions.cm: " + cm.nome)
-                  node_cm = SocialNode.get_by_resource(cm.key)[0]
-                  node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
+                  cms = SocialNode.get_by_resource(cm.key)
+                  if len(cms) > 0: 
+                    node_cm = SocialNode.get_by_resource(cm.key)[0]
+                    node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
+                  else:
+                    logging.info(cm.name + " not found")
       
       if what == "messages":
           for m in Messaggio.query().filter(Messaggio.livello == 0).filter().order(Messaggio.creato_il).fetch(limit=limit, offset=offset):
@@ -1019,9 +1039,9 @@ class CMAdminCommissarioHandler(BasePage):
                       comment = post.create_comment(mc.body, mc.c_ua.get())
                       comment.created = mc.creato_il
                       comment.put()
-                      for v in comment.votes:
+                      for v in mc.votes:
                           logging.info("msg.voti")
-                          vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=post.key, vote = v.voto)
+                          vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=comment.key, vote = v.voto)
                           vote.put()
                                                 
               #voti    
