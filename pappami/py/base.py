@@ -181,7 +181,7 @@ class BaseHandler(webapp.RequestHandler):
     if( commissario and commissario.is_active()) :
       if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
         template_values["welcome"] = "new"
-      if commissario.ultimo_accesso_il and commissario.ultimo_accesso_il < datetime(year=2013, month=4, day=20) and self.request.url.find("/stream") != -1:
+      if commissario.ultimo_accesso_il and commissario.ultimo_accesso_il < datetime(year=2013, month=4, day=19) and self.request.url.find("/stream") != -1:
         logging.info(str(self.request.url.find("/stream")))
         template_values["welcome"] = "returning"
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):

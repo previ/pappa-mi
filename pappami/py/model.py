@@ -219,8 +219,12 @@ class Commissario(model.Model):
     memcache.delete("commissario-"+str(self.usera.id()))
 
   @classmethod
-  def get_all(cls):
-    return Commissario.query()
+  def get_all(cls, offset=0, limit=100):
+    return Commissario.query().order(Commissario.creato_il).fetch(limit=limit, offset=offset)
+
+  @classmethod
+  def get_all_reverse(cls, offset=0, limit=100):
+    return Commissario.query().order(-Commissario.creato_il).fetch(limit=limit, offset=offset)
   
   @classmethod
   def get_for_newsletter(cls):
