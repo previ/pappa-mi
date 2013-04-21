@@ -180,23 +180,23 @@ $(document).ready(function(){
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
 
-    <div class="container marketing main">
+    <div class="container marketing">
 
       <!-- Three columns of text below the carousel -->
       <div class="row">
         <div class="span3">
-          <h2><a class="" href="/commissioni">Scuole registrate &raquo;</a></h2>
+          <h2 class="marketing-heading"><a class="" href="/commissioni">Scuole registrate &raquo;</a></h2>
 	  <div id="map" class="tile img-rounded" onclick="location.href='/commissioni';"></div>
         </div><!-- /.span4 -->
         <div class="span6">
-          <h2><a class="" href="/stream">Ultimi dati raccolti &raquo;</a></h2>
+          <h2 class="marketing-heading"><a class="" href="/stream">Ultimi dati raccolti &raquo;</a></h2>
 	  <div id="main_stream" class="tile" onclick="location.href='/stream'">
 	   <ul id="main_stream_list" class="unstyled">
 	   </ul>
 	  </div>
         </div><!-- /.span4 -->
         <div class="span3">
-          <h2><a class="" href="/contatti">Utenti iscritti &raquo;</a></h2>
+          <h2 class="marketing-heading"><a class="" href="/contatti">Utenti iscritti &raquo;</a></h2>
 	    <ul class="thumbnails tile tile-user" id="contacts">  
 	  {%for c in contacts%}
 	     <li class="user"><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(cmsro)}}"></li>

@@ -11,7 +11,7 @@ derived_file_type:
 
 builtins:
 - remote_api: on 
-- appstats: on
+- appstats: off
 - deferred: on
 
 libraries:
