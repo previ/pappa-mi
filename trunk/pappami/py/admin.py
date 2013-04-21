@@ -775,6 +775,77 @@ class CMAdminHandler(BasePage):
           break
         index.delete(doc_ids)        
 
+    if self.request.get("cmd") == "prune_index":
+      index = search.Index(name="index-nodes")
+      for doc in index.get_range(ids_only=True):
+        try:
+          item = model.Key(urlsafe=doc.doc_id[5:]).get()
+        except:
+          index.delete(doc_ids)        
+
+      index = search.Index(name="index-posts")
+      for doc in index.get_range(ids_only=True):
+        try:
+          item = model.Key(urlsafe=doc.doc_id[5:]).get()
+        except:
+          index.delete(doc_ids)        
+
+    if self.request.get("cmd") == "refresh_index":
+      for node in SocialNode.query():
+        fields = [search.TextField(name='name', value=node.name),
+         search.HtmlField(name='description', value=node.description)]      
+        if node.geo:
+          fields.append(search.GeoField(name='geo', value=search.GeoPoint(node.geo.lat, node.geo.lon)))
+          
+        doc=search.Document(
+                        doc_id='node-'+str(node.key.id()),
+                        fields=fields,
+                        language='it')
+        
+       
+        index = search.Index(name='index-nodes')
+        try:
+            index.put(doc)
+        
+        except search.Error, e:
+            pass
+      for post in SocialPost.query():
+        resource = ""
+        for r in post.res_type:
+          resource += r + " "
+  
+        #logging.info(resource)
+        ref_date = post.created
+        if len(post.res_type) > 0:
+          if post.res_type[0] in ["isp","dieta"]:
+            ref_date = post.resource[0].get().dataIspezione
+          elif post.res_type[0] == ["nc"]:
+            ref_date = post.resource[0].get().dataNonconf
+          elif post.res_type[0] == ["nota"]:
+            ref_date = post.resource[0].get().dataNota
+            
+        doc=search.Document(
+                        doc_id='post-'+post.key.urlsafe(),
+                        fields=[search.TextField(name='node', value=post.key.parent().get().name),
+                                search.TextField(name='author', value=post.commissario.nomecompleto(cmsro=None, myself=True)),
+                                search.TextField(name='title', value=post.title),
+                                search.HtmlField(name='content', value=post.content),
+                                search.HtmlField(name='comments', value=post.get_comments_text()),
+                                search.TextField(name='resources', value=resource),
+                                search.TextField(name='attach', value=str(len(post.attachments)>0)),
+                                search.DateField(name='date', value=ref_date)
+                                ],
+                        language='it')
+        
+       
+        index = search.Index(name='index-posts')
+        try:
+            index.put(doc)
+        
+        except search.Error, e:
+            pass
+        
+
     template_values = {
       'content': 'admin/admin.html',
     }
