@@ -120,7 +120,7 @@ class PostManageHandler(BaseHandler):
         if cmd == "create_comment":
             post=model.Key(urlsafe=self.request.get('post')).get()
             node=post.key.parent().get()
-            logging.info("content:" + self.request.get("content"))
+            #logging.info("content:" + self.request.get("content"))
             clean_content = Sanitizer.sanitize(self.request.get("content"))            
             comment = post.create_comment(clean_content,user)  
              
@@ -161,7 +161,7 @@ class PostManageHandler(BaseHandler):
             }                                    
                 
             template = jinja_environment.get_template("post/post.html")
-            logging.info(self.request.get('exp_comments'))
+            #logging.info(self.request.get('exp_comments'))
  
             html=template.render(template_values)
             response = {'response':'success','post':post.key.urlsafe(),'html':html}
@@ -189,11 +189,11 @@ class PostManageHandler(BaseHandler):
             
             #check admin permissions
             if not post.can_admin(user):
-                logging.info("not admin")
+                #logging.info("not admin")
                 return    
             #delete replies
             node.delete_post(post)
-            logging.info("delete")
+            #logging.info("delete")
             
             self.success({'url':"/node/"+str(node.key.urlsafe())})
 
@@ -292,7 +292,7 @@ class PostManageHandler(BaseHandler):
             post_or_comment = model.Key(urlsafe=self.request.get('key')).get()
             vote = int(self.request.get('vote'))
             post_or_comment.vote(vote, self.get_current_user())
-            logging.info(str(len(post_or_comment.votes)))
+            #logging.info(str(len(post_or_comment.votes)))
             response = {'response':'success', 'key': post_or_comment.key.urlsafe(), 'votes':str(len(post_or_comment.votes))}
             self.output_as_json(response)             
 
@@ -365,7 +365,7 @@ class PostManageHandler(BaseHandler):
             template = jinja_environment.get_template("post/comment.html")
  
             html=template.render(template_values)
-            logging.info(html)
+            #logging.info(html)
             response = {'response':'success','comment':comment.key.urlsafe(),'html':html,"cursor":''}
             self.output_as_json(response)
 
@@ -411,7 +411,7 @@ class PostPaginationHandler(BaseHandler):
         return self.post()
     
     def post(self):
-        logging.info("PostPaginationHandler")
+        #logging.info("PostPaginationHandler")
         cmd=self.request.get("cmd")
         user=self.request.user
         cursor=self.request.get("cursor")

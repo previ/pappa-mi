@@ -202,6 +202,8 @@ class NodePaginationHandler(BaseHandler):
             if cmd=="node_main":                
                 node = None
                 node_key_str = self.request.get("node")
+                self.get_context()['node'] = node_key_str
+                self.set_context()
                 node_name = self.request.get("node_name")
                 if node_key_str != "all" and node_key_str != "news":
                     node = model.Key(urlsafe=self.request.get("node")).get()

@@ -858,10 +858,10 @@ function initNode(node_key){
 }
 
 
-function init(){
+function init(node_key){
 
  $("ul#node_list").find("a").click(onNodeClick);
- $("#node_list").children().find('a[data-node-key]').first().click();
+ $("#node_list").children().find("a[data-node-key='" + node_key+ "']").first().click();
  
  var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.attr("data-visible", 'false');

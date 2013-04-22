@@ -112,11 +112,13 @@ class BaseHandler(webapp.RequestHandler):
       ctx = dict()
       commissario = self.getCommissario()
       if commissario:
+        ctx["node"] = "all"
         ctx["citta_key"] = commissario.citta.id()
         if commissario.commissione():
           ctx["cm_key"] = commissario.commissione().key.id()
           ctx["cm_name"] = str(commissario.commissione().desc())
       else:
+        ctx["node"] = "news"
         ctx["citta_key"] = Citta.get_first().key.id()
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente

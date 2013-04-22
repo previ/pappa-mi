@@ -197,7 +197,7 @@ class Sanitizer(object):
     images = list()
     try:
       for img in lxml.html.fromstring(html).iter('img'):
-        logging.info(str(img))
+        #logging.info(str(img))
         images.append(img.get('src'))
     except Exception:
       pass
