@@ -46,9 +46,9 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			
 			{% if user %} 
 			<div class="s_post_commands btn-toolbar">
-				{%if user and post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin%}
-				<div class="btn-group">
-				 <span class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></span>
+				{%if user and post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin or True%}
+				<div class="btn-group dropup">
+				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
 				 <ul class="dropdown-menu">
 				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
 				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
