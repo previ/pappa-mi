@@ -33,30 +33,30 @@ class MailHandler(InboundMailHandler):
     logging.info("Received a message from: " + parseaddr(message.sender)[1])
     logging.info("subject: " + message.subject)
     text_bodies = message.bodies('text/plain')
-    
+
     #for body in text_bodies:
     #  logging.info("body: " + body[1].decode())
     commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
     if commissario:
       feedback = list()
-      logging.info("found commissario")      
+      logging.info("found commissario")
       nota = Nota()
       nota.creato_da = commissario.usera
       nota.titolo = message.subject
-      
+
       commissione = None
       cms = commissario.commissioni()
       if len(cms) == 0:
         feedback.append( """Non è stato possibile ricavare la Commissione a cui la segnalazione si riferisce perché non sei registrato su nessuna scuola.
-        
+
 Per favore modifica il tuo profilo in Pappa-Mi specificando almeno una Scuola.
-        
+
 Se specifichi piu' di una Scuola, ricorda di specificare nell'oggetto della mail il nome della commissione e il livello della scuola, ad esempio 'materna muzio'.\r\n""")
-        
+
       if len(cms) > 1:
         subupper = nota.titolo.upper()
-        for cm in cms:          
-          #logging.info(cm.nome.upper() + " " + cm.tipoScuola.upper() + " subject: " + subupper)    
+        for cm in cms:
+          #logging.info(cm.nome.upper() + " " + cm.tipoScuola.upper() + " subject: " + subupper)
           if cm.nome.upper() in subupper and cm.tipoScuola.upper() in subupper:
             commissione = cm
       else:
@@ -70,10 +70,10 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         nota.commissario = commissario.key
         nota.commissione = commissione.key
         self.parseMessage( nota, message, feedback)
-          
-          
+
+
   def parseMessage(self, nota, message, feedback):
-    
+
     tags = list()
     nota.dataNota = datetime.now().date()
     if nota.titolo.lower().find("ieri") >= 0:
@@ -89,10 +89,10 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         if nota.titolo.lower().find(giorno) >= 0:
           nota.dataNota = nota.dataNota - timedelta(nota.dataNota.isoweekday()-i)
           break;
-        
+
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
-      
+
     nota.put()
 
     #allegati
@@ -106,35 +106,35 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
         if len(allegato_decode) > 5000000:
           logging.info("attachment too big")
           feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 5MB\r\n")
-        elif len(allegato_decode) < 5000: 
+        elif len(allegato_decode) < 5000:
           logging.info("attachment too small")
         else:
-          logging.info('uploading attachment')        
+          logging.info('uploading attachment')
           blob = Blob()
           blob.create(allegato.nome)
           allegato.blob_key = blob.write(allegato_decode)
-   
+
     node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
     template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
-            
+
     feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
-         
+
 Link pubblico:
 """ + "http://" + self.host + "/post/" + str(temlate_values["postlist"][0].urlsafe()/ + """
-    
+
 ---
 Pappa-Mi staff """)
 
-    
+
     if len(feedback) > 0:
       self.sendFeedbackMail(parseaddr(message.sender)[1], msg, feedback)
 
   def sendFeedbackMail(self, dest, msg, feedback) :
-  
+
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
 
     feedback.append("""
-    
+
     --
     Pappa-Mi staff""")
     message = mail.EmailMessage()
@@ -148,7 +148,7 @@ Pappa-Mi staff """)
 
     logging.info("sending mail to: " + message.to)
     message.send()
-            
+
   def decode(self, text):
     if len(decode_header(text)) > 0 and len(decode_header(text)[0]) > 1 and decode_header(text)[0][0] is not None and decode_header(text)[0][1] is not None:
       decoded_text = decode_header(text)[0]
@@ -156,7 +156,7 @@ Pappa-Mi staff """)
     else:
       decoded_text = text.decode('utf-8')
     return decoded_text
-  
+
 app = webapp.WSGIApplication([
     MailHandler.mapping()
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'))

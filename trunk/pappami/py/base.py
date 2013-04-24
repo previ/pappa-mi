@@ -46,17 +46,17 @@ from common import Const, Channel
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
 
 unsupported_browsers = {"Microsoft Internet Explorer": ["5.0", "6.0"]}
-            
-class BaseHandler(webapp.RequestHandler):  
-  
+
+class BaseHandler(webapp.RequestHandler):
+
   #@webapp.cached_property
   #def jinja2(self):
-        #return jinja2.get_jinja2(app=self.app)  
+        #return jinja2.get_jinja2(app=self.app)
 
   @toplevel
   def dispatch(self):
     # Get a session store for this request.
-    sessions.default_config['secret_key'] = "wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY" 
+    sessions.default_config['secret_key'] = "wIDjEesObzp5nonpRHDzSp40aba7STuqC6ZRY"
     self.session_store = sessions.get_store(request=self.request)
 
     try:
@@ -67,45 +67,45 @@ class BaseHandler(webapp.RequestHandler):
         #logging.info(self.get_context())
         self.set_context()
         self.session_store.save_sessions(self.response)
-    
+
   def handle_exception(self,exception,debug_mode=False):
-      
+
     if type(exception).__name__== FloodControlException.__name__:
       template = jinja_environment.get_template("flooderror.html")
       template_values={
                        'flood_time':Const.SOCIAL_FLOOD_TIME,
-                       
-                       }     
-      html=template.render(template_values) 
+
+                       }
+      html=template.render(template_values)
       time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
-     
+
       time=Const.SOCIAL_FLOOD_TIME-time.seconds
       response = {'response':'flooderror','time':time,'html':html}
-     
+
       self.output_as_json(response)
       return
     else:
-      super(BaseHandler,self).handle_exception(exception,debug_mode)      
+      super(BaseHandler,self).handle_exception(exception,debug_mode)
 
 
   def success(self,data=None):
-      
+
       response = {'response':'success'}
       if data:
-        response.update(data.items()) 
-        
-      self.output_as_json(response)
-  
-  def error(self):     
-      response = {'response':'error'}      
+        response.update(data.items())
+
       self.output_as_json(response)
 
-  
+  def error(self):
+      response = {'response':'error'}
+      self.output_as_json(response)
+
+
   @webapp.cached_property
   def session(self):
       # Returns a session using the default cookie key.
-    return self.session_store.get_session(backend="memcache")   
-  
+    return self.session_store.get_session(backend="memcache")
+
   def get_context(self):
     ctx = self.session.get("ctx")
     if ctx == None:
@@ -124,14 +124,14 @@ class BaseHandler(webapp.RequestHandler):
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
       ctx["anno"] = str(anno)
-      self.session["ctx"] = ctx      
+      self.session["ctx"] = ctx
     return ctx
 
   def set_context(self):
     ctx = self.session.get("ctx")
     if ctx:
       self.session["ctx"] = ctx
-  
+
   def get_or_set_ctx(self, key, value):
     if value != None:
       self.get_context()[key] = value
@@ -148,25 +148,25 @@ class BaseHandler(webapp.RequestHandler):
     if hasattr(self.request, 'user'):
       user = self.request.user
     return user
-    
+
   def getBase(self, template_values):
-    
+
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
-      self.redirect("http://www.pappa-mi.it")      
+      self.redirect("http://www.pappa-mi.it")
 
     if self.request.url.find("beta") != -1:
-      self.redirect("http://www.pappa-mi.it")      
+      self.redirect("http://www.pappa-mi.it")
 
     if (self.request.url.find("m.") != -1 or self.request.url.find("mobile.") != -1) and self.request.url.find("/mobile") == -1:
-      self.redirect("/mobile")      
-      
+      self.redirect("/mobile")
+
     user = self.get_current_user()
-      
+
     if self.request.url.find("/test") != -1 :
       template_values["test"] = "true"
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
-      
+
     user_agent = httpagentparser.detect(self.request.headers["User-Agent"])
     if user_agent.get("browser"):
       if user_agent.get("browser").get("name"):
@@ -178,7 +178,7 @@ class BaseHandler(webapp.RequestHandler):
           u_b = unsupported_browsers.get(browser_name)
           if browser_ver in u_b:
             template_values["main"] = 'unsupported.html'
-      
+
     commissario = self.getCommissario(user)
     if( commissario and commissario.is_active()) :
       if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
@@ -192,20 +192,20 @@ class BaseHandler(webapp.RequestHandler):
         commissario.set_cache()
       template_values["commissario"] = commissario.isCommissario() or commissario.isRegCommissario()
       template_values["genitore"] = commissario.isGenitore()
-      
+
       template_values["channel"] = Channel.get_by_user(user)
-      
+
       #user.fullname = commissario.nomecompleto(commissario)
       #user.title = commissario.titolo(commissario)
       #user.avatar = commissario.avatar()
       #logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
-       
+
       #logging.info("commissario: " + str(commissario.isCommissario()))
       #logging.info("genitore: " + str(commissario.isGenitore()))
-    
+
     template_values["cmsro"] = commissario
     url, url_linktext = self.get_login_url_text()
-    
+
     if "main" not in template_values:
       template_values["main"] = 'main.html'
     template_values["user"] = user
@@ -216,11 +216,11 @@ class BaseHandler(webapp.RequestHandler):
     template_values["host"] = self.getHost()
     template_values["version"] = "3.0.0.0 - 2013.04.19"
     template_values["ctx"] = self.get_context()
-        
-    
+
+
     #logging.info("content: " + template_values["content"])
     #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
-    
+
     #this is to avoid that a new user click on "enter" instead of "register" => she will be redirected to "signup" path until she complete the process, or logout
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
@@ -228,12 +228,16 @@ class BaseHandler(webapp.RequestHandler):
 
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
-  
+
+  def render_template(template_path, template_values):
+    template = jinja_environment.get_template(template_path)
+    return template.render(template_values)
+
   #response object dump as json string
-  def output_as_json(self, obj):   
-    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')    
+  def output_as_json(self, obj):
+    self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
     json.dump(obj, self.response.out)
-    
+
   def getCommissario(self, user = None):
     if user is None:
       user = self.get_current_user()
@@ -242,7 +246,7 @@ class BaseHandler(webapp.RequestHandler):
       return Commissario.get_by_user(user)
     else:
       return None
-    
+
   def getHost(self):
     host = self.request.url[len("http://"):]
     host = host[:host.find("/")]
@@ -260,7 +264,7 @@ class BaseHandler(webapp.RequestHandler):
       url = "/eauth/login?next=" + self.request.uri
       url_linktext = 'Entra'
     return url, url_linktext
-    
+
   @classmethod
   def getNews(self,name):
     news = memcache.get(name)
@@ -275,16 +279,16 @@ class BaseHandler(webapp.RequestHandler):
           break
         i = i + 1
         news.append(n)
-        
+
       memcache.add(name,news)
     return news
-  
-class BasePage(BaseHandler):  
+
+class BasePage(BaseHandler):
   pass
-  
+
 class CMCommissioniDataHandler(BasePage):
 
-  def get(self): 
+  def get(self):
     user = self.get_current_user()
     city = self.request.get("city")
     if city == "" and self.getCommissario(user):
@@ -295,15 +299,15 @@ class CMCommissioniDataHandler(BasePage):
     buff = ""
     buff = memcache.get("cm_city_json_"+str(city.id()))
     if(buff is None):
-      cmlist = list()  
+      cmlist = list()
       cms = Commissione.get_by_citta(city)
       for cm in cms:
         cmlist.append({'value': str(cm.key.id()), 'label':cm.nome + ' - ' + cm.tipoScuola})
-      
-      buff = json.JSONEncoder().encode(cmlist)      
-        
+
+      buff = json.JSONEncoder().encode(cmlist)
+
       memcache.add("cm_city_json_"+str(city.id()), buff)
-          
+
     expires_date = datetime.utcnow() + timedelta(20)
     expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
     self.response.headers.add_header("Expires", expires_str)
@@ -313,51 +317,51 @@ class CMMenuHandler(BasePage):
 
   def createMenu(self,request,c,template_values):
     menu = Menu();
-       
+
     data = self.workingDay(datetime.now().date())
 
-    menu = self.getMenu(data, c)    
+    menu = self.getMenu(data, c)
     template_values["sett"] = len(menu) > 2
     template_values["menu"] = self.getMenu(data, c)
-    
+
   def workingDay(self, data):
     while data.isoweekday() > 5:
-      data += timedelta(1)      
+      data += timedelta(1)
     return data
-    
+
   def getMenu(self, data, c):
     offset = -1
     citta = Citta.get_first()
-    
+
     if c and not c.getCentroCucina(data):
       return list()
-    
+
     if c and c.getCentroCucina(data).getMenuOffset(data) is not None:
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
-      
+
     #logging.info("offset: " + str(offset))
     menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     if not menu:
       menu = list()
-      
+
       self.getMenuHelper(menu,data,offset,citta)
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
-              
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu)    
+
+      memcache.set("menu-" + str(offset) + "-" + str(data), menu)
     #logging.info(str(menu))
     return menu
 
-  def getMenuHelper(self, menu, data, offset, citta):    
+  def getMenuHelper(self, menu, data, offset, citta):
     mn = MenuNew.get_by(citta, data)
-    
+
     if mn:
       piatti = dict()
       if offset >= 0:
         piatti = Piatto.get_by_menu_date_offset(mn, data, offset)
         mh = MenuHelper()
-        mh.data = data# + timedelta(data.isoweekday()-1)      
+        mh.data = data# + timedelta(data.isoweekday()-1)
         mh.giorno = data.isoweekday()
         mh.primo = piatti.get("p", Piatto())
         mh.secondo = piatti.get("s", Piatto())
@@ -365,23 +369,23 @@ class CMMenuHandler(BasePage):
         mh.dessert = piatti.get("d", Piatto())
         menu.append(mh)
       else:
-        
+
         settimane = Piatto.get_by_date(data)
-      
+
         for i in range(1,5):
           piatti = settimane[i]
           mh = MenuHelper()
-          mh.data = data# + timedelta(data.isoweekday()-1)      
+          mh.data = data# + timedelta(data.isoweekday()-1)
           mh.giorno = data.isoweekday()
           mh.settimana = i
           mh.primo = piatti.get("p", Piatto())
           mh.secondo = piatti.get("s", Piatto())
           mh.contorno = piatti.get("c", Piatto())
           mh.dessert = piatti.get("d", Piatto())
-          menu.append(mh)      
-    
+          menu.append(mh)
 
-  def getMenuWeek(self, data, cm): 
+
+  def getMenuWeek(self, data, cm):
 
     #logging.info(str(cm.key))
     #logging.info(str(data))
@@ -391,7 +395,7 @@ class CMMenuHandler(BasePage):
       offset = 0
 
     #logging.info("offset: " + str(offset))
-    
+
     # settimana corrente
     menu = MenuNew.get_by(cm.citta, data)
 
@@ -402,23 +406,23 @@ class CMMenuHandler(BasePage):
         #if not pg.giorno in giorni:
           #giorni[pg.giorno] = dict()
         #giorni[pg.giorno][pg.tipo] = pg.piatto
-  
-      data = data + timedelta(data.isoweekday()-1)      
-        
+
+      data = data + timedelta(data.isoweekday()-1)
+
       for i in range(1,6):
         piatti = giorni[i]
         mh = MenuHelper()
-        mh.data = data + timedelta(i - 1) 
+        mh.data = data + timedelta(i - 1)
         mh.giorno = i
         mh.primo = piatti.get("p", Piatto())
         mh.secondo = piatti.get("s", Piatto())
         mh.contorno = piatti.get("c", Piatto())
         mh.dessert = piatti.get("d", Piatto())
         mlist.append(mh)
-      
+
     return mlist
-      
-    
+
+
 
   def get_next_working_day(self, date):
     while date.isoweekday() > 5:
@@ -426,17 +430,17 @@ class CMMenuHandler(BasePage):
 
     return date;
 
-    
+
 class CMCittaHandler(webapp.RequestHandler):
-  def get(self):        
+  def get(self):
     citta = Citta.get_all()
     citlist = list()
     for c in citta:
       citlist.append({'key': str(c.key), 'nome':c.nome, 'codice':c.codice, 'provincia':c.provincia, 'lat':c.geo.lat, 'lon':c.geo.lon})
-      
+
     self.response.out.write(json.JSONEncoder().encode({'label':'nome', 'identifier':'key', 'items': citlist}))
 
-    
+
 def handle_404(request, response, exception):
   c = {'exception': exception.status}
   jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
@@ -456,21 +460,21 @@ def handle_500(request, response, exception):
   message.body = """Exception in Pappa-Mi.
   Request: """ + str(request.url) + """
   Exception: """ + str(exception) + """
-  
+
   <Stacktrace>:
   """ + traceback.format_exc(20) + """
-  
-  <Stacktrace/> 
+
+  <Stacktrace/>
   """
-    
+
   message.send()
-  
+
   jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
   template = jinja_environment.get_template('500.html')
   t = template.render(c)
   response.write(t)
   response.set_status(500)
-    
+
 def user_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
@@ -478,7 +482,7 @@ def user_required(func):
       basePage.redirect("/eauth/signup?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)
-  return callf    
+  return callf
 
 def commissario_required(func):
   def callf(basePage, *args, **kwargs):
@@ -489,7 +493,7 @@ def commissario_required(func):
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)
-  return callf    
+  return callf
 
 def reguser_required(func):
   def callf(basePage, *args, **kwargs):
@@ -499,7 +503,7 @@ def reguser_required(func):
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:
       return func(basePage, *args, **kwargs)
-  return callf    
+  return callf
 
 def reguser_required_mobile(func):
   def callf(basePage, *args, **kwargs):
@@ -509,7 +513,7 @@ def reguser_required_mobile(func):
       basePage.response.set_status(401, "Authentication required")
     else:
       return func(basePage, *args, **kwargs)
-  return callf    
+  return callf
 
 config = {
     'webapp2_extras.sessions': {
@@ -519,6 +523,6 @@ config = {
 class FloodControlException(Exception):
      def __init__(self):
                 pass
-                
+
      def __str__(self):
           return repr("Flood Control Error")

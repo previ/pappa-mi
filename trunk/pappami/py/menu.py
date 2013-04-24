@@ -32,16 +32,16 @@ from py.model import *
 from py.comments import *
 
 class CMMenuDataHandler(CMMenuHandler):
-  
-  def get(self): 
+
+  def get(self):
     if( self.request.get("cmd") == "getbydate" ):
       menu = Menu();
       data = datetime.strptime(self.request.get("data"),Const.DATE_FORMAT).date()
       c = model.Key("Commissione", int(self.request.get("commissione"))).get()
-      menus = self.getMenu(data, c)      
+      menus = self.getMenu(data, c)
       if len(menus):
         menu = self.getMenu(data, c)[0]
-      
+
       json.dump(menu.to_dict(), self.response.out)
 
     elif( self.request.get("cmd") == "getdetails" ):
@@ -65,11 +65,11 @@ class CMMenuDataHandler(CMMenuHandler):
 
     else:
       template_values = dict()
-      template_values['content'] = 'menu.html'      
+      template_values['content'] = 'menu.html'
       template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
       template_values["citta"] = Citta.get_all()
-  
-      self.getBase(template_values)      
+
+      self.getBase(template_values)
 
   def post(self):
     cm_key = self.get_context().get("cm_key")
@@ -79,34 +79,34 @@ class CMMenuDataHandler(CMMenuHandler):
     if self.request.get("cm"):
       logging.info(self.request.get("cm"))
       cm = model.Key("Commissione", int(self.request.get("cm"))).get()
-    
+
     template_values = dict()
-    template_values['content'] = 'menu.html'      
+    template_values['content'] = 'menu.html'
     template_values["citta"] = Citta.get_all()
     template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
 
     if cm:
       self.get_context()["citta_key"] = cm.citta.id()
       self.get_context()["cm_key"] = cm.key.id()
-      self.get_context()["cm_name"] = cm.desc()    
-      
+      self.get_context()["cm_name"] = cm.desc()
+
     self.getBase(template_values)
-    
-      
+
+
 
 class CMMenuSlideHandler(CMMenuHandler):
-  
-  def get(self): 
+
+  def get(self):
     template_values = dict()
-    template_values['main'] = 'menu_slides.html'    
+    template_values['main'] = 'menu_slides.html'
     self.getBase(template_values)
-    
+
   def getBase(self,template_values):
     cm = None
 
     if self.get_context().get("cm_key"):
       cm = model.Key("Commissione", self.get_context()["cm_key"]).get()
-     
+
     if not cm:
       commissario = self.getCommissario(self.get_current_user())
       if self.request.get("cm") != "":
@@ -118,15 +118,15 @@ class CMMenuSlideHandler(CMMenuHandler):
           cm = Commissione.get_by_citta(commissario.citta)[0]
         else:
           cm = Commissione.get_by_citta(Citta.get_first().key)[0]
-      
+
     date = self.request.get("data")
     if date:
       date = datetime.strptime(date,Const.DATE_FORMAT).date()
     else:
       date = datetime.now().date()
-    
+
     date = self.get_next_working_day(date)
-    
+
     date1 = date - timedelta(date.isoweekday() - 1)
     datep = date1 - timedelta(7)
     daten = date1 + timedelta(7)
@@ -139,36 +139,36 @@ class CMMenuSlideHandler(CMMenuHandler):
     template_values['cm'] = cm
     template_values['action'] = self.request.path
     super(CMMenuHandler,self).getBase(template_values)
-    
+
 
 class MenuScraper(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     template_values = dict()
-    
+
     response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=01&x2=05&x3=2012', deadline=60)
     p = MenuParser()
     p.text = ""
     p.feed(response.content)
-    
+
     self.response.out.write(p.text)
 
 
 # create a subclass and override the handler methods
-class MenuParser(HTMLParser):    
-  
+class MenuParser(HTMLParser):
+
 
   piatti = set()
   settimane = list()
-  
+
   curr_id = ""
   def handle_starttag(self, tag, attrs):
     for attrid, attrvalue in attrs:
       if attrid == "id":
         self.curr_id=attrvalue
-    
+
   def handle_endtag(self, tag):
-    pass     
+    pass
 
   def handle_data(self, data):
     #logging.info(data)
@@ -180,8 +180,8 @@ class MenuParser(HTMLParser):
       logging.info(data)
       self.text += data + "|"
       self.curr_id=""
-    
-  
+
+
 app = webapp.WSGIApplication([
   ('/menu', CMMenuDataHandler),
   ('/menuslide', CMMenuSlideHandler),
@@ -191,9 +191,4 @@ app = webapp.WSGIApplication([
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
 
-def main():
-  app.run();
 
-if __name__ == "__main__":
-  main()
-    

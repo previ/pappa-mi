@@ -6,11 +6,11 @@
    <ul class="dropdown-menu">
     <li><a class="open_msg" onclick="onOpenPostForm()" href="#">Messaggio</a></li>
     {%if cmsro.isCommissario() %}
-    <li><a class="open_isp" onclick="opennewisp();" href="#">Ispezione</a></li>
-    <li><a class="open_dieta" onclick="opennewdieta();" href="#">Ispezione Diete</a></li>
-    <li><a class="open_nc" onclick="opennewnc();" href="#">Non conformit&agrave;</a></li>
+    <li class="hidden-phone"><a class="open_isp" onclick="opennewisp();" href="#">Ispezione</a></li>
+    <li class="hidden-phone"><a class="open_dieta" onclick="opennewdieta();" href="#">Ispezione Diete</a></li>
+    <li class="hidden-phone"><a class="open_nc" onclick="opennewnc();" href="#">Non conformit&agrave;</a></li>
    {%endif%}
-    <li><a class="open_nota" onclick="opennewnota();" href="#">Nota</a></li>
+    <li class="hidden-phone"><a class="open_nota" onclick="opennewnota();" href="#">Nota</a></li>
    </ul>
   </div>
   {%if node%}
@@ -30,7 +30,7 @@
  </div>
 {%endif%} 
  <div id="node_title">
-  <h3 style="display:inline;">{{node_name}}</h3>{%if node%}<a class="pull-right s_node_link" target="_new" href="/node/{{node.key.urlsafe()}}">link a questo argomento</a>{%endif%}
+  <h3 style="display:inline;">{{node_name}}</h3>{%if node%}<a class="pull-right s_node_link" style="margin-left:5px;" target="_new" href="/node/{{node.key.id()}}/rss">rss</a><a class="pull-right s_node_link" target="_new" href="/node/{{node.key.id()}}">link a questo argomento</a>{%endif%}
  </div>{%if user %}
  <div id="new_post" style="display:none" class="well">
   <form id="new_post_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">

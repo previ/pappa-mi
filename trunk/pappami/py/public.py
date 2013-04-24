@@ -44,8 +44,8 @@ TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
 class CMIspezionePublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     isp = model.Key("Ispezione", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["isp"] = isp
@@ -54,15 +54,15 @@ class CMIspezionePublicHandler(BasePage):
     template_values["content"] = "public/ispezione_read.html"
     template_values["comments"] = True
     template_values["comment_root"] = CMCommentHandler.getRoot(isp.key)
-    
+
     self.getBase(template_values)
 
-  def post(self): 
+  def post(self):
     return self.get()
- 
+
 class CMNonconfPublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     nc = model.Key("Nonconformita", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["nc"] = nc
@@ -73,12 +73,12 @@ class CMNonconfPublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(nc.key)
     self.getBase(template_values)
 
-  def post(self): 
+  def post(self):
     return self.get()
-    
+
 class CMDietePublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     dieta = model.Key("Dieta", int(self.request.get("key"))).get()
     template_values = dict()
     template_values["dieta"] = dieta
@@ -89,17 +89,17 @@ class CMDietePublicHandler(BasePage):
     template_values["comment_root"] = CMCommentHandler.getRoot(dieta.key)
     self.getBase(template_values)
 
-  def post(self): 
+  def post(self):
     return self.get()
-    
+
 class CMNotePublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     nota = model.Key("Nota", int(self.request.get("key"))).get()
     allegati = None
     if nota.has_allegati:
       allegati = nota.get_allegati
-    
+
     template_values = dict()
     template_values["nota"] = nota
     template_values["public_url"] = "http://" + self.getHost() + "/public/nota?key=" + str(nota.key.id())
@@ -108,25 +108,25 @@ class CMNotePublicHandler(BasePage):
     template_values["allegati"] = allegati
     template_values["comments"] = True
     template_values["comment_root"] = CMCommentHandler.getRoot(nota.key)
-    
+
     self.getBase(template_values)
 
-  def post(self): 
+  def post(self):
     return self.get()
 
 class ActivityPublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     message = model.Key("Messaggio", int(self.request.get("key"))).get()
 
     template_values = dict()
     template_values["activity"] = message
     if message.root is None:
       template_values["msg"] = message
-      template_values["detail"] = "public/detail_msg.html"      
+      template_values["detail"] = "public/detail_msg.html"
     elif message.tipo == 101:
       template_values["isp"] = message.root.get()
-      template_values["detail"] = "ispezioni/ispezione_read_div.html"      
+      template_values["detail"] = "ispezioni/ispezione_read_div.html"
     elif message.tipo == 102:
       template_values["nc"] = message.root.get()
       template_values["detail"] = "ispezioni/nonconf_read_div.html"
@@ -136,28 +136,28 @@ class ActivityPublicHandler(BasePage):
     elif message.tipo == 104:
       template_values["nota"] = message.root.get()
       template_values["detail"] = "ispezioni/nota_read_div.html"
-    
+
     template_values["content"] = "public/activity.html"
     template_values["activities"] = [message]
-    
+
     self.getBase(template_values)
 
-  def post(self): 
+  def post(self):
     return self.get()
-    
+
 class CMAllegatoPublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     allegato = model.Key("Allegato", int(self.request.get("key"))).get()
     if allegato.isImage():
       self.response.headers['Content-Type'] = "image/png"
     else:
       self.response.headers['Content-Type'] = "application/pdf"
-    self.response.out.write(allegato.dati)    
+    self.response.out.write(allegato.dati)
 
 class CMRobotPublicHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     if "Googlebot" in self.request.headers["User-Agent"]:
       template_values = dict()
       msgs = self.get_activities()
@@ -169,11 +169,11 @@ class CMRobotPublicHandler(BasePage):
       self.redirect("/")
 
 class CMDetailHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     logging.info("CMDetailHandler")
     message = model.Key("Messaggio", int(self.request.get("key"))).get()
-    
+
     temp = "public/detail_"
     tipo = int(message.tipo)
     if tipo == 101:
@@ -186,19 +186,19 @@ class CMDetailHandler(BasePage):
       temp += "nota"
     if tipo == 201:
       temp += "msg"
-      
+
     template_values = dict()
     template_values["main"] = temp + ".html"
     template_values["msg"] = message
-    
+
     comment_root = message
     template_values["comments"] = True,
     template_values["comment_root"] = comment_root
-       
+
     self.getBase(template_values)
-      
+
 class CMAvatarRenderHandler(BasePage):
-  
+
   def get(self):
     user_id = self.request.get("id")
     user = model.Key("User", int(user_id)).get()
@@ -208,7 +208,7 @@ class CMAvatarRenderHandler(BasePage):
     if self.request.get("size") != "big":
       img = images.resize(img, 48,48)
     self.response.out.write(img)
-    
+
 app = webapp.WSGIApplication([
     ('/public/robot', CMRobotPublicHandler),
     #('/public/isp', CMIspezionePublicHandler),

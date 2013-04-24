@@ -34,8 +34,8 @@ class CommissioniHandler(BasePage):
     template_values["centriCucina"] = CentroCucina.query().filter(CentroCucina.citta == citta.key).order(CentroCucina.nome)
     template_values['action'] = self.request.path
     self.getBase(template_values)
-    
-  
+
+
 class ContattiHandler(BasePage):
 
   def get(self):
@@ -59,12 +59,12 @@ class ContattiHandler(BasePage):
   @classmethod
   def get_contacts(cls, num=12):
     if not cls._contacts:
-      with cls._contacts_lock:     
+      with cls._contacts_lock:
         cls._contacts = list()
         for c in Commissario.get_all_reverse(limit=num):
           cls._contacts.append(c)
     return cls._contacts
-  
+
   def post(self):
     cm_key = self.get_context().get("cm_key")
     cm = None
@@ -73,7 +73,7 @@ class ContattiHandler(BasePage):
     if self.request.get("cm"):
       logging.info(self.request.get("cm"))
       cm = model.Key("Commissione", int(self.request.get("cm"))).get()
-    
+
     template_values = dict()
     template_values['content'] = 'contatti.html'
     template_values["citta"] = Citta.get_all()
@@ -82,11 +82,11 @@ class ContattiHandler(BasePage):
       template_values['commissari'] = cm.commissari()
       self.get_context()["citta_key"] = cm.citta.id()
       self.get_context()["cm_key"] = cm.key.id()
-      self.get_context()["cm_name"] = cm.desc() 
+      self.get_context()["cm_name"] = cm.desc()
     self.getBase(template_values)
-      
-    
-        
+
+
+
 app = webapp.WSGIApplication([
   ('/contatti', ContattiHandler),
   ('/commissioni', CommissioniHandler)

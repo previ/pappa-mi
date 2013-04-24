@@ -466,12 +466,13 @@ function onPostReshare() {
     success:function(data){
       var modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
+      modal_reshare.find('[data-loading-text]').button();
       $(document).ready(function () {
 	//modal_reshare = $("#tools").find("#post_reshare")
 	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
 	modal_reshare.find('input[name="post"]').attr("value", post);
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
-	modal_reshare.find('form').ajaxForm({clearForm: true, dataType:'json', error: onError, success:function(data){
+	modal_reshare.find('form').ajaxForm({beforeSubmit: function() {modal_reshare.find('[data-loading-text]').button('loading');}, clearForm: true, dataType:'json', error: onError, success:function(data){
 	  if(data.response!="success") {
 	    if(data.response=="flooderror") {
 	      modal_reshare.modal('hide');

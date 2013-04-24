@@ -60,14 +60,14 @@ class CMStatsHandler(BasePage):
     table = DataTable(desc)
     table.LoadData(data)
     return table
-    
+
   def post(self):
     return self.get()
 
   def get(self):
     template_values = dict()
     self.getBase(template_values)
-  
+
   def getBase(self,template_values):
     cm = None
     cc = None
@@ -92,14 +92,14 @@ class CMStatsHandler(BasePage):
       logging.info(st.timeId)
       anni.append(st.timeId)
     anni = sorted(anni)
-      
+
 
     cy_key = model.Key("Citta", self.get_context().get("citta_key"))
     if self.request.get("citta"):
       cy_key = model.Key("Citta", int(self.request.get("citta")))
-    
+
     statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=cy_key, timeId=anno).get()
-      
+
     #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
     #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
     cm_key = self.get_context().get("cm_key")
@@ -112,49 +112,49 @@ class CMStatsHandler(BasePage):
       statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
       statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
     stats = [statCY,statCC,statCM]
-    
-    z_desc = {"group": ("string", "Gruppo"), 
+
+    z_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Scarso"),
                "2": ("number", "Sufficiente"),
                "3": ("number", "Discreto"),
                "4": ("number", "Buono")}
 
-    g_desc = {"group": ("string", "Gruppo"), 
+    g_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "< 25%"),
                "2": ("number", "25% < 50%"),
                "3": ("number", "50% < 75%"),
                "4": ("number", ">75%")}
 
-    a_desc = {"group": ("string", "Gruppo"), 
+    a_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Non Accettabile"),
                "2": ("number", "Accettabile"),
                "3": ("number", "Gradevole")}
 
-    c_desc = {"group": ("string", "Gruppo"), 
+    c_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Scarsa"),
                "2": ("number", "Corretta"),
                "3": ("number", "Eccessiva")}
 
-    t_desc = {"group": ("string", "Gruppo"), 
+    t_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Freddo"),
                "2": ("number", "Corretta"),
                "3": ("number", "Caldo")}
 
-    q_desc = {"group": ("string", "Gruppo"), 
+    q_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Scarso"),
                "2": ("number", "Giusta"),
                "3": ("number", "Abbondante")}
 
-    d_desc = {"group": ("string", "Gruppo"), 
+    d_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "< 10min"),
                "2": ("number", "10min - 20min"),
                "3": ("number", "> 20min")}
 
-    m_desc = {"group": ("string", "Gruppo"), 
+    m_desc = {"group": ("string", "Gruppo"),
                "1": ("number", "Acerba"),
                "2": ("number", "Corretta"),
                "3": ("number", "Matura")}
-    
+
     gg_table = self.getTable(stats,"giudizioGlobale",a_desc)
     zr_table = self.getTable(stats,"puliziaRefettorio",z_desc)
     zc_table = self.getTable(stats,"puliziaCentroCottura",z_desc)
@@ -190,7 +190,7 @@ class CMStatsHandler(BasePage):
     fm_table = self.getTable(stats,"fruttaMaturazione",m_desc)
     fq_table = self.getTable(stats,"fruttaQuantita",q_desc)
 
-    a_desc = {"tipo": ("string", "Descrizione"), 
+    a_desc = {"tipo": ("string", "Descrizione"),
                "count": ("number", "Numero")}
 
     a_stat = statCY
@@ -203,25 +203,25 @@ class CMStatsHandler(BasePage):
       for a_idx in range(0, len(a_stat.ambiente)):
         aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
     aa_table = DataTable(a_desc)
-    aa_table.LoadData(aa_data)    
-    
-    nc_desc = {"tipo": ("string", "Tipo"), 
+    aa_table.LoadData(aa_data)
+
+    nc_desc = {"tipo": ("string", "Tipo"),
                "count": ("number", "Occorrenze")}
-    
+
     if cm:
       ncstat = StatisticheNonconf.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
     else:
       ncstat = StatisticheNonconf.get_cy_cc_cm_time(cy=statCY.citta, timeId=anno).get()
 
     nc_table = DataTable(nc_desc)
-    if ncstat is not None:      
+    if ncstat is not None:
       nc_data = list()
       nci = Nonconformita();
       for nd in ncstat.getTipiPos():
         nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
       nc_table.LoadData(nc_data)
-    
-    di_desc = {"time": ("string", "Settimane"), 
+
+    di_desc = {"time": ("string", "Settimane"),
                "schede": ("number", "Schede"),
                "nonconf": ("number", "Non Conformita")}
     di_data = list()
@@ -235,16 +235,16 @@ class CMStatsHandler(BasePage):
     di_table = DataTable(di_desc)
     di_table.LoadData(di_data)
 
-    cm_desc = {"tipo": ("string", "Tipo Scuola"), 
+    cm_desc = {"tipo": ("string", "Tipo Scuola"),
                "iscritte": ("number", "Iscritte"),
                "totali": ("number", "Totali")}
     cm_data = list()
     for cm_t in ["Materna", "Primaria", "Secondaria"]:
-      cm_data.append({"tipo": cm_t, "iscritte": Commissione.query().filter(Commissione.numCommissari > 0).filter(Commissione.tipoScuola == cm_t).count(), 
+      cm_data.append({"tipo": cm_t, "iscritte": Commissione.query().filter(Commissione.numCommissari > 0).filter(Commissione.tipoScuola == cm_t).count(),
                                     "totali": Commissione.query().filter(Commissione.tipoScuola == cm_t).count()})
     cm_table = DataTable(cm_desc)
     cm_table.LoadData(cm_data)
-    
+
     template_values["anni"] = anni
     template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
     template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "iscritte", "totali"))
@@ -287,18 +287,18 @@ class CMStatsHandler(BasePage):
     template_values["cmsro"] = self.getCommissario()
     template_values["citta"] = Citta.get_all()
     template_values["anno"] = anno
-    self.get_context()["anno"] = anno    
-    
+    self.get_context()["anno"] = anno
+
     if cm:
       self.get_context()["citta_key"] = cm.citta.id()
       self.get_context()["cm_key"] = cm.key.id()
-      self.get_context()["cm_name"] = cm.desc()    
+      self.get_context()["cm_name"] = cm.desc()
 
     super(CMStatsHandler, self).getBase(template_values)
 
-    
+
 class CMStatsDataHandler(BasePage):
-    
+
   def get(self):
     path = os.path.join(os.path.dirname(__file__), '../templates/stats/statdata.js')
     self.response.out.write(template.render(path, template_values))
@@ -314,25 +314,25 @@ class CMStatCalcHandler(BasePage):
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
     if self.request.get("year"):
-      year = int(self.request.get("year"))      
-      
+      year = int(self.request.get("year"))
+
     logging.info("year: " + str(year))
     logging.info("limit: %d", limit)
     logging.info("offset: %d", offset)
 
     self.putTask('/admin/stats/calcisp', year=year, limit=limit, offset=offset)
     self.putTask('/admin/stats/calcnc', year=year, limit=limit, offset=offset)
-    
+
   def putTask(self, aurl, year, offset=0, limit=50):
     task = Task(url=aurl, params={"limit": str(limit), "offset":str(offset)}, method="GET")
     if year:
       task.params["year"] = str(year)
     queue = Queue()
     queue.add(task)
-    
+
 class CMStatNCCalcHandler(CMStatCalcHandler):
   def get(self):
-    
+
     statAll = None
     statCM = None
     statCC = None
@@ -345,7 +345,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
-    
+
     limit = 50
     #logging.info("limit: %s", limit)
     if self.request.get("limit"):
@@ -354,17 +354,17 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     offset = 0
     if self.request.get("offset"):
       offset = int(self.request.get("offset"))
-    
+
     if self.request.get("year"):
-      year = int(self.request.get("year"))      
+      year = int(self.request.get("year"))
 
     logging.info("year: %d", year)
     logging.info("limit: %d", limit)
     logging.info("offset: %d", offset)
-      
+
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = min(datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday()), dataInizio + timedelta(335))
-    
+
     dataCalcolo = datetime.datetime.now()
     dataUltimoCalcolo = datetime.datetime(dataInizio.year, dataInizio.month, dataInizio.day) #default dataUltimoCalcolo = data inizio anno
     timeId=year
@@ -376,17 +376,17 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       if s.citta:
         statsCY[s.citta] = s
       elif s.centroCucina:
-        statsCC[s.centroCucina] = s        
+        statsCC[s.centroCucina] = s
       elif s.commissione:
         statsCM[s.commissione] = s
       else:
         statAll = s
         if not self.request.get("year"):
           dataUltimoCalcolo = statAll.dataCalcolo
-        
+
       s.dataFine = dataFine
       self.initWeek(s, wtot)
-      
+
     if not statAll:
       statAll = StatisticheNonconf()
       #statAll.creato_da = self.get_current_user()
@@ -394,17 +394,17 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
       statAll.dataFine = dataFine
       statAll.timeId = timeId
       statAll.timePeriod = timePeriod
-      self.initWeek(statAll, wtot)      
-    
-    count = 0 
+      self.initWeek(statAll, wtot)
 
-    logging.info("dataInizio: " + str(dataInizio))    
-    logging.info("dataFine: " + str(dataFine))    
-    logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))    
-    
+    count = 0
+
+    logging.info("dataInizio: " + str(dataInizio))
+    logging.info("dataFine: " + str(dataFine))
+    logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))
+
     for nc in Nonconformita.query().filter(Nonconformita.creato_il > dataUltimoCalcolo).order(Nonconformita.creato_il).fetch(limit=limit+1, offset=offset):
       if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine :
-        if nc.commissione not in statsCM:          
+        if nc.commissione not in statsCM:
           statCM = StatisticheNonconf()
           #statCM.creato_da = self.get_current_user()
           statCM.dataInizio = dataInizio
@@ -416,7 +416,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
           self.initWeek(statCM, wtot)
         else:
           statCM = statsCM[nc.commissione]
-          
+
         if nc.commissione.get().getCentroCucina(now).key not in statsCC:
           statCC = StatisticheNonconf()
           #statCC.creato_da = self.get_current_user()
@@ -442,44 +442,44 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
           self.initWeek(statCY, wtot)
         else:
           statCY = statsCY[nc.commissione.get().citta]
-          
+
         self.calcNC(nc,statCM)
         self.calcNC(nc,statCC)
         self.calcNC(nc,statCY)
         self.calcNC(nc,statAll)
       count += 1
-      if count == limit : break           
-    
+      if count == limit : break
+
     for stat in statsCM.values() :
       #when no more data to process, update dataCalcolo
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.commissione.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCC.dataCalcolo for " + stat.centroCucina.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCY.values() :
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCY.dataCalcolo for " + stat.citta.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
-    if count < limit :  
+    if count < limit :
       logging.info("when no more data to process, update statAll.dataCalcolo")
       statAll.dataCalcolo = dataCalcolo
     statAll.put()
-      
-    finish = count < limit    
-    logging.info("finish: " + str(finish))  
+
+    finish = count < limit
+    logging.info("finish: " + str(finish))
 
     if not finish:
       if not self.request.get("year"):
-        year = None        
+        year = None
       self.putTask("/admin/stats/calcnc", year, offset + limit)
 
   def initWeek(self, stat, wtot):
@@ -494,15 +494,15 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     stats.numeroNonconf += 1
     settimana = (nc.dataNonconf - stats.dataInizio).days / 7
 
-    #logging.info("dataInizio: " + str(stats.dataInizio))    
-    #logging.info("dataNonconf: " + str(nc.dataNonconf))        
+    #logging.info("dataInizio: " + str(stats.dataInizio))
+    #logging.info("dataNonconf: " + str(nc.dataNonconf))
     #logging.info("stats.numeroNonconfSettimana " + str(len(stats.numeroNonconfSettimana)) + " settimana: " + str(settimana))
-    
+
     stats.numeroNonconfSettimana[settimana] += 1
-    
+
 class CMStatIspCalcHandler(CMStatCalcHandler):
   def get(self):
-    
+
     statAll = None
     statCM = None
     statCC = None
@@ -515,7 +515,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     year = now.year
     if now.month < 8: #siamo in inverno -estate, data inizio = settembre anno precedente
       year = year - 1
-    
+
     limit = 50
     #logging.info("limit: %s", limit)
     if self.request.get("limit"):
@@ -526,13 +526,13 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       offset = int(self.request.get("offset"))
 
     if self.request.get("year") and self.request.get("year") != "None":
-      year = int(self.request.get("year"))      
-      
+      year = int(self.request.get("year"))
+
     logging.info("year: %d", year)
     logging.info("limit: %d", limit)
     logging.info("offset: %d", offset)
 
-    
+
     dataInizio = datetime.datetime(year=year, month=9, day=1).date() + datetime.timedelta(DAYS_OF_WEEK - datetime.date(year=year, month=9, day=1).isoweekday() + 1)
     dataFine = min(datetime.datetime.now().date() + datetime.timedelta(DAYS_OF_WEEK - datetime.datetime.now().isoweekday()), dataInizio + timedelta(330))
     dataCalcolo = datetime.datetime.now()
@@ -545,13 +545,13 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     #logging.info("dataInizio: " + str(dataInizio))
     #logging.info("dataFine: " + str(dataFine))
     #logging.info("wtot: " + str(wtot))
-    
+
     # carica gli elementi creati successivamente all'ultimo calcolo
     for s in StatisticheIspezioni.get_from_year(year):
       if s.citta:
         statsCY[s.citta] = s
       elif s.centroCucina:
-        statsCC[s.centroCucina] = s        
+        statsCC[s.centroCucina] = s
       elif s.commissione:
         statsCM[s.commissione] = s
       else:
@@ -568,18 +568,18 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
       statAll.dataFine = dataFine
       statAll.timeId = timeId
       statAll.timePeriod = timePeriod
-      self.initWeek(statAll, wtot)      
+      self.initWeek(statAll, wtot)
       statAll.init()
-     
+
     count = 0
 
-    logging.info("dataInizio: " + str(dataInizio))    
-    logging.info("dataFine: " + str(dataFine))    
-    logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))    
-      
+    logging.info("dataInizio: " + str(dataInizio))
+    logging.info("dataFine: " + str(dataFine))
+    logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))
+
     for isp in Ispezione.query().filter(Ispezione.creato_il > dataUltimoCalcolo).order(Ispezione.creato_il).fetch(limit=limit+1, offset=offset):
       if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
-        if( isp.commissione not in statsCM ):          
+        if( isp.commissione not in statsCM ):
           statCM = StatisticheIspezioni()
           #statCM.creato_da = self.get_current_user()
           statCM.dataInizio = dataInizio
@@ -592,7 +592,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
           statCM.init()
         else:
           statCM = statsCM[isp.commissione]
-  
+
         if( isp.commissione.get().getCentroCucina(now).key not in statsCC ):
           statCC = StatisticheIspezioni()
           #statCC.creato_da = self.get_current_user()
@@ -606,8 +606,8 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
           statCC.init()
         else:
           statCC = statsCC[isp.commissione.get().getCentroCucina(now).key]
-          
-        if( isp.commissione.get().citta not in statsCY ):          
+
+        if( isp.commissione.get().citta not in statsCY ):
           statCY = StatisticheIspezioni()
           #statCY.creato_da = self.get_current_user()
           statCY.dataInizio = dataInizio
@@ -620,42 +620,42 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
           statCY.init()
         else:
           statCY = statsCY[isp.commissione.get().citta]
-          
+
         self.calcIsp(isp,statCM)
         self.calcIsp(isp,statCC)
         self.calcIsp(isp,statCY)
         self.calcIsp(isp,statAll)
       count += 1
       if count == limit : break
-        
+
     for stat in statsCM.values() :
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.commissione.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCC.values() :
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.centroCucina.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
     for stat in statsCY.values() :
-      if count < limit :  
+      if count < limit :
         logging.info("when no more data to process, update statsCM.dataCalcolo for " + stat.citta.get().nome)
         stat.dataCalcolo = dataCalcolo
       stat.put()
 
-    if count < limit :  
+    if count < limit :
       logging.info("when no more data to process, update statAll.dataCalcolo")
       statAll.dataCalcolo = dataCalcolo
     statAll.put()
-      
-    finish = count < limit    
-    logging.info("finish: " + str(finish))  
+
+    finish = count < limit
+    logging.info("finish: " + str(finish))
     if not finish:
       if not self.request.get("year"):
-        year = None        
+        year = None
       self.putTask("/admin/stats/calcisp", year, offset + limit)
 
   def initWeek(self, stat, wtot):
@@ -665,14 +665,14 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
   def calcIsp(self, isp, stats):
     stats.numeroSchede += 1;
     settimana = (isp.dataIspezione - stats.dataInizio).days / 7
-    
-    #logging.info("dataInizio: " + str(stats.dataInizio))    
-    #logging.info("dataNonconf: " + str(isp.dataIspezione))    
+
+    #logging.info("dataInizio: " + str(stats.dataInizio))
+    #logging.info("dataNonconf: " + str(isp.dataIspezione))
     #logging.info("stats.numeroSchedeSettimana " + str(len(stats.numeroSchedeSettimana)) + " settimana: " + str(settimana))
-    
+
     stats.numeroSchedeSettimana[settimana] += 1
     stats.calc(isp)
-      
+
 class CMStatCalcHandlerOld(BasePage):
   def get(self):
     self.calc(date(year=2009, month=1,day=1),date(year=2010, month=12,day=31) )
@@ -711,7 +711,7 @@ class CMStatCalcHandlerOld(BasePage):
              "durataPasto": StatisticheIspezioni(),
              "smaltimentoRifiuti": StatisticheIspezioni(),
              "giudizioGlobale": StatisticheIspezioni()}
-    
+
     for attr, stat in attrs.iteritems():
       stat.nomeValore = attr;
       stat.dataInizio = inizio
@@ -737,18 +737,13 @@ class CMStatCalcHandlerOld(BasePage):
       #stat.creato_da = self.get_current_user()
       stat.put()
 
-      
+
 app = webapp.WSGIApplication([
   ('/stats', CMStatsHandler),
   ('/admin/stats/calc', CMStatCalcHandler),
   ('/admin/stats/calcisp', CMStatIspCalcHandler),
-  ('/admin/stats/calcnc', CMStatNCCalcHandler)], config=config)
+  ('/admin/stats/calcnc', CMStatNCCalcHandler)],
+  debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()

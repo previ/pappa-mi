@@ -24,15 +24,15 @@ TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
 class CMMenuWidgetHandler(CMMenuHandler):
-  
-  def get(self): 
+
+  def get(self):
     menu = Menu();
 
     bgcolor = self.request.get("bc")
-    if(bgcolor is None): 
+    if(bgcolor is None):
       bgcolor = "eeeeff"
     fcolor = self.request.get("fc")
-    if(fcolor is None): 
+    if(fcolor is None):
       fcolor = "000000"
 
     template_values = dict()
@@ -47,27 +47,27 @@ class CMMenuWidgetHandler(CMMenuHandler):
       else:
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
         self.request.GET["cm"] = c.key.id()
-    
+
     self.createMenu(self.request,c,template_values)
 
     if self.request.get("i") == "n":
-      template_values["main"] = 'widget/menu.html'      
+      template_values["main"] = 'widget/menu.html'
     else:
-      template_values["main"] = 'widget/wmenu.html'      
-    
-    template_values["main"] = 'widget/wmenu.html'      
+      template_values["main"] = 'widget/wmenu.html'
+
+    template_values["main"] = 'widget/wmenu.html'
     self.getBase(template_values)
 
-    
+
 class CMStatWidgetHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
 
     bgcolor = self.request.get("bc")
-    if(bgcolor == ""): 
+    if(bgcolor == ""):
       bgcolor = "eeeeff"
     fcolor = self.request.get("fc")
-    if(fcolor == ""): 
+    if(fcolor == ""):
       fcolor = "000000"
 
     template_values = dict()
@@ -82,17 +82,17 @@ class CMStatWidgetHandler(BasePage):
       else:
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
         self.request.GET["cm"] = c.key.id()
-    
+
     self.createStat(self.request,c,template_values)
-    
+
     t = ""
     if self.request.get("t") == "c":
       t = "_" + self.request.get("t")
 
     template_values["wcontent"] = "widget/stat" + t + ".html"
-    
+
     if self.request.get("i") == "n":
-      template_values["main"] = 'widget/' + template_values["wcontent"]  
+      template_values["main"] = 'widget/' + template_values["wcontent"]
     else:
       template_values["main"] = 'widget/wstat.html'
 
@@ -114,7 +114,7 @@ class CMStatWidgetHandler(BasePage):
         logging.info("statCY miss")
         statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=c.citta, timeId=year).get()
         memcache.set("statCY" + str(c.citta.id), statCY, 86400)
-     
+
       statCC = memcache.get("statCC" + str(c.centroCucina.id))
       if not statCC:
         logging.info("statCC miss")
@@ -126,7 +126,7 @@ class CMStatWidgetHandler(BasePage):
         logging.info("statCM miss")
         statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=c.key, timeId=year).get()
         memcache.set("statCM" + str(c.key.id), statCM, 86400)
-      
+
     template_values["statCY"] = statCY
     template_values["statCC"] = statCC
     template_values["statCM"] = statCM
@@ -140,7 +140,7 @@ class WidgetListitem:
 
   def scuola(self):
     return self.item.commissione.tipoScuola + " " + self.item.commissione.nome
-  
+
   def tipo(self):
     if isinstance(self.item, Ispezione):
       return "Ispezione"
@@ -164,7 +164,7 @@ class WidgetListitem:
 
   def sommario(self):
       return self.item.sommario()
-    
+
   def url(self):
     u = "#"
     post = SocialPost.get_by_resource(self.item.key)[0]
@@ -172,22 +172,22 @@ class WidgetListitem:
       u = "/post/"+post.key.urlsafe()
     return u
 
-  
+
 class CMListWidgetHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     template_values = dict()
 
     bgcolor = self.request.get("bc")
-    if(bgcolor is None): 
+    if(bgcolor is None):
       bgcolor = "eeeeff"
     fcolor = self.request.get("fc")
-    if(fcolor is None): 
+    if(fcolor is None):
       fcolor = "000000"
 
     template_values["bgcolor"] = bgcolor
     template_values["fcolor"] = fcolor
-    
+
     items=list()
     c = None
     if self.request.get("cm"):
@@ -200,7 +200,7 @@ class CMListWidgetHandler(BasePage):
       isps = Ispezione.get_by_cm(c.key)
       for isp in isps:
         items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
-      
+
       ncs = Nonconformita.get_by_cm(c.key)
       for nc in ncs:
         items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
@@ -212,9 +212,9 @@ class CMListWidgetHandler(BasePage):
       note = Nota.get_by_cm(c.key)
       for nota in note:
         items.append(WidgetListitem(item=nota, date=nota.dataNota))
-        
+
       items = sorted(items, key=lambda item: item.date, reverse=True)
-    
+
     template_values["host"] = self.getHost()
     template_values["items"] = items
     template_values["scuola"] = c.desc()
@@ -224,7 +224,7 @@ class CMListWidgetHandler(BasePage):
     self.getBase(template_values)
 
 class NodeWidgetHandler(BasePage):
-  
+
   def get(self, node_key):
     if self.request.get("cmd") == "get_by_cm":
       node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
@@ -232,41 +232,41 @@ class NodeWidgetHandler(BasePage):
     elif node_key:
       logging.info(node_key)
       template_values = dict()
-  
+
       bgcolor = self.request.get("bc")
-      if(bgcolor is None): 
+      if(bgcolor is None):
         bgcolor = "eeeeff"
       fcolor = self.request.get("fc")
-      if(fcolor is None): 
+      if(fcolor is None):
         fcolor = "000000"
-  
+
       template_values["bgcolor"] = bgcolor
       template_values["fcolor"] = fcolor
-      
+
       template_values["node_key"] = node_key
       template_values["main"] = 'widget/node.html'
-  
+
       self.getBase(template_values)
 
 class CMGadgetHandler(BasePage):
-  
-  def get(self): 
+
+  def get(self):
     template_values = dict()
     template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
     template_values["nodes"] = SocialNode.query().order(SocialNode.name).fetch()
     self.getBase(template_values)
-    
-        
+
+
 class CMWidgetHandler(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["content"] = "widget/widgetindex.html"
     template_values["host"] = self.getHost()
-    template_values["citta"] = Citta.get_all()    
+    template_values["citta"] = Citta.get_all()
     self.getBase(template_values)
-    
+
 app = webapp.WSGIApplication([
   ('/widget/get', CMWidgetHandler),
   ('/widget/menu', CMMenuWidgetHandler),
@@ -276,13 +276,7 @@ app = webapp.WSGIApplication([
   ('/widget/node(.*)', NodeWidgetHandler),
   ('/widget/gadget', CMGadgetHandler),
   ('/widget/getcm', CMCommissioniDataHandler)
-  ], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+  ], debug = os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()

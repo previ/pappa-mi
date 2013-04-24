@@ -35,7 +35,7 @@ from google.appengine.ext.webapp import util
 from base import BasePage, config, handle_404, handle_500
 
 class LoginPage(BasePage):
-  
+
   def get(self):
     user = self.request.user if self.request.user else None
     profiles = None
@@ -60,7 +60,7 @@ class LoginPage(BasePage):
     return self.get()
 
 class ProtectedPage(BasePage):
-  
+
   def get(self):
     session = self.request.session if self.request.session else None
     user = self.request.user if self.request.user else None
@@ -81,18 +81,18 @@ class ProtectedPage(BasePage):
       self.getBase(template_values)
     else:
       self.redirect("/eauth/login?next="+self.request.path)
-      
+
   def post(self):
     return self.get()
 
 class LogoutPage(BasePage):
-  
+
   def get(self):
     self.response.delete_cookie('_eauth')
-    self.redirect("/")            
-      
+    self.redirect("/")
+
 class SignupPage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["main"] = '/eauth/main.html'
@@ -101,17 +101,17 @@ class SignupPage(BasePage):
     if not self.session.get("a") or not self.session.get("b") or not self.session.get("c"):
       a = random.randint(1, 10)
       b = random.randint(1, 10)
-      
+
       self.session["a"] = str(a)
       self.session["b"] = str(b)
       self.session["c"] = str(a + b)
-      
+
     template_values["cap_a"] = self.session["a"]
     template_values["cap_b"] = self.session["b"]
     #logging.info("SignupPage a: " + template_values["cap_a"] + " b " + template_values["cap_b"] + " c " + self.session["c"])
-      
+
     self.getBase(template_values)
-    
+
   def post(self):
     error = None
     email = self.request.get('email')
@@ -145,13 +145,13 @@ class SignupPage(BasePage):
               'raw_info': user_info,
               }
       }
-      
-      profile = models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))      
+
+      profile = models.UserProfile.get_or_create(auth_id, u_i, password=security.generate_password_hash(password1, length=12))
 
       self.request = middleware.EngineAuthRequest(self.request.environ)
       self.request.load_user_by_profile(profile)
       return self.redirect("/signup")
-    
+
     if error:
       self.handle_error(error)
 
@@ -161,7 +161,7 @@ class SignupPage(BasePage):
     template_values["content"] = '/eauth/signup.html'
     a = random.randint(1, 10)
     b = random.randint(1, 10)
-          
+
     if not self.session.get("a") or not self.session.get("b") or not self.session.get("c"):
       self.session["a"] = str(a)
       self.session["b"] = str(b)
@@ -173,12 +173,12 @@ class SignupPage(BasePage):
 
     template_values["messages"] = [{'message': error}]
     self.getBase(template_values)
-      
-    
-        
+
+
+
 
 class PwdRecoverRequestPage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["main"] = '/eauth/main.html'
@@ -186,13 +186,13 @@ class PwdRecoverRequestPage(BasePage):
 
     a = random.randint(1, 10)
     b = random.randint(1, 10)
-    
+
     self.session["c"] = str(a + b)
     template_values["cap_a"] = a
     template_values["cap_b"] = b
-    
+
     self.getBase(template_values)
-    
+
   def post(self):
 
     error = None
@@ -213,7 +213,7 @@ class PwdRecoverRequestPage(BasePage):
         error = "Ok"
       else:
         error = "A questa email non corrisponde una password Pappa-Mi, per recuperare la password devi contattare il gestore dell'account di email."
-    
+
     self.response.out.write(error)
 
   def sendPwdRecEmail(self, email):
@@ -232,29 +232,29 @@ class PwdRecoverRequestPage(BasePage):
     message.bcc = sender
     message.subject = "Pappa-Mi: richiesta di cambio password"
     message.body = """ Hai chiesto di cambiare la password del tuo account.
-    
+
     Clicca sul link di seguito per continuare:
     http://"""  + url + """
 
-        
+
     Ciao
     Pappa-Mi staff
-    
+
     """
-      
+
     message.send()
 
-    
+
     #logging.info("url: " + url)
-    
+
 class PwdRecoverChangePage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["main"] = '/eauth/main.html'
     template_values["content"] = '/eauth/pwdrec2.html'
 
-    keycripted = self.request.get("key")    
+    keycripted = self.request.get("key")
     ##TODO DECRYPT
     key = keycripted
     if key is None:
@@ -265,9 +265,9 @@ class PwdRecoverChangePage(BasePage):
         error = "Errore, richiesta non valida"
       else:
         template_values["key"] = keycripted
-        
+
     self.getBase(template_values)
-        
+
   def post(self):
 
     error = None
@@ -280,27 +280,27 @@ class PwdRecoverChangePage(BasePage):
     key = keycripted
 
     userprofile = model.Key(urlsafe=key).get()
-    
+
     if userprofile is None:
       error = "Email non presente in archivio"
     elif password1 != password2:
       error = "Controllo password non corretto"
     else:
-      userprofile.password = security.generate_password_hash(password1, length=12)     
+      userprofile.password = security.generate_password_hash(password1, length=12)
       userprofile.put()
       error = "Ok"
-    
+
     self.response.out.write(error)
 
 class PwdChangePage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["main"] = '/eauth/main.html'
     template_values["content"] = '/eauth/pwdchg.html'
-        
+
     self.getBase(template_values)
-        
+
   def post(self):
 
     error = None
@@ -310,7 +310,7 @@ class PwdChangePage(BasePage):
 
     auth_id = models.User.generate_auth_id("password", self.request.user.email)
     userprofile = models.UserProfile.get_by_id(auth_id)
-    
+
     if userprofile is None:
       error = "Email non presente in archivio"
     elif not security.check_password_hash(password, userprofile.password):
@@ -318,31 +318,31 @@ class PwdChangePage(BasePage):
     elif password1 != password2:
       error = "Controllo password non corretto"
     else:
-      userprofile.password = security.generate_password_hash(password1, length=12)     
+      userprofile.password = security.generate_password_hash(password1, length=12)
       userprofile.put()
       error = "Ok"
-    
+
     self.response.out.write(error)
 
 class RemoveAuthPage(BasePage):
-  
+
   def get(self):
     strategy = self.request.get("p")
 
     auth_id = self.request.user.has_auth_strategy(strategy)
-    self.request.user.remove_auth_strategy(auth_id)      
+    self.request.user.remove_auth_strategy(auth_id)
     error = "Ok"
-    
+
     self.response.out.write(error)
 
 class OpenIdLoginHandler(webapp.RequestHandler):
     def get(self):
       login_url = users.create_login_url(self.request.get('continue'), None, "https://www.google.com/accounts/o8/id")
       self.redirect(login_url)
-    
+
     def post(self):
       self.get()
-  
+
 app = webapp.WSGIApplication([
   ('/eauth/login', LoginPage),
   ('/eauth/logout', LogoutPage),
@@ -357,10 +357,3 @@ app = webapp.WSGIApplication([
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()
-  

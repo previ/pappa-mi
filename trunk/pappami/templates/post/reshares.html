@@ -12,7 +12,7 @@
 </div>
 <div class="s_post_container">
 	<div class="s_post_header">			
-		<div class="s_post_title"><a class="node" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</a> / <a class="post" href="/post/{{post.key.urlsafe()}}">{{post.title}}</a></div> 
+		<div class="s_post_title"><a class="node" data-node-key="{{post.key.parent().urlsafe()}}" href="#">{{post.key.parent().get().name}}</a> / <a class="post" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">{{post.title}}</a></div> 
 		<div class="s_post_author">scritto da {{post.commissario.nome}}</div>
 		<div class="s_post_date">&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
 	</div>				

@@ -37,13 +37,13 @@ from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 from py.model import *
 from py.modelMsg import *
 from py.comments import *
-    
+
 class MainPage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["host"] = self.getHost()
-        
+
     commissario = self.getCommissario(self.get_current_user())
     if commissario and commissario.is_active():
       self.redirect("/stream")
@@ -52,20 +52,20 @@ class MainPage(BasePage):
       self.redirect("/signup")
       return
       #return self.getPrivate(template_values)
-          
+
     template_values["main"] = "public.html"
     template_values["contacts"] = ContattiHandler.get_contacts()
-    
+
     geo = model.GeoPt(41.754922,12.502441)
-    
+
     template_values["news_pappami_alt"] = "http://blog.pappa-mi.it/"
     template_values["geo"] = geo
-      
+
     self.getBase(template_values)
-    
+
   def post(self):
     return self.get()
-    
+
   def getPrivate(self, template_values):
 
     c = None
@@ -77,16 +77,16 @@ class MainPage(BasePage):
     offset = 0
     if self.request.get("offset") != "":
       offset = int(self.request.get("offset"))
-   
+
     template_values = dict()
     template_values["bgcolor"] = "eeeeff"
-    template_values["fgcolor"] = "000000"    
+    template_values["fgcolor"] = "000000"
     template_values["geo"] = geo
     template_values["billboard"] = "navigation.html"
     template_values["host"] = self.getHost()
-       
+
     self.getBase(template_values)
-    
+
   def getStats(self):
     stats = memcache.get("stats")
     if(stats is None):
@@ -94,7 +94,7 @@ class MainPage(BasePage):
       anno = now.year
       if now.month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
-      
+
       stats = Statistiche()
       stats.numeroCommissioni = Commissione.get_active()
       try:
@@ -102,44 +102,44 @@ class MainPage(BasePage):
         stats.ncTotali = StatisticheNonconf.get_cc_cm_time(timeId=anno).get().numeroNonconf
       except :
         stats.numeroSchede = 0
-        stats.ncTotali = 0      
+        stats.ncTotali = 0
       stats.diete = Dieta.query().count()
       stats.note = Nota.query().count()
       stats.anno1 = anno
       stats.anno2 = anno + 1
       memcache.add("stats", stats)
-      
+
     return stats
-        
+
 class CMSupportoHandler(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["content"] = "supporto.html"
     self.getBase(template_values)
-    
+
 class CMCondizioniHandler(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["content"] = "condizioni.html"
-    self.getBase(template_values)    
-         
+    self.getBase(template_values)
+
 class MapDataHandler(webapp.RequestHandler):
-  
-  def get(self): 
+
+  def get(self):
     cursor = self.request.get("cur")
 
     offset = 0
     if self.request.get("offset"):
-      offset = int(self.request.get("offset"))    
+      offset = int(self.request.get("offset"))
 
     if self.request.get("cmd") == "all":
       markers = memcache.get("markers_all"+str(offset))
       if(markers == None):
-          
+
         commissioni = Commissione.get_all_cursor(cursor)
-          
+
         limit = Const.ENTITY_FETCH_LIMIT
         i = 0
         markers_list = list()
@@ -149,11 +149,11 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo:
-              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="' 
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="'
               if c.getCentroCucina(datetime.now().date()):
                 mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
               else:
-                mark += '" />\n'              
+                mark += '" />\n'
               markers_list.append(mark)
         except:
           logging.error("Timeout")
@@ -161,18 +161,18 @@ class MapDataHandler(webapp.RequestHandler):
           markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
         else:
           markers = "<markers>\n"
-          
+
         markers = markers + "".join(markers_list) + "</markers>"
-        
+
         memcache.add("markers_all"+str(offset), markers)
-      
+
       #logging.info(markers)
       self.response.headers["Content-Type"] = "text/xml"
-      self.response.out.write(markers)      
+      self.response.out.write(markers)
     else:
       markers = memcache.get("markers"+str(offset))
       if(markers == None):
-          
+
         commissioni = Commissione.get_active_cursor(cursor)
 
         limit = Const.ENTITY_FETCH_LIMIT
@@ -184,25 +184,25 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo :
-              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="' 
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="'
               if c.getCentroCucina(datetime.now().date()):
                 mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
               else:
-                mark += '" />\n'              
+                mark += '" />\n'
               markers_list.append(mark)
         except:
           raise
           logging.error("Timeout")
-          
+
         #logging.info(markers_list)
         if i >= limit:
           markers = "<markers cur='" + commissioni.cursor_after().to_websafe_string() + "'>\n"
         else:
           markers = "<markers>\n"
-          
+
         markers = markers + "".join(markers_list) + "</markers>"
         memcache.add("markers"+str(offset), markers)
-      
+
       #logging.info(markers)
       self.response.headers["Content-Type"] = "text/xml"
       self.response.out.write(markers)
@@ -212,7 +212,7 @@ class CalendarioHandler(BasePage):
   def post(self):
     return self.get()
   @reguser_required
-  def get(self):    
+  def get(self):
     commissario = self.getCommissario(self.get_current_user())
     if self.request.get("cmd") == "create":
       cm = Commissione.get(model.Key(Commissione,self.request.get("cm")))
@@ -225,7 +225,7 @@ class CalendarioHandler(BasePage):
             calendario.share(c.user.email())
         cm.calendario = str(calendario.GetId())
         cm.put()
-      
+
     else:
       cm = None
       if self.request.get("cm") != "":
@@ -234,45 +234,45 @@ class CalendarioHandler(BasePage):
         cm = commissario.commissione()
       else:
         cm = Commissione.query().get()
-        
+
     template_values = dict()
     template_values["content"] = "calendario/calendario.html"
     template_values["commissioni"] = commissario.commissioni()
     template_values["creacal"] = (cm.calendario == None or cm.calendario == "") and commissario.is_registered(cm)
     template_values["cm"] = cm
     self.getBase(template_values)
-      
+
 class TagsPage(BasePage):
-  
+
   @reguser_required
   def get(self):
     template_values = dict()
     template_values["content"] = "tags.html"
     template_values["tags"] = CMTagHandler().getTags()
-    
+
     self.getBase(template_values)
-      
+
 class ChiSiamoPage(BasePage):
-  
+
   def get(self):
     template_values = dict()
     template_values["content"] = "chi.html"
     self.getBase(template_values)
 
 class AddCityHandler(BasePage):
-  
+
   def get(self):
     self.redirect("https://docs.google.com/a/pappa-mi.it/spreadsheet/viewform?formkey=dGpyOHNISHBjQnZqWjUwSzdJU3hPMnc6MQ")
-    
+
 class ContactusHandler(BasePage):
- 
+
   def get(self):
     self.redirect("https://docs.google.com/spreadsheet/viewform?formkey=dE82eHdyRVJ0VVpNUVBCLXIwNDMwN1E6MQ#gid=0")
-  
+
 app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/chi', ChiSiamoPage),
-  ('/map', MapDataHandler),  
+  ('/map', MapDataHandler),
   ('/calendario', CalendarioHandler),
   ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
@@ -283,14 +283,10 @@ app = webapp.WSGIApplication([
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
 
-def main():
-  app.run();
 
-if __name__ == "__main__":
-  main()
 """
 def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')   
+  debug = os.environ['HTTP_HOST'].startswith('localhost')
 
   application = webapp.WSGIApplication([
   ('/', MainPage),
@@ -306,7 +302,7 @@ def main():
   ('/registrazione', CMRegistrazioneHandler),
   ('/signup', CMSignupHandler)
   ], debug=debug)
-  
+
   wsgiref.handlers.CGIHandler().run(application)
 """
 #def profile_main():
@@ -322,9 +318,9 @@ def main():
     ## The rest is optional.
     ##stats.print_callees()
     ##stats.print_callers()
-    #print "</pre>"  
+    #print "</pre>"
 
 #import py.dblog
-#py.dblog.patch_appengine()    
+#py.dblog.patch_appengine()
 
-  
+

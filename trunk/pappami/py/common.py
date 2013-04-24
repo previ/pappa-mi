@@ -47,41 +47,41 @@ class Const:
 
 class cached_property(object):
   """A decorator that converts a function into a lazy property.
-  
+
   The function wrapped is called the first time to retrieve the result
   and then that calculated result is used the next time you access
   the value::
-  
+
       class Foo(object):
-  
+
           @cached_property
           def foo(self):
               # calculate something important here
               return 42
   """
-  
+
   _default_value = object()
-  
+
   def __init__(self, func, name=None, doc=None):
     self.__name__ = name or func.__name__
     self.__module__ = func.__module__
     self.__doc__ = doc or func.__doc__
     self.func = func
     self.lock = threading.RLock()
-  
+
   def __get__(self, obj, type=None):
     if obj is None:
       return self
     if not hasattr(obj, "cache"):
       #logging.info("cache.init")
       obj.cache = dict()
-  
+
     with self.lock:
       value = obj.cache.get(self.__name__, self._default_value)
       if value is self._default_value:
         value = self.func(obj)
         obj.cache[self.__name__] = value
-  
+
       return value
 
   def __set__(self, obj, value):
@@ -89,20 +89,20 @@ class cached_property(object):
       return self
     if not hasattr(obj, "cache"):
       obj.cache = dict()
-  
+
     with self.lock:
       if value is None and obj.cache.get(self.__name__) is not None:
         del obj.cache[self.__name__]
-  
+
       return value
-  
+
   def invalidate(self, obj):
     del obj.cache[self.__name__]
-    
+
 
 
 # create a subclass and override the handler methods
-class Parser(HTMLParser):    
+class Parser(HTMLParser):
 
   def handle_starttag(self, tag, attrs):
     pass
@@ -112,12 +112,12 @@ class Parser(HTMLParser):
 
   def handle_data(self, data):
     self.text += str(data)
-    
+
 class Cache(object):
-  
+
   _all_caches = dict()
   _all_lock = threading.RLock()
-  
+
   def __init__(self, cache_name, *args, **kwargs):
     self.name=cache_name
     self._lock = threading.RLock()
@@ -125,34 +125,34 @@ class Cache(object):
     self._version = 0
     memcache.incr(self.name + "-version", 0)
     Cache.put_cache(self.name, self)
-    super(Cache, self).__init__(*args, **kwargs) 
-    
+    super(Cache, self).__init__(*args, **kwargs)
+
   def get(self, name):
     return self._cache.get(name)
-    
+
   def put(self, name, obj):
-    with self._lock:    
+    with self._lock:
       self._cache[name] = obj
       self._version += 1
       memcache.incr(self.name + "-version")
-    
+
   def clear(self, name):
-    with self._lock:    
+    with self._lock:
       if self._cache.get(name):
         del self._cache[name]
         self._version += 1
         memcache.incr(self.name + "-version")
 
   def clear_all(self):
-    with self._lock:    
+    with self._lock:
       self._cache.clear()
       self._version += 1
       memcache.incr(self.name + "-version")
- 
+
   def check_version(self):
     global_version = memcache.get(self.name + "-version")
     return self._version != global_version
-    
+
   @classmethod
   def get_cache(cls,name):
     cache=cls._all_caches.get(name)
@@ -165,24 +165,24 @@ class Cache(object):
   def put_cache(cls,name, cache):
     with cls._all_lock:
       cls._all_caches[name] = cache
- 
+
   @classmethod
   def clear_all_caches(cls):
     with cls._all_lock:
       for cache in cls._all_caches.itervalues():
         cache.clear_all()
-  
-  
-  
+
+
+
 class Sanitizer(object):
-  sanitizer = Cleaner(allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)  
-  texter = Cleaner(allow_tags=[''],remove_unknown_tags=False)  
-  
+  sanitizer = Cleaner(allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)
+  texter = Cleaner(allow_tags=[''],remove_unknown_tags=False)
+
   @classmethod
   def sanitize(cls, html):
     sanitized = ""
     if html and len(html) > 0:
-      sanitized = cls.sanitizer.clean_html(html) 
+      sanitized = cls.sanitizer.clean_html(html)
     return sanitized
 
   @classmethod
@@ -201,12 +201,12 @@ class Sanitizer(object):
         images.append(img.get('src'))
     except Exception:
       pass
-      
+
     return images
-  
+
 
 class Channel(object):
-  
+
   @classmethod
   def get_by_user(cls, user):
     #channel_key = 'pappa-mi.' + str(user.key.id())
@@ -217,7 +217,7 @@ class Channel(object):
     if not hasattr(user, "channel"):
       user.channel = channel.create_channel('pappa-mi.' + str(user.key.id()))
     return user.channel
-  
-  @classmethod  
+
+  @classmethod
   def send_message(cls, user, message):
     channel.send_message('pappa-mi.' + str(user.key.id()), message)
