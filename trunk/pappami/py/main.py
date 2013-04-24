@@ -30,13 +30,9 @@ from jinja2.filters import do_pprint
 from google.appengine.api import memcache
 from google.appengine.api import mail
 
-import py.feedparser
-
 from py.widget import CMMenuWidgetHandler, CMStatWidgetHandler
 
 from py.model import *
-from py.modelMsg import *
-from py.comments import *
 
 class MainPage(BasePage):
 
