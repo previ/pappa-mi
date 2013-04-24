@@ -42,9 +42,9 @@ TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
 class MobileHandler(BasePage):
-  
-  def get(self): 
-    
+
+  def get(self):
+
     template_values = {
       "main": "mobile/public.html"
     }
@@ -53,10 +53,10 @@ class MobileHandler(BasePage):
     return self.get()
 
 class MobilePrivateHandler(BasePage):
-  
+
   @reguser_required_mobile
-  def get(self): 
-    
+  def get(self):
+
     template_values = {
       "main": "mobile/menu.html"
     }
@@ -64,7 +64,7 @@ class MobilePrivateHandler(BasePage):
   def post(self):
     return self.get()
 
-    
+
 app = webapp.WSGIApplication([
     ('/mobile', MobileHandler),
     ('/mobile/priv', MobilePrivateHandler)
@@ -72,9 +72,3 @@ app = webapp.WSGIApplication([
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()

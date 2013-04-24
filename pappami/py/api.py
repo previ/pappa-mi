@@ -39,9 +39,9 @@ TIME_FORMAT = "%H:%M"
 DATE_FORMAT = "%Y-%m-%d"
 
 class UserApiHandler(BasePage):
-  
+
   @reguser_required
-  def get(self): 
+  def get(self):
     co = self.getCommissario()
     user_schools = list()
     for cm in co.commissioni():
@@ -53,14 +53,14 @@ class UserApiHandler(BasePage):
     self.output_as_json(user_api)
 
 class MenuApiHandler(CMMenuHandler):
-      
+
   @reguser_required
-  def get(self): 
+  def get(self):
 
     menu_api = []
     data = datetime.strptime(self.request.get("date"),Const.DATE_FORMAT).date()
     c = model.Key("Commissione", int(self.request.get("school"))).get()
-    menus = self.getMenu(data, c)      
+    menus = self.getMenu(data, c)
     if len(menus):
       menu = self.getMenu(data, c)[0]
       menu_api = [
@@ -78,8 +78,8 @@ class MenuApiHandler(CMMenuHandler):
           'desc2': 'dessert' }];
 
     self.output_as_json(menu_api)
- 
-    
+
+
 app = webapp.WSGIApplication([
     ('/api/getuser', UserApiHandler),
     ('/api/getmenu', MenuApiHandler)

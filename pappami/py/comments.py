@@ -31,13 +31,13 @@ handle both messages (comments not attached to other objects) and comments (comm
 """
 class CMCommentHandler(BasePage):
 
-  """ 
+  """
   init a comment structure, attaching an empty root message to an existing object
   """
   @classmethod
   def init(cls, msg_rif, msg_grp, tipo, tags, user):
     messaggio = Messaggio.get_by_parent(msg_rif)
-    if not messaggio:  
+    if not messaggio:
       messaggio = Messaggio()
       messaggio.par = msg_rif
       messaggio.root = msg_rif
@@ -49,7 +49,7 @@ class CMCommentHandler(BasePage):
       messaggio.put()
       if tags:
         CMTagHandler.saveTags(messaggio, tags)
-        
+
       messaggio.invalidate_cache();
     return messaggio
 
@@ -61,7 +61,7 @@ class CMCommentHandler(BasePage):
   def initActivity(cls, msg_rif, msg_grp, tipo, last, tags, user):
 
     new_msg = CMCommentHandler.init(msg_rif, msg_grp, tipo, tags, user)
-    
+
     return cls.loadActivity(last, new_msg.par)
 
   """
@@ -79,18 +79,18 @@ class CMCommentHandler(BasePage):
     if not last:
       last = Messaggio.get_by_parent(item_key)
     activities = Messaggio.get_all_from_item(last)
-  
-    template_values['activities'] = activities       
+
+    template_values['activities'] = activities
 
     return template_values
-  
+
   """
   return the root object of a given message (comment)
   """
   @classmethod
   def getRoot(cls, msg_rif):
     return Messaggio.get_root(msg_rif)
-  
+
   """
   http post handler
   handle both new message and new comment (livello is the discriminant)
@@ -110,12 +110,12 @@ class CMCommentHandler(BasePage):
     messaggio.titolo = self.request.get("titolo")
     messaggio.testo = self.request.get("testo")
     messaggio.commenti = 0
-    messaggio.c_ua = self.request.user.key    
+    messaggio.c_ua = self.request.user.key
     messaggio.put()
 
     logging.info("testo: " + self.request.get("testo"))
     logging.info("last: " + self.request.get("last"))
-    
+
     messaggio.allegati = list()
     for i in range(1,10):
       if self.request.get('allegato_file_' + str(i)):
@@ -131,7 +131,7 @@ class CMCommentHandler(BasePage):
           messaggio.allegati.append(allegato)
         else:
           logging.info("attachment is too big.")
-    
+
     if messaggio.livello > 0 and par_key:
       par = par_key.get()
       commenti = par.commenti
@@ -139,17 +139,17 @@ class CMCommentHandler(BasePage):
         commenti = 0
       par.commenti = commenti + 1
       par.put()
-   
+
     CMTagHandler.saveTags(messaggio, self.request.get_all("tags"))
-  
+
     template_values = {
       'activity': messaggio,
       'ease': True
     }
     messaggio.invalidate_cache();
     last_key = None
-          
-    if messaggio.livello == 0: #posting root message      
+
+    if messaggio.livello == 0: #posting root message
       last_key = messaggio.key
       if self.request.get("last") != "":
         last_key = model.Key("Messaggio", int(self.request.get("last")))
@@ -158,33 +158,33 @@ class CMCommentHandler(BasePage):
       if self.request.get("last") != "":
         last_key = model.Key("Messaggio", int(self.request.get("last")))
       activities = Messaggio.get_all_from_item_parent(last_key, messaggio)
-  
+
       template_values['main'] = 'comments/comment.html'
       comment_root = model.Key("Messaggio",int(self.request.get("root"))).get()
-  
+
       template_values['activities'] = activities
       template_values['comments'] = activities
       template_values['comment_root'] = comment_root
 
     return self.getBase(template_values)
-    
+
   """
   load comments html put under a message
   """
   def get(self):
     root = self.request.get("par")
     commento_root = model.Key("Messaggio", int(root)).get()
-    
+
     comments = list()
-    if commento_root:      
+    if commento_root:
       commenti = Messaggio.get_by_parent(commento_root.key)
       for msg in commenti:
         comments.append(msg)
-      
+
     comment_last = None
     if len(comments):
       comment_last = comments[len(comments)-1]
-      
+
     logging.info("comment_last: " + str(comment_last))
     template_values = {
       'main': 'comments/comment.html',
@@ -205,19 +205,19 @@ class ActivityLoadHandler(BasePage):
     }
 
     buff = ""
-    
+
     offset = 0
     if self.request.get("offset") != "":
       offset = int(self.request.get("offset"))
 
     limit = None
-    if self.request.get("limit") != "":     
+    if self.request.get("limit") != "":
       template_values['limit'] = int(self.request.get("limit"))
     template_values['activities'] = self.get_activities(offset)
 
     self.getBase(template_values)
-    
-  
+
+
 class CMVoteHandler(BasePage):
   @reguser_required
   def get(self):
@@ -226,14 +226,14 @@ class CMVoteHandler(BasePage):
     messaggio.vote(int(self.request.get('voto')), self.request.user)
     self.response.out.write(len(messaggio.votes))
 
-class CMVotersHandler(BasePage):  
+class CMVotersHandler(BasePage):
   def get(self):
-    messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()    
+    messaggio = model.Key("Messaggio", int(self.request.get('msg'))).get()
     template_values = {
       'main': 'comments/voters.html',
       'votes': messaggio.votes
     }
-    self.getBase(template_values)    
+    self.getBase(template_values)
 
 class CMTagHandler(BasePage):
   def get(self):
@@ -248,18 +248,18 @@ class CMTagHandler(BasePage):
     for tag in Tag.get_all():
       alltags.append(tag.nome)
 
-    buff = json.JSONEncoder().encode({'assignedTags': assignedtags, 'availableTags':alltags})      
+    buff = json.JSONEncoder().encode({'assignedTags': assignedtags, 'availableTags':alltags})
     self.response.out.write(buff)
-    
+
   @reguser_required
   def post(self):
     tagnames = self.request.get_all("tags")
-      
+
     CMTagHandler.saveTags(messaggio.Key("Messaggio", int(self.request.get('msg'))),tagnames)
 
-    buff = json.JSONEncoder().encode({'status': 'ok'})      
+    buff = json.JSONEncoder().encode({'status': 'ok'})
     self.response.out.write(buff)
-    
+
   @classmethod
   def saveTags(cls,obj,tagnames):
     logging.info("tags")
@@ -283,7 +283,7 @@ class CMTagHandler(BasePage):
         tag.put()
     for name in tagold:
       logging.info(name)
-      
+
       if (name in tagnames) is False:
         logging.info("removing:" + name)
         tagobj = tagold[name]
@@ -291,20 +291,20 @@ class CMTagHandler(BasePage):
         tag.numRef -= 1
         tag.put()
         tagobj.key.delete()
-        
+
   def getTags(self):
     tags = Tag.get_all()
     return tags
-    
-    
+
+
 app = webapp.WSGIApplication([
     ('/comments/load', ActivityLoadHandler),
     ('/comments/message', CMCommentHandler),
     ('/comments/comment', CMCommentHandler),
     ('/comments/vote', CMVoteHandler),
     ('/comments/voters', CMVotersHandler),
-    ('/comments/gettags', CMTagHandler), 
-    ('/comments/updatetags', CMTagHandler)    
+    ('/comments/gettags', CMTagHandler),
+    ('/comments/updatetags', CMTagHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404

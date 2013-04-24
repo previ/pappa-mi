@@ -7,13 +7,13 @@ import operator
 
 def db_log(model, call, details=''):
   """Call this method whenever the database is invoked.
-  
+
   Args:
     model: the model name (aka kind) that the operation is on
     call: the kind of operation (Get/Put/...)
     details: any text that should be added to the detailed log entry.
   """
-  
+
   # First, let's update memcache
   if model:
     stats = memcache.get('DB_TMP_STATS')
@@ -21,7 +21,7 @@ def db_log(model, call, details=''):
     key = '%s_%s' % (call, model)
     stats[key] = stats.get(key, 0) + 1
     memcache.set('DB_TMP_STATS', stats)
-  
+
   # Next, let's log for some more detailed analysis
   logging.debug('DB_LOG: %s @ %s (%s)', call, model, details)
 
@@ -30,7 +30,7 @@ def patch_appengine():
   """Apply a hook to app engine that logs db statistics."""
   def model_name_from_key(key):
     return key.path().element_list()[0].type()
-    
+
   def hook(service, call, request, response):
     assert service == 'datastore_v3'
     if call == 'Put':
@@ -44,7 +44,7 @@ def patch_appengine():
       db_log(kind, call)
     else:
       db_log(None, call)
-      
+
   apiproxy_stub_map.apiproxy.GetPreCallHooks().Append(
       'db_log', hook, 'datastore_v3')
 
@@ -61,6 +61,6 @@ def main():
     print '%s : %s' % (name, count)
   print '----------'
 
-  
+
 if __name__ == "__main__":
   main()

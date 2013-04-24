@@ -31,10 +31,10 @@ class MainHandler(webapp.RequestHandler):
       template_values["picture"] = picture
     path = os.path.join(os.path.dirname(__file__), '../templates/fb/index.html')
     self.response.out.write(template.render(path, template_values))
-        
-  
+
+
 class LoginHandler(webapp.RequestHandler):
-  def get(self):    
+  def get(self):
     template_values = {
     }
     path = os.path.join(os.path.dirname(__file__), '../templates/fb/login2.html')
@@ -45,8 +45,8 @@ class SaveUserInfoHandler(BasePage):
     commissario = self.getCommissario(users.get_current_user())
     commissario.avatar_url = self.request.get("picture")
     commissario.put()
-    
-    
+
+
 app = webapp.WSGIApplication([
     ('/fb', MainHandler),
     ('/fb/login', LoginHandler),

@@ -14,7 +14,7 @@
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
 					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
 					<div class="s_post_date">{{post.extended_date()}}</div>
-					<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+					<div class="s_post_link"><a target="_new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
 				</div>
 			</div>
 			<div class="s_post_body">{%if post.has_summary()%}

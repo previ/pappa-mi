@@ -21,14 +21,14 @@ class MenuLoader(Loader):
                      ('dessert', str)
                      ])
     self.alias_old_names()
-    
+
 class CentroCucinaZonaLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'CentroCucinaZona',
                     [('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
                      ('zona', int),
                      ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
-                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())                     
+                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())
                      ])
     self.alias_old_names()
 
@@ -38,10 +38,10 @@ class CommissioneCentroCucinaLoader(Loader):
                     [('commissione', lambda x: Commissione.get(x)),
                      ('centroCucina', lambda x: db.Key.from_path('CentroCucina',x)),
                      ('validitaDa', lambda x: datetime.strptime(x,DATE_FORMAT).date()),
-                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())                     
+                     ('validitaA', lambda x: datetime.strptime(x,DATE_FORMAT).date())
                      ])
     self.alias_old_names()
-    
+
 class CommissioneLoader(Loader):
   def __init__(self):
     Loader.__init__(self, 'Commissione',
@@ -78,7 +78,7 @@ class NonconfLoader(Loader):
                      ('modificato_il', lambda x: datetime.strptime(x.split('.')[0], "%Y-%m-%d %H:%M:%S")),
                      ('stato', decode_int)
                      ])
-    self.alias_old_names()    
+    self.alias_old_names()
 
 class CentroCucinaLoader(Loader):
   def __init__(self):
@@ -95,16 +95,16 @@ class CentroCucinaLoader(Loader):
                      ('fax', str),
                      ('codice', str)
                      ])
-                     
+
     self.alias_old_names()
-    
+
 loaders = [CentroCucinaZonaLoader, CommissioneCentroCucinaLoader, CommissioneLoader, NonconfLoader, CentroCucinaLoader]
 
 class CommissioneExporter(Exporter):
   def __init__(self):
     Exporter.__init__(self, 'Commissione',
-                    [('__key__', str, None), 
-                     ('nome', str, None), 
+                    [('__key__', str, None),
+                     ('nome', str, None),
                      ('nomeScuola', str, None),
                      ('codiceScuola', str, None),
                      ('tipoScuola', str, None),
@@ -123,18 +123,18 @@ class CommissioneExporter(Exporter):
 class CommissioneCentroCucinaExporter(Exporter):
   def __init__(self):
     Exporter.__init__(self, 'CommissioneCentroCucina',
-                    [('commissione', str, None), 
-                     ('commissione', lambda x: Commissione.get(x).nome, None), 
+                    [('commissione', str, None),
+                     ('commissione', lambda x: Commissione.get(x).nome, None),
                      ('centroCucina', lambda x: x.name(), ""),
                      ('validitaDa', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
                      ('validitaA', lambda x: datetime.date(x).strftime(DATE_FORMAT), None),
                      ])
-    
+
 class NonconfExporter(Exporter):
   def __init__(self):
-    
+
     Exporter.__init__(self, 'Nonconformita',
-                    [('commissione', lambda x: Commissione.get(x).nome, None), 
+                    [('commissione', lambda x: Commissione.get(x).nome, None),
                      ('commissario', lambda x: Commissario.get(x).user.email(), None),
                      ('dataNonconf', str, None),
                      ('turno', str, None),
@@ -149,13 +149,13 @@ class NonconfExporter(Exporter):
                      ])
 class IspezioneExporter(Exporter):
   def __init__(self):
-    
+
     Exporter.__init__(self, 'Ispezione',
-                    [('commissione', str, None), 
-                     ('commissione', lambda x: Commissione.get(x).nome, None), 
+                    [('commissione', str, None),
+                     ('commissione', lambda x: Commissione.get(x).nome, None),
                      ('commissario', lambda x: Commissario.get(x).user.email(), None),
                      ('dataIspezione', str, None),
-                     ('turno', str, None),                    
+                     ('turno', str, None),
                      ('aaRispettoCapitolato', str, None),
                      ('aaTavoliApparecchiati', str, None),
                      ('aaTermichePulite', str, None),
@@ -220,13 +220,13 @@ class IspezioneExporter(Exporter):
                      ('modificato_il', str, ""),
                      ('stato', str, "")
                      ])
-  
+
 def encode(x):
   if x != None :
     return x.encode('utf-8')
   else:
     return ""
-    
+
 def convert_note(x):
   if x != None :
     return base64.b64encode(x.encode('utf-8'))
@@ -265,6 +265,6 @@ class MenuExporter(Exporter):
                      ('contorno', str, None),
                      ('dessert', str, None)
                      ])
-    
-  
+
+
 exporters = [CommissioneExporter, CommissioneCentroCucinaExporter, NonconfExporter, IspezioneExporter, CentroCucinaZonaExporter, MenuExporter]

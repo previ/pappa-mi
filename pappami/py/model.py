@@ -30,7 +30,7 @@ class Citta(model.Model):
   modificato_il = model.DateTimeProperty(auto_now=True)
 
   stato = model.IntegerProperty()
-  
+
   @classmethod
   def get_all(cls):
     return cls.query().order(Citta.nome)
@@ -38,20 +38,20 @@ class Citta(model.Model):
   @classmethod
   def get_first(cls):
     return cls.query().get()
-    
+
 class Configurazione(model.Model):
   nome = model.StringProperty()
   valore = model.StringProperty()
-  
+
   @classmethod
   def get_value_by_name(cls, name):
     return Configurazione.query(Configurazione.nome == name).get().valore
-  
-class CentroCucina(model.Model):  
+
+class CentroCucina(model.Model):
   def __init__(self, *args, **kwargs):
     self._ce_cu_zo_cache = None
     self._zo_of_cache = None
-    super(CentroCucina, self).__init__(*args, **kwargs)  
+    super(CentroCucina, self).__init__(*args, **kwargs)
 
   nome = model.StringProperty()
   codice = model.StringProperty()
@@ -70,7 +70,7 @@ class CentroCucina(model.Model):
   creato_il = model.DateTimeProperty(auto_now_add=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
-  
+
   @classmethod
   def get_by_citta(cls, citta_key):
     CentroCucina.query().filter(CentroCucina.citta == citta_key).order(CentroCucina.nome)
@@ -79,18 +79,18 @@ class CentroCucina(model.Model):
     if not(self._ce_cu_zo_cache and self._ce_cu_zo_cache.validitaDa <= data and self._ce_cu_zo_cache.validitaA >= data):
       self._ce_cu_zo_cache = CentroCucinaZona.query().filter(CentroCucinaZona.centroCucina == self.key).filter(CentroCucinaZona.validitaDa <= data).order(-CentroCucinaZona.validitaDa).get()
     return self._ce_cu_zo_cache.zona
-  
+
   def getMenuOffset(self, data=datetime.now().date()):
     if not(self._zo_of_cache and self._zo_of_cache.validitaDa <= data and self._zo_of_cache.validitaA >= data):
       self._zo_of_cache = ZonaOffset.query().filter(ZonaOffset.zona == self.getZona(data)).filter(ZonaOffset.validitaDa <=data).order(-ZonaOffset.validitaDa).get()
     return self._zo_of_cache.offset
-  
+
 class Commissione(model.Model):
   def __init__(self, *args, **kwargs):
     self._com_cen_cuc_last = None
     self._cc_last = None
     self._commissari = None
-    super(Commissione, self).__init__(*args, **kwargs)  
+    super(Commissione, self).__init__(*args, **kwargs)
 
   nome = model.StringProperty(default="")
   nomeScuola = model.StringProperty(default="")
@@ -101,19 +101,19 @@ class Commissione(model.Model):
   strada = model.StringProperty(default="")
   civico = model.StringProperty(default="")
   #citta = model.StringProperty(default="") # PRE_MIGRATION
-  citta = model.KeyProperty(kind=Citta) 
+  citta = model.KeyProperty(kind=Citta)
   cap = model.StringProperty(default="")
   telefono = model.StringProperty(default="")
   fax = model.StringProperty(default="")
   email = model.StringProperty()
   centroCucina = model.KeyProperty(kind=CentroCucina)
-  
+
   geo = model.GeoPtProperty()
 
   numCommissari = model.IntegerProperty(default=0)
 
   calendario = model.StringProperty(default="")
-  
+
   creato_il = model.DateTimeProperty(auto_now_add=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
@@ -133,7 +133,7 @@ class Commissione(model.Model):
   @classmethod
   def get_active(cls):
     return Commissione.query().filter(Commissione.numCommissari > 0).count()
-  
+
   @classmethod
   def get_all_cursor(cls, cursor):
     if cursor and cursor != "":
@@ -147,15 +147,15 @@ class Commissione(model.Model):
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
     else:
       return Commissione.query().filter(Commissione.numCommissari > 0).iter(produce_cursors=True)
-    
-  
+
+
   def commissari(self):
     if not self._commissari:
       self._commissari = list()
       for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissione == self.key):
         self._commissari.append(cc.commissario)
     return self._commissari
-  
+
   def getCentroCucina(self, data=datetime.now().date()):
     if not (self._com_cen_cuc_last and self._com_cen_cuc_last.validitaDa <= data and self._com_cen_cuc_last.validitaA >= data):
       self._com_cen_cuc_last = CommissioneCentroCucina.query().filter(CommissioneCentroCucina.commissione == self.key).filter(CommissioneCentroCucina.validitaDa <= data).order(-CommissioneCentroCucina.validitaDa).get()
@@ -165,19 +165,19 @@ class Commissione(model.Model):
 
   def desc(self):
     return self.nome + " " + self.tipoScuola
-  
+
 class Commissario(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissioni = list()
     self._privacy = None
     self._notify = None
-    super(Commissario, self).__init__(*args, **kwargs)  
+    super(Commissario, self).__init__(*args, **kwargs)
 
   user = model.UserProperty()
   usera = model.KeyProperty()
   nome = model.StringProperty()
   cognome = model.StringProperty()
-  
+
   avatar_url = model.StringProperty(indexed=False)
   avatar_data = model.BlobProperty()
 
@@ -187,20 +187,20 @@ class Commissario(model.Model):
   notify = model.PickleProperty()
 
   user_email_lower = model.StringProperty()
-  
+
   citta = model.KeyProperty(kind=Citta)
-  
+
   creato_il = model.DateTimeProperty(auto_now_add=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
-  
+
   ultimo_accesso_il = model.DateTimeProperty()
   ultimo_accesso_notifiche= model.DateTimeProperty(auto_now_add=True)
-  
+
   stato = model.IntegerProperty()
-  
-  cmdefault = None  
+
+  cmdefault = None
 
   @classmethod
   def get_by_user(cls, user):
@@ -214,7 +214,7 @@ class Commissario(model.Model):
           #commissario.put()
       memcache.add("commissario-"+str(user.key.id()), commissario)
     return commissario
-  
+
   def set_cache(self):
     memcache.delete("commissario-"+str(self.usera.id()))
 
@@ -225,7 +225,7 @@ class Commissario(model.Model):
   @classmethod
   def get_all_reverse(cls, offset=0, limit=100):
     return Commissario.query().order(-Commissario.creato_il).fetch(limit=limit, offset=offset)
-  
+
   @classmethod
   def get_for_newsletter(cls):
     return Commissario.query().filter(Commissario.newsletter==True)
@@ -233,7 +233,7 @@ class Commissario(model.Model):
   @classmethod
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
-      
+
   def is_registered(self, cm):
     return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissario.commissione == cm).get() is not None
 
@@ -243,13 +243,13 @@ class Commissario(model.Model):
     cm.numCommissari += 1
     cm.put()
     self._commissioni = list()
-  
+
   def unregister(self, cm):
     CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissario.commissione == cm.key).get().key.delete()
     cm.numCommissari -= 1
     cm.put()
     self._commissioni = list()
-    
+
   def isCommissario(self):
     return self.stato == 1
   def isGenitore(self):
@@ -266,17 +266,17 @@ class Commissario(model.Model):
     return self.stato == 99
   def is_active(self):
     return not self.is_deactivated()
-  
+
   def commissioni(self):
     if len(self._commissioni) == 0:
       for cc in CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key):
-        self._commissioni.append(cc.commissione.get())      
+        self._commissioni.append(cc.commissione.get())
     return self._commissioni
 
   def setCMDefault(self):
     if len(self.commissioni()) > 0:
       self.cmdefault = self.commissioni()[0]
-  
+
   def commissione(self):
     #if not self.cmdefault and len(self.commissioni()) > 0:
       #self.cmdefault = self.commissioni()[0]
@@ -284,7 +284,7 @@ class Commissario(model.Model):
     cms = self.commissioni()
     if len(cms) > 0:
       return cms[0]
-  
+
   def nomecompleto(self, cmsro, myself=False):
     nome = ""
     if myself or self.can_show(1,self.get_user_type(cmsro)):
@@ -307,9 +307,9 @@ class Commissario(model.Model):
       for c in self.commissioni():
         titolo = titolo + c.tipoScuola + " " + c.nome + "; "
     return titolo
-    
+
   def avatar(self, cmsro, size = None, myself=False):
-    if self.avatar_url and ( myself or self.can_show(4,self.get_user_type(cmsro))):    
+    if self.avatar_url and ( myself or self.can_show(4,self.get_user_type(cmsro))):
       if "?id=" in self.avatar_url and size:
         return self.avatar_url + "&size="+size
       else:
@@ -331,7 +331,7 @@ class Commissario(model.Model):
     if cmsro.isCommissario():
       return 2
     return 0
-    
+
   def can_show(self, what, whom):
     if self._privacy == None:
       if self.privacy == None or len(self.privacy) < 5:
@@ -345,7 +345,7 @@ class Commissario(model.Model):
         self.notify = [1,2,0]
       self._notify = self.notify
     return self._notify[what]
-  
+
   privacy_objects = {0: "email",
                      1: "name",
                      2: "surname",
@@ -355,11 +355,11 @@ class Commissario(model.Model):
                       1: "registered",
                       2: "cm"}
 
-  
+
 class CommissioneCommissario(model.Model):
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
-  
+
 class Menu(model.Model):
   tipoScuola = model.StringProperty()
   validitaDa = model.DateProperty()
@@ -391,7 +391,7 @@ class MenuNew(model.Model):
 
   _lock = threading.RLock()
   _menu_cache = dict()
-  
+
   @classmethod
   def get_by(cls, citta_key, data):
     menu = None
@@ -413,7 +413,7 @@ class Piatto(model.Model):
   grassi = model.IntegerProperty()
   carboidrati = model.IntegerProperty()
   gi = model.IntegerProperty()
-    
+
   _pi_gi_cache = dict()
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
@@ -428,7 +428,7 @@ class Piatto(model.Model):
     else:
       pi_gi = cls._pi_gi_cache[str(menu.key.id()) + "-" + str(settimana)]
     return pi_gi
-        
+
   @classmethod
   def get_by_menu_date_offset(cls, menu, date, offset):
     piatti = dict()
@@ -438,18 +438,18 @@ class Piatto(model.Model):
 
   @classmethod
   def get_by_date(cls, data):
-    settimane = dict()  
+    settimane = dict()
     for pg in PiattoGiorno.query().filter(PiattoGiorno.giorno == data.isoweekday()):
       if not pg.settimana in settimane:
         settimane[pg.settimana] = dict()
       settimane[pg.settimana][pg.tipo] = pg.piatto.get()
     return settimane
-  
-  
+
+
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
   #stato = model.IntegerProperty()
-  
+
 class Ingrediente(model.Model):
   nome = model.StringProperty()
 
@@ -461,7 +461,7 @@ class PiattoIngrediente(model.Model):
   piatto = model.KeyProperty(kind=Piatto)
   ingrediente = model.KeyProperty(kind=Ingrediente)
   quantita = model.FloatProperty()
-  
+
 class PiattoGiorno(model.Model):
   menu = model.KeyProperty(kind=MenuNew)
   settimana = model.IntegerProperty()
@@ -472,7 +472,7 @@ class PiattoGiorno(model.Model):
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
   #stato = model.IntegerProperty()
-  
+
 class MenuHelper():
   primo = None
   secondo = None
@@ -488,15 +488,15 @@ class MenuHelper():
     return self._giorni[self.giorno-1]
   def today(self):
     return datetime.now().date() == self.data
-  
+
   def to_dict(self):
     return {"data":str(self.data), "giorno": str(self.giorno), "settimana":self.getData(),
             "primo": self.primo.nome, "primo_key": str(self.primo.key),
             "secondo": self.secondo.nome, "secondo_key": str(self.secondo.key),
             "contorno": self.contorno.nome, "contorno_key": str(self.contorno.key),
             "dessert": self.dessert.nome, "dessert_key": str(self.dessert.key)}
-  
-  
+
+
 class StatistichePiatto(model.Model):
   piatto = model.KeyProperty(kind=Piatto)
   citta = model.KeyProperty(kind=Citta)
@@ -505,13 +505,13 @@ class StatistichePiatto(model.Model):
 
   timePeriod = model.StringProperty() # W, M, Y
   timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
-  
+
   dataInizio = model.DateProperty()
   dataFine = model.DateProperty()
 
   dataCalcolo = model.DateTimeProperty()
 
-  numeroSchede = model.IntegerProperty(default=0) 
+  numeroSchede = model.IntegerProperty(default=0)
   numeroSchedeSettimana = model.IntegerProperty(repeated=True)
 
   cottura = model.IntegerProperty(repeated=True, indexed=False)
@@ -523,7 +523,7 @@ class StatistichePiatto(model.Model):
   creato_il = model.DateTimeProperty(auto_now_add=True)
   modificato_il = model.DateTimeProperty(auto_now=True)
   stato = model.IntegerProperty()
-  
+
 class CommissioneCentroCucina(model.Model):
   commissione = model.KeyProperty(kind=Commissione)
   centroCucina = model.KeyProperty(kind=CentroCucina)
@@ -541,16 +541,16 @@ class ZonaOffset(model.Model):
   offset = model.IntegerProperty()
   validitaDa = model.DateProperty()
   validitaA = model.DateProperty()
-  
+
 class Ispezione(model.Model):
   def __init__(self, language='en', *args, **kwargs):
     self.allegati = None
     self.tags = list()
-    super(Ispezione, self).__init__(*args, **kwargs)  
-      
+    super(Ispezione, self).__init__(*args, **kwargs)
+
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
- 
+
   dataIspezione = model.DateProperty()
   turno = model.IntegerProperty()
 
@@ -558,10 +558,10 @@ class Ispezione(model.Model):
   aaTavoliApparecchiati = model.IntegerProperty(indexed=False)
   aaTermichePulite = model.IntegerProperty(indexed=False)
   aaAcqua = model.IntegerProperty(indexed=False)
-  aaScaldaVivande = model.IntegerProperty(indexed=False)  
+  aaScaldaVivande = model.IntegerProperty(indexed=False)
   aaSelfService = model.IntegerProperty(indexed=False)
   aaTabellaEsposta = model.IntegerProperty(indexed=False)
-  
+
   ricicloStoviglie = model.IntegerProperty(indexed=False)
   ricicloPosate = model.IntegerProperty(indexed=False)
   ricicloBicchieri = model.IntegerProperty(indexed=False)
@@ -628,44 +628,44 @@ class Ispezione(model.Model):
   note = model.TextProperty(default="",indexed=False)
 
   anno = model.IntegerProperty()
-  
+
   creato_il = model.DateTimeProperty(auto_now_add=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
 
   stato = model.IntegerProperty()
-  
-  def data(self): 
-    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
+
+  def data(self):
+    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)
 
   @property
   def restype(self):
     return "isp"
-  
-  testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
+
+  testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"],
             "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
-            "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
-            "temperatura": ["","Freddo", "Giusta", "Caldo"], 
-            "maturazione": ["","Acerba", "Giusta", "Matura"], 
+            "cottura": ["", "Scarsa", "Giusta", "Eccessiva"],
+            "temperatura": ["","Freddo", "Giusta", "Caldo"],
+            "maturazione": ["","Acerba", "Giusta", "Matura"],
             "quantita": ["","Scarsa", "Sufficiente", "Abbondante"],
             "condito": ["","No", "Si"],
             "pulizia": ["","Scarso", "Mediocre", "Sufficiente", "Ottimo"],
             "distribuzione": ["","< 30 min.", "30 < 60 min.", "> 60 min."],
             "giudizio": ["","Insufficiente", "Sufficiente", "Buono"]
-           }  
-  cls = {   "assaggio": ["","label131", "label132", "label133"], 
+           }
+  cls = {   "assaggio": ["","label131", "label132", "label133"],
             "gradimento": ["","label41", "label42", "label43", "label44"],
-            "cottura": ["","label231", "label232", "label233"], 
-            "temperatura": ["","label231", "label232", "label233"], 
-            "maturazione": ["","label231", "label232", "label233"], 
+            "cottura": ["","label231", "label232", "label233"],
+            "temperatura": ["","label231", "label232", "label233"],
+            "maturazione": ["","label231", "label232", "label233"],
             "quantita": ["","label131", "label132", "label133"],
             "condito": ["label232", ""],
             "pulizia": ["","label41", "label42", "label43", "label44"],
-            "distribuzione": ["","label131", "label132", "label133"], 
-            "giudizio": ["","label131", "label132", "label133"] 
-        }  
-  
+            "distribuzione": ["","label131", "label132", "label133"],
+            "giudizio": ["","label131", "label132", "label133"]
+        }
+
   def sommario(self):
     sommario = ""
     sommario += '<i class="primo" title="Primo piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.primoAssaggio] + '" title="' + self.testi['assaggio'][self.primoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.primoGradimento] + '" title="' + self.testi['gradimento'][self.primoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
@@ -673,13 +673,13 @@ class Ispezione(model.Model):
     sommario += '<i class="contorno" title="Contorno piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.contornoAssaggio] + '" title="' + self.testi['assaggio'][self.contornoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.contornoGradimento] + '" title="' + self.testi['gradimento'][self.contornoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
     sommario += '<i class="pane" title="Pane piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.paneAssaggio] + '" title="' + self.testi['assaggio'][self.paneAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.paneGradimento] + '" title="' + self.testi['gradimento'][self.paneGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
     sommario += '<i class="dessert" title="Dessert piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.paneAssaggio] + '" title="' + self.testi['assaggio'][self.fruttaAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.fruttaGradimento] + '" title="' + self.testi['gradimento'][self.fruttaGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
-      
-    return sommario  
-    
+
+    return sommario
+
   @classmethod
   def get_last_by_cm(cls, cm_key):
     return Ispezione.query().filter(Ispezione.commissione == cm_key).order(-Ispezione.dataIspezione).get()
-  
+
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
     return Ispezione.query().filter(Ispezione.dataIspezione == data).filter(Ispezione.commissione == cm).filter(Ispezione.turno == turno)
@@ -689,7 +689,7 @@ class Ispezione(model.Model):
     return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione)
 
   @cached_property
-  def get_allegati(self): 
+  def get_allegati(self):
     if not self.allegati:
       self.allegati = list()
       if self.key:
@@ -700,32 +700,32 @@ class Ispezione(model.Model):
   @cached_property
   def has_allegati(self):
     return len(self.get_allegati) > 0
-  
+
 class Nonconformita(model.Model):
   def __init__(self, language='en', *args, **kwargs):
     self.allegati = None
     self.tags = list()
-    super(Nonconformita, self).__init__(*args, **kwargs)  
-  
+    super(Nonconformita, self).__init__(*args, **kwargs)
+
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
- 
+
   dataNonconf = model.DateProperty()
   turno = model.IntegerProperty()
-  
+
   tipo = model.IntegerProperty()
   richiestaCampionatura = model.IntegerProperty()
 
   note = model.TextProperty(default="")
 
   anno = model.IntegerProperty()
-  
+
   creato_il = model.DateTimeProperty(auto_now_add=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
-    
+
   @classmethod
   def get_by_cm(cls, cm):
     return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
@@ -733,19 +733,19 @@ class Nonconformita(model.Model):
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
     return Nonconformita.query().filter(Nonconformita.dataNonconf == data).filter(Nonconformita.commissione == cm).filter(Nonconformita.turno == turno)
-  
-  def data(self): 
-    return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)  
+
+  def data(self):
+    return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
-    return u"Non conformità: <strong>" + self.tipoNome() + "</strong> Richiesta campionatura: <strong>" + ("Si" if self.richiestaCampionatura == 1 else "No") + "</strong>" 
+    return u"Non conformità: <strong>" + self.tipoNome() + "</strong> Richiesta campionatura: <strong>" + ("Si" if self.richiestaCampionatura == 1 else "No") + "</strong>"
 
   @property
   def restype(self):
     return "nc"
 
   @cached_property
-  def get_allegati(self): 
+  def get_allegati(self):
     if not self.allegati:
       self.allegati = list()
       if self.key:
@@ -756,7 +756,7 @@ class Nonconformita(model.Model):
   @cached_property
   def has_allegati(self):
     return len(self.get_allegati) > 0
-  
+
   _tipi_n = {1:0,
            2:1,
            3:2,
@@ -786,7 +786,7 @@ class Nonconformita(model.Model):
            99:"Altro"}
   def tipi(self):
     return self._tipi
-  
+
   def tipoNome(self):
     return self._tipi[self.tipo]
 
@@ -794,14 +794,14 @@ class Dieta(model.Model):
   def __init__(self, language='en', *args, **kwargs):
     self.allegati = None
     self.tags = list()
-    super(Dieta, self).__init__(*args, **kwargs)  
+    super(Dieta, self).__init__(*args, **kwargs)
 
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
- 
+
   dataIspezione = model.DateProperty()
   turno = model.IntegerProperty()
-  
+
   tipoDieta = model.IntegerProperty()
   etichettaLeggibile = model.IntegerProperty(indexed=False)
   temperaturaVaschetta = model.IntegerProperty(indexed=False)
@@ -820,23 +820,23 @@ class Dieta(model.Model):
   note = model.TextProperty(default="")
 
   anno = model.IntegerProperty()
-  
+
   creato_il = model.DateTimeProperty(auto_now_add=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
 
-  def data(self): 
-    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)  
+  def data(self):
+    return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
     return "Dieta sanitaria: <strong>" + self.tipoNome() + "</strong>"
-  
+
   @property
   def restype(self):
     return "dieta"
-  
+
   @classmethod
   def get_by_cm_data_turno_tipo(cls, cm, data, turno, tipo):
     return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno).filter(Dieta.tipoDieta==tipo)
@@ -846,7 +846,7 @@ class Dieta(model.Model):
     return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione)
 
   @cached_property
-  def get_allegati(self): 
+  def get_allegati(self):
     if not self.allegati:
       self.allegati = list()
       if self.key:
@@ -857,7 +857,7 @@ class Dieta(model.Model):
   @cached_property
   def has_allegati(self):
     return len(self.get_allegati) > 0
-  
+
   _tipi_n = {1:0,
            2:1,
            3:2,
@@ -907,11 +907,11 @@ class Dieta(model.Model):
            22:"menu privo di carni bovine e suine",
            23:"menu privo di carni di origine animale",
            24:"menu privo di carne e pesce"}
-  
+
   @classmethod
   def tipi(cls):
     return cls._tipi
-  
+
   def tipoNome(self):
     return self._tipi[self.tipoDieta]
 
@@ -920,24 +920,24 @@ class Nota(model.Model):
     #logging.info("__init__")
     self.allegati = None
     self.tags = list()
-    super(Nota, self).__init__(*args, **kwargs)  
-      
+    super(Nota, self).__init__(*args, **kwargs)
+
   commissione = model.KeyProperty(kind=Commissione)
   commissario = model.KeyProperty(kind=Commissario)
- 
+
   dataNota = model.DateProperty()
   titolo = model.StringProperty(default="")
   note = model.TextProperty(default="")
   anno = model.IntegerProperty()
-    
+
   creato_il = model.DateTimeProperty(auto_now=True)
   creato_da = model.KeyProperty(kind=models.User)
   modificato_il = model.DateTimeProperty(auto_now=True)
   modificato_da = model.KeyProperty(kind=models.User)
   stato = model.IntegerProperty()
-  
-  def data(self): 
-    return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)  
+
+  def data(self):
+    return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
     return ""
@@ -945,16 +945,16 @@ class Nota(model.Model):
   @property
   def restype(self):
     return "nota"
-  
+
   @cached_property
   def notefmt(self):
     if "<p>" in self.note:
       return self.note
     else:
       return self.note.replace("\n","<br/>")
-  
+
   @cached_property
-  def get_allegati(self): 
+  def get_allegati(self):
     if not self.allegati:
       self.allegati = list()
       if self.key:
@@ -969,14 +969,14 @@ class Nota(model.Model):
   @classmethod
   def get_by_cm(cls, cm):
     return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota)
-  
+
 class Allegato(model.Model):
   obj = model.KeyProperty()
   path = model.StringProperty()
   blob_key = model.BlobKeyProperty()
   nome = model.StringProperty(default="")
   descrizione = model.StringProperty(default="",indexed=False)
-  
+
   dati=None
 
   @classmethod
@@ -986,38 +986,38 @@ class Allegato(model.Model):
   @classmethod
   def get_by_obj(cls, obj):
     return cls.query().filter(Allegato.obj==obj)
-  
+
   def isImage(self):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
 
   def contentType(self):
     return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
-  
+
   def imgthumb(self):
     if self.isImage():
       return google.appengine.api.images.get_serving_url(blob_key=self.blob_key,size=128)
 
   def path(self):
     return "/blob/get?key=" + str(self.blob_key)
-    
+
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
            ".jpeg":"image/jpeg",
            ".gif":"image/gif",
            ".tif":"image/tiff",
-           ".tiff":"image/tiff",           
+           ".tiff":"image/tiff",
            ".pdf":"application/pdf",
            ".doc":"application/msword",
            ".pdf":"application/msword"}
-  
+
 class Statistiche:
   anno1 = int(0)
   anno2 = int(0)
   numeroCommissioni = int(0)
-  numeroSchede = int(0) 
+  numeroSchede = int(0)
   ncTotali = int(0)
-  diete = int(0)  
-  note = int(0)  
+  diete = int(0)
+  note = int(0)
 
 class StatisticheIspezioni(model.Model):
   citta = model.KeyProperty(kind=Citta)
@@ -1026,13 +1026,13 @@ class StatisticheIspezioni(model.Model):
 
   timePeriod = model.StringProperty() # W, M, Y
   timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
-  
+
   dataInizio = model.DateProperty()
   dataFine = model.DateProperty()
 
   dataCalcolo = model.DateTimeProperty()
 
-  numeroSchede = model.IntegerProperty(default=0,indexed=False) 
+  numeroSchede = model.IntegerProperty(default=0,indexed=False)
   numeroSchedeSettimana = model.IntegerProperty(repeated=True,indexed=False)
 
   ambiente_names = {"aaRispettoCapitolato":0,"aaTavoliApparecchiati":1,"aaTermichePulite":2,"aaAcqua":3, "aaScaldaVivande":4, "aaSelfService":5, "aaTabellaEsposta":6, "ricicloStoviglie":7, "ricicloPosate":8, "ricicloBicchieri":9}
@@ -1045,13 +1045,13 @@ class StatisticheIspezioni(model.Model):
   numeroPastiBambini = model.IntegerProperty(indexed=False)
   numeroPastiSpeciali = model.IntegerProperty(indexed=False)
   numeroAddetti = model.IntegerProperty(indexed=False)
-  
+
   puliziaRefettorio = model.IntegerProperty(repeated=True,indexed=False)
   puliziaCentroCottura = model.IntegerProperty(repeated=True,indexed=False)
   smaltimentoRifiuti = model.IntegerProperty(repeated=True,indexed=False)
 
   giudizioGlobale = model.IntegerProperty(repeated=True,indexed=False)
-  
+
   primoCondito = model.IntegerProperty(repeated=True,indexed=False)
   primoDist = model.IntegerProperty(repeated=True,indexed=False)
   primoCottura = model.IntegerProperty(repeated=True,indexed=False)
@@ -1066,7 +1066,7 @@ class StatisticheIspezioni(model.Model):
   secondoQuantita = model.IntegerProperty(repeated=True,indexed=False)
   secondoAssaggio = model.IntegerProperty(repeated=True,indexed=False)
   secondoGradimento = model.IntegerProperty(repeated=True,indexed=False)
-  
+
   contornoCondito = model.IntegerProperty(repeated=True,indexed=False)
   contornoCottura = model.IntegerProperty(repeated=True,indexed=False)
   contornoTemperatura = model.IntegerProperty(repeated=True,indexed=False)
@@ -1078,7 +1078,7 @@ class StatisticheIspezioni(model.Model):
   paneAssaggio = model.IntegerProperty(repeated=True,indexed=False)
   paneGradimento = model.IntegerProperty(repeated=True,indexed=False)
   paneServito = model.IntegerProperty(repeated=True,indexed=False)
-  
+
   fruttaMaturazione = model.IntegerProperty(repeated=True,indexed=False)
   fruttaQuantita = model.IntegerProperty(repeated=True,indexed=False)
   fruttaAssaggio = model.IntegerProperty(repeated=True,indexed=False)
@@ -1090,7 +1090,7 @@ class StatisticheIspezioni(model.Model):
     if timeId:
       q = q.filter(StatisticheIspezioni.timeId == timeId)
     return q
-  
+
   @classmethod
   def get_from_date(cls, data):
     return StatisticheIspezioni.query().filter(StatisticheIspezioni.dataInizio >= data)
@@ -1098,7 +1098,7 @@ class StatisticheIspezioni(model.Model):
   @classmethod
   def get_from_year(cls, year):
     return StatisticheIspezioni.query().filter(StatisticheIspezioni.timeId == year)
-  
+
   def primoAssaggioNorm(self):
     return fpformat.fix(float(self.primoAssaggio[0]+self.primoAssaggio[1]+self.primoAssaggio[2]-self.numeroSchede)/2*100/self.numeroSchede,2)
   def primoGradimentoNorm(self):
@@ -1189,7 +1189,7 @@ class StatisticheIspezioni(model.Model):
     return float(self.paneQuantita[1])*100/self.numeroSchede/2
   def paneQuantita3Norm(self):
     return float(self.paneQuantita[2])*100/self.numeroSchede/3
-  
+
   def fruttaQuantita1Norm(self):
     return float(self.fruttaQuantita[0])*100/self.numeroSchede
   def fruttaQuantita2Norm(self):
@@ -1202,7 +1202,7 @@ class StatisticheIspezioni(model.Model):
     return float(self.fruttaMaturazione[1])*100/self.numeroSchede/2
   def fruttaMaturazione3Norm(self):
     return float(self.fruttaMaturazione[2])*100/self.numeroSchede/3
-  
+
   def getNome(self):
     if self.centroCucina:
       return self.centroCucina.get().nome
@@ -1210,7 +1210,7 @@ class StatisticheIspezioni(model.Model):
       return self.commissione.get().nome
     else:
       return "Tutte"
-    
+
   def incVal(self, attrname, attrbase, isp):
     attr_stat = getattr(self,attrname)
     attr_isp = getattr(isp,attrname)
@@ -1227,7 +1227,7 @@ class StatisticheIspezioni(model.Model):
       attr_stat.append(0)
 
     attr_stat[attr_index] += attr_isp
-    
+
   def getVals(self, attrname):
     attr = getattr(self,attrname)
     return attr
@@ -1243,12 +1243,12 @@ class StatisticheIspezioni(model.Model):
   def getNormVal(self, attrname, voto):
     attr = getattr(self,attrname)
     return attr[voto-1] * 100 / voto
-      
+
   def getNormValMedia(self, attrname):
     attr = getattr(self,attrname)
     value = 0
     for v in attr:
-      val += v 
+      val += v
     return val * 100 / len(attr)
 
   _attrs = {"puliziaCentroCottura": [1,4],
@@ -1285,20 +1285,20 @@ class StatisticheIspezioni(model.Model):
              "smaltimentoRifiuti": [1,4],
              "giudizioGlobale": [1,3]}
   _attrs_sub = ["ambiente"]
-  
+
   def init(self):
     for attr, base_size in self._attrs.iteritems():
       attr_stat = getattr(self,attr)
       while len(attr_stat) < base_size[1]:
-        attr_stat.append(0)              
-    
-  def calc(self, isp):  
+        attr_stat.append(0)
+
+  def calc(self, isp):
     for attr, base_size in self._attrs.iteritems():
       self.incVal(attr, base_size[0], isp)
     for attr in self._attrs_sub:
       for attr_sub in getattr(self, attr+"_names"):
         self.incValSub(attr, attr_sub, isp)
-        
+
 class SocialNode(model.Model):
     name = model.StringProperty(default="")
     description = model.TextProperty(default="",indexed=False)
@@ -1316,10 +1316,14 @@ class SocialNode(model.Model):
 
     resource = model.KeyProperty(repeated=True)
     res_type = model.StringProperty(repeated=True)
-    
+
     created = model.DateTimeProperty(auto_now=True)
     rank = model.IntegerProperty()
-    
+
+    @classmethod
+    def get_by_name(cls, name):
+      return SocialNode.query().filter(SocialNode.name==name).fetch()
+
     @classmethod
     def get_nodes_by_resource(cls,res_key):
       nodes=SocialNode.query().filter(SocialNode.resource==res_key).fetch()
@@ -1349,7 +1353,7 @@ class SocialNode(model.Model):
             if len(nodes) >= 50:
                 break
         cache.put('most-actives', nodes)
-      
+
       return nodes
 
     @classmethod
@@ -1366,7 +1370,7 @@ class SocialNode(model.Model):
     def init_rank(self):
       init_rank = datetime.now() - Const.BASE_RANK
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
-      
+
     def calc_rank(self, activity):
       values = {SocialPost: 10,
                 SocialComment: 7,
@@ -1377,86 +1381,86 @@ class SocialNode(model.Model):
       delta = now - self.last_act
       delta_rank = delta.seconds + (delta.days*Const.DAY_SECONDS)
       self.rank += ((delta_rank * values[activity]) / 10)
-      
-    @cached_property  
+
+    @cached_property
     def geo(self):
       if len(self.resource) > 0 and hasattr(self.resource[0].get(), "geo"):
         return self.resource[0].get().geo
       else:
         return None
-        
+
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
-      
+
       node=future.get_result().get()
       fields = [search.TextField(name='name', value=node.name),
-       search.HtmlField(name='description', value=node.description)]      
+       search.HtmlField(name='description', value=node.description)]
       if node.geo:
         fields.append(search.GeoField(name='geo', value=search.GeoPoint(node.geo.lat, node.geo.lon)))
-        
+
       doc=search.Document(
                       doc_id='node-'+str(node.key.id()),
                       fields=fields,
                       language='it')
-      
-     
+
+
       index = search.Index(name='index-nodes')
       try:
           index.put(doc)
-      
+
       except search.Error, e:
           pass
 
     def _pre_delete_hook_1(cls, key):
-        
-        index = search.Index(name='index-nodes')
-        try:
-            index.delete('node-'+key.urlsafe())
-        
-        except search.Error, e:
-            pass
+
+      index = search.Index(name='index-nodes')
+      try:
+          index.delete('node-'+key.urlsafe())
+    
+      except search.Error, e:
+          pass
 
     @classmethod
     def active_nodes(cls):
-           return cls.query().filter(cls.active==True)
-        
-              
+      return cls.query().filter(cls.active==True)
+
+
     def __init__(self, *args, **kwargs):
-        super(SocialNode, self).__init__(*args, **kwargs) 
-        
+      super(SocialNode, self).__init__(*args, **kwargs)
+
     def create_open_post(self, author, title, content, resources=[], res_types=[]):
-        if Const.FLOOD_SYSTEM_ACTIVATED:
-          floodControl=memcache.get("FloodControl-"+str(author.key))
-          if floodControl:
-            raise base.FloodControlException
-          
-        new_post= SocialPost(parent=self.key)
-        new_post.author=author.key
-        new_post.content=content
-        new_post.title=title
-        new_post.resource=resources
-        new_post.res_type=res_types
-        new_post.init_rank()
-        new_post.put()
-        self.last_act=new_post.created
-        self.calc_rank(SocialPost)
-        self.put()
-        comm=Commissario.get_by_user(author)
-        new_post.subscribe_user(author)
-        
-        if Const.EVENT:
-          SocialEvent.create(type="post", target_key=self.key, source_key=new_post.key, user_key=author.key)
-        
-        if Const.FLOOD_SYSTEM_ACTIVATED:       
-          memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
-        return new_post.key
-        
-        
+      if Const.FLOOD_SYSTEM_ACTIVATED:
+        floodControl=memcache.get("FloodControl-"+str(author.key))
+        if floodControl:
+          raise base.FloodControlException
+
+      new_post= SocialPost(parent=self.key)
+      new_post.author=author.key
+      new_post.content=content
+      new_post.title=title
+      new_post.resource=resources
+      new_post.res_type=res_types
+      new_post.init_rank()
+      new_post.put()
+      self.last_act=new_post.created
+      self.calc_rank(SocialPost)
+      self.put()
+      comm=Commissario.get_by_user(author)
+      new_post.subscribe_user(author)
+
+      if Const.EVENT:
+        SocialEvent.create(type="post", target_key=self.key, source_key=new_post.key, user_key=author.key)
+
+      if Const.FLOOD_SYSTEM_ACTIVATED:
+        memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
+      return new_post.key
+
+
     def delete_post(self,post):
       #delete subscriptions to post
       model.delete_multi(model.put_multi(SocialPostSubscription.query(ancestor=post.key)))
-      
+
       for e in SocialEvent.get_keys_by_source(post.key):
         for n in SocialNotification.get_keys_by_event(e):
           n.delete()
@@ -1465,116 +1469,115 @@ class SocialNode(model.Model):
         for n in SocialNotification.get_keys_by_event(e):
           n.delete()
         e.delete()
-      
+
       #delete comments
       model.delete_multi(model.put_multi(SocialComment.query(ancestor=post.key)))
 
       #delete post
-      post.key.delete()           
+      post.key.delete()
       #logging.info("delete_post")
-        
+
     def set_position(self,lat,lon):
-        self.geo=model.GeoPt(lat,lon)
-        self.put()
-    
+      self.geo=model.GeoPt(lat,lon)
+      self.put()
+
     def get_latest_posts(self,amount):
-        
-        posts= SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(amount)
-        return posts    
-        
+      posts= SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(amount)
+      return posts
+
     def subscribe_user(self, current_user, ntfy_period=0):
-      #user has already subscribed to this node    
+      #user has already subscribed to this node
       if SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).count()>0:
-          return
-      
+        return
+
       sub = SocialNodeSubscription(parent=self.key, ntfy_period=ntfy_period)
       if current_user:
-          sub.user=current_user.key
+        sub.user=current_user.key
       else:
-          raise users.UserNotFoundError
-                     
+        raise users.UserNotFoundError
+
       sub.init_perm()
       sub.put()
-      
+
       Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
       return sub
-    
+
     def unsubscribe_user(self, current_user):
-         subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
-         if subscription is not None:
-            subscription.key.delete()
-            Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
-                    
-         else:
-             raise users.UserNotFoundError
-            
+      subscription=SocialNodeSubscription.query( SocialNodeSubscription.user==current_user.key,ancestor=self.key).get()
+      if subscription is not None:
+        subscription.key.delete()
+        Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+
+      else:
+        raise users.UserNotFoundError
+
     def is_user_subscribed(self,user_t):
-        return self.get_subscription(user_t.key) is not None
-          
+      return self.get_subscription(user_t.key) is not None
+
     def get_subscription(self,user_key):
-        return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_key).get()
-        
-        
+      return SocialNodeSubscription.query(ancestor=self.key).filter(SocialNodeSubscription.user==user_key).get()
+
+
     def subscription_list(self,amount):
-       q=SocialNodeSubscription.query(ancestor=self.key).order(-SocialNodeSubscription.starting_date).fetch(amount)
-       q=[i.user.get() for i in q if (i.user is not None)]
-       return q
-    
+      q=SocialNodeSubscription.query(ancestor=self.key).order(-SocialNodeSubscription.starting_date).fetch(amount)
+      q=[i.user.get() for i in q if (i.user is not None)]
+      return q
+
     def delete_subscription(self,user_t):
-        SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
-        
+      SocialNodeSubscription.query(SocialNodeSubscription.user==user_t,ancestor=self.key).get().key.delete()
+
 
     def permission_for_edit(self, permission):
-        perm=getattr(self,"default_"+permission)
-        if perm is True: 
-            return "<option selected value='True'>S&igrave;</option>\n<option value='False'>No</option>"
-        
-        else:
-            return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
-    
-    def get_latest_post(self):
-        last_post=memcache.get("last_post_"+str(self.key.id()))
-        if not last_post:
-            last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(1)
-            memcache.add("last_post_"+str(self.key.id()),last_post)
-        return last_post
-    
-    @classmethod    
-    def get_all_cursor(cls, cursor):
-        if cursor and cursor != "":
-          return SocialNode.active_nodes().order(SocialNode.name).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
-        else:
-          return SocialNode.active_nodes().order(SocialNode.name).iter(produce_cursors=True)
+      perm=getattr(self,"default_"+permission)
+      if perm is True:
+        return "<option selected value='True'>S&igrave;</option>\n<option value='False'>No</option>"
 
-    @classmethod    
+      else:
+        return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
+
+    def get_latest_post(self):
+      last_post=memcache.get("last_post_"+str(self.key.id()))
+      if not last_post:
+        last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(1)
+        memcache.add("last_post_"+str(self.key.id()),last_post)
+      return last_post
+
+    @classmethod
+    def get_all_cursor(cls, cursor):
+      if cursor and cursor != "":
+        return SocialNode.active_nodes().order(SocialNode.name).iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True);
+      else:
+        return SocialNode.active_nodes().order(SocialNode.name).iter(produce_cursors=True)
+
+    @classmethod
     def get_active_cursor(cls, cursor):
-        if cursor and cursor != "":
-          return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
-        else:
-          return SocialNode.active_nodes().filter().iter(produce_cursors=True)
-    
-   
-   
+      if cursor and cursor != "":
+        return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
+      else:
+        return SocialNode.active_nodes().filter().iter(produce_cursors=True)
+
+
+
 class SocialPost(model.Model):
     def __init__(self, *args, **kwargs):
       self._comments = None
-      super(SocialPost, self).__init__(*args, **kwargs)  
-  
+      super(SocialPost, self).__init__(*args, **kwargs)
+
     author = model.KeyProperty(kind=models.User)
     title = model.StringProperty(default="", indexed=False)
     content = model.TextProperty(default="", indexed=False)
     #public_reference=model.StringProperty(default="")
     resource=model.KeyProperty(repeated=True)
     res_type=model.StringProperty(repeated=True)
-    
+
     created = model.DateTimeProperty(auto_now_add=True)
     modified = model.DateTimeProperty(auto_now_add=True)
-    
+
     comments = model.IntegerProperty(default=0)
     last_act = model.DateTimeProperty(auto_now=True)
-    
+
     rank = model.IntegerProperty(default=0)
-    
+
     @cached_property
     def content_summary(self):
       summary = ""
@@ -1582,8 +1585,8 @@ class SocialPost(model.Model):
         summary = self.resource[0].get().sommario()
       elif len(self.res_type) > 0 and self.res_type[0] in ["post"]:
         summary = self.resource[0].get().content_summary
-        logging.info(summary)
-        
+        #logging.info(summary)
+
       if len(self.content) <= 1000:
         summary += ("<div>" + self.content + "</div>")
       else:
@@ -1602,13 +1605,13 @@ class SocialPost(model.Model):
           imgs.append(a.imgthumb())
       imgs.extend(Sanitizer.images(self.content))
       return imgs
-    
+
     def has_summary(self):
       return len(self.content) > 1000 or (len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota", "post"])
 
     def display_content(self):
       return not(len(self.res_type) > 0 and self.res_type[0] in ['isp', 'nc', 'dieta', 'nota'])
-    
+
     def extended_date(self):
       delta = datetime.now() - self.created
       if delta.days == 0 and delta.seconds < 3600:
@@ -1617,27 +1620,27 @@ class SocialPost(model.Model):
         return str(delta.seconds / 3600) + " ore fa"
       else:
         return "il " + datetime.strftime(self.created, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
-      
+
     @cached_property
     def comment_list(self):
       comment_list = list()
       for comment in SocialComment.query(ancestor=self.key).order(SocialComment.created).fetch():
-        comment_list.append(comment)          
+        comment_list.append(comment)
       return comment_list
-    
+
     def reset_comment_list(self):
       self.comment_list = None
-    
+
     def get_comments_text(self):
       text = ""
       for c in self.comment_list:
         text += c.content + " "
       return text
-    
-    @classmethod   
+
+    @classmethod
     def get_by_resource(cls, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
-          
+
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
@@ -1663,7 +1666,7 @@ class SocialPost(model.Model):
       for attach in Allegato.query().filter(Allegato.obj == self.key):
         attachments.append(attach)
       return attachments
-    
+
     def can_admin(self, user):
       if not user:
         return False
@@ -1693,12 +1696,12 @@ class SocialPost(model.Model):
       for s in SocialPostSubscription.query(ancestor=self.key).fetch():
         subs[s.user] = s
       return subs
-      
+
     def can_sub(self, user):
       if not user:
         return False
       return (self.subscriptions.get(user.key) is None)
-          
+
     def remove_attachment(self, attach_key):
       attach_key.delete()
       self.clear_attachments()
@@ -1736,9 +1739,9 @@ class SocialPost(model.Model):
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
-        logging.info("next_cursor: " + str(next_cursor))
+        #logging.info("next_cursor: " + str(next_cursor))
       return postlist, next_cursor, more
-    
+
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
       cache =  Cache.get_cache("UserStream")
@@ -1746,18 +1749,18 @@ class SocialPost(model.Model):
       stream = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       if not stream:
-        stream = list()        
+        stream = list()
         next_cursor = int(start_cursor if start_cursor else 0) + 1
         #logging.info("next_cursor:" + str(next_cursor))
         for node in SocialNodeSubscription.get_nodes_by_user(user):
           next_cursor_rank = None
           for x in range(0, next_cursor):
             postlist, next_cursor_rank, more = SocialPost.get_by_node_rank(node.key, page=page, start_cursor=next_cursor_rank)
-            #logging.info("node: " + node.get().name + " offset: " + str(x) + " postlist: " + str(len(postlist)) + " more: " + str(more))       
+            #logging.info("node: " + node.get().name + " offset: " + str(x) + " postlist: " + str(len(postlist)) + " more: " + str(more))
             stream.extend(postlist)
             if not more:
               break
-        
+
         stream = sorted(stream, key=lambda post: post.rank, reverse=True)
         offset = int(start_cursor if start_cursor else 0)
         #logging.info("offset: " + str(offset))
@@ -1770,7 +1773,7 @@ class SocialPost(model.Model):
     def get_news_stream(cls, page, start_cursor=None):
       return SocialPost.get_by_rank(page=page, start_cursor=start_cursor)
 
-    def reshare(self,target_node,new_author,new_content, new_title):
+    def reshare(self, target_node, new_author, new_content, new_title):
       new_post = None
       if len(self.res_type) > 0 and self.res_type[0] == "post":
         #reshare of a reshare
@@ -1778,8 +1781,8 @@ class SocialPost(model.Model):
       else:
         new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key], res_types=["post"])
       return new_post
-      
-    
+
+
     def subscribe_user(self, user):
       #user has already subscribed to this post
       if self.subscriptions.get(user.key):
@@ -1787,50 +1790,50 @@ class SocialPost(model.Model):
         return
 
       #logging.info("user not yet subscribed")
-        
+
       sub = SocialPostSubscription(parent=self.key)
-      
+
       if user:
           sub.user=user.key
       else:
           raise users.UserNotFoundError
-      
-      sub.put()    
+
+      sub.put()
       self.subscriptions = None
-              
+
     def unsubscribe_user(self, user):
       subscription=self.subscriptions.get(user.key)
       if subscription is not None:
          subscription.key.delete()
          self.subscriptions = None
-    
+
       else:
           raise users.UserNotFoundError
-    
+
     def create_comment(self,content,author):
       floodControl=memcache.get("FloodControl-"+str(author.key))
       if floodControl:
         raise base.FloodControlException
-      
+
       new_comment= SocialComment(parent=self.key)
       new_comment.author=author.key
       new_comment.content=content
       new_comment.put()
-      
+
       self.comments=self.comments + 1
       self.calc_rank(SocialComment)
       self.put()
       self.key.parent().get().calc_rank(SocialComment)
       self.key.parent().get().put()
-      
+
       self.subscribe_user(author)
-      
+
       if Const.EVENT:
         SocialEvent.create(type="comment", target_key=self.key, source_key=new_comment.key, user_key=author.key)
-      
+
       if Const.FLOOD_SYSTEM_ACTIVATED:
         memcache.add("FloodControl-"+str(author.key), datetime.now(),time=Const.SOCIAL_FLOOD_TIME)
-      
+
       return new_comment
 
     def delete_comment(self, comment_key):
@@ -1849,13 +1852,13 @@ class SocialPost(model.Model):
       else :
         vote = Vote(ref = self.key, vote = vote, c_u = user.key)
         vote.put()
-  
+
       self.votes = None
-      
+
       self.calc_rank(Vote)
       self.key.parent().get().calc_rank(Vote)
       self.key.parent().get().put()
-      
+
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
 
@@ -1874,8 +1877,8 @@ class SocialPost(model.Model):
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
 
     def pin(self, days):
-      rank = datetime.now() - Const.BASE_RANK + timedelta(days=days) 
-      self.rank = rank.seconds + (rank.days*Const.DAY_SECONDS)      
+      rank = datetime.now() - Const.BASE_RANK + timedelta(days=days)
+      self.rank = rank.seconds + (rank.days*Const.DAY_SECONDS)
 
     def is_pinned(self):
       base = datetime.now() - Const.BASE_RANK
@@ -1895,7 +1898,7 @@ class SocialPost(model.Model):
     def _post_put_hook(cls, future):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
-            
+
       post=future.get_result().get()
 
       resource = ""
@@ -1911,7 +1914,7 @@ class SocialPost(model.Model):
           ref_date = post.resource[0].get().dataNonconf
         elif post.res_type[0] == ["nota"]:
           ref_date = post.resource[0].get().dataNota
-          
+
       doc=search.Document(
                       doc_id='post-'+post.key.urlsafe(),
                       fields=[search.TextField(name='node', value=post.key.parent().get().name),
@@ -1924,12 +1927,12 @@ class SocialPost(model.Model):
                               search.DateField(name='date', value=ref_date)
                               ],
                       language='it')
-      
-     
+
+
       index = search.Index(name='index-posts')
       try:
           index.put(doc)
-      
+
       except search.Error, e:
           pass
 
@@ -1937,36 +1940,36 @@ class SocialPost(model.Model):
     def _pre_delete_hook(cls, key):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
-      
+
       index = search.Index(name='index-posts')
       try:
           index.delete('post-'+key.urlsafe())
-      
+
       except search.Error, e:
           pass
 
 class SocialPostSubscription(model.Model):
     user = model.KeyProperty(kind=models.User)
     has_ntfy = model.BooleanProperty(default=False)
-    
+
     @classmethod
     def get_by_user(cls,user):
       sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key)
-      return sub_list 
+      return sub_list
 
     @classmethod
     def get_posts_keys_by_user(cls,user):
       sub_list=SocialPostSubscription.query().filter(SocialPostSubscription.user==user.key).fetch(keys_only=True)
-      return [i.parent() for i in sub_list]  
+      return [i.parent() for i in sub_list]
 
     @classmethod
     def get_by_post(cls,post_key):
       return SocialPostSubscription.query(ancestor=post_key).fetch()
-    
+
     @classmethod
     def get_by_ntfy(cls):
-      return SocialPostSubscription.query().filter(SocialPostSubscription.has_ntfy==True)   
-        
+      return SocialPostSubscription.query().filter(SocialPostSubscription.has_ntfy==True)
+
 class SocialNodeSubscription(model.Model):
     starting_date=model.DateProperty(auto_now=True)
     user = model.KeyProperty(kind=models.User)
@@ -1986,29 +1989,29 @@ class SocialNodeSubscription(model.Model):
         self.can_comment=parent.default_comment
         self.can_post=parent.default_post
         self.can_admin=parent.default_admin
-        
+
     def reset_ntfy(self):
       self.ntfy = 0
       self.put()
-      
+
     @classmethod
     def get_by_user(self, user_t, order_method=None):
-        
+
         if not order_method:
             order_method=SocialNodeSubscription.starting_date
-        
+
         subs = SocialNodeSubscription.query(SocialNodeSubscription.user==user_t.key).order(order_method).fetch()
-          
+
         #node_list=[i.key.parent().get() for i in subscriptions_list]
         return subs
 
-    
+
     @classmethod
     def get_nodes_by_user(cls,user):
       cache = Cache.get_cache("UserNode")
       cache_key = "UserNode-" + str(user.key.id())
       nodes = cache.get(cache_key)
-      if not nodes:        
+      if not nodes:
         sub_list=SocialNodeSubscription.query().filter(SocialNodeSubscription.user==user.key).order(SocialNodeSubscription.starting_date).fetch(keys_only=True)
         nodes = [i.parent().get() for i in sub_list]
         cache.put(cache_key, nodes)
@@ -2020,7 +2023,7 @@ class SocialNodeSubscription(model.Model):
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=limit, start_cursor=cursor)
       else:
         return SocialNodeSubscription.query(ancestor=node_key).fetch_page(page_size=limit)
-    
+
     @classmethod
     def get_by_ntfy(cls):
       subs = list()
@@ -2030,7 +2033,7 @@ class SocialNodeSubscription(model.Model):
           subs.append(sub)
       return subs
 
-    
+
 class SocialComment(model.Model):
     author=model.KeyProperty(kind=models.User)
     content=model.TextProperty(default="",indexed=False)
@@ -2041,7 +2044,7 @@ class SocialComment(model.Model):
       Cache.get_cache("SocialPost").clear_all()
       Cache.get_cache("UserStream").clear_all()
       future.get_result().get().key.parent().get().reset_comment_list()
-              
+
     def extended_date(self):
       delta = datetime.now() - self.created
       if delta.days == 0 and delta.seconds < 3600:
@@ -2050,7 +2053,7 @@ class SocialComment(model.Model):
         return str(delta.seconds / 3600) + " ore fa"
       else:
         return "il " + datetime.strftime(self.created, Const.ACTIVITY_DATE_FORMAT + " alle " + Const.ACTIVITY_TIME_FORMAT)
-    
+
     @cached_property
     def commissario(self):
       return Commissario.get_by_user(self.author.get())
@@ -2065,14 +2068,14 @@ class SocialComment(model.Model):
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
       return sub and (sub.can_admin or self.author == user.key)
-    
+
     @cached_property
     def votes(self):
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
       return votes
-    
+
     def vote(self, vote, user):
       if vote == 0:
         for p_vote in self.votes:
@@ -2083,9 +2086,9 @@ class SocialComment(model.Model):
       else :
         vote = Vote(ref = self.key, vote = vote, c_u = user.key)
         vote.put()
-    
+
       self.votes = None
-          
+
       #Cache.get_cache("SocialPost").clear_all()
       #Cache.get_cache("UserStream").clear_all()
 
@@ -2103,21 +2106,21 @@ class SocialComment(model.Model):
 class Vote(model.Model):
   def __init__(self, *args, **kwargs):
     self._commissario = None
-    super(Vote, self).__init__(*args, **kwargs)  
-  
+    super(Vote, self).__init__(*args, **kwargs)
+
   ref = model.KeyProperty()
   vote = model.IntegerProperty()
 
   c_u = model.KeyProperty(kind=models.User)
   c_d = model.DateTimeProperty(auto_now_add=True)
-  
+
   @cached_property
   def author(self):
     return Commissario.get_by_user(self.c_u.get())
 
   @classmethod
   def get_by_ref(cls, ref):
-    return Vote.query().filter(Vote.ref==ref)                         
+    return Vote.query().filter(Vote.ref==ref)
 
 class SocialEvent(model.Model):
   type = model.StringProperty()
@@ -2143,28 +2146,28 @@ class SocialEvent(model.Model):
   @classmethod
   def get_keys_by_target(cls, target_key):
     return SocialEvent.query().filter(SocialEvent.target==target_key).fetch(keys_only=True)
-          
+
   status_created = 0
   status_processed = 1
   new_post = "post"
   new_comment = "comment"
-  
+
 class SocialNotification(model.Model):
   event = model.KeyProperty()
   user = model.KeyProperty()
   date = model.DateTimeProperty(auto_now_add=True)
-  
+
   status = model.IntegerProperty()
 
   def set_read(self):
     self.status=self.status_read
     self.put()
-    
+
   @classmethod
   def create(cls, event_key, user_key):
     notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=cls.status_created)
     notification.put()
-  
+
   @classmethod
   def get_by_user(cls, user, cursor=None):
     cache = Cache.get_cache('SocialNotification')
@@ -2203,21 +2206,21 @@ class SocialNotification(model.Model):
   @classmethod
   def get_keys_by_event(cls, event_key):
     return SocialNotification.query().filter(SocialNotification.event==event_key).fetch(keys_only=True)
-  
+
   @classmethod
   def get_by_date(cls, date, cursor=None):
     return SocialNotification.query().order(-SocialNotification.date)
-    
+
   @classmethod
   def get_by_user_status(cls, user, status):
     return SocialNotification.query().filter(SocialNotification.user==user).filter(SocialNotification.status==status)
-  
+
   status_created = 0
   status_notified = 1
   status_read = 2
-      
-      
-          
+
+
+
 class StatisticheNonconf(model.Model):
   citta = model.KeyProperty(kind=Citta)
   commissione = model.KeyProperty(kind=Commissione)
@@ -2225,16 +2228,16 @@ class StatisticheNonconf(model.Model):
 
   timePeriod = model.StringProperty() # W, M, Y
   timeId = model.IntegerProperty()    # 1, 2, 3 - 2009, 2010
-  
+
   dataInizio = model.DateProperty()
   dataFine = model.DateProperty()
   dataCalcolo = model.DateTimeProperty()
-  
+
   numeroNonconf = model.IntegerProperty(default=0,indexed=False)
   numeroNonconfSettimana = model.IntegerProperty(repeated=True,indexed=False)
 
   data = model.IntegerProperty(repeated=True)
-    
+
   _tipiPos = {1:0,
            2:1,
            3:2,
@@ -2247,7 +2250,7 @@ class StatisticheNonconf(model.Model):
            10:9,
            11:10,
            12:11,
-           99:12}  
+           99:12}
 
   @classmethod
   def get_cy_cc_cm_time(cls, cy = None, cc = None, cm = None, timeId=None):
@@ -2263,13 +2266,13 @@ class StatisticheNonconf(model.Model):
   @classmethod
   def get_from_year(cls, year):
     return StatisticheNonconf.query().filter(StatisticheNonconf.timeId == year)
-  
+
   def getData(self, tipo):
     return self.data[self._tipiPos[tipo]]
-  
+
   def incData(self, tipo):
     self.data[self._tipiPos[tipo]] += 1
 
   def getTipiPos(self):
     return self._tipiPos
-  
+

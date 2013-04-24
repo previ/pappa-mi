@@ -27,9 +27,9 @@ from base import BasePage, CMCommissioniDataHandler, commissario_required, user_
 from form import CommissarioForm
 
 class SignupPreHandler(BasePage):
-  
+
   @user_required
-  def get(self):   
+  def get(self):
     if self.getCommissario() and self.getCommissario().is_active():
       self.redirect("/")
     form = CommissarioForm()
@@ -48,7 +48,7 @@ class SignupPreHandler(BasePage):
         form.avatar_url.data=user_info.get("image").get("url")
     if not form.avatar_url.data:
       form.avatar_url.data = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
-      
+
     form.privacy = [[0,1,1],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
     form.notify = [1,2,0]
     if user.email:
@@ -62,13 +62,13 @@ class SignupPreHandler(BasePage):
       'default_avatar': "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
     }
     self.getBase(template_values)
-    
+
   @user_required
   def post(self):
     return self.get()
 
 class SignupHandler(BasePage):
-      
+
   @user_required
   def post(self):
     user = self.request.user
@@ -76,20 +76,20 @@ class SignupHandler(BasePage):
     form = CommissarioForm(self.request.POST)
 
     if not user.email:
-      user.email = self.request.get("email")      
+      user.email = self.request.get("email")
       user.put()
       models.UserEmail.create(user.email, user.get_id())
-    
+
     #SocialProfile.create(user.key)
     commissario = self.getCommissario()
     if not commissario:
       commissario = Commissario()
-    
+
     form.populate_obj(commissario)
     commissario.usera = user.key
     commissario.citta = model.Key("Citta", int(self.request.get("citta")))
     commissario.user_email_lower = user.email.lower()
-    
+
     privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
     for what in range(0,len(privacy)):
       for who in range(0,len(privacy[0])):
@@ -100,10 +100,10 @@ class SignupHandler(BasePage):
     for what in range(0,len(notify)):
       if self.request.get("n_"+str(what)):
         notify[what] = int(self.request.get("n_"+str(what)))
-        
+
     commissario.privacy = privacy
     commissario.notify = notify
-    
+
     commissario.put()
     commissario.set_cache()
 
@@ -113,11 +113,28 @@ class SignupHandler(BasePage):
       new.append(int(c_key))
       #logging.info("new " + c_key)
     new = set(new)
-      
+
     for cm in new:
       commissione = model.Key("Commissione", cm).get()
       commissario.register(commissione)
       node = SocialNode.get_by_resource(commissione.key)[0]
+      if node:
+        node.subscribe_user(commissario.usera.get())
+      if commissione.zona:
+        node = SocialNode.get_by_name(commissione.citta.get().nome + " - Zona " + str(commissione.zona))[0]
+        if node:
+          node.subscribe_user(commissario.usera.get())
+
+
+    #default nodes
+    def_nodes = ["Salute",
+                 "Educazione alimentare",
+                 "Commissioni Mensa",
+                 "Nutrizione",
+                 "Eventi",
+                 "Generale"]
+    for node_name in def_nodes:
+      node = SocialNode.get_by_name(node_name)
       if node:
         node.subscribe_user(commissario.usera.get())
 
@@ -126,11 +143,11 @@ class SignupHandler(BasePage):
     commissario.set_cache()
 
     self.sendRegistrationRequestMail(commissario)
-    
+
     message = "Registrazione completata."
     if commissario.isRegCommissario():
       message = "Grazie per esserti registrato, riceverai una mail quando il tuo profilo sarà stato attivato."
-      
+
     self.response.out.write(message)
 
 
@@ -138,33 +155,33 @@ class SignupHandler(BasePage):
     if commissario.isGenitore():
       self.sendRegistrationConfirmGenitoreMail(commissario)
     else:
-      self.sendRegistrationConfirmCommissarioMail(commissario)      
+      self.sendRegistrationConfirmCommissarioMail(commissario)
 
   def sendRegistrationConfirmGenitoreMail(self, commissario) :
 
     host = self.getHost()
 
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
-    
+
     message = mail.EmailMessage()
     message.sender = sender
     message.to = commissario.usera.get().email
     message.bcc = sender
     message.subject = "Benvenuto in Pappa-Mi"
     message.body = """ La tua richiesta di registrazione come Genitore e' stata confermata.
-    
+
     Clicca qui per accedere a Pappa-Mi:
     http://"""  + host + """/
 
-    
+
     Ti rocordo anche il sito PappaPedia (documenti):
     http://pappapedia.pappa-mi.it
-    
+
     Ciao !
     Pappa-Mi staff
-    
+
     """
-      
+
     message.send()
 
   def sendRegistrationConfirmCommissarioMail(self, commissario) :
@@ -172,50 +189,50 @@ class SignupHandler(BasePage):
     host = self.getHost()
 
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
-    
+
     message = mail.EmailMessage()
     message.sender = sender
     message.to = commissario.usera.get().email
     message.bcc = sender
     message.subject = "Benvenuto in Pappa-Mi"
     message.body = """ La tua richiesta di registrazione come Commissione Mensa e' stata confermata.
-    
+
     Clicca qui per accedere a Pappa-Mi:
     http://"""  + host + """/
 
-    
+
     Ti rocordo anche il sito PappaPedia (documenti):
     http://pappapedia.pappa-mi.it
-    
+
     Ciao !
     Pappa-Mi staff
-    
+
     """
-      
+
     message.send()
-    
+
   def sendRegistrationCommissarioRequestMail(self, commissario) :
 
     host = self.getHost()
-    
+
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
-    
+
     message = mail.EmailMessage()
     message.sender = sender
     message.to = sender
     message.subject = "Richiesta di Registrazione da " + commissario.nome + " " + commissario.cognome
-    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.usera.get().email + """ ha inviato una richiesta di registrazione come Commissario. 
-    
+    message.body = commissario.nome + " " + commissario.cognome + " " + commissario.usera.get().email + """ ha inviato una richiesta di registrazione come Commissario.
+
     Per abilitarlo usare il seguente link:
-    
+
     """ + "http://" + host + "/admin/commissario?cmd=enable&key="+str(commissario.key.id())
 
     message.send()
-    
+
 app = webapp.WSGIApplication([
   ('/signup', SignupPreHandler),
   ('/signup2', SignupHandler),
-  ('/profilo/getcm', CMCommissioniDataHandler)], 
+  ('/profilo/getcm', CMCommissioniDataHandler)],
   debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404

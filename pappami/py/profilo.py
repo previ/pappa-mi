@@ -23,57 +23,57 @@ from form import CommissarioForm
 from base import BasePage, CMCommissioniDataHandler, reguser_required, user_required, config, handle_404, handle_500
 
 class DeactivateProfileHandler(BaseHandler):
-  
+
   @reguser_required
   def get(self):
-   
+
     commissario = self.getCommissario()
     form = CommissarioForm(obj=commissario)
     form.email = commissario.usera.get().email
     template_values = {
       'cmsro': commissario,
     }
-    template = jinja_environment.get_template("deactivate_profile_modal.html")    
+    template = jinja_environment.get_template("deactivate_profile_modal.html")
     html=template.render(template_values)
-    
+
     self.output_as_json({'response':'success','html':html})
-    
+
   @reguser_required
   def post(self):
-   
+
     if self.request.get("cmd") == "deactivate":
       commissario = self.getCommissario()
-              
+
       #commissario.privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
-      
+
       for commissione in commissario.commissioni():
         commissario.unregister(commissione)
         node = SocialNode.get_by_resource(commissione.key)[0]
         if node:
           node.unsubscribe_user(commissario.usera.get())
-      
+
       for sp in SocialPostSubscription.get_by_user(commissario.usera.get()):
         sp.key.delete()
-        
+
       commissario.stato = 99
       commissario.put()
       commissario.set_cache()
-      
+
       for ue in models.UserEmail.get_by_user(commissario.usera.id()):
         ue.key.delete()
-    
+
       template_values = {
       'content': 'profile_deactivated.html',
       }
-      
-      self.response.delete_cookie('_eauth')      
+
+      self.response.delete_cookie('_eauth')
       self.getBase(template_values)
 
 class CMProfiloHandler(BasePage):
-  
+
   @user_required
   def get(self):
-   
+
     commissario = self.getCommissario()
     form = CommissarioForm(obj=commissario)
     form.email = commissario.usera.get().email
@@ -86,16 +86,16 @@ class CMProfiloHandler(BasePage):
       'subscriptions': SocialNodeSubscription.get_by_user(commissario.usera.get())
     }
     self.getBase(template_values)
-    
+
   @user_required
   def post(self):
-   
+
     commissario = self.getCommissario()
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
       form.citta = model.Key("Citta", int(self.request.get("citta")))
-      
+
       privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
       for what in range(0,len(privacy)):
         for who in range(0,len(privacy[0])):
@@ -106,14 +106,14 @@ class CMProfiloHandler(BasePage):
       for what in range(0,len(notify)):
         if self.request.get("n_"+str(what)):
           notify[what] = int(self.request.get("n_"+str(what)))
-          
-      
-      commissario.newsletter=True if self.request.get("newsletter")=="True" else False    
+
+
+      commissario.newsletter=True if self.request.get("newsletter")=="True" else False
       commissario.privacy = privacy
       commissario.notify = notify
       commissario.put()
       commissario.set_cache()
-          
+
       old = list()
       for cm in commissario.commissioni():
         old.append(cm.key)
@@ -134,20 +134,25 @@ class CMProfiloHandler(BasePage):
         node = SocialNode.get_by_resource(cm_key)[0]
         if node:
           node.unsubscribe_user(commissario.usera.get())
-        
+
       for cm_key in toadd:
         commissione = cm_key.get()
         commissario.register(commissione)
         node = SocialNode.get_by_resource(cm_key)[0]
         if node:
           node.subscribe_user(commissario.usera.get())
+          if commissione.zona:
+            node = SocialNode.get_by_name(commissione.citta.get().nome + " - Zona " + str(commissione.zona))[0]
+            if node:
+              node.subscribe_user(commissario.usera.get())
+
 
       commissario.setCMDefault()
-        
+
     self.response.out.write("Dati salvati.")
 
 class CMAvatarHandler(BasePage):
-      
+
   def post(self):
     cmd = self.request.get("cmd")
     #logging.info("cmd:" + cmd)
@@ -160,7 +165,7 @@ class CMAvatarHandler(BasePage):
           #logging.info(commissario.avatar_data)
           commissario.avatar_data = avatar
           #logging.info("len: " + str(len(commissario.avatar_data)))
-          #logging.info(commissario.avatar_data)          
+          #logging.info(commissario.avatar_data)
           commissario.avatar_url = "/public/avatar?id="+str(commissario.usera.id())
           commissario.put()
           commissario.set_cache()
@@ -178,8 +183,8 @@ class CMAvatarHandler(BasePage):
       commissario.put()
       commissario.set_cache()
       self.response.out.write(commissario.avatar(cmsro=None,myself=True));
-      
-    
+
+
 app = webapp.WSGIApplication([
   ('/profilo/deactivate', DeactivateProfileHandler),
   ('/profilo/avatar', CMAvatarHandler),
@@ -189,9 +194,3 @@ app = webapp.WSGIApplication([
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()

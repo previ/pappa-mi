@@ -120,7 +120,7 @@ class AuthMiddleware(object):
 
     def __call__(self, environ, start_response):
         # If the request is to the admin, return
-        if environ['PATH_INFO'].startswith('/_ah/') or environ['PATH_INFO'].startswith('/admin/'):
+        if environ['PATH_INFO'].startswith('/_ah/') or environ['PATH_INFO'].startswith('/_admin/'):
             return self.app(environ, start_response)
         # load session
         req = EngineAuthRequest(environ)

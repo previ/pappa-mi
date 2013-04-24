@@ -27,7 +27,7 @@ padding-top: 6px;
       {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
     <li style="list-style-type: none;">
 	    <div class="">
-	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}">messaggio</a> su {{post.key.parent().get().name}}
 	    </div>
 	    <div class=""> 
 		    <div style="float:left;padding-right:5px;">
@@ -35,7 +35,7 @@ padding-top: 6px;
 		    </div>
 		    <div style="overflow:hidden;zoom:1;">
 			    <div>			
-				    <div class="s_post_title"><span class="s_node_link">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand"><a target="_new" href="http://{{host}}/post/{{post.key.urlsafe()}}">{{post.title}}</a></span></div> 
+				    <div class="s_post_title"><span class="s_node_link">{{post.key.parent().get().name}}</span> / <span class="s_post_title_1 post_expand"><a target="_new" href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}">{{post.title}}</a></span></div> 
 				    <div style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" class="s_post_author">scritto da {{post.commissario.nome}}</div>
 				    <div class="s_post_date" style="display: table-cell;font-style: italic;color: #999;padding-left: 1em;" >&nbsp;- il {{post.created.strftime('%d/%m/%Y  %H:%M:%S')}}</div>
 			    </div>				
@@ -46,7 +46,7 @@ padding-top: 6px;
        {%elif ntfy.event.get().type == "comment"%}{%set post = ntfy.event.get().target.get()%}{%set cmnt = ntfy.event.get().source.get()%}
        <li>
 	    <div class="">
-	    {{cmnt.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.urlsafe()}}#{{cmnt.key.urlsafe()}}">commento</a> al <a href="http://{{host}}/post/{{post.key.urlsafe()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    {{cmnt.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}#{{cmnt.key.id()}}">commento</a> al <a href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}">messaggio</a> su {{post.key.parent().get().name}}
 	    </div>
 	    <div class=""> 
 		    <div style="float:left;padding-right:5px;">

@@ -23,10 +23,10 @@ $(document).ready(function () {
      <a href="/node/list"><i class="icon-search"></i>Altre scuole e argomenti</a>
     </li>
     <li class="nav-header hidden-phone"><i class="icon-fire"></i>Più discussi</li>
-    {%for node in node_active%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_active%}<li class="hidden-phone"><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
     <li class="nav-header hidden-phone"><i class="icon-asterisk"></i>Nuovi</li>
-    {%for node in node_recent%}<li><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
+    {%for node in node_recent%}<li class="hidden-phone"><a data-node-key="{{node.key.urlsafe()}}" href="#"><span title="{{node.name}}" class="node_name">{{node.name|truncate(length=30, end="...")}}</span><i class="pull-right icon-chevron-right"></i></a></li>
     {%endfor%}
    </ul>    
   </div>

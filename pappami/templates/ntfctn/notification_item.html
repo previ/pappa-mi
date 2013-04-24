@@ -5,9 +5,9 @@
 <img class="avatar" src="{{notification.event.get().source.get().commissario.avatar(cmsro)}}" title="{{notification.event.get().source.get().commissario.nomecompleto(cmsro)}}">
 {{notification.event.get().source.get().commissario.nomecompleto(cmsro)}} ha aggiunto
 {%if notification.event.get().type=='post'%}
- un <a href="#" onclick="location.href='/post/{{notification.event.get().source.urlsafe()}}'">post</a>
+ un <a href="#" onclick="location.href='/post/{{notification.event.get().source.id()}}'">post</a>
 {%elif notification.event.get().type=='comment'%} 
- un <a href="#" onclick="location.href='/post/{{notification.event.get().target.urlsafe()}}#{{notification.event.get().source.urlsafe()}}'">commento</a>
+ un <a href="#" onclick="location.href='/post/{{notification.event.get().target.id()}}#{{notification.event.get().source.id()}}'">commento</a>
 {%endif%} {{notification.event.get().source.get().extended_date()}}
 </div>
 </li>

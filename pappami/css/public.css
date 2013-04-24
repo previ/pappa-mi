@@ -41,7 +41,65 @@
   margin-top: 10px;
 }
 
+.back_trasp {
+background:url('/img/back_transp.png');
+}
 
+.social-logos {
+  background:url('/img/social-logos-med.png');
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 62px;
+  height: 62px;
+}
+
+.logo-fb {
+  background-position: 0 0;
+}
+
+a:hover.logo-fb  {
+  background-position: 0 -256px;
+}
+
+.logo-twitter {
+  background-position: -64px 0;
+}
+
+a:hover.logo-twitter  {
+  background-position: -64px -256px;
+}
+
+.logo-gplus {
+  background-position: -193px -194px;
+}
+
+a:hover.logo-gplus {
+  background-position: -193px -450px;
+}
+
+.logo-pinterest {
+  background-position: -193px -64px;
+}
+
+a:hover.logo-pinterest {
+  background-position: -193px -320px;
+}
+
+.logo-youtube {
+  background-position: 0 -129px;
+}
+
+a:hover.logo-youtube {
+  background-position: 0 -385px;
+}
+
+.logo-rss {
+  background-position: -128px 0;
+}
+
+a:hover.logo-rss {
+  background-position: -128px -256px;
+}
 
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */

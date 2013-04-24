@@ -21,9 +21,9 @@ class Blob:
     blob_key = None
     blob_reader = None
     mime_type = None
-    
+
     def create(self, filename):
-        # Create the file        
+        # Create the file
         self.mime_type = mimetypes.guess_type(filename)[0]
         if not self.mime_type:
             self.mime_type = "application/octet-stream"
@@ -31,31 +31,31 @@ class Blob:
 
     def open(self,key):
         self.blob_reader = blobstore.BlobReader(blob_key)
-        
+
 
     def write(self,data):
         # Open the file and write to it
         with files.open(self.file_name, 'a') as f:
             f.write(data)
-        
+
         # Finalize the file. Do this before attempting to read it.
         files.finalize(self.file_name)
-        
+
         # Get the file's blob key
         self.blob_key = files.blobstore.get_blob_key(self.file_name)
-        
+
         return self.blob_key
-        
+
     def read(self):
         # Open the file and write to it
         value = self.lob_reader.read()
         return value
-    
+
     def mime(self):
         return self.mime_type
-    
+
 class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
-  
+
     def get(self):
         blob_key = self.request.get("key")
         logging.info("blob_key: " + str(blob_key))
@@ -67,7 +67,7 @@ class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
             logging.info("blog.200")
             self.send_blob(blob_info)
 
-            
+
 app = webapp.WSGIApplication([
     ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

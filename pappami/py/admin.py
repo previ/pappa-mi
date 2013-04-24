@@ -56,7 +56,7 @@ class AdminMenuHandler(BasePage):
     self.getBase(template_values)
 
 
-  def post(self):    
+  def post(self):
     if self.request.get("cmd") == "upload" and self.request.get("what") == "menu":
       citta = model.Key("Citta", int(self.request.get("city")))
       data = self.request.get("data")
@@ -73,7 +73,7 @@ class AdminMenuHandler(BasePage):
           menu.secondo = fields[6]
           menu.contorno = fields[7]
           menu.dessert = fields[8]
-          
+
           logging.info("menu: " + str(menu.validitaA))
           nm = MenuNew.query().filter(MenuNew.citta==citta).filter(Menu.validitaA==menu.validitaA).get()
           if not nm:
@@ -167,7 +167,7 @@ class AdminMenuHandler(BasePage):
             piattoGiorno.put()
             logging.info("piattogiorno.dessert.put: " + piatto.nome)
       self.response.out.write("initMenu Ok")
-      return      
+      return
     if self.request.get("cmd") == "upload" and self.request.get("what") == "content":
       data = self.request.get("data")
       for line in data.split("\n"):
@@ -189,12 +189,12 @@ class AdminMenuHandler(BasePage):
               p_i.quantita = float(fields[2])
               p_i.put()
       self.response.out.write("initMenu Ok")
-      return      
+      return
 
 
 class CMAdminCommissioneHandler(BasePage):
 
-  def get(self):    
+  def get(self):
 
     if self.request.get("cmd") == "open":
 
@@ -203,13 +203,13 @@ class CMAdminCommissioneHandler(BasePage):
       user = users.get_current_user()
 
       key = ""
-      
+
       if(self.request.get("key") == ""):
-        commissione = Commissione()       
+        commissione = Commissione()
       else:
         commissione = model.Key("Commissione", self.request.get("key")).get()
         key = commissione.key
-              
+
       template_values = {
         'content': 'admin/commissione.html',
         'commissione': commissione,
@@ -221,7 +221,7 @@ class CMAdminCommissioneHandler(BasePage):
         'distretto': self.request.get("distretto"),
         'centriCucina': CentroCucina.query().order(CentroCucina.nome)
       }
-    
+
       self.getBase(template_values)
 
     else:
@@ -232,31 +232,31 @@ class CMAdminCommissioneHandler(BasePage):
         'centriCucina': centriCucina,
       }
       self.getBase(template_values)
-      
 
-  def post(self):    
+
+  def post(self):
     if( self.request.get("cmd") == "save" ):
       if self.request.get("key"):
         commissione = model.Key("Commissione", self.request.get("key")).get()
       else:
         commissione = Commissione()
-        
+
       form = CommissioneForm(data=self.request.POST, instance=commissione)
-      
+
       if form.is_valid():
         commissione = form.save(commit=False)
         commissione.geo = model.GeoPt(float(self.request.get("lat")), float(self.request.get("lon")))
         commissione.put()
 
       self.redirect("/admin/commissione?offset=" + self.request.get("offset") + "&tipoScuola=" + self.request.get("q_tipoScuola") + "&centroCucina=" + self.request.get("q_centroCucina") + "&zona="+ self.request.get("q_zona") + "&distretto=" + self.request.get("q_distretto") )
-      
+
     elif self.request.get("cmd") == "list":
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
       user = users.get_current_user()
- 
+
       centriCucina = CentroCucina.query().order(CentroCucina.nome)
-      
+
       #if query.is_valid():
       commissioni = Commissione.query()
       if self.request.get("tipoScuola") :
@@ -281,12 +281,12 @@ class CMAdminCommissioneHandler(BasePage):
 
 class CMAdminCommissioneDataHandler(BasePage):
 
-  def get(self):    
+  def get(self):
       tq = urllib.unquote(self.request.get("tq"))
       #logging.info(tq)
       query = tq[:tq.find("limit")]
       #logging.info(query)
-      
+
       orderby = "nome"
       if(query.find("by") > 0):
         orderby = query[query.find("`"):query.rfind("`")].strip("` ")
@@ -302,25 +302,25 @@ class CMAdminCommissioneDataHandler(BasePage):
       if(query.find("centroCucina") >= 0):
         centroCucina = query[(query.find("centroCucina ") + len("centroCucina ")):]
         centroCucina = centroCucina[:centroCucina.find(" ")]
-      
+
       #logging.info(orderby)
-      
+
       params = tq[tq.find("limit"):].split()
       #logging.info(params)
       limit = int(params[1])
       offset = int(params[3])
-      
+
       if params[3] >= 0:
         offset = int(params[3])
       else:
         offset = 0
-        
+
       if offset > 0:
         prev = offset - 10
       else:
         prev = None
       next = offset + 10
-      
+
       # Creating the data
       description = {"nome": ("string", "Commissione"),
                      "nomeScuola": ("string", "Scuola"),
@@ -330,7 +330,7 @@ class CMAdminCommissioneDataHandler(BasePage):
                      "zona": ("string", "Zona"),
                      "geo": ("string", "Geo"),
                      "comando": ("string", "")}
-      
+
       commissioni = Commissione.query()
       if tipoScuola :
         commissioni = commissioni.filter("tipoScuola", tipoScuola)
@@ -346,20 +346,20 @@ class CMAdminCommissioneDataHandler(BasePage):
           data.append({"nome": commissione.nome, "nomeScuola": commissione.nomeScuola, "tipoScuola": commissione.tipoScuola, "strada": commissione.strada + ", " + commissione.civico + ", " + commissione.cap + " " + commissione.citta.nome, "distretto": commissione.distretto, "zona": commissione.zona, "geo": str(commissione.geo != None), "comando":"<a href='/admin/commissione?cmd=open&key="+str(commissione.key())+"&offset="+str(offset)+ "&tipoScuola=" + self.request.get("tipoScuola") + "&centroCucina=" + self.request.get("centroCucina") + "&zona="+ self.request.get("zona") + "&distretto=" + self.request.get("distretto")+"'>Apri</a>"})
       except model.Timeout:
         errmsg = "Timeout"
-        
+
       # Loading it into gviz_api.DataTable
       data_table = DataTable(description)
       data_table.LoadData(data)
 
       # Creating a JSon string
       self.response.out.write("google.visualization.Query.setResponse({reqId: '0',status:'ok',table:" + data_table.ToJSon(columns_order=("nome", "nomeScuola", "tipoScuola", "strada", "distretto", "zona", "geo", "comando"))+",version: '0.6'})")
-  
+
 class CMAdminHandler(BasePage):
 
-  def get(self):    
+  def get(self):
 
     """
-    Pappa-Mi 1 to 2.0 migration    
+    Pappa-Mi 1 to 2.0 migration
     1.deploy app with citta = TextProperty
     2.initCity1
     3.deploy app with citta = ReferenceProperty
@@ -369,12 +369,12 @@ class CMAdminHandler(BasePage):
     7.initMenu
     8.initStream
     """
-    
+
     if self.request.get("cmd") == "initConfig":
       dummy = Configurazione(nome="dummyname", valore="dummyvalue")
       dummy.put()
-      return      
-     
+      return
+
     if self.request.get("cmd") == "initMenu":
       citta = Citta.query().get()
       for menu in Menu.query().filter(Menu.tipoScuola=="Materna").filter(Menu.validitaA==datetime.datetime.strptime(self.request.get("offset"), "%Y-%m-%d")):
@@ -471,8 +471,8 @@ class CMAdminHandler(BasePage):
           piattoGiorno.put()
           logging.info("piattogiorno.dessert.put")
       self.response.out.write("initMenu Ok")
-      return      
-                
+      return
+
     if self.request.get("cmd") == "initCity1":
       for cm in Commissione.query().filter(Commissione.citta=="Milano"):
         cm.citta = None
@@ -506,7 +506,7 @@ class CMAdminHandler(BasePage):
         cs.put_async()
       self.response.out.write("initCity2 Ok")
       return
-        
+
     if self.request.get("cmd") == "initStream1":
       offset = 0
       limit = 100
@@ -535,7 +535,7 @@ class CMAdminHandler(BasePage):
           messaggio.put()
       self.response.out.write("initStream Ok")
       return
-          
+
     if self.request.get("cmd") == "initStream2":
       for msg in Messaggio().query():
         if msg.tipo in range(101, 104):
@@ -543,14 +543,14 @@ class CMAdminHandler(BasePage):
           msg.put_async()
       self.response.out.write("initStream 2 Ok")
       return
-  
+
     if self.request.get("cmd") == "initStream3":
       for msg in Messaggio().query():
         if msg.c_ua is None:
           a_id = models.User.generate_auth_id('google', msg.creato_da.user_id(), 'legacy')
           logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)          
-          if ua:            
+          ua = models.User.get_by_auth_id(a_id)
+          if ua:
             logging.info("email: " + str(ua.email))
             msg.c_ua = ua.key
           msg.put()
@@ -562,8 +562,8 @@ class CMAdminHandler(BasePage):
         if v.c_ua is None:
           a_id = models.User.generate_auth_id('google', v.creato_da.user_id(), 'legacy')
           logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)          
-          if ua:            
+          ua = models.User.get_by_auth_id(a_id)
+          if ua:
             logging.info("email: " + str(ua.email))
             v.c_ua = ua.key
           v.put()
@@ -571,14 +571,14 @@ class CMAdminHandler(BasePage):
         if t.c_ua is None:
           a_id = models.User.generate_auth_id('google', t.creato_da.user_id(), 'legacy')
           logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)          
-          if ua:            
+          ua = models.User.get_by_auth_id(a_id)
+          if ua:
             logging.info("email: " + str(ua.email))
             t.c_ua = ua.key
           t.put()
       self.response.out.write("initStream 4 Ok")
       return
-    
+
     if self.request.get("cmd") == "fixStream":
       for isp in Ispezione().query():
         msgs = Messaggio.query().filter(Messaggio.par==isp.key).filter(Messaggio.tipo==101)
@@ -609,7 +609,7 @@ class CMAdminHandler(BasePage):
           tagobj.put()
       self.response.out.write("fixTagObj Ok")
       return
-    
+
     if self.request.get("cmd") == "initAuthR":
       logging.info("initAuth")
       offset = int(self.request.get("offset"))
@@ -618,8 +618,8 @@ class CMAdminHandler(BasePage):
         c.put()
       self.response.out.write("initAuthR Ok")
       return
-    
-    
+
+
     if self.request.get("cmd") == "initAuth":
       logging.info("initAuth")
       offset = int(self.request.get("offset"))
@@ -640,8 +640,8 @@ class CMAdminHandler(BasePage):
                       },
                   'emails': [
                       {
-                          'value': c.user.email(),                          
-                          'verified': True                          
+                          'value': c.user.email(),
+                          'verified': True
                       }
                   ]
               },
@@ -649,7 +649,7 @@ class CMAdminHandler(BasePage):
               }
           }
           profile = models.UserProfile.get_or_create(auth_id, user_info)
-          usera = models.User.get_or_create_by_profile(profile)          
+          usera = models.User.get_or_create_by_profile(profile)
           c.usera = usera.key
           c.avatar_url = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
           c.put()
@@ -660,7 +660,7 @@ class CMAdminHandler(BasePage):
       for c in Commissario.query():
         c.privacy = [[0,0,0],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
         c.put()
-        
+
       self.response.out.write("Ok")
       return
 
@@ -668,11 +668,11 @@ class CMAdminHandler(BasePage):
       for c in Commissario.query().filter(Commissario.user_email_lower==None):
         c.user_email_lower = c.usera.get().email.lower()
         c.put()
-        
+
       self.response.out.write("Ok")
       return
-    
-      
+
+
     if self.request.get("cmd") == "initAnno":
       d2008da = date(2008,9,1)
       d2008a = date(2009,7,31)
@@ -697,8 +697,8 @@ class CMAdminHandler(BasePage):
           nc.anno = 2010
         nc.put()
       return
-          
-    
+
+
     if self.request.get("cmd") == "initZone":
       for cc in CentroCucina.query():
         ccZona = CentroCucinaZona(centroCucina = cc, zona = cc.menuOffset + 1, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
@@ -711,14 +711,14 @@ class CMAdminHandler(BasePage):
         zonaOld.put()
         zona = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2010,month=11, day=1), validitaA=date(year=2099,month=12, day=31))
         zona.put()
-        
+
     if self.request.get("cmd") == "getCommissari":
       buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
       for c in Commissario.query():
         if c.isCommissario():
           buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-        
-      self.response.out.write(buff)        
+
+      self.response.out.write(buff)
       return
 
     if self.request.get("cmd") == "getGenitori":
@@ -726,12 +726,12 @@ class CMAdminHandler(BasePage):
       for c in Commissario.query():
         if c.isGenitore():
           buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-        
+
       self.response.out.write(buff)
       return
 
     if self.request.get("cmd") == "migSocial":
-      #SocialUtils.msg_to_post()     
+      #SocialUtils.msg_to_post()
       self.response.out.write("migSocial Ok")
       return
 
@@ -753,12 +753,12 @@ class CMAdminHandler(BasePage):
         if cc.menuOffset == None:
           cc.menuOffset = None
           cc.put()
-      
+
     if self.request.get("cmd") == "migrate":
       what = self.request.get("kind")
       limit = int(self.request.get("limit"))
       offset = int(self.request.get("offset"))
-      SocialAdmin.migrate(what, offset, limit)    
+      SocialAdmin.migrate(what, offset, limit)
 
     if self.request.get("cmd") == "vacuum_index":
       index = search.Index(name="index-nodes")
@@ -766,14 +766,14 @@ class CMAdminHandler(BasePage):
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
         if not doc_ids:
           break
-        index.delete(doc_ids)        
+        index.delete(doc_ids)
 
       index = search.Index(name="index-posts")
       while True:
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
         if not doc_ids:
           break
-        index.delete(doc_ids)        
+        index.delete(doc_ids)
 
     if self.request.get("cmd") == "prune_index":
       index = search.Index(name="index-nodes")
@@ -781,39 +781,39 @@ class CMAdminHandler(BasePage):
         try:
           item = model.Key(urlsafe=doc.doc_id[5:]).get()
         except:
-          index.delete(doc_ids)        
+          index.delete(doc_ids)
 
       index = search.Index(name="index-posts")
       for doc in index.get_range(ids_only=True):
         try:
           item = model.Key(urlsafe=doc.doc_id[5:]).get()
         except:
-          index.delete(doc_ids)        
+          index.delete(doc_ids)
 
     if self.request.get("cmd") == "refresh_index":
       for node in SocialNode.query():
         fields = [search.TextField(name='name', value=node.name),
-         search.HtmlField(name='description', value=node.description)]      
+         search.HtmlField(name='description', value=node.description)]
         if node.geo:
           fields.append(search.GeoField(name='geo', value=search.GeoPoint(node.geo.lat, node.geo.lon)))
-          
+
         doc=search.Document(
                         doc_id='node-'+str(node.key.id()),
                         fields=fields,
                         language='it')
-        
-       
+
+
         index = search.Index(name='index-nodes')
         try:
             index.put(doc)
-        
+
         except search.Error, e:
             pass
       for post in SocialPost.query():
         resource = ""
         for r in post.res_type:
           resource += r + " "
-  
+
         #logging.info(resource)
         ref_date = post.created
         if len(post.res_type) > 0:
@@ -823,7 +823,7 @@ class CMAdminHandler(BasePage):
             ref_date = post.resource[0].get().dataNonconf
           elif post.res_type[0] == ["nota"]:
             ref_date = post.resource[0].get().dataNota
-            
+
         doc=search.Document(
                         doc_id='post-'+post.key.urlsafe(),
                         fields=[search.TextField(name='node', value=post.key.parent().get().name),
@@ -836,15 +836,15 @@ class CMAdminHandler(BasePage):
                                 search.DateField(name='date', value=ref_date)
                                 ],
                         language='it')
-        
-       
+
+
         index = search.Index(name='index-posts')
         try:
             index.put(doc)
-        
+
         except search.Error, e:
             pass
-        
+
 
     template_values = {
       'content': 'admin/admin.html',
@@ -861,7 +861,7 @@ class CMAdminHandler(BasePage):
   def delete_all_in_index(self, index_name):
       """Delete all the docs in the given index."""
       doc_index = search.Index(name=index_name)
-  
+
       while True:
           # Get a list of documents populating only the doc_id field and extract the ids.
           document_ids = [document.doc_id
@@ -870,14 +870,14 @@ class CMAdminHandler(BasePage):
               break
           # Remove the documents for the given ids from the Index.
           doc_index.remove(document_ids)
-    
+
 class CMAdminCommissarioHandler(BasePage):
 
-  def get(self):    
+  def get(self):
 
     if( self.request.get("cmd") == "enable" or
         self.request.get("cmd") == "disable" ):
-      
+
       commissario = Commissario.get(self.request.get("key"))
 
       url = users.create_logout_url("/")
@@ -886,37 +886,37 @@ class CMAdminCommissarioHandler(BasePage):
 
       calendario = Calendario()
       calendario.logon(user=Configurazione.query().filter("nome","calendar_user").get().valore, password=Configurazione.query().filter("nome", "calendar_password").get().valore)
-      
+
       if self.request.get("cmd") == "enable":
         if commissario.isRegCommissario():
           commissario.stato = 1
           for c in commissario.commissioni():
             c.numCommissari = c.numCommissari + 1
-            c.put() 
+            c.put()
 
             if(c.calendario):
               calendario.load(c.calendario)
               calendario.share(commissario.user.email())
-            
+
         else:
           commissario.stato = 11
-      elif self.request.get("cmd") == "disable" : 
+      elif self.request.get("cmd") == "disable" :
         if commissario.isCommissario():
-          commissario.stato = 0 
+          commissario.stato = 0
           for c in commissario.commissioni():
             c.numCommissari = c.numCommissari - 1
-            c.put() 
+            c.put()
         else:
           commissario.stato = 10
-        
+
       commissario.put()
       memcache.set("commissario" + str(user.user_id()), commissario, 600)
-      
-     
-      if commissario.stato == 1:              
-        
+
+
+      if commissario.stato == 1:
+
         host = self.getHost()
-        
+
         sender = "Pappa-Mi <aiuto@pappa-mi.it>"
         message = mail.EmailMessage()
         message.sender = sender
@@ -924,26 +924,26 @@ class CMAdminCommissarioHandler(BasePage):
         message.bcc = sender
         message.subject = "Benvenuto in Pappa-Mi"
         message.body = """ La tua richiesta di registrazione come Commissario e' stata confermata.
-        
+
         Ora puoi accedere all'applicazione utilizzando il seguente link:
-        
+
         http://"""  + host + """/commissario
-        
+
         e iniziare a inserire le schede di valutazione e di non conformita'
-        
+
         Ciao
         Pappa-Mi staff
-        
+
         """
-          
+
         message.send()
-        
+
         memcache.delete("markers")
         memcache.delete("markers_all")
         memcache.delete("stats")
-      
+
       self.redirect("/admin/commissario")
-    
+
     else:
       url = users.create_logout_url("/")
       url_linktext = 'Logout'
@@ -957,7 +957,7 @@ class CMAdminCommissarioHandler(BasePage):
                      "stato": ("string", "Stato"),
                      "ultimo_accesso_il": ("string", "Ultimo accesso"),
                      "comando": ("string", "Azione")}
-      
+
       data = list()
       for commissario in Commissario.query():
         if commissario.isRegCommissario():
@@ -972,7 +972,7 @@ class CMAdminCommissarioHandler(BasePage):
           stato = "Genitore"
           comando = "Disabilita"
           cmd = "disable"
-        
+
         commissioni = ""
         for c in commissario.commissioni():
           commissioni = commissioni + c.nome + " - " + c.tipoScuola + "<br/>"
@@ -986,7 +986,7 @@ class CMAdminCommissarioHandler(BasePage):
       # Creating a JSon string
       json = data_table.ToJSon(columns_order=("nome", "cognome", "email", "commissioni", "stato", "ultimo_accesso_il", "comando"), order_by="cognome")
 
- 
+
       template_values = {
         'content': 'admin/commissari.html',
         'json': json
@@ -995,7 +995,7 @@ class CMAdminCommissarioHandler(BasePage):
 
 class SocialAdmin(object):
   @classmethod
-  def migrate(cls, what, offset, limit):  
+  def migrate(cls, what, offset, limit):
       if what == "nodes":
           logging.info("generate_nodes.city")
           citta=Citta.get_all()
@@ -1003,7 +1003,7 @@ class SocialAdmin(object):
               node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
               node.init_rank()
               node.put()
-          
+
           logging.info("generate_nodes.cm")
           commissioni=Commissione.query().fetch()
           for i in commissioni:
@@ -1013,7 +1013,7 @@ class SocialAdmin(object):
                               description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["cm"])
               node.init_rank()
               node.put()
-      
+
       logging.info("generate_nodes.tag")
       tags_mapping = {"salute": "Salute",
                       "educazione alimentare": "Educazione alimentare",
@@ -1035,7 +1035,7 @@ class SocialAdmin(object):
       for tag in tags_mapping:
           logging.info("tag: " + tag)
           node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
-          if not node:                
+          if not node:
               node = SocialNode(name = tags_mapping[tag],
                           description="Gruppo di discussione su " + tags_mapping[tag] )
               node.init_rank()
@@ -1043,7 +1043,7 @@ class SocialAdmin(object):
           tags_mapping[tag] = node
 
       node_default = tags_mapping["rassegna stampa"]
-      
+
       if what == "subscriptions":
           #subscriptions
           logging.info("subscriptions.city")
@@ -1053,22 +1053,28 @@ class SocialAdmin(object):
               logging.info("subscriptions.city")
               node_citta = SocialNode.get_by_resource(co.citta)[0]
               node_citta.subscribe_user(co.usera.get(), ntfy_period=1)
-  
+
               logging.info("subscriptions.tags")
               for tag in tags_mapping:
                   node_tag = tags_mapping[tag]
                   node_tag.subscribe_user(co.usera.get(), ntfy_period=1)
-          
+
               logging.info("subscriptions.cm")
               for cm in co.commissioni():
                   logging.info("subscriptions.cm: " + cm.nome)
                   cms = SocialNode.get_by_resource(cm.key)
-                  if len(cms) > 0: 
+                  if len(cms) > 0:
                     node_cm = SocialNode.get_by_resource(cm.key)[0]
                     node_cm.subscribe_user(co.usera.get(), ntfy_period=0)
                   else:
                     logging.info(cm.name + " not found")
-      
+                  #zone
+                  if cm.zona:
+                    node = SocialNode.get_by_name(cm.citta.get().nome + " - Zona " + str(cm.zona))[0]
+                    if node:
+                      node.subscribe_user(co.usera.get())
+
+
       if what == "messages":
           for m in Messaggio.query().filter(Messaggio.livello == 0).filter().order(Messaggio.creato_il).fetch(limit=limit, offset=offset):
               logging.info("msg: " + m.title)
@@ -1082,7 +1088,7 @@ class SocialAdmin(object):
                       logging.info("msg.par.allegati")
                       a.obj = post.key
                       a.put()
-                  
+
               elif m.tipo == 201:
                   #messaggi
                   node = None
@@ -1096,13 +1102,13 @@ class SocialAdmin(object):
                       logging.info("msg.allegati")
                       a.obj = post.key
                       a.put()
-                  
-                  
+
+
               post.created = m.creato_il
               init_rank = post.created - Const.BASE_RANK
               post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
               post.put()
-              
+
               #commenti
               if m.commenti:
                   logging.info("msg.commenti")
@@ -1114,15 +1120,15 @@ class SocialAdmin(object):
                           logging.info("msg.voti")
                           vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=comment.key, vote = v.voto)
                           vote.put()
-                                                
-              #voti    
+
+              #voti
               for v in m.votes:
                   logging.info("msg.voti")
                   vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
                   vote.put()
-              
+
       logging.info("migrate.end")
-        
+
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
