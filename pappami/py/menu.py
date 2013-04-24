@@ -29,7 +29,6 @@ import webapp2 as webapp
 from google.appengine.api import memcache
 
 from py.model import *
-from py.comments import *
 
 class CMMenuDataHandler(CMMenuHandler):
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 
-from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler
+from py.base import *
 
 import os
 import cgi
@@ -14,11 +14,9 @@ from google.appengine.ext.ndb import model
 import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp.util import login_required
-import py.feedparser
 
 from py.model import *
 from py.modelMsg import *
-from py.base import *
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"

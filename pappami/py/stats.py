@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+from py.base import *
 import os
 import cgi
 import logging
@@ -33,7 +34,7 @@ from google.appengine.api.taskqueue import Task, Queue
 from py.model import *
 from py.form import CommissioneForm
 from py.gviz_api import *
-from py.base import BasePage, config, handle_404, handle_500
+
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"

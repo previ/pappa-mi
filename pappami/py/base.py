@@ -35,7 +35,6 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
-import py.feedparser
 import httpagentparser
 
 from py.gviz_api import *
@@ -265,23 +264,6 @@ class BaseHandler(webapp.RequestHandler):
       url_linktext = 'Entra'
     return url, url_linktext
 
-  @classmethod
-  def getNews(self,name):
-    news = memcache.get(name)
-    i = 0
-    if news is None:
-      news_all = py.feedparser.parse(self._news[name])
-      #logging.debug(news_all)
-      news = []
-      for n in news_all.entries:
-        #logging.debug(n)
-        if i >= 4 :
-          break
-        i = i + 1
-        news.append(n)
-
-      memcache.add(name,news)
-    return news
 
 class BasePage(BaseHandler):
   pass
