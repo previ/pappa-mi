@@ -133,6 +133,7 @@ function getPostKeyByElement(element) {
 }
 
 function initPost(post_root) {
+  
   var comment_form = post_root.find('form.s_new_comment_form');
   comment_form.validate({
 	  ignore: "",
@@ -172,7 +173,7 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content').setContent('');
+    tinymce.get('comment_content_' + getPostKeyByElement(post_root)).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);
@@ -390,6 +391,7 @@ function onPostExpand() {
 	  error: onError,
 	  success:function(data){
 	    post_item.html(data.html);
+	    initPost(post_item);
 	  }});
   
 }
