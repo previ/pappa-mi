@@ -360,7 +360,7 @@ var onCommentEditCancel = function (){
 }
 
 function onAttachDelete(){
-  var form = getPostRootByElement($(this)).find('form.s_update_post_form');
+  var form = $(this).parents('form');
   var attach = $(this).parents('.s_attach');  
   var attach_key = attach.attr('data-attach-key');  
   

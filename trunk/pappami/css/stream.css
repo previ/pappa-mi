@@ -148,6 +148,27 @@ font-style: italic;
 color: #999;
 }
 
+.s_node_wall {
+height:200px;
+}
+
+.s_node_header {
+overflow:hidden; 
+position:relative; 
+left:20px; 
+top:20px; 
+background:url('/img/back_transp.png');
+}
+
+.s_node_header_em {
+overflow:hidden; 
+margin-left:9px;
+}
+.s_node_avatar {
+position:relative; 
+left:20px; 
+top:20px;
+}
 .s_post_votes_c {
 cursor: pointer;
 }
@@ -165,8 +186,7 @@ margin-left:20px;
 }
 
 .node_selected{
-	background-color:grey;
-	
+background-color:grey;	
 }
 
 .notification {

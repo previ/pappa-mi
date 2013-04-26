@@ -49,9 +49,9 @@ class PostHandler(BasePage):
     self.getBase(template_values)
 
   @classmethod
-  def create_post(cls, node, user, title, content=None, resources=None, res_types=None, attachments=None):
+  def create_post(cls, node, user, title, content=None, resources=None, attachments=None):
 
-    post=node.get().create_open_post(user, title, content, resources, res_types)
+    post=node.get().create_open_post(user, title, content, resources)
 
     if attachments:
       for attach in attachments:
@@ -92,7 +92,7 @@ class PostManageHandler(BaseHandler):
       clean_content = Sanitizer.sanitize(self.request.get("content"))
       post_key=node.create_open_post(content=clean_content,title=clean_title,author=user)
 
-      PostUtils.process_attachments(self.request, post_key)
+      Allegato.process_attachments(self.request, post_key)
 
       postlist = list()
       postlist.append(post_key.get())
@@ -227,7 +227,7 @@ class PostManageHandler(BaseHandler):
      post.put()
      node = post.key.parent().get()
 
-     PostUtils.process_attachments(self.request, post.key)
+     Allegato.process_attachments(self.request, post.key)
 
      post.clear_attachments()
 
@@ -489,25 +489,6 @@ class PostPaginationHandler(BaseHandler):
       if not more:
         response['eof'] = 'true'
       self.output_as_json(response)
-
-class PostUtils:
-  @classmethod
-  def process_attachments(cls, request, obj):
-    for att in request.POST.getall('attach_file'):
-      if hasattr(att, "filename"):
-        if len(att.value) < 10000000 :
-          attachment = Allegato()
-          attachment.nome = att.filename
-          blob = Blob()
-          blob.create(attachment.nome)
-          attachment.blob_key = blob.write(att.value)
-          attachment.obj = obj
-          attachment.put()
-        else:
-          logging.info("attachment is too big.")
-    for att_key in request.POST.getall('attach_delete'):
-      model.Key(urlsafe=att_key).delete()
-
 
 app = webapp.WSGIApplication([
   ('/post/manage',PostManageHandler),

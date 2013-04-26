@@ -157,7 +157,7 @@ class IspezioneHandler(BasePage):
         memcache.delete("statsMese")
 
         node = SocialNode.get_nodes_by_resource(isp.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], res_types=["isp"], attachments=isp.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione", content=isp.note, resources=[isp.key], attachments=isp.allegati)
 
 
       #template = jinja_environment.get_template("post/post_item.html")
@@ -285,7 +285,7 @@ class NonconfHandler(BasePage):
         memcache.delete("statsMese")
 
         node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key], res_types=["nc"])
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Non conformità", content=nc.note, resources=[nc.key])
 
 
       #template = jinja_environment.get_template("post/post_item.html")
@@ -407,7 +407,7 @@ class DietaHandler(BasePage):
         memcache.delete("statsMese")
 
         node = SocialNode.get_nodes_by_resource(dieta.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], res_types=["dieta"], attachments=dieta.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title="Ispezione Diete speciali", content=dieta.note, resources=[dieta.key], attachments=dieta.allegati)
 
       #template = jinja_environment.get_template("post/post_item.html")
       #html=template.render(template_values)
@@ -526,7 +526,7 @@ class NotaHandler(BasePage):
         memcache.delete("statsMese")
 
         node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
+        template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
 
 
       #template = jinja_environment.get_template("post/post_item.html")

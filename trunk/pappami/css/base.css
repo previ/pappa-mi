@@ -33,14 +33,14 @@ cursor: pointer;
 float:left;
 }
 
-.brand {
-padding:14px 20px 0px
+.navbar .brand {
+padding:4px 20px 4px
 }
 
 img.logo {
 display: inline;
 float:left;
-height: 24px;
+height: 32px;
 margin-right:6px;
 }
 

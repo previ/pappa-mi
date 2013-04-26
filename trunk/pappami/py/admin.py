@@ -811,17 +811,17 @@ class CMAdminHandler(BasePage):
             pass
       for post in SocialPost.query():
         resource = ""
-        for r in post.res_type:
-          resource += r + " "
+        for r in post.resource:
+          resource += r.get().restype + " "
 
         #logging.info(resource)
         ref_date = post.created
-        if len(post.res_type) > 0:
-          if post.res_type[0] in ["isp","dieta"]:
+        if len(post.resource) > 0:
+          if post.resource[0].kind() in ["Ispezione","Dieta"]:
             ref_date = post.resource[0].get().dataIspezione
-          elif post.res_type[0] == ["nc"]:
+          elif post.resource[0].kind() == ["Nonconformita"]:
             ref_date = post.resource[0].get().dataNonconf
-          elif post.res_type[0] == ["nota"]:
+          elif post.resource[0].kind() == ["Nota"]:
             ref_date = post.resource[0].get().dataNota
 
         doc=search.Document(
@@ -1000,7 +1000,7 @@ class SocialAdmin(object):
           logging.info("generate_nodes.city")
           citta=Citta.get_all()
           for i in citta:
-              node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key], res_type=["city"])
+              node=SocialNode(name=i.nome,description="Gruppo di discussione sulla citta di "+i.nome,resource=[i.key])
               node.init_rank()
               node.put()
 
@@ -1010,7 +1010,7 @@ class SocialAdmin(object):
               logging.info("node: " + i.nome)
               c = i.citta.get()
               node = SocialNode(name = i.nome + " " + i.tipoScuola,
-                              description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key], res_type=["cm"])
+                              description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key])
               node.init_rank()
               node.put()
 
@@ -1082,7 +1082,7 @@ class SocialAdmin(object):
               if m.tipo in [101,102,103,104]:
                   #dati: get node by cm (resource)
                   node = SocialNode.get_by_resource(m.grp)[0]
-                  post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par], res_types=[m.par.get().restype]).get()
+                  post=node.create_open_post(author=m.c_ua.get(), title=m.title, content=m.body, resources=[m.par]).get()
                   #allegati a ispezioni e note
                   for a in m.par.get().get_allegati:
                       logging.info("msg.par.allegati")

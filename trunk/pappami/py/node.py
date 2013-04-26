@@ -17,6 +17,7 @@ from datetime import date, datetime, time, timedelta
 from gviz_api import *
 from py.model import *
 from py.blob import *
+
 import py.PyRSS2Gen
 
 from form import *
@@ -40,7 +41,7 @@ class NodeHandler(BaseHandler):
       self.response.out.write("");
 
   def get(self,node_id):
-      node=model.Key('SocialNode', int(node_id)).get()
+      node=model.Key('SocialNode', long(node_id)).get()
 
       user=self.get_current_user()
 
@@ -108,66 +109,76 @@ class NodeSubscribeHandler(BaseHandler):
 class NodeCreateHandler(BaseHandler):
     @reguser_required
     def get(self):
-        template_values = {
-                        'content': 'node/createnode.html',
-                        "citta" : Citta.get_all(),
+      template_values = {
+        'content': 'node/createnode.html',
+        "citta" : Citta.get_all(),
 
-        }
-        self.getBase(template_values)
+      }
+      self.getBase(template_values)
 
     def post(self):
+      node=SocialNode()
+      node.name=Sanitizer.text(self.request.get("name"))
+      node.description=Sanitizer.sanitize(self.request.get("description"))
+      node.default_comment=bool(self.request.get("default_comment"))
+      node.default_post=bool(self.request.get("default_post"))
+      node.default_admin=bool(self.request.get("default_admin"))
+      node.founder=self.get_current_user().key
+      node.init_rank()
+      logging.info(self.request.get("citta"))
+      #node.resource=model.Key(urlsafe=self.request.get("citta")).get().create_resource().key
 
-        node=SocialNode()
-        node.name=Sanitizer.text(self.request.get("name"))
-        node.description=Sanitizer.sanitize(self.request.get("description"))
-        node.default_comment=bool(self.request.get("default_comment"))
-        node.default_post=bool(self.request.get("default_post"))
-        node.default_admin=bool(self.request.get("default_admin"))
-        node.founder=self.get_current_user().key
-        node.init_rank()
-        logging.info(self.request.get("citta"))
-        #node.resource=model.Key(urlsafe=self.request.get("citta")).get().create_resource().key
+      node.put()
 
-
-        node.put()
-
-        self.redirect("/node/"+str(node.key.id()))
+      self.redirect("/node/"+str(node.key.id()))
 
 
 class NodeEditHandler(BaseHandler):
     def get(self,id):
-        node=model.Key(urlsafe=id).get()
-        if node is None or type(node) is not SocialNode:
-            self.response.clear()
-            self.response.set_status(404)
-            template = jinja_environment.get_template('404_custom.html')
-            c={"error": "Il post a cui stai provando ad accedere non esiste"}
-            t = template.render(c)
-            self.response.out.write(t)
-            return
+      logging.info(str(id))
+      node=model.Key("SocialNode", long(id)).get()
+      if node is None or type(node) is not SocialNode:
+        self.response.clear()
+        self.response.set_status(404)
+        template = jinja_environment.get_template('404_custom.html')
+        c={"error": "Il post a cui stai provando ad accedere non esiste"}
+        t = template.render(c)
+        self.response.out.write(t)
+        return
 
-        template_values = {
-                        "content": 'node/editnode.html',
-                        "node":node,
-                        "citta" : Citta.get_all(),
+      template_values = {
+                      "content": 'node/editnode.html',
+                      "node":node,
+                      "citta" : Citta.get_all(),
 
-                        }
+                      }
 
+      self.getBase(template_values)
 
-
-        self.getBase(template_values)
     def post(self,id):
-        node=model.Key(urlsafe=self.request.get("node_id")).get()
-        node.name=Sanitizer.text(self.request.get("name"))
-        node.description=Sanitizer.sanitize(self.request.get("description"))
-        node.default_comment=bool(self.request.get("default_comment"))
-        node.default_post=bool(self.request.get("default_post"))
-        node.default_admin=bool(self.request.get("default_admin"))
-        node.founder=self.get_current_user().key
-        node.init_rank()
-        node.put()
+      logging.info(id)
+      node=model.Key("SocialNode", long(id)).get()
 
-        self.redirect("/node/"+str(node.key.id()))
+      node.name = Sanitizer.text(self.request.get("name"))
+      node.description = Sanitizer.sanitize(self.request.get("description"))
+      node.default_comment = bool(self.request.get("default_comment"))
+      node.default_post = bool(self.request.get("default_post"))
+      node.default_admin = bool(self.request.get("default_admin"))
+      if self.request.get('city'):
+        if self.request.get('city') != "0":
+          node.set_resource('Citta', model.Key("Citta", int(self.request.get('city')))) 
+        else:
+          node.set_resource('Citta', None) 
+      if self.request.get('cm'):
+        node.set_resource('Commissione', model.Key("Commissione", int(self.request.get('cm'))))
+      else:
+        node.set_resource('Commissione', None) 
+
+      Allegato.process_attachments(self.request, node.key)
+      
+      node.put()
+
+      self.redirect("/node/"+str(node.key.id()))
 
 class NodePaginationHandler(BaseHandler):
 
@@ -217,6 +228,7 @@ class NodePaginationHandler(BaseHandler):
                         "node_name":node_name,
                         "user": user,
                         "cmsro": cmsro,
+                        "admin": users.is_current_user_admin()
                         }
 
                 if node and user:
@@ -237,7 +249,7 @@ class NodePaginationHandler(BaseHandler):
                   results = search.Index(name="index-nodes").search(search.Query(query_string=self.request.get("query")))
 
                   for scored_document in results:
-                    nodes.append(model.Key("SocialNode", int(scored_document.doc_id[5:])).get())
+                    nodes.append(model.Key("SocialNode", long(scored_document.doc_id[5:])).get())
 
                 except search.Error:
                   logging.exception('Search failed' )
@@ -293,7 +305,7 @@ class NodeFeedHandler(BasePage):
 
   def get(self, node_id):
 
-    node=model.Key('SocialNode', int(node_id)).get()
+    node=model.Key('SocialNode', long(node_id)).get()
     postlist, next_curs, more = SocialPost.get_by_node_rank(node=node.key, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
     items = list()
 
