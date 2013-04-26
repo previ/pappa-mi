@@ -8,7 +8,7 @@
 		<textarea class="s_post_edit_content required" name="content">{{post.content}}</textarea>
 		{%for resource in post.resource%}
 		<div class="s_post_resource well">
-		{%include "resources/"+post.res_type[loop.index-1]+".html"%}
+		{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}
 		</div>			
 		{%endfor%}		
 		<div class="s_post_attachs well">

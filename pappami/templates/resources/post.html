@@ -7,13 +7,13 @@
 		<div class="s_post_content">
 			<div class="s_post_header">			
 				<div class="s_post_title">
-					<span class="s_post_title_1"><a target="_new" href="/post/{{post.key.urlsafe()}}">{{post.title}}</a></span>
+					<span class="s_post_title_1"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">{{post.title}}</a></span>
 				</div> 
 				<div class="s_post_subtitle">
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
 					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
 					<div class="s_post_date">{{post.extended_date()}}</div>
-					<div class="s_post_link"><a target="_new" href="/post/{{post.key.urlsafe()}}">link a questo post</a></div>
+					<div class="s_post_link"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
 				</div> 
 			</div>				
 			<div class="s_post_body">
@@ -21,7 +21,7 @@
 				<div class="edit_hollow" id="edit_hollow_{{post.key.urlsafe()}}"></div>
 				{%for resource in post.resource%}
 				<div class="post_resource">
-				{%include "resources/"+post.res_type[loop.index-1]+".html"%}
+				{%include "resources/" + post.resource[loop.index-1].get().restype + ".html"%}
 				</div>			
 				{%endfor%}	
 			</div>									

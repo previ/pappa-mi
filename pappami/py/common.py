@@ -221,3 +221,5 @@ class Channel(object):
   @classmethod
   def send_message(cls, user, message):
     channel.send_message('pappa-mi.' + str(user.key.id()), message)
+
+

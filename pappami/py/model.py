@@ -18,7 +18,7 @@ from google.appengine.api import users
 import base
 from common import cached_property, Const, Cache, Sanitizer
 from engineauth import models
-jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)[0:len(os.path.dirname(__file__))-3]+"/templates"))
+from py.blob import *
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -38,6 +38,11 @@ class Citta(model.Model):
   @classmethod
   def get_first(cls):
     return cls.query().get()
+  
+  @property
+  def restype(self):
+    return "citta"
+  
 
 class Configurazione(model.Model):
   nome = model.StringProperty()
@@ -165,6 +170,10 @@ class Commissione(model.Model):
 
   def desc(self):
     return self.nome + " " + self.tipoScuola
+  
+  @property
+  def restype(self):
+    return "cm"
 
 class Commissario(model.Model):
   def __init__(self, *args, **kwargs):
@@ -972,9 +981,9 @@ class Nota(model.Model):
 
 class Allegato(model.Model):
   obj = model.KeyProperty()
-  path = model.StringProperty()
+  path = model.StringProperty(indexed=False)
   blob_key = model.BlobKeyProperty()
-  nome = model.StringProperty(default="")
+  nome = model.StringProperty(default="",indexed=False)
   descrizione = model.StringProperty(default="",indexed=False)
 
   dati=None
@@ -1009,6 +1018,25 @@ class Allegato(model.Model):
            ".pdf":"application/pdf",
            ".doc":"application/msword",
            ".pdf":"application/msword"}
+
+  @classmethod
+  def process_attachments(cls, request, obj):
+    for att in request.POST.getall('attach_file'):
+      if hasattr(att, "filename"):
+        if len(att.value) < 10000000 :
+          attachment = Allegato()
+          attachment.nome = att.filename
+          blob = Blob()
+          blob.create(attachment.nome)
+          attachment.blob_key = blob.write(att.value)
+          attachment.obj = obj
+          attachment.put()
+        else:
+          logging.info("attachment is too big.")
+    for att_key in request.POST.getall('attach_delete'):
+      logging.info("deleting attachment")
+      model.Key(urlsafe=att_key).delete()
+    obj.get().attachments = None
 
 class Statistiche:
   anno1 = int(0)
@@ -1315,7 +1343,6 @@ class SocialNode(model.Model):
     #latest_post = model.KeyProperty(kind="SocialPost")
 
     resource = model.KeyProperty(repeated=True)
-    res_type = model.StringProperty(repeated=True)
 
     created = model.DateTimeProperty(auto_now=True)
     rank = model.IntegerProperty()
@@ -1367,6 +1394,50 @@ class SocialNode(model.Model):
         subs[s.user] = s
       return subs
 
+    @cached_property
+    def attachments(self):
+      attachments = list()
+      for attach in Allegato.query().filter(Allegato.obj == self.key):
+        attachments.append(attach)
+      return attachments
+
+    @cached_property
+    def image_avatar_path(self):
+      if len(self.attachments) > 0:
+        return self.attachments[0].path()
+      elif len(self.resource) > 0:
+        return "/img/avatar/node_" + self.resource[0].get().restype + "_avatar.jpg"
+      else:
+        return "/img/avatar/node_default_avatar.jpg"
+
+    @cached_property
+    def image_wall_path(self):
+      if len(self.attachments) > 1:
+        return self.attachments[1].path()
+      elif len(self.resource) > 0:
+        return "/img/avatar/node_" + self.resource[0].get().restype + "_wall.jpg"
+      else:
+        return "/img/avatar/node_default_wall.jpg"
+
+    def get_resource(self, kind):
+      resources = dict()
+      for n in range(0, len(self.resource)):
+        resources[self.resource[n].kind()] = self.resource[n]
+      
+      return resources.get(kind)
+
+    def set_resource(self, kind, resource):
+      if self.get_resource(kind):
+        for n in range(0, len(self.resource)):
+          if self.resource[n].kind() == kind:
+            if resource:
+              self.resource[n] = resource
+            else:
+              self.resource.pop(n)
+      elif resource:
+        self.resource.append(resource)
+      
+      
     def init_rank(self):
       init_rank = datetime.now() - Const.BASE_RANK
       self.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
@@ -1429,7 +1500,7 @@ class SocialNode(model.Model):
     def __init__(self, *args, **kwargs):
       super(SocialNode, self).__init__(*args, **kwargs)
 
-    def create_open_post(self, author, title, content, resources=[], res_types=[]):
+    def create_open_post(self, author, title, content, resources=[]):
       if Const.FLOOD_SYSTEM_ACTIVATED:
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
@@ -1440,7 +1511,6 @@ class SocialNode(model.Model):
       new_post.content=content
       new_post.title=title
       new_post.resource=resources
-      new_post.res_type=res_types
       new_post.init_rank()
       new_post.put()
       self.last_act=new_post.created
@@ -1568,7 +1638,6 @@ class SocialPost(model.Model):
     content = model.TextProperty(default="", indexed=False)
     #public_reference=model.StringProperty(default="")
     resource=model.KeyProperty(repeated=True)
-    res_type=model.StringProperty(repeated=True)
 
     created = model.DateTimeProperty(auto_now_add=True)
     modified = model.DateTimeProperty(auto_now_add=True)
@@ -1581,9 +1650,9 @@ class SocialPost(model.Model):
     @cached_property
     def content_summary(self):
       summary = ""
-      if len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota"]:
+      if len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"]:
         summary = self.resource[0].get().sommario()
-      elif len(self.res_type) > 0 and self.res_type[0] in ["post"]:
+      elif len(self.resource) > 0 and self.resource[0] in ["SocialPost"]:
         summary = self.resource[0].get().content_summary
         #logging.info(summary)
 
@@ -1607,10 +1676,10 @@ class SocialPost(model.Model):
       return imgs
 
     def has_summary(self):
-      return len(self.content) > 1000 or (len(self.res_type) > 0 and self.res_type[0] in ["isp", "dieta", "nc", "nota", "post"])
+      return len(self.content) > 1000 or (len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"])
 
     def display_content(self):
-      return not(len(self.res_type) > 0 and self.res_type[0] in ['isp', 'nc', 'dieta', 'nota'])
+      return not(len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"])
 
     def extended_date(self):
       delta = datetime.now() - self.created
@@ -1667,6 +1736,14 @@ class SocialPost(model.Model):
         attachments.append(attach)
       return attachments
 
+    @cached_property
+    def images(self):
+      imgs = list()
+      for a in self.attachments:
+        if a.isImage():
+          imgs.append(a.imgthumb())
+      return imgs
+ 
     def can_admin(self, user):
       if not user:
         return False
@@ -1708,6 +1785,10 @@ class SocialPost(model.Model):
 
     def clear_attachments(self):
       self.attachments = None
+
+    @property
+    def restype(self):
+      return "post"
 
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
@@ -1775,11 +1856,11 @@ class SocialPost(model.Model):
 
     def reshare(self, target_node, new_author, new_content, new_title):
       new_post = None
-      if len(self.res_type) > 0 and self.res_type[0] == "post":
+      if len(self.resource) > 0 and self.resource[0].kind() == "SocialPost":
         #reshare of a reshare
-        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.resource[0]], res_types=[self.res_type[0]])
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.resource[0]])
       else:
-        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key], res_types=["post"])
+        new_post = target_node.get().create_open_post(new_author, new_title, new_content, resources=[self.key])
       return new_post
 
 
@@ -1902,17 +1983,17 @@ class SocialPost(model.Model):
       post=future.get_result().get()
 
       resource = ""
-      for r in post.res_type:
-        resource += r + " "
+      for r in post.resource:
+        resource += r.get().restype + " "
 
       #logging.info(resource)
       ref_date = post.created
-      if len(post.res_type) > 0:
-        if post.res_type[0] in ["isp","dieta"]:
+      if len(post.resource) > 0:
+        if post.resource[0].kind() in ["Ispezione","Dieta"]:
           ref_date = post.resource[0].get().dataIspezione
-        elif post.res_type[0] == ["nc"]:
+        elif post.resource[0].kind() == ["Nonconformita"]:
           ref_date = post.resource[0].get().dataNonconf
-        elif post.res_type[0] == ["nota"]:
+        elif post.resource[0].kind() == ["Nota"]:
           ref_date = post.resource[0].get().dataNota
 
       doc=search.Document(

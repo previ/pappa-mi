@@ -115,7 +115,7 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
           allegato.blob_key = blob.write(allegato_decode)
 
     node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-    template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], res_types=["nota"], attachments=nota.allegati)
+    template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
 
     feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
 

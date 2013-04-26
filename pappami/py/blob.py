@@ -1,6 +1,8 @@
 from __future__ import with_statement
 from google.appengine.api import files
 
+from py.base import *
+
 import os
 import cgi
 import logging
@@ -9,12 +11,9 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 import mimetypes
 
-from py.base import *
-
 from google.appengine.ext import blobstore
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import blobstore_handlers
-from google.appengine.ext.webapp.util import run_wsgi_app
 
 class Blob:
     file_name = None
@@ -69,13 +68,8 @@ class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
 
 app = webapp.WSGIApplication([
-    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
+    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
-app.error_handlers[404] = handle_404
-app.error_handlers[500] = handle_500
+#app.error_handlers[404] = handle_404
+#app.error_handlers[500] = handle_500
 
-def main():
-  app.run();
-
-if __name__ == "__main__":
-  main()

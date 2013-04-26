@@ -14,6 +14,9 @@
    </ul>
   </div>
   {%if node%}
+  {%if admin%}
+  <a class="btn btn-normal" href="/node/edit/{{node.key.id()}}">Modifica</a>
+  {%endif%}
   <div class="btn-group pull-right" style="display:inline;" id="node_subscription">
    <div id="subscribe_btn" class="btn"></div>
    <a id="sub_prop" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -29,7 +32,8 @@
    {%endif%}
  </div>
 {%endif%} 
- <div id="node_title">
+ <div id="node_title" class="s_node_header_em">
+  {%if node%}<img class="avatar pull-left" src="{{node.image_avatar_path}}">{%endif%}
   <h3 style="display:inline;">{{node_name}}</h3>{%if node%}<a class="pull-right s_node_link" style="margin-left:5px;" target="_new" href="/node/{{node.key.id()}}/rss">rss</a><a class="pull-right s_node_link" target="_new" href="/node/{{node.key.id()}}">link a questo argomento</a>{%endif%}
  </div>{%if user %}
  <div id="new_post" style="display:none" class="well">
@@ -67,9 +71,10 @@
   <ul id="main_stream_list" class="unstyled">
   </ul>
  </div>
- <div id="main_cmd">
-  <div id="more_posts" class="btn btn-normal span5 offset2">Carica altri...</div>
-  <div id="no_more_posts" class="span5 offset2 alert alert-info fade in" style="display:none;">Non sono presenti altri messaggi<a class="close" data-dismiss="alert" href="#">&times;</a>
+ <div id="main_cmd"><center>
+  <div id="more_posts" class="btn btn-normal span5">Carica altri...</div>
+  <div id="no_more_posts" class="span5 alert alert-info fade in" style="display:none;">Non sono presenti altri messaggi<a class="close" data-dismiss="alert" href="#">&times;</a>
+  </center>
  </div>
 </div>
 <div id="new-data" style="display:none;">
