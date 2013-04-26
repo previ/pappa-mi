@@ -232,7 +232,7 @@ class EventHandler(BaseHandler):
       logging.info("Notification: " + str(n.event.get().type))
 
     template = jinja_environment.get_template("ntfctn/notifications_email.html")
-    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications})
+    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": 'test.pappa-mi.it'})
     test_emails = ['roberto.previtera@gmail.com',
            'aiuto@pappa-mi.it',
            'bob_previ@tahoo.com',

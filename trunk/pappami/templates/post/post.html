@@ -1,6 +1,6 @@
-<script type="text/javascript">
+{%if fullscreen%}<script type="text/javascript">
 $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
-</script>
+</script>{%endif%}
 <div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
 	<div class="s_post"> 
 		<div class="s_post_avatar">
@@ -97,7 +97,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
 						<div class="form_parent">
-							<textarea id="comment_content" class="s_post_comment" name="content"></textarea>
+							<textarea id="comment_content_{{post.key.urlsafe()}}" class="s_post_comment" name="content"></textarea>
 							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
 						</div>
 					</form>
