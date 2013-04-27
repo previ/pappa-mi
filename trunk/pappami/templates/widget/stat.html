@@ -1,14 +1,14 @@
 <table border="0" style="padding:0px; margin:0px; font-family:verdana; font-size:12px; border-spacing:0px;">
 <tr>
 <td><a href="/" target="_new"><img border="0" width="20" src="/img/pappa-mi-logo.png" title="Pappa-Mi"/></a></td>
-<td align="center"><img width="20" src="/img/chef.png" title="Assaggio"/></td>
-<td align="center"><img width="20" src="/img/grad.png" title="Gradimento"/></td>
-<td align="center"><img width="20" src="/img/bilancia.png" title="Quantit&agrave;"/></td>
-<td align="center"><img width="20" src="/img/forno.png" title="Cottura"/></td>
-<td align="center"><img width="20" src="/img/term.png" title="Temperatura"/></td>
+<td align="center"><div class="wid-icons-small ico-chef" title="Assaggio"/></td>
+<td align="center"><div class="wid-icons-small ico-grad" title="Gradimento"/></td>
+<td align="center"><div class="wid-icons-small ico-bilancia" title="Quantit&agrave;"/></td>
+<td align="center"><div class="wid-icons-small ico-forno" title="Cottura"/></td>
+<td align="center"><div class="wid-icons-small ico-term" title="Temperatura"/></td>
 </tr>
 <tr>
-<td><img width="20" src="/img/pasta.png" title="Primo"/></td>
+<td><div class="wid-icons-small ico-pasta" title="Primo"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.primoAssaggioNorm()}}{%endif%},{%if statCC%}{{statCC.primoAssaggioNorm()}}{%endif%},{%if statCM%}{{statCM.primoAssaggioNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.primoGradimentoNorm()}}{%endif%},{%if statCC%}{{statCC.primoGradimentoNorm()}}{%endif%},{%if statCM%}{{statCM.primoGradimentoNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.primoQuantita1Norm()}}{%endif%},{%if statCC%}{{statCC.primoQuantita1Norm()}}{%endif%},{%if statCM%}{{statCM.primoQuantita1Norm()}}{%endif%}|{%if statCY%}{{statCY.primoQuantita2Norm()}}{%endif%},{%if statCC%}{{statCC.primoQuantita2Norm()}}{%endif%},{%if statCM%}{{statCM.primoQuantita2Norm()}}{%endif%}|{%if statCY%}{{statCY.primoQuantita3Norm()}}{%endif%},{%if statCC%}{{statCC.primoQuantita3Norm()}}{%endif%},{%if statCM%}{{statCM.primoQuantita3Norm()}}{%endif%}&chco=ff0000,00cc00,00ff00&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Primo - Quantit&agrave;"/></td>
@@ -16,7 +16,7 @@
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.primoTemperatura1Norm()}}{%endif%},{%if statCC%}{{statCC.primoTemperatura1Norm()}}{%endif%},{%if statCM%}{{statCM.primoTemperatura1Norm()}}{%endif%}|{%if statCY%}{{statCY.primoTemperatura2Norm()}}{%endif%},{%if statCC%}{{statCC.primoTemperatura2Norm()}}{%endif%},{%if statCM%}{{statCM.primoTemperatura2Norm()}}{%endif%}|{%if statCY%}{{statCY.primoTemperatura3Norm()}}{%endif%},{%if statCC%}{{statCC.primoTemperatura3Norm()}}{%endif%},{%if statCM%}{{statCM.primoTemperatura3Norm()}}{%endif%}&chco=0000ff,00ff00,ff0000&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Primo - Temperatura"//></td>
 </tr>
 <tr>
-<td><img width="20" src="/img/carne.png" title="Secondo"/></td>
+<td><div class="wid-icons-small ico-carne" title="Secondo"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.secondoAssaggioNorm()}}{%endif%},{%if statCC%}{{statCC.secondoAssaggioNorm()}}{%endif%},{%if statCM%}{{statCM.secondoAssaggioNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.secondoGradimentoNorm()}}{%endif%},{%if statCC%}{{statCC.secondoGradimentoNorm()}}{%endif%},{%if statCM%}{{statCM.secondoGradimentoNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/></td>
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.secondoQuantita1Norm()}}{%endif%},{%if statCC%}{{statCC.secondoQuantita1Norm()}}{%endif%},{%if statCM%}{{statCM.secondoQuantita1Norm()}}{%endif%}|{%if statCY%}{{statCY.secondoQuantita2Norm()}}{%endif%},{%if statCC%}{{statCC.secondoQuantita2Norm()}}{%endif%},{%if statCM%}{{statCM.secondoQuantita2Norm()}}{%endif%}|{%if statCY%}{{statCY.secondoQuantita3Norm()}}{%endif%},{%if statCC%}{{statCC.secondoQuantita3Norm()}}{%endif%},{%if statCM%}{{statCM.secondoQuantita3Norm()}}{%endif%}&chco=ff0000,00cc00,00ff00&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Secondo - Quantit&agrave;"/></td>
@@ -24,7 +24,7 @@
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.secondoTemperatura1Norm()}}{%endif%},{%if statCC%}{{statCC.secondoTemperatura1Norm()}}{%endif%},{%if statCM%}{{statCM.secondoTemperatura1Norm()}}{%endif%}|{%if statCY%}{{statCY.secondoTemperatura2Norm()}}{%endif%},{%if statCC%}{{statCC.secondoTemperatura2Norm()}}{%endif%},{%if statCM%}{{statCM.secondoTemperatura2Norm()}}{%endif%}|{%if statCY%}{{statCY.secondoTemperatura3Norm()}}{%endif%},{%if statCC%}{{statCC.secondoTemperatura3Norm()}}{%endif%},{%if statCM%}{{statCM.secondoTemperatura3Norm()}}{%endif%}&chco=0000ff,00ff00,ff0000&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Secondo - Temperatura"/></td>
 </tr>
 <tr>
-<td><img width="20" src="/img/salad.png" title="Contorno"/></td>
+<td><div class="wid-icons-small ico-salad" title="Contorno"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.contornoAssaggioNorm()}}{%endif%},{%if statCC%}{{statCC.contornoAssaggioNorm()}}{%endif%},{%if statCM%}{{statCM.contornoAssaggioNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Contorno - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.contornoGradimentoNorm()}}{%endif%},{%if statCC%}{{statCC.contornoGradimentoNorm()}}{%endif%},{%if statCM%}{{statCM.contornoGradimentoNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.contornoQuantita1Norm()}}{%endif%},{%if statCC%}{{statCC.contornoQuantita1Norm()}}{%endif%},{%if statCM%}{{statCM.contornoQuantita1Norm()}}{%endif%}|{%if statCY%}{{statCY.contornoQuantita2Norm()}}{%endif%},{%if statCC%}{{statCC.contornoQuantita2Norm()}}{%endif%},{%if statCM%}{{statCM.contornoQuantita2Norm()}}{%endif%}|{%if statCY%}{{statCY.contornoQuantita3Norm()}}{%endif%},{%if statCC%}{{statCC.contornoQuantita3Norm()}}{%endif%},{%if statCM%}{{statCM.contornoQuantita3Norm()}}{%endif%}&chco=ff0000,00cc00,00ff00&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Contorno - Quantit&agrave;"/></td>
@@ -32,7 +32,7 @@
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.contornoTemperatura1Norm()}}{%endif%},{%if statCC%}{{statCC.contornoTemperatura1Norm()}}{%endif%},{%if statCM%}{{statCM.contornoTemperatura1Norm()}}{%endif%}|{%if statCY%}{{statCY.contornoTemperatura2Norm()}}{%endif%},{%if statCC%}{{statCC.contornoTemperatura2Norm()}}{%endif%},{%if statCM%}{{statCM.contornoTemperatura2Norm()}}{%endif%}|{%if statCY%}{{statCY.contornoTemperatura3Norm()}}{%endif%},{%if statCC%}{{statCC.contornoTemperatura3Norm()}}{%endif%},{%if statCM%}{{statCM.contornoTemperatura3Norm()}}{%endif%}&chco=0000ff,00ff00,ff0000&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Contorno - Temperatura"/></td>
 </tr>
 <tr>
-<td><img width="20" src="/img/pane.png" title="Pane"/></td>
+<td><div class="wid-icons-small ico-pane" title="Pane"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.paneAssaggioNorm()}}{%endif%},{%if statCC%}{{statCC.paneAssaggioNorm()}}{%endif%},{%if statCM%}{{statCM.paneAssaggioNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Pane - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.paneGradimentoNorm()}}{%endif%},{%if statCC%}{{statCC.paneGradimentoNorm()}}{%endif%},{%if statCM%}{{statCM.paneGradimentoNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.paneQuantita1Norm()}}{%endif%},{%if statCC%}{{statCC.paneQuantita1Norm()}}{%endif%},{%if statCM%}{{statCM.paneQuantita1Norm()}}{%endif%}|{%if statCY%}{{statCY.paneQuantita2Norm()}}{%endif%},{%if statCC%}{{statCC.paneQuantita2Norm()}}{%endif%},{%if statCM%}{{statCM.paneQuantita2Norm()}}{%endif%}|{%if statCY%}{{statCY.paneQuantita3Norm()}}{%endif%},{%if statCC%}{{statCC.paneQuantita3Norm()}}{%endif%},{%if statCM%}{{statCM.paneQuantita3Norm()}}{%endif%}&chco=ff0000,00cc00,00ff00&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Pane - Quantit&agrave;"/></td>
@@ -40,7 +40,7 @@
 <td>-</td>
 </tr>
 <tr>
-<td><img width="20" src="/img/mela.png" title="Frutta"/></td>
+<td><div class="wid-icons-small ico-mela" title="Frutta"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.fruttaAssaggioNorm()}}{%endif%},{%if statCC%}{{statCC.fruttaAssaggioNorm()}}{%endif%},{%if statCM%}{{statCM.fruttaAssaggioNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=32x16&cht=gom&chd=t:{%if statCY%}{{statCY.fruttaGradimentoNorm()}}{%endif%},{%if statCC%}{{statCC.fruttaGradimentoNorm()}}{%endif%},{%if statCM%}{{statCM.fruttaGradimentoNorm()}}{%endif%}& chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Gradimento"/></td>
 <td><img src="http://chart.apis.google.com/chart?cht=bhs&chs=32x16&chd=t:{%if statCY%}{{statCY.fruttaQuantita1Norm()}}{%endif%},{%if statCC%}{{statCC.fruttaQuantita1Norm()}}{%endif%},{%if statCM%}{{statCM.fruttaQuantita1Norm()}}{%endif%}|{%if statCY%}{{statCY.fruttaQuantita2Norm()}}{%endif%},{%if statCC%}{{statCC.fruttaQuantita2Norm()}}{%endif%},{%if statCM%}{{statCM.fruttaQuantita2Norm()}}{%endif%}|{%if statCY%}{{statCY.fruttaQuantita3Norm()}}{%endif%},{%if statCC%}{{statCC.fruttaQuantita3Norm()}}{%endif%},{%if statCM%}{{statCM.fruttaQuantita3Norm()}}{%endif%}&chco=ff0000,00cc00,00ff00&chma=0,0,0,0|0,0&chbh=4,1,1&chf=bg,s,{{bgcolor}}00" title="Frutta - Quantit&agrave;"/></td>
@@ -48,7 +48,7 @@
 <td>-</td>
 </tr>
 <tr>
-<td><img width="20" src="/img/service.png" title="Servizio"/></td>
+<td><div class="wid-icons-small ico-service" title="Servizio"/></td>
 <td colspan="5"><img src="http://chart.apis.google.com/chart?chs=48x20&cht=gom&chd=t:{%if statCY%}{{statCY.giudizioGlobaleNorm()}}{%endif%},{%if statCC%}{{statCC.giudizioGlobaleNorm()}}{%endif%},{%if statCM%}{{statCM.giudizioGlobaleNorm()}}{%endif%}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Giudizio Globale sul cibo"/>
 <img src="http://chart.apis.google.com/chart?chs=48x20&cht=gom&chd=t:{%if statCY%}{{statCY.puliziaRefettorioNorm()}}{%endif%},{%if statCC%}{{statCC.puliziaRefettorioNorm()}}{%endif%},{%if statCM%}{{statCM.puliziaRefettorioNorm()}}{%endif%}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Pulizia Refettorio"/>
 <img src="http://chart.apis.google.com/chart?chs=48x20&cht=gom&chd=t:{%if statCY%}{{statCY.smaltimentoRifiutiNorm()}}{%endif%},{%if statCC%}{{statCC.smaltimentoRifiutiNorm()}}{%endif%},{%if statCM%}{{statCM.smaltimentoRifiutiNorm()}}{%endif%}&chls=3,2,2|3,2,2|15|10&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Smaltimento Rifiuti"/>
