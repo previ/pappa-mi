@@ -608,9 +608,13 @@ font-weight: bold;
 
 .wid-icons {
 background: url('/img/widget_icons.png');
+width:32px;
+height:32px;
 }
 .wid-icons-small {
-background: url('/img/widget_icons_small.png');
+background: url('/img/widget_icons.png');
+width:20px;
+height:20px;
 }
 .ico-assaggio {
 background-position: -32px 0px;
@@ -657,4 +661,13 @@ background-position:  -160px -32px;
 }
 .ico-pane-small {
 background-position:  -200px -32px;
+}
+.ico-quantita-small {
+background-position:  0px -32px;
+}
+.ico-cottura-small {
+background-position:  -60px -32px;
+}
+.ico-temp-small {
+background-position:  -180px -32px;
 }
