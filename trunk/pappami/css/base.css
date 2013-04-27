@@ -608,33 +608,53 @@ font-weight: bold;
 
 .wid-icons {
 background: url('/img/widget_icons.png');
-background-size:320px;
 }
 .wid-icons-small {
-background: url('/img/widget_icons.png');
-background-size:200px;
+background: url('/img/widget_icons_small.png');
 }
-.ico-chef {
-background-position: 
+.ico-assaggio {
+background-position: -32px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-grad {
+background-position:  -128px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-primo {
+background-position:  -192px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-secondo {
+background-position:  -64px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-contorno {
+background-position:  -224px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-dessert {
+background-position:  -160px 0px;
 }
-.ico-chef {
-background-position: 
+.ico-service {
+background-position:  -256px 0px;
 }
-.ico-chef {
-background-position: 
+
+.ico-assaggio-small {
+background-position: -20px -32px;
+}
+.ico-grad-small {
+background-position:  -80px -32px;
+}
+.ico-primo-small {
+background-position:  -120px -32px;
+}
+.ico-secondo-small {
+background-position:  -40px -32px;
+}
+.ico-contorno-small {
+background-position:  -140px -32px;
+}
+.ico-dessert-small {
+background-position:  -100px -32px;
+}
+.ico-service-small {
+background-position:  -160px -32px;
+}
+.ico-pane-small {
+background-position:  -200px -32px;
 }

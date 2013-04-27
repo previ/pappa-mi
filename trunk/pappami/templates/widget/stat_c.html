@@ -3,28 +3,28 @@
 <table border="0" style="padding:0px; margin:0px; font-family:verdana; font-size:12px; border-spacing:0px;">
 <tr>
 <td>{%if not pappamiit%}<a href="/" target="_new"><img width="20" border="0" src="/img/pappa-mi-logo.png" title="Pappa-Mi"/></a>{%endif%}<img style="position:absolute; top:0px; right:0px;" width="16" src="/img/help-icon.png" title="Legenda" onmouseover="$('#lgd').show()" onmouseout="$('#lgd').hide()"/></td>
-<td align="center"><div class="wid-icons ico-chef" title="Assaggio"/></td>
+<td align="center"><div class="wid-icons ico-assaggio" title="Assaggio"/></td>
 <td align="center"><div class="wid-icons ico-grad" title="Gradimento"/></td>
 </tr>
 <tr>
-<td><div class="wid-icons ico-pasta" title="Primo"/></td>
+<td><div class="wid-icons ico-primo" title="Primo"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.primoAssaggioNorm()}}{%endif%}{%if statCC%}|{{statCC.primoAssaggioNorm()}}{%endif%}{%if statCM%}|{{statCM.primoAssaggioNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.primoGradimentoNorm()}}{%endif%}{%if statCC%}|{{statCC.primoGradimentoNorm()}}{%endif%}{%if statCM%}|{{statCM.primoGradimentoNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 </tr>
 <tr>
-<td><div class="wid-icons ico-carne" title="Secondo"/></td>
+<td><div class="wid-icons ico-secondo" title="Secondo"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.secondoAssaggioNorm()}}{%endif%}{%if statCC%}|{{statCC.secondoAssaggioNorm()}}{%endif%}{%if statCM%}|{{statCM.secondoAssaggioNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.secondoGradimentoNorm()}}{%endif%}{%if statCC%}|{{statCC.secondoGradimentoNorm()}}{%endif%}{%if statCM%}|{{statCM.secondoGradimentoNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Secondo - Gradimento"/></td>
 <td>
 </tr>
 <tr>
-<td><div class="wid-icons ico-salad" title="Contorno"/></td>
+<td><div class="wid-icons ico-contorno" title="Contorno"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.contornoAssaggioNorm()}}{%endif%}{%if statCC%}|{{statCC.contornoAssaggioNorm()}}{%endif%}{%if statCM%}|{{statCM.contornoAssaggioNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Contorno - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.contornoGradimentoNorm()}}{%endif%}{%if statCC%}|{{statCC.contornoGradimentoNorm()}}{%endif%}{%if statCM%}|{{statCM.contornoGradimentoNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Primo - Gradimento"/></td>
 <td>
 </tr>
 <tr>
-<td><div class="wid-icons ico-mela" title="Frutta"/></td>
+<td><div class="wid-icons ico-dessert" title="Frutta"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.fruttaAssaggioNorm()}}{%endif%}{%if statCC%}|{{statCC.fruttaAssaggioNorm()}}{%endif%}{%if statCM%}|{{statCM.fruttaAssaggioNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Assaggio"/></td>
 <td><img src="http://chart.apis.google.com/chart?chs=80x40&cht=gom&chd=t:{%if statCY%}{{statCY.fruttaGradimentoNorm()}}{%endif%}{%if statCC%}|{{statCC.fruttaGradimentoNorm()}}{%endif%}{%if statCM%}|{{statCM.fruttaGradimentoNorm()}}{%endif%}&chls=1{%if statCC%}|2{%endif%}{%if statCM%}|3{%endif%}&chco=FF0000,FFFF00,00FF00&chma=0,0,0,0|0,0&chf=bg,s,{{bgcolor}}00" title="Frutta - Gradimento"/></td>
 <td>
