@@ -48,6 +48,9 @@ class PostHandler(BasePage):
 
     self.getBase(template_values)
 
+  def post(self,node_id, post_id):
+    return self.get(node_id, post_id)
+  
   @classmethod
   def create_post(cls, node, user, title, content=None, resources=None, attachments=None):
 

@@ -83,7 +83,7 @@ function onSuccess(data){
 }
 
 function onError(jqXHR, textStatus, errorThrown){
-  alert("textStatus: " + textStatus + " errorThrown: " + errorThrown);
+  console.log("textStatus: " + textStatus + " errorThrown: " + errorThrown);
   window.location.href="/";
 }
 
