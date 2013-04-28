@@ -1070,9 +1070,9 @@ class SocialAdmin(object):
                     logging.info(cm.name + " not found")
                   #zone
                   if cm.zona:
-                    node = SocialNode.get_by_name(cm.citta.get().nome + " - Zona " + str(cm.zona))[0]
-                    if node:
-                      node.subscribe_user(co.usera.get())
+                    nodes = SocialNode.get_by_name(cm.citta.get().nome + " - Zona " + str(cm.zona))
+                    if len(nodes) > 0:
+                      nodes[0].subscribe_user(cm.usera.get())
 
 
       if what == "messages":

@@ -142,9 +142,9 @@ class CMProfiloHandler(BasePage):
         if node:
           node.subscribe_user(commissario.usera.get())
           if commissione.zona:
-            node = SocialNode.get_by_name(commissione.citta.get().nome + " - Zona " + str(commissione.zona))[0]
-            if node:
-              node.subscribe_user(commissario.usera.get())
+            nodes = SocialNode.get_by_name(commissione.citta.get().nome + " - Zona " + str(commissione.zona))
+            if len(nodes) > 0:
+              nodes[0].subscribe_user(commissario.usera.get())
 
 
       commissario.setCMDefault()
