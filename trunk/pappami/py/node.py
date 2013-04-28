@@ -36,10 +36,6 @@ class NodeHandler(BaseHandler):
         self.response.out.write(t)
         return
 
-
-  def post(self):
-      self.response.out.write("");
-
   def get(self,node_id):
       node=model.Key('SocialNode', long(node_id)).get()
 
@@ -52,8 +48,10 @@ class NodeHandler(BaseHandler):
             "node":node,
             }
 
-
       self.getBase(template_values)
+
+  def post(self, node_id):
+      self.get(node_id)
 
 class NodeListHandler(BaseHandler):
 

@@ -1436,7 +1436,7 @@ class SocialNode(model.Model):
           return a.path()+"=s128"
 
       if len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].restype + "_avatar.jpg"
+        return "/img/avatar/node_" + self.resource[0].get().restype + "_avatar.jpg"
       else:
         return "/img/avatar/node_default_avatar.jpg"
 
@@ -1445,8 +1445,9 @@ class SocialNode(model.Model):
       for a in self.attachments:
         if a.size > 16384:
           return a.path()+"=s1170"
+      
       if len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].restype + "_wall.jpg"
+        return "/img/avatar/node_" + self.resource[0].get().restype + "_wall.jpg"
       else:
         return "/img/avatar/node_default_wall.jpg"
 
