@@ -175,7 +175,7 @@ class NodeEditHandler(BaseHandler):
         node.set_resource('Commissione', None) 
 
       Allegato.process_attachments(self.request, node.key)
-      
+
       node.put()
 
       self.redirect("/node/"+str(node.key.id()))

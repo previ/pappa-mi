@@ -5,7 +5,7 @@ from google.appengine.api import search
 from datetime import date, datetime, time, timedelta
 import logging
 import fpformat
-import google.appengine.api.images
+from google.appengine.api import images
 import threading
 import math
 import jinja2
@@ -1004,10 +1004,13 @@ class Allegato(model.Model):
 
   def imgthumb(self):
     if self.isImage():
-      return google.appengine.api.images.get_serving_url(blob_key=self.blob_key,size=128)
+      return images.get_serving_url(blob_key=self.blob_key,size=128)
 
   def path(self):
-    return "/blob/get?key=" + str(self.blob_key)
+    if self.isImage():
+      return images.get_serving_url(blob_key=self.blob_key)
+    else:
+      return "/blob/get?key=" + str(self.blob_key)
 
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
@@ -1019,6 +1022,12 @@ class Allegato(model.Model):
            ".doc":"application/msword",
            ".pdf":"application/msword"}
 
+  @cached_property
+  def size(self):
+    blob = Blob()
+    blob.open(self.blob_key)
+    return blob.size()
+    
   @classmethod
   def process_attachments(cls, request, obj):
     for att in request.POST.getall('attach_file'):
@@ -1034,6 +1043,25 @@ class Allegato(model.Model):
         else:
           logging.info("attachment is too big.")
     for att_key in request.POST.getall('attach_delete'):
+      logging.info("deleting attachment")
+      model.Key(urlsafe=att_key).delete()
+    obj.get().attachments = None
+
+  @classmethod
+  def process_attachment(cls, request, field_name, obj):
+    for att in request.POST.get(field_name + "_file"):
+      if hasattr(att, "filename"):
+        if len(att.value) < 10000000 :
+          attachment = Allegato()
+          attachment.nome = att.filename
+          blob = Blob()
+          blob.create(attachment.nome)
+          attachment.blob_key = blob.write(att.value)
+          attachment.obj = obj
+          attachment.put()
+        else:
+          logging.info("attachment is too big.")
+    for att_key in request.POST.get(field_name + '_delete'):
       logging.info("deleting attachment")
       model.Key(urlsafe=att_key).delete()
     obj.get().attachments = None
@@ -1403,19 +1431,22 @@ class SocialNode(model.Model):
 
     @cached_property
     def image_avatar_path(self):
-      if len(self.attachments) > 0:
-        return self.attachments[0].path()
-      elif len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].get().restype + "_avatar.jpg"
+      for a in self.attachments:
+        if a.size < 16384:
+          return a.path()+"=s128"
+
+      if len(self.resource) > 0:
+        return "/img/avatar/node_" + self.resource[0].restype + "_avatar.jpg"
       else:
         return "/img/avatar/node_default_avatar.jpg"
 
     @cached_property
     def image_wall_path(self):
-      if len(self.attachments) > 1:
-        return self.attachments[1].path()
-      elif len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].get().restype + "_wall.jpg"
+      for a in self.attachments:
+        if a.size > 16384:
+          return a.path()+"=s1170"
+      if len(self.resource) > 0:
+        return "/img/avatar/node_" + self.resource[0].restype + "_wall.jpg"
       else:
         return "/img/avatar/node_default_wall.jpg"
 
