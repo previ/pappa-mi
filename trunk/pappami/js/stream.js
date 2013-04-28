@@ -879,8 +879,12 @@ function init_ntfy() {
 }
 
 function init_node(node_key){
- $("ul#node_list").find("a").click(onNodeClick);
- $("#node_list").children().find("a[data-node-key='" + node_key+ "']").first().click();
+ $("ul#node_list a[data-node-key]").click(onNodeClick);
+ if($("#node_list a[data-node-key='" + node_key + "']").lenght>0) {
+  $("#node_list a[data-node-key='" + node_key + "']").first().click();
+ } else {
+  $("ul#node_list a[data-node-key]").first().click();
+ }
 }
 
 function onOpenNotifications(event) {
