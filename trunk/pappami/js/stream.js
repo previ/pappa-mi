@@ -83,6 +83,7 @@ function onSuccess(data){
 }
 
 function onError(jqXHR, textStatus, errorThrown){
+  alert("textStatus: " + textStatus + " errorThrown: " + errorThrown);
   window.location.href="/";
 }
 
@@ -860,12 +861,7 @@ function initNode(node_key){
  $('.post_attach_delete').click(onAttachDelete);   
 }
 
-
-function init(node_key){
-
- $("ul#node_list").find("a").click(onNodeClick);
- $("#node_list").children().find("a[data-node-key='" + node_key+ "']").first().click();
- 
+function init_ntfy() {
  var ntfy_pop = $('#ntf_cnt');
  ntfy_pop.attr("data-visible", 'false');
  ntfy_pop.popover({
@@ -880,6 +876,11 @@ function init(node_key){
       //e.preventDefault()
     });
  });  
+}
+
+function init_node(node_key){
+ $("ul#node_list").find("a").click(onNodeClick);
+ $("#node_list").children().find("a[data-node-key='" + node_key+ "']").first().click();
 }
 
 function onOpenNotifications(event) {

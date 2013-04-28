@@ -1687,7 +1687,7 @@ class SocialPost(model.Model):
         summary = self.resource[0].get().content_summary
         #logging.info(summary)
 
-      if len(self.content) <= 1000:
+      if self.content and len(self.content) <= 1000:
         summary += ("<div>" + self.content + "</div>")
       else:
         text_content = Sanitizer.text(self.content)
@@ -1707,7 +1707,7 @@ class SocialPost(model.Model):
       return imgs
 
     def has_summary(self):
-      return len(self.content) > 1000 or (len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"])
+      return self.content and len(self.content) > 1000 or (len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"])
 
     def display_content(self):
       return not(len(self.resource) > 0 and self.resource[0].kind() in ["Ispezione", "Dieta", "Nonconformita", "Nota"])
