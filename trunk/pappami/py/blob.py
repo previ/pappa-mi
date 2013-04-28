@@ -16,10 +16,10 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import blobstore_handlers
 
 class Blob:
-    file_name = None
-    blob_key = None
-    blob_reader = None
-    mime_type = None
+    #file_name = None
+    #blob_key = None
+    #blob_reader = None
+    #mime_type = None
 
     def create(self, filename):
         # Create the file
@@ -29,7 +29,8 @@ class Blob:
         self.file_name = files.blobstore.create(mime_type=self.mime_type)
 
     def open(self,key):
-        self.blob_reader = blobstore.BlobReader(blob_key)
+        self.blob_key = key
+        self.blob_reader = blobstore.BlobReader(self.blob_key)
 
 
     def write(self,data):
@@ -47,17 +48,20 @@ class Blob:
 
     def read(self):
         # Open the file and write to it
-        value = self.lob_reader.read()
+        value = self.blob_reader.read()
         return value
 
     def mime(self):
         return self.mime_type
+    
+    def size(self):
+        return blobstore.BlobInfo.get(self.blob_key).size
 
 class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
     def get(self):
         blob_key = self.request.get("key")
-        logging.info("blob_key: " + str(blob_key))
+        #logging.info("blob_key: " + str(blob_key))
         blob_info = blobstore.BlobInfo.get(blob_key)
         if not blob_info:
             logging.info("blog.404")
