@@ -1,15 +1,8 @@
 <script type="text/javascript">
-
 $(document).ready(function () {
- init('{{ctx.get('node')}}')
- init_search()
+ init_node('{{ctx.get('node')}}')
 });
-
-</script>
-
-{%set tab_activity="active"%}
-{%include "navigation.html"%}
-
+</script>{%set tab_activity="active"%}{%include "navigation.html"%}
 <div id="node_selector">	
  <div class="row">
   <div class="span3 s_node_panel">

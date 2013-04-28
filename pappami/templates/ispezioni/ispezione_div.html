@@ -719,7 +719,7 @@ var piattounico = false;
 $(document).ready(function() {
  $( "#e_dataIspezioneViz" ).datepicker({ altField: '#e_dataIspezione', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d' });
 
- $("#e_fruttaTipo").autocomplete({source:["Albicocche","Arance","Mele","Pere","Mandarini","Pesche","Banane","Uva","Fragole","Ciliegie","Gelato"]}); 
+ $("#e_fruttaTipo").typeahead({source:["Albicocche","Arance","Mele","Pere","Mandarini","Pesche","Banane","Uva","Fragole","Ciliegie","Gelato","Budino","Muffin"]}); 
  
  $('#allegato_file_1').change(function(){
   $('#allegato_file_2').show(); 
