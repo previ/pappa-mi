@@ -42,7 +42,7 @@ function getNotificationsNum() {
 function onChannelMessage(m) {
   var m = jQuery.parseJSON(m.data)
   getNotificationsNum();
-  var textmessage = m.user + ' ha aggiunto un <a href="' + m.source_id +'">' + m.source_desc + '</a> su <a href="' + m.target_id + '">' + m.target_desc + '</a>';
+  var textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
   $.pnotify({
     title: 'Notifica',
     text: textmessage
@@ -215,11 +215,14 @@ function onPostEdit(){
   var post_root = getPostRootByElement($(this));
   var post_container = $(this).parents('.s_post_container')
   var edit_post = post_root.find(".s_post_tools > .s_post_edit_form").clone();
+  var fullscreen = post_root.attr('data-fullscreen');
+
   $.ajax({
     type: 'POST',
     url:'/post/manage', 
     data: {'cmd': 'edit_post',
-	   'post': post_key},
+	   'post': post_key,
+	   'fullscreen': fullscreen },
     dataType:'json',
     error: onError,
     success:function(data){
@@ -251,7 +254,9 @@ function onPostEdit(){
 	  }
 	});
 
-	edit_form.ajaxForm({clearForm: true, dataType:'html', error: onError, success:onEditSubmit});	
+	edit_form.ajaxForm({clearForm: true, dataType:'html', error: onError, success:onEditSubmit, beforeSubmit: function(arr,$form) {
+	  post_root.find(".post_edit_submit").button("loading");
+	}});	
 	var edit_undo = $('<div class="s_edit_undo" style="display:none;"></div>');
 	edit_undo.append(post_container.contents());
 	post_root.append(edit_undo);
@@ -290,7 +295,10 @@ function onEditSubmit(data) {
   }
   getPostElementByKey(data.post).parent().html(data.html);
   */
-  getPostElementByKey(data.post).parent().html(data);
+  var post = $(data);
+  var post_root = getPostElementByKey(post.attr('data-post-key'));
+  post_root.replaceWith(post);
+  initPost(post);
 }
 
 function onCommentEdit(){
@@ -418,7 +426,7 @@ function onPostCollapse() {
 }
 
 function onPostCommentsExpand() {
-  var post_root = getPostRootByElement($(this))
+  var post_root = getPostRootByElement($(this));
   post_root.find('.s_comment_list').show();
 }
 
@@ -459,11 +467,13 @@ function onOpenPostFormCancel() {
 function onPostReshare() {
   var post = getPostKeyByElement($(this));    
   var post_root = getPostRootByElement($(this))
+  var fullscreen = post_root.attr('data-fullscreen');
   $.ajax({
     type: 'POST',
     url:'/post/manage', 
     data: {'cmd': 'reshare_modal',
-	   'post': post },
+	   'post': post,
+	   'fullscreen': fullscreen },
     dataType:'json',
     error: onError,
     success:function(data){
@@ -485,7 +495,7 @@ function onPostReshare() {
 	      return
 	    }
 	  }
-	  if( $("#main_stream_list") ) {
+	  if( $("#main_stream_list").length > 0 ) {
 	      $("#main_stream_list").prepend(data.html);
 	      var post_root = $("#main_stream_list li:first-child");
 	      initPostList(post_root);

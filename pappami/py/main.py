@@ -279,28 +279,6 @@ app = webapp.WSGIApplication([
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
 
-
-"""
-def main():
-  debug = os.environ['HTTP_HOST'].startswith('localhost')
-
-  application = webapp.WSGIApplication([
-  ('/', MainPage),
-  ('/tags', TagsPage),
-  #('/fb', FbPage),
-  ('/docs', DocPage),
-  #('/blog', BlogPage),
-  ('/chi', ChiSiamoPage),
-  ('/map', MapDataHandler),
-  ('/menu', CMMenuDataHandler),
-  ('/supporto', CMSupportoHandler),
-  ('/condizioni', CMCondizioniHandler),
-  ('/registrazione', CMRegistrazioneHandler),
-  ('/signup', CMSignupHandler)
-  ], debug=debug)
-
-  wsgiref.handlers.CGIHandler().run(application)
-"""
 #def profile_main():
     ## This is the main function for profiling
     ## We've renamed our original main() above to real_main()
