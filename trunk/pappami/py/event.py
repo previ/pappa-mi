@@ -260,14 +260,18 @@ class EventHandler(BaseHandler):
 
       #logging.info("Notification: " + str(event.type))
       if event.type == "post":
-        message['source_id'] = "/post/" + str(event.source.parent().id())+"-"+str(event.source.id())
+        #message['source_id'] = str(event.source.parent().id())+"-"+str(event.source.id())
+        message['source_uri'] = "/post/" + str(event.source.parent().id())+"-"+str(event.source.id())
         message['source_desc'] = "messaggio"
-        message['target_id'] = "/node/" + str(event.target.id())
+        #message['target_id'] = str(event.target.id())
+        message['target_uri'] = "/node/" + str(event.target.id())
         message['target_desc'] = event.target.get().name
       if event.type == "comment":
-        message['source_id'] = "/post/" + str(event.source.parent().parent().id())+"-"+str(event.source.parent().id())+"#"+str(event.source.id())
+        #message['source_id'] = str(event.source.parent().parent().id())+"-"+str(event.source.parent().id())+"#"+str(event.source.id())
+        message['source_uri'] = "/post/" + str(event.source.parent().parent().id())+"-"+str(event.source.parent().id())+"#"+str(event.source.id())
         message['source_desc'] = "commento"
-        message['target_id'] = "/post/" + str(event.target.parent().id())+"-"+str(event.target.id())
+        #message['target_id'] = str(event.target.parent().id())+"-"+str(event.target.id())
+        message['target_uri'] = "/post/" + str(event.target.parent().id())+"-"+str(event.target.id())
         message['target_desc'] = event.target.get().title
 
       json_msg = json.dumps(message)

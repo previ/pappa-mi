@@ -198,63 +198,67 @@ class PostManageHandler(BaseHandler):
       node.delete_post(post)
       #logging.info("delete")
 
-      self.success({'url':"/node/"+str(node.key.urlsafe())})
+      self.success({'url':"/node/"+str(node.key.id())})
 
     if cmd == "pin_post":
-     post=model.Key(urlsafe=self.request.get('post')).get()
-     post.pin(days=int(self.request.get('days')))
-     post.put()
-     response = {'response':'success','post':post.key.urlsafe()}
-     self.output_as_json(response)
+      post=model.Key(urlsafe=self.request.get('post')).get()
+      post.pin(days=int(self.request.get('days')))
+      post.put()
+      response = {'response':'success','post':post.key.urlsafe()}
+      self.output_as_json(response)
 
     if cmd == "edit_post":
-     post=model.Key(urlsafe=self.request.get('post')).get()
-     node = post.key.parent().get()
-     template_values = {
-       "post":post,
-       "cmsro":self.getCommissario(user),
-       "subscription": node.get_subscription(user.key),
-       "user": user
-      }
+      post=model.Key(urlsafe=self.request.get('post')).get()
+      node = post.key.parent().get()
+      template_values = {
+        "post":post,
+        "cmsro":self.getCommissario(user),
+        "subscription": node.get_subscription(user.key),
+        "user": user,
+        "fullscreen": self.request.get("fullscreen")
+       }
 
-     template = jinja_environment.get_template("post/post_edit.html")
-
-     html=template.render(template_values)
-     response = {'response':'success','post':post.key.urlsafe(),'html':html}
-     self.output_as_json(response)
+      template = jinja_environment.get_template("post/post_edit.html")
+ 
+      html=template.render(template_values)
+      response = {'response':'success','post':post.key.urlsafe(),'html':html}
+      self.output_as_json(response)
 
     if cmd == "update_post":
-     post=model.Key(urlsafe=self.request.get('post')).get()
-     post.title = Sanitizer.text(self.request.get("title"))
-     post.content = Sanitizer.sanitize(self.request.get("content"))
-     post.put()
-     node = post.key.parent().get()
-
-     Allegato.process_attachments(self.request, post.key)
-
-     post.clear_attachments()
-
-     template_values = {
-       "main": "post/post.html",
-       "post": post,
-       "node": node,
-       "cmsro": self.getCommissario(user),
-       "subscription": node.get_subscription(user.key),
-       "user": user
-      }
-
-     #template = jinja_environment.get_template("post/post.html")
-     #html=template.render(template_values)
-     #response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
-     #self.output_as_json(response)
-     self.getBase(template_values)
+      post=model.Key(urlsafe=self.request.get('post')).get()
+      post.title = Sanitizer.text(self.request.get("title"))
+      post.content = Sanitizer.sanitize(self.request.get("content"))
+      post.put()
+      node = post.key.parent().get()
+ 
+      Allegato.process_attachments(self.request, post.key)
+ 
+      post.clear_attachments()
+ 
+      template_values = {
+        "main": "post/post.html",
+        "post": post,
+        "node": node,
+        "cmsro": self.getCommissario(user),
+        "subscription": node.get_subscription(user.key),
+        "user": user,
+        "fullscreen": self.request.get("fullscreen"),
+        "edit" : True
+       }
+ 
+      #template = jinja_environment.get_template("post/post.html")
+      #html=template.render(template_values)
+      #response = {'response':'success','post':post.key.urlsafe(),'html':html,"cursor":''}
+      #self.output_as_json(response)
+      self.getBase(template_values)
 
     if cmd=="reshare_modal":
       post=model.Key(urlsafe=self.request.get('post')).get()
       template_values = {
         "subs":SocialNodeSubscription.get_by_user(user) ,
         "post":post,
-        "cmsro": self.getCommissario()
+        "cmsro": self.getCommissario(),
+        'fullscreen': self.request.get("fullscreen")
       }
 
       template = jinja_environment.get_template("post/modal_reshare.html")
@@ -270,8 +274,9 @@ class PostManageHandler(BaseHandler):
       clean_content = Sanitizer.sanitize(self.request.get("content"))
 
       rs_post_key=post.reshare(node.key,user,clean_content,clean_title)
-      if False:
-        self.success({'url': "/post/"+str(rs_post_key.urlsafe())})
+      
+      if self.request.get("fullscreen"):
+        self.success({'response': 'success', 'url': "/post/"+str(rs_post_key.parent().id())+"-"+str(rs_post_key.id())})
       else:
         postlist = list()
         postlist.append(rs_post_key.get())

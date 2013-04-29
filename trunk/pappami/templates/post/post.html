@@ -1,7 +1,7 @@
-{%if fullscreen%}<script type="text/javascript">
+{%if fullscreen and not edit%}<script type="text/javascript">
 $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
 </script>{%endif%}
-<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}'>
+<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}' data-fullscreen="{{fullscreen}}">
 	<div class="s_post"> 
 		<div class="s_post_avatar">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
