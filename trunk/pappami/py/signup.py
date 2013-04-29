@@ -134,9 +134,9 @@ class SignupHandler(BasePage):
                  "Eventi",
                  "Generale"]
     for node_name in def_nodes:
-      node = SocialNode.get_by_name(node_name)
-      if node:
-        node.subscribe_user(commissario.usera.get())
+      nodes = SocialNode.get_by_name(node_name)
+      if len(nodes) > 0:
+        nodes[0].subscribe_user(commissario.usera.get())
 
     commissario.setCMDefault()
     #logging.info(commissario.usera)

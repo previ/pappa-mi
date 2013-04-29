@@ -9,7 +9,7 @@ import logging
 import urllib
 from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
-from google.appengine.ext.ndb import model
+from google.appengine.ext.ndb import model, Future, toplevel
 from google.appengine.api.taskqueue import Task, Queue
 
 import webapp2 as webapp
@@ -24,6 +24,8 @@ import time
 from common import Const, Cache, Sanitizer, Channel
 
 class EventHandler(BaseHandler):
+  
+  @toplevel
   def get(self):
     logging.info("EventHandler")
     if self.request.get("cmd") == "clear":
@@ -60,11 +62,11 @@ class EventHandler(BaseHandler):
 
   @classmethod
   def putTask(cls, aurl, job):
-   params = {'cmd': 'process'}
-   params.update(job)
-   task = Task(url=aurl, params=params, method="GET")
-   queue = Queue()
-   queue.add(task)
+    params = {'cmd': 'process'}
+    params.update(job)
+    task = Task(url=aurl, params=params, method="GET")
+    queue = Queue()
+    queue.add(task)
 
   """
   process events as a batch
@@ -83,22 +85,32 @@ class EventHandler(BaseHandler):
       event_cursor = Cursor(urlsafe=job['event_cursor'])
 
     event_batch_processed = True
-    events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor, limit=2)
+    events, event_next_cursor, event_more = SocialEvent.get_by_status(0, event_cursor, limit=Const.EVENT_PROC_LIMIT)
+    e_futures = list()
+    n_futures = list()
     for e in events:
       logging.info("event: " + e.type)
       if e.type==SocialEvent.new_post:
         node_cursor = None
         if job.get('node_cursor_' + str(e.target.id())):
           node_cursor = Cursor(urlsafe=job.get('node_cursor_' + str(e.target.id())))
-        ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor, limit=50)
+        ns, ns_next_cursor, ns_more = SocialNodeSubscription.get_by_node(e.target, cursor=node_cursor, limit=Const.EVENT_PROC_NODE_SUB_LIMIT)
+        #opti
+        s_futures = list()
         for s in ns:
           #logging.info("subs.user: " + s.user.get().email + " e.user: " + e.user.get().email)
           if e.user != s.user:
             #logging.info("new_post.created")
-            SocialNotification.create(e.key, s.user)
+            #opti
+            n_futures.append(SocialNotification.create(e.key, s.user))
             s.has_ntfy = True
             s.ntfy += 1
-            s.put()
+            #s.put()
+            #opti
+            s_futures.append(s.put_async())
+        
+        Future.wait_all(s_futures)
+
         if ns_more:
           logging.info("node_cursor " + str(e.target.id()) + " " + str(ns_next_cursor) + " more")
           job['node_cursor_' + str(e.target.id())] = ns_next_cursor.urlsafe()
@@ -108,17 +120,35 @@ class EventHandler(BaseHandler):
           if job.get('node_cursor_' + str(e.target.id())):
             del job['node_cursor_' + str(e.target.id())]
           e.status = 1
-          e.put()
+          #opti
+          #e.put()
+          e_futures.append(e.put_async())
+          
       if e.type==SocialEvent.new_comment:
         #logging.info("new_comment")
+        
+        #opti
+        s_futures = list()
         for s in SocialPostSubscription.get_by_post(e.target):
           if e.user != s.user:
             #logging.info("new_comment.created")
-            SocialNotification.create(e.key, s.user)
+            #opti
+            n_futures.append(SocialNotification.create(e.key, s.user))
             s.has_ntfy = True
-            s.put()
+            #s.put()
+            #opti
+            s_futures.append(s.put_async()) 
+        
+        Future.wait_all(s_futures)
+        
         e.status = 1
-        e.put()
+        #opti
+        #e.put()
+        e_futures.append(e.put_async())
+
+    Future.wait_all(e_futures)
+    Future.wait_all(n_futures)
+    
     job['event_more'] = event_more or not event_batch_processed
     if event_batch_processed and event_more:
       logging.info("event_cursor more")
@@ -143,9 +173,11 @@ class EventHandler(BaseHandler):
     user_ntfy = dict()
     #Node Subscription
     count = 0
-    limit = 50
+    limit = Const.EVENT_PROC_NTFY_LIMIT
     more = False
     ns = SocialNodeSubscription.get_by_ntfy()
+    #opti
+    s_futures = list()
     for sub in ns:
       #logging.info("SocialNodeSub")
       notifications = user_ntfy.get(sub.user)
@@ -153,19 +185,27 @@ class EventHandler(BaseHandler):
         notifications = list()
         user_ntfy[sub.user] = notifications
       nt = SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created)
+      #opti
+      n_futures = list()
       for ntfy in nt:
         notifications.append(ntfy)
         ntfy.status = SocialNotification.status_notified
-        ntfy.put()
+        #ntfy.put()
+        #opti
+        n_futures.append(ntfy.put_async())
         count += 1
         if count > limit:
           more = True
           break
+      #opti
+      Future.wait_all(n_futures)
       if count > limit:
         break
       sub.has_ntfy = False
       sub.last_ntfy_sent = datetime.now()
-      sub.put()
+      s_futures.append(sub.put_async())
+    
+    Future.wait_all(s_futures)
 
     #Post Subscriptions
     for sub in SocialPostSubscription.get_by_ntfy():
@@ -174,18 +214,27 @@ class EventHandler(BaseHandler):
       if notifications is None:
         notifications = list()
         user_ntfy[sub.user] = notifications
+      #opti
+      n_futures = list()
       for ntfy in SocialNotification.get_by_user_status(sub.user, SocialNotification.status_created):
         notifications.append(ntfy)
         ntfy.status = SocialNotification.status_notified
-        ntfy.put()
+        #ntfy.put()
+        #opti
+        n_futures.append(ntfy.put_async())
         count += 1
         if count > limit:
           more = True
           break
+      #opti
+      Future.wait_all(n_futures)  
       if count > limit:
         break
       sub.has_ntfy = False
-      sub.put()
+      #sub.put()
+      s_futures.append(sub.put_async())
+      
+    Future.wait_all(s_futures)
 
     logging.info("user_ntfy.len: " + str(len(user_ntfy)))
     for user in user_ntfy:
@@ -198,7 +247,6 @@ class EventHandler(BaseHandler):
     return more
 
 
-
   @classmethod
   def send_notifications_channel(cls, user, notifications):
     logging.info("Sending channel notification to user: " + user.get().email)
@@ -207,17 +255,19 @@ class EventHandler(BaseHandler):
       event = n.event.get()
       message = { 'type': event.type,
             'user': event.source.get().commissario.nomecompleto(Commissario.get_by_user(user.get())),
-            'source_id': event.source.urlsafe(),
-            'target_id': event.target.urlsafe(),
             'ntfy_num': len(notifications)
             }
 
       #logging.info("Notification: " + str(event.type))
       if event.type == "post":
+        message['source_id'] = "/post/" + str(event.source.parent().id())+"-"+str(event.source.id())
         message['source_desc'] = "messaggio"
+        message['target_id'] = "/node/" + str(event.target.id())
         message['target_desc'] = event.target.get().name
       if event.type == "comment":
+        message['source_id'] = "/post/" + str(event.source.parent().parent().id())+"-"+str(event.source.parent().id())+"#"+str(event.source.id())
         message['source_desc'] = "commento"
+        message['target_id'] = "/post/" + str(event.target.parent().id())+"-"+str(event.target.id())
         message['target_desc'] = event.target.get().title
 
       json_msg = json.dumps(message)

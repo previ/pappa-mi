@@ -2274,12 +2274,16 @@ class SocialNotification(model.Model):
 
   def set_read(self):
     self.status=self.status_read
-    self.put()
+    #self.put()
+    #opti    
+    self.put_async()
 
   @classmethod
   def create(cls, event_key, user_key):
     notification = SocialNotification(event=event_key, user=user_key, date=datetime.now(), status=cls.status_created)
-    notification.put()
+    #notification.put()
+    #opti
+    return notification.put_async()
 
   @classmethod
   def get_by_user(cls, user, cursor=None):

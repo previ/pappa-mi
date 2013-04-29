@@ -23,6 +23,9 @@ class Const:
   FLOOD_SYSTEM_ACTIVATED = False
   BASE_RANK = datetime.datetime(2008, 1, 1)
   DAY_SECONDS = 86400
+  EVENT_PROC_LIMIT=2
+  EVENT_PROC_NODE_SUB_LIMIT = 200
+  EVENT_PROC_NTFY_LIMIT = 200
   ALLOWED_TAGS = [
     'a',
     'abbr',
