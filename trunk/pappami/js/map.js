@@ -44,6 +44,7 @@ var fstyles = {
 
 function drawMap(data) {
   var f_citta = $("#e_citta").val();
+  var f_z = $("#e_z").val();
   var f_cc = $("#e_cc").val();
   var f_type = $("#e_tipo").val();
   var f_numcm = $("#e_numcm").val();
@@ -58,8 +59,9 @@ function drawMap(data) {
     var type = marker.attr("tipo");
     var numcm = marker.attr("numcm");
     var citta = marker.attr("citta");
+    var z = marker.attr("zona");
     var cc = marker.attr("cc");
-    if(( !f_citta || citta == f_citta) && ( !f_cc || cc == f_cc) && (!f_type || type == f_type) && (f_numcm == 0 || numcm > 0)) {
+    if(( !f_citta || citta == f_citta) && ( !f_z || z == f_z) && ( !f_cc || cc == f_cc) && (!f_type || type == f_type) && (f_numcm == 0 || numcm > 0)) {
       var latlng = new google.maps.LatLng(parseFloat(marker.attr("lat")),
                               parseFloat(marker.attr("lon")));
       var school = {key: key, latlng: latlng, name: name, address: address, type: type};
@@ -86,7 +88,7 @@ function redraw() {
     center: new google.maps.LatLng(lat,lon),
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }    
-  map = new google.maps.Map(document.getElementById("map"), myOptions);
+  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
   
   list.children().remove();
   list.lenght = 0;
@@ -183,7 +185,7 @@ function loadSmallMap(lat,lon) {
     scaleControl: false,
     draggable: false
   }    
-  var map = new google.maps.Map(document.getElementById("map"), myOptions);
+  var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
   fluster = new Fluster2(map); 
   
   var image = new google.maps.MarkerImage('/img/school.png',

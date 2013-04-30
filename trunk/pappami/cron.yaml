@@ -6,6 +6,6 @@ cron:
 
 - description: process events
   url: /event
-  schedule: every day 08:00
+  schedule: every day 07:00
   timezone: Europe/Rome
  
