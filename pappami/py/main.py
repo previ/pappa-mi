@@ -145,7 +145,7 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo:
-              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="'
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" zona="' + str(c.zona) + '" cc="'
               if c.getCentroCucina(datetime.now().date()):
                 mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
               else:
@@ -180,7 +180,7 @@ class MapDataHandler(webapp.RequestHandler):
             if i >= limit:
               break
             if c.geo :
-              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" cc="'
+              mark = '<marker key="' + str(c.key.id()) + '" nome="' + c.nome + '" indirizzo="' + c.strada + ', ' + c.civico + ', ' + c.cap + " " + c.citta.get().nome + '"' + ' lat="' + str(c.geo.lat) + '" lon="' + str(c.geo.lon) + '" tipo="' + c.tipoScuola + '" numcm="' + str(c.numCommissari) + '" citta="' + str(c.citta.id()) + '" zona="' + str(c.zona) + '" cc="'
               if c.getCentroCucina(datetime.now().date()):
                 mark += str(c.getCentroCucina(datetime.now().date()).key.id()) + '" />\n'
               else:

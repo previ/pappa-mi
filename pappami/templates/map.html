@@ -7,13 +7,14 @@ $(document).ready(function () {
 {%set tab_map="active"%}
 {%include "navigation.html"%}
 <div style="position:absolute; top:20em; left:18em; width:30em; background: #ffffff; border: 1px;z-index:999;display:none;" id="loading"><center><img src="/img/loading.gif"/><br/>Caricamento in corso ...</center></div>
+
 <ul class="nav nav-tabs">
 <li class="dropdown">
  <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
   Commissioni presso le Scuole di <b id="l_citta">{{citta.nome}}</b><i class="caret"></i>
  </a>
  <ul class="dropdown-menu dropdown-large">
-  {#<form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">#}
+  <form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">
     <label class="control-label" for="citta">Citt&agrave;</label>
     <select class="large required" id="e_citta" name="citta" value="{{ctx.citta_key}}">
     <option value=""></option>
@@ -23,6 +24,11 @@ $(document).ready(function () {
     <select class="large required" id="e_cc" name="centroCucina" value="">
     <option value="">Tutti</option>{%for cc in centriCucina%}
     <option value="{{cc.key.string_id()}}">{{cc.nome}}</option>{%endfor%}    
+    </select>
+    <label class="control-label" for="zona">Zone cittadine</label>
+    <select class="large" id="e_z" name="zona" value="">
+    <option value="">Tutte</option>{%for z in range(1, 10)%}
+    <option value="{{z}}">Zona {{z}}</option>{%endfor%}    
     </select>
     <label class="control-label" for="citta">Grado Scuole</label>
     <select name="tipoScuola" id="e_tipo">
@@ -37,10 +43,10 @@ $(document).ready(function () {
     <option value="1" selected>Attive</option>
     </select>    
     <div class="controls">
-      <button type="submit" class="btn primary" onclick="$('#dropdown').click(); redraw();">Ok</button>
+      <button type="submit" class="btn primary" onclick="$('#dropdown').click(); redraw(); return false;">Ok</button>
       <button type="reset" class="btn" onclick="$('#dropdown').click();">Annulla</button>
     </div>
-  {#</form>#}
+  </form>
  </ul>
 </li>
 </ul>
@@ -49,6 +55,6 @@ $(document).ready(function () {
   <div id="left_list" class="scroll" style="height: 600px; overflow: auto;"></div>
  </div>
  <div class="span9">
-  <div id="map" style="height: 600px;"></div>
+  <div id="map_canvas" style="height: 600px;"></div>
  </div>
 </div>
