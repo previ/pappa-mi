@@ -494,7 +494,7 @@ class MenuHelper():
   #_giorni = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì","Sabato", "Domenica"]
   _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
   def getData(self):
-    return self._giorni[self.giorno-1]
+    return self._giorni[self.giorno-1] + " " + datetime.strftime(self.data, Const.ACTIVITY_DATE_FORMAT)
   def today(self):
     return datetime.now().date() == self.data
 
