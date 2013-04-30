@@ -119,6 +119,8 @@ class BaseHandler(webapp.RequestHandler):
       else:
         ctx["node"] = "news"
         ctx["citta_key"] = Citta.get_first().key.id()
+        ctx["cm_key"] = Commissione.get_by_citta(Citta.get_first().key)[0].key.id()
+        ctx["cm_name"] = Commissione.get_by_citta(Citta.get_first().key)[0].desc()
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1

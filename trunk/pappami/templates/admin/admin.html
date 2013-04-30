@@ -6,19 +6,27 @@
 <a href="/admin?cmd=getGenitori" class="btn">Get Genitori</a>
 </div>
 <div class="row">
- <form action="/admin" method="get">
+ <form action="/admin" method="post">
   <div class="control-group">
-   <div class="controls">
-    <label class="control-label">Comando</label>
-    <input type="text" name="cmd"/>
-    <label class="control-label">Limit</label>
-    <input type="text" name="limit"/>
-    <label class="control-label">Offset</label>
-    <input type="text" name="offset"/>
-    <label class="control-label">Kind</label>
-    <input type="text" name="kind"/>
-    <label class="control-label">Year</label>
-    <input type="text" name="year"/>
+   <div class="span6">
+    <div class="controls">
+     <label class="control-label">Comando</label>
+     <input type="text" name="cmd"/>
+     <label class="control-label">Limit</label>
+     <input type="text" name="limit"/>
+     <label class="control-label">Offset</label>
+     <input type="text" name="offset"/>
+     <label class="control-label">Kind</label>
+     <input type="text" name="kind"/>
+     <label class="control-label">Year</label>
+     <input type="text" name="year"/>
+    </div>
+   </div>
+   <div class="span6">
+    <div class="controls">
+     <label class="control-label">Rawdata</label>
+     <textarea cols="80" rows="40" name="rawdata"></textarea>
+    </div>
    </div>
    <div class="form-actions">
     <input type="submit" class="btn btn-button"/>
