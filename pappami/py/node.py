@@ -28,27 +28,34 @@ from common import Const, Cache, Sanitizer, Channel
 class NodeHandler(BaseHandler):
 
   def error(self):
-        self.response.clear()
-        self.response.set_status(404)
-        template = jinja_environment.get_template('404_custom.html')
-        c={"error": "Il nodo a cui stai provando ad accedere non esiste"}
-        t = template.render(c)
-        self.response.out.write(t)
-        return
+    self.response.clear()
+    self.response.set_status(404)
+    template = jinja_environment.get_template('404_custom.html')
+    c={"error": "Il nodo a cui stai provando ad accedere non esiste"}
+    t = template.render(c)
+    self.response.out.write(t)
+    return
 
   def get(self,node_id):
-      node=model.Key('SocialNode', long(node_id)).get()
+    try:
+      n_l = long(node_id)
+    except ValueError:
+      logging.info("invalid node_id: " + str(node_id))
+      self.redirect('/')
+      return
+      
+    node=model.Key('SocialNode', long(node_id)).get()
 
-      user=self.get_current_user()
+    user=self.get_current_user()
 
-      template_values = {
-            'content': 'node/node.html',
-            "cmsro":self.getCommissario(user),
-            "user":user,
-            "node":node,
-            }
+    template_values = {
+          'content': 'node/node.html',
+          "cmsro":self.getCommissario(user),
+          "user":user,
+          "node":node,
+          }
 
-      self.getBase(template_values)
+    self.getBase(template_values)
 
   def post(self, node_id):
       self.get(node_id)
@@ -324,12 +331,24 @@ class NodeFeedHandler(BasePage):
     self.response.headers.add_header("Expires", expires_str)
     self.response.out.write(rss.to_xml())
 
+class NodeByResHandler(BasePage):
+
+  def get(self, node_id, res_type):
+    types = {'cm': 'Commissione',
+             'city': "Citta"}
+    res_key = model.Key(types.get(res_type), int(node_id))
+    if res_key:
+      nodes = SocialNode.get_by_resource(res_key)
+      if len(nodes):
+        self.redirect('/node/'+str(nodes[0].key.id()))
+
 app = webapp.WSGIApplication([
   ('/node/create', NodeCreateHandler),
   ('/node/edit/(.*)', NodeEditHandler),
   ('/node/list', NodeListHandler),
   ('/node/paginate', NodePaginationHandler),
   ('/node/subscribe', NodeSubscribeHandler),
+  ('/node/res/(.*)/(.*)', NodeByResHandler),
   ('/node/(.*)/rss', NodeFeedHandler),
   ('/node/(.*)', NodeHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)

@@ -65,8 +65,8 @@ class AdminMenuHandler(BasePage):
         if len(fields) > 6:
           menu = Menu()
           menu.tipo = fields[0]
-          menu.validitaDa = datetime.datetime.strptime(fields[1],Const.ACTIVITY_DATE_FORMAT).date()
-          menu.validitaA = datetime.datetime.strptime(fields[2],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.validitaDa = datetime.strptime(fields[1],Const.ACTIVITY_DATE_FORMAT).date()
+          menu.validitaA = datetime.strptime(fields[2],Const.ACTIVITY_DATE_FORMAT).date()
           menu.settimana = int(fields[3])
           menu.giorno = int(fields[4])
           menu.primo = fields[5]

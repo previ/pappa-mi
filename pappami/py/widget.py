@@ -228,7 +228,6 @@ class NodeWidgetHandler(BasePage):
       node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
       self.output_as_json({'node_key': node_key.urlsafe()})
     elif node_key:
-      logging.info(node_key)
       template_values = dict()
 
       bgcolor = self.request.get("bc")

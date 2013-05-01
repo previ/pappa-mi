@@ -43,12 +43,16 @@ class ContattiHandler(BasePage):
     cm = None
     commissario = self.getCommissario()
     if self.request.get("cm") != "":
-      cm = Commissione.get(self.request.get("cm"))
+      cm = model.Key('Commissione', int(self.request.get("cm"))).get()
     elif commissario and commissario.commissione() :
       cm = commissario.commissione()
 
     if cm:
       template_values['commissari'] = cm.commissari()
+      ctx = self.get_context()
+      ctx["cm_key"] = cm.key.id()
+      ctx["cm_name"] = cm.desc()
+      self.set_context()
 
     template_values["citta"] = Citta.get_all()
     template_values["content"] = "contatti.html"
