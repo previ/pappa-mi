@@ -161,7 +161,7 @@ function initPost(post_root) {
     }
   });
     
-  comment_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data) { 
+  comment_form.ajaxForm({clearForm: true, dataType:'json', error: onError, success: function(data, status, xhr, form) { 
     if (data.response!="success") {
       if(data.response=="flooderror"){
 	onFloodError(data, function(){} )
@@ -174,7 +174,7 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content_' + getPostKeyByElement(post_root)).setContent('');
+    tinymce.get('comment_content_' + post_root.find('.s_post_root').attr('data-post-key')).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);
@@ -297,8 +297,10 @@ function onEditSubmit(data) {
   */
   var post = $(data);
   var post_root = getPostElementByKey(post.attr('data-post-key'));
+  
   post_root.replaceWith(post);
-  initPost(post);
+
+  initPost(post.parent());
 }
 
 function onCommentEdit(){

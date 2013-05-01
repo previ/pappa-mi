@@ -32,80 +32,39 @@ class MailHandler(InboundMailHandler):
     return host
 
   def receive(self, message):
-    logging.info("Received a message from: " + parseaddr(message.sender)[1])
+    logging.info("Received a message from: " + parseaddr(message.sender)[1] + " to: " + parseaddr(message.to)[1])
     logging.info("subject: " + message.subject)
     text_bodies = message.bodies('text/plain')
+    html_bodies = message.bodies('text/html')
+    
+    feedback = list()    
+    content = ""
+    for body in html_bodies:
+      content = Sanitizer.sanitize(body[1].decode())
+    if content == "":
+      for body in text_bodies:
+        content = Sanitizer.text("<p>"+body[1].decode()+"</p>")
+      
+    to = parseaddr(message.to)[1]
 
-    #for body in text_bodies:
-    #  logging.info("body: " + body[1].decode())
+    node_id = None
+    if "node" in to:
+      node_id = to[5:to.find('@')]
+      logging.info(node_id)
+    
+    node = model.Key("SocialNode", int(node_id)).get()
+
+    user = None
     commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
     if commissario:
-      feedback = list()
-      logging.info("found commissario")
-      nota = Nota()
-      nota.creato_da = commissario.usera
-      nota.titolo = message.subject
-
-      commissione = None
-      cms = commissario.commissioni()
-      if len(cms) == 0:
-        feedback.append( """Non è stato possibile ricavare la Commissione a cui la segnalazione si riferisce perché non sei registrato su nessuna scuola.
-
-Per favore modifica il tuo profilo in Pappa-Mi specificando almeno una Scuola.
-
-Se specifichi piu' di una Scuola, ricorda di specificare nell'oggetto della mail il nome della commissione e il livello della scuola, ad esempio 'materna muzio'.\r\n""")
-
-      if len(cms) > 1:
-        subupper = nota.titolo.upper()
-        for cm in cms:
-          #logging.info(cm.nome.upper() + " " + cm.tipoScuola.upper() + " subject: " + subupper)
-          if cm.nome.upper() in subupper and cm.tipoScuola.upper() in subupper:
-            commissione = cm
-      else:
-        commissione = cms[0]
-
-      if commissione is None:
-        feedback.append("""Non è stato possibile ricavare la Commissione a cui la segnalazione si riferisce.
-
-Per favore specifica nell'oggetto della mail il nome della commissione e il livello della scuola, ad esempio 'materna muzio'.\r\n""")
-      else:
-        nota.commissario = commissario.key
-        nota.commissione = commissione.key
-        self.parseMessage( nota, message, feedback)
-
-
-  def parseMessage(self, nota, message, feedback):
-
-    tags = list()
-    nota.dataNota = datetime.now().date()
-    if nota.titolo.lower().find("ieri") >= 0:
-      nota.dataNota = nota.dataNota + timedelta(-1)
-      if nota.dataNota.isoweekday() == 0 :
-        nota.dataNota = nota.dataNota + timedelta(-2)
-      if nota.dataNota.isoweekday() == 6 :
-        nota.dataNota = nota.dataNota + timedelta(-1)
-    else:
-      i = 0
-      for giorno in ["luned","marted","mercoled","gioved","venerd"]:
-        i = i + 1
-        if nota.titolo.lower().find(giorno) >= 0:
-          offset = i - nota.dataNota.isoweekday()
-          if nota.dataNota.isoweekday() <= i:
-            offset -= 7 
-          nota.dataNota = nota.dataNota + timedelta(offset)
-          break;
-
-    logging.info(nota.dataNota)
-    for body in message.bodies('text/plain'):
-      nota.note = body[1].decode()
-
-    nota.put()
-
+      user = commissario.usera
+      
     #allegati
+    attachments = list()
     if hasattr(message, 'attachments'):
       for attach in message.attachments :
         allegato = Allegato()
-        allegato.obj = nota.key
+        #allegato.obj = nota.key
         allegato.nome = self.decode(attach[0])
         logging.info("allegato: " + allegato.nome)
         allegato_decode = attach[1].decode()
@@ -119,9 +78,9 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
           blob = Blob()
           blob.create(allegato.nome)
           allegato.blob_key = blob.write(allegato_decode)
-
-    node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-    template_values = PostHandler.create_post(node=node.key, user=nota.creato_da.get(), title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
+      attachments.append(allegato)
+    
+    template_values = PostHandler.create_post(node=node.key, user=commissario.usera.get(), title=message.subject, content=content, resources=[], attachments=attachments)
     post = template_values["postlist"][0]
     
     feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
@@ -133,12 +92,11 @@ Link pubblico:
 
 
     if len(feedback) > 0:
-      self.sendFeedbackMail(parseaddr(message.sender)[1], post, feedback)
+      sender = "'Pappa-Mi - " + node.name + " <node-" + str(node.key.id()) + "@pappa-mi.it>"
+      self.sendFeedbackMail( parseaddr(message.to)[1], parseaddr(message.sender)[1], post, feedback)
       #SendMail().send_mail(sender=message.sender, to=parseaddr(message.sender)[1], subject=post.title, text_body=feedback)
 
-  def sendFeedbackMail(self, dest, post, feedback) :
-
-    sender = "Pappa-Mi <aiuto@pappa-mi.it>"
+  def sendFeedbackMail(self, sender, dest, post, feedback) :
 
     feedback.append("""
 
@@ -147,7 +105,7 @@ Link pubblico:
     message = mail.EmailMessage()
     message.sender = sender
     message.to = dest
-    message.subject = post.title
+    message.subject = "[Pappa-Mi] - " + post.title
     body = ""
     for f in feedback:
       body = body + f
