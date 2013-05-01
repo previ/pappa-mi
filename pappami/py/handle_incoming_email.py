@@ -17,7 +17,8 @@ from google.appengine.api.app_identity import *
 
 from py.blob import *
 from py.model import *
-from py.comments import CMCommentHandler
+
+from py.post import PostHandler
 
 class MailHandler(InboundMailHandler):
 
@@ -87,9 +88,13 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
       for giorno in ["luned","marted","mercoled","gioved","venerd"]:
         i = i + 1
         if nota.titolo.lower().find(giorno) >= 0:
-          nota.dataNota = nota.dataNota - timedelta(nota.dataNota.isoweekday()-i)
+          offset = i - nota.dataNota.isoweekday()
+          if nota.dataNota.isoweekday() <= i:
+            offset -= 7 
+          nota.dataNota = nota.dataNota + timedelta(offset)
           break;
 
+    logging.info(nota.dataNota)
     for body in message.bodies('text/plain'):
       nota.note = body[1].decode()
 
@@ -115,21 +120,22 @@ Per favore specifica nell'oggetto della mail il nome della commissione e il live
           allegato.blob_key = blob.write(allegato_decode)
 
     node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
-    template_values = PostHandler.create_post(node=node.key, user=self.request.user, title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
-
+    template_values = PostHandler.create_post(node=node.key, user=nota.creato_da.get(), title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
+    post = template_values["postlist"][0]
+    
     feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
 
 Link pubblico:
-""" + "http://" + self.host + "/post/" + str(temlate_values["postlist"][0].urlsafe()/ + """
+""" + "http://" + self.host + "/post/" + post.id + """
 
 ---
 Pappa-Mi staff """)
 
 
     if len(feedback) > 0:
-      self.sendFeedbackMail(parseaddr(message.sender)[1], msg, feedback)
+      self.sendFeedbackMail(parseaddr(message.sender)[1], post, feedback)
 
-  def sendFeedbackMail(self, dest, msg, feedback) :
+  def sendFeedbackMail(self, dest, post, feedback) :
 
     sender = "Pappa-Mi <aiuto@pappa-mi.it>"
 
@@ -140,7 +146,7 @@ Pappa-Mi staff """)
     message = mail.EmailMessage()
     message.sender = sender
     message.to = dest
-    message.subject = msg.root.get().titolo
+    message.subject = post.title
     body = ""
     for f in feedback:
       body = body + f

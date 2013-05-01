@@ -1,4 +1,4 @@
-from __future__ import with_statement
+#from __future__ import with_statement
 from google.appengine.api import files
 
 from py.base import *
