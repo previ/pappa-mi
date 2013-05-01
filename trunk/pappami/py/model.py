@@ -1738,6 +1738,10 @@ class SocialPost(model.Model):
         text += c.content + " "
       return text
 
+    @property
+    def id(self):
+      return str(self.key.parent().id()) + "-" + str(self.key.id())
+    
     @classmethod
     def get_by_resource(cls, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
