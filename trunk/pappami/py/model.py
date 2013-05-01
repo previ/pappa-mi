@@ -1954,6 +1954,11 @@ class SocialPost(model.Model):
       return new_comment
 
     def delete_comment(self, comment_key):
+      for e in SocialEvent.get_keys_by_source(comment_key):
+        for n in SocialNotification.get_keys_by_event(e):
+          n.delete()
+        e.delete()
+      
       comment_key.delete()
       self.comments=self.comments-1
       self.put()

@@ -46,6 +46,10 @@ skip_files: |
 
 handlers:
 
+- url: /_ah/mail/node-.*
+  script: handle_node_email.app
+  login: admin
+
 - url: /_ah/mail/.+ 
   script: py.handle_incoming_email.app 
   login: admin

@@ -34,7 +34,10 @@
 {%endif%} 
  <div id="node_title" class="s_node_header_em">
   {%if node%}<img class="avatar pull-left" src="{{node.image_avatar_path}}">{%endif%}
-  <h3 style="display:inline;">{{node_name}}</h3>{%if node%}<a class="pull-right s_node_link" style="margin-left:5px;" target="_new" href="/node/{{node.key.id()}}/rss">rss</a><a class="pull-right s_node_link" target="_new" href="/node/{{node.key.id()}}">link a questo argomento</a>{%endif%}
+  <h3 style="display:inline;">{{node_name}}</h3>
+  {%if node%}{%if user%}<a class="pull-right s_node_link" style="margin-left:5px;" target="new" href="mailto:'Pappa-Mi - {{node.name}}' <node-{{node.key.id()}}@pappa-mi.it>">mail&nbsp;<i class="icon-envelope"></i></a>{%endif%}
+  <a class="pull-right s_node_link" style="margin-left:5px;" target="new" href="/node/{{node.key.id()}}/rss">rss |</a>
+  <a class="pull-right s_node_link" target="new" href="/node/{{node.key.id()}}">link a questo argomento |</a>{%endif%}
  </div>{%if user %}
  <div id="new_post" style="display:none" class="well">
   <form id="new_post_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">

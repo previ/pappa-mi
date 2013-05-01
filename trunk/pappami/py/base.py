@@ -248,6 +248,14 @@ class BaseHandler(webapp.RequestHandler):
     else:
       return None
 
+  @property
+  def host(self):
+    if "test" in get_application_id():
+      host = "test.pappa-mi.it"
+    else:
+      host = "www.pappa-mi.it"
+    return host
+
   def getHost(self):
     host = self.request.url[len("http://"):]
     host = host[:host.find("/")]
