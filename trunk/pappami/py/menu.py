@@ -145,7 +145,7 @@ class MenuScraper(BasePage):
   def get(self):
     template_values = dict()
 
-    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=01&x2=05&x3=2012', deadline=60)
+    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=06&x2=05&x3=2013', deadline=60)
     p = MenuParser()
     p.text = ""
     p.feed(response.content)
