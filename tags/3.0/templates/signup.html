@@ -1,0 +1,159 @@
+<script src="/js/profilo.js" type="text/javascript"></script>
+<div class="row">
+  <div class="span12">
+    <h2>Completa i tuoi dati</h2>
+    <ul class="nav nav-tabs">
+     <li class="active"><a href="#profile" data-toggle="tab">Profilo</a></li>
+     <li><a href="#privacy" data-toggle="tab">Privacy</a></li>
+     <li><a href="#notifications" data-toggle="tab">Notifiche</a></li>
+    </ul>
+<form action="/signup2" method="POST" id="form0" novalidate class="form-horizontal">
+<div class="tab-content">
+  <div id="profile" class="tab-pane active">
+    <fieldset>
+    <legend>I tuoi dati</legend>
+    <div class="control-group">
+      <label class="control-label" for="avatar">Email</label>
+      <div class="controls"><input class="xlarge required email" id="email" name="email" value="{{form.email}}" size="30" type="text" {%if form.email != ""%}readonly{%endif%}></div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="avatar">Immagine</label>
+      <div class="controls"><img id="avatar" src="{{form.avatar_url.data}}" class="avatar-big"/></div>
+      <input type="hidden" name="avatar_url" id="avatar_url" value="{{form.avatar_url.data}}"/>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="nome">Nome</label>
+      <div class="controls"><input class="xlarge required" id="nome" name="nome" value="{{form.nome.data}}" size="30" type="text"></div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="cognome">Cognome</label>
+      <div class="controls"><input class="xlarge required" id="cognome" name="cognome" value="{{form.cognome.data}}" size="30" type="text"></div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="citta">Citt&agrave;</label>
+      <div class="controls">
+	<select class="xlarge required" id="citta" name="citta" value="">
+	<option value=""></option>
+	{%for cit in citta%}<option value="{{cit.key.id()}}">{{cit.nome}}</option>{%endfor%}
+	</select><i class="icon-info-sign" data-content="Non trovi la tua Citta ? <a href='/citta' target='new'>clicca qui per richiedere l'attivazione</a>"></i>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="commissione_sel"></label>
+      <div class="controls"><input id="tipo_cm" name="stato" value="1" class="required" type="radio"> Faccio parte di una Commissione mensa</controls></div>
+      <div class="controls"><input id="tipo_g" name="stato" value="11" class="required" type="radio"> Sono una mamma o un pap&agrave;</controls></div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="commissione_sel">Seleziona una o pi&ugrave; scuole</label>
+      <div class="controls"><input id="commissione_sel" name="commissione_sel" type="text"/>	    
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls" id="commissioni">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="commissione_sel"></label>
+      <div class="controls">
+	<input id="condizioni" name="condizioni" value="" type="checkbox" class="required"> Accetto le <a href="/condizioni" target="new">condizioni del servizio</a>
+      </div>
+    </div>
+    </fieldset>
+  </div>
+  <div id="privacy" class="tab-pane">
+    <fieldset>
+    <legend>Scegli quali dati mostrare e a chi:</legend>
+    <div class="control-group">    
+    <table>
+    <tr>
+    <td class="span2"></td>
+    <td class="span2">A tutti</td>
+    <td class="span2">Agli utenti registrati</td>
+    <td class="span2">Alle CM</td>
+    </tr>
+    <tr>
+    <td>email</td>
+    <td><input id="p_1_1" name="p_0_0" value="1" type="checkbox"{%if form.privacy[0][0]%} checked{%endif%}/></td>
+    <td><input id="p_1_2" name="p_0_1" value="1" type="checkbox"{%if form.privacy[0][1]%} checked{%endif%}/></td>
+    <td><input id="p_1_3" name="p_0_2" value="1" type="checkbox"{%if form.privacy[0][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Nome</td>
+    <td><input id="p_2_1" name="p_1_0" value="1" type="checkbox"{%if form.privacy[1][0]%} checked{%endif%}/></td>
+    <td><input id="p_2_2" name="p_1_1" value="1" type="checkbox"{%if form.privacy[1][1]%} checked{%endif%}/></td>
+    <td><input id="p_2_3" name="p_1_2" value="1" type="checkbox"{%if form.privacy[1][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Cognome</td>
+    <td><input id="p_3_1" name="p_2_0" value="1" type="checkbox"{%if form.privacy[2][0]%} checked{%endif%}/></td>
+    <td><input id="p_3_2" name="p_2_1" value="1" type="checkbox"{%if form.privacy[2][1]%} checked{%endif%}/></td>
+    <td><input id="p_3_3" name="p_2_2" value="1" type="checkbox"{%if form.privacy[2][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Scuola</td>
+    <td><input id="p_4_1" name="p_3_0" value="1" type="checkbox"{%if form.privacy[3][0]%} checked{%endif%}/></td>
+    <td><input id="p_4_2" name="p_3_1" value="1" type="checkbox"{%if form.privacy[3][1]%} checked{%endif%}/></td>
+    <td><input id="p_4_3" name="p_3_2" value="1" type="checkbox"{%if form.privacy[3][2]%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Immagine</td>
+    <td><input id="p_5_1" name="p_4_0" value="1" type="checkbox"{%if form.privacy[4][0]%} checked{%endif%}/></td>
+    <td><input id="p_5_2" name="p_4_1" value="1" type="checkbox"{%if form.privacy[4][1]%} checked{%endif%}/></td>
+    <td><input id="p_5_3" name="p_4_2" value="1" type="checkbox"{%if form.privacy[4][2]%} checked{%endif%}/></td>
+    </tr>
+    </table>
+    </fieldset>
+  </div>
+  <div id="notifications" class="tab-pane">
+    <fieldset>
+    <legend>Avvisami via mail in caso di:</legend>
+    <table>
+    <tr>
+    <td class="span2"></td>
+    <td class="span2">Una mail per evento</td>
+    <td class="span2">Una mail al giorno</td>
+    <td class="span2">Una mail alla settimana</td>
+    <td class="span2">Nessuna mail</td>    
+    </tr>
+    <tr>
+    <td>Novit&agrave; sulla mia Scuola</td>
+    <td><input id="n_1_1" name="n_0" value="1" type="radio"{%if form.notify[0]==1%} checked{%endif%}/></td>
+    <td><input id="n_1_2" name="n_0" value="2" type="radio"{%if form.notify[0]==2%} checked{%endif%}/></td>
+    <td><input id="n_1_3" name="n_0" value="3" type="radio"{%if form.notify[0]==3%} checked{%endif%}/></td>
+    <td><input id="n_1_3" name="n_0" value="0" type="radio"{%if form.notify[0]==0%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Novit&agrave; sulla mia Citt&agrave;</td>
+    <td><input id="n_2_1" name="n_1" value="1" type="radio"{%if form.notify[1]==1%} checked{%endif%}/></td>
+    <td><input id="n_2_2" name="n_1" value="2" type="radio"{%if form.notify[1]==2%} checked{%endif%}/></td>
+    <td><input id="n_2_3" name="n_1" value="3" type="radio"{%if form.notify[1]==3%} checked{%endif%}/></td>
+    <td><input id="n_2_3" name="n_1" value="0" type="radio"{%if form.notify[1]==0%} checked{%endif%}/></td>
+    </tr>
+    <tr>
+    <td>Tutte le novit&agrave;</td>
+    <td><input id="n_3_1" name="n_2" value="1" type="radio"{%if form.notify[2]==1%} checked{%endif%}/></td>
+    <td><input id="n_3_2" name="n_2" value="1" type="radio"{%if form.notify[2]==2%} checked{%endif%}/></td>
+    <td><input id="n_3_3" name="n_2" value="3" type="radio"{%if form.notify[2]==3%} checked{%endif%}/></td>
+    <td><input id="n_3_3" name="n_2" value="0" type="radio"{%if form.notify[2]==0%} checked{%endif%}/></td>
+    </tr>
+    </table>
+    </fieldset>
+  </div>
+</div>
+<div class="form-actions">
+   <button type="submit" id="do_submit" class="btn btn-primary" data-loading-text="Registrazione in corso...">Completa registrazione</button>&nbsp;<button type="reset" class="btn">Annulla</button>
+</div>
+</div>
+<div id="message" class="span12" style="display:none;">
+<div class="alert-message block-message info fade in" data-alert="alert">
+  <a class="close" href="#">x</a>
+  <p id="message_body"></p>
+  <div class="alert-actions">
+    <a class="btn" href="#" onclick="window.location.href='/'">Procedi</a>
+  </div>
+</div>
+</div>
+</form>
+</div>
+<div id="dialog"></div>
+{%include "avatar.html"%}

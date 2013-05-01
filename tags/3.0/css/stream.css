@@ -1,0 +1,214 @@
+@media (max-width: 979px) and (min-width: 768px){
+.s_node_panel {
+width: 230px;
+}
+.s_node_container {
+width: 474px;
+}
+}
+@media (min-width: 980px) and (max-width: 1199px){
+.s_node_panel {
+width: 270px;
+}
+.s_node_container {
+width: 640px;
+}
+}
+
+.node_description {
+float:right
+}
+
+.node {
+width:400px
+}
+
+.s_post {
+padding-bottom: 8px;
+zoom:1;
+overflow:hidden;
+}
+
+.s_post_item {
+padding: 2px 4px 2px 4px;
+zoom:1;
+overflow:hidden;
+}
+
+.s_post_pinned {
+background-color: #eee;
+}
+
+.s_post_comments {
+margin-left:64px;
+}
+
+.s_comment {
+margin-top: 8px;
+margin-bottom: 8px;
+zoom:1;
+}
+
+.s_post_avatar {
+float: left;
+padding-left: 5px;
+padding-right: 5px;
+cursor: pointer;
+}
+
+.s_post_container {
+display: block;
+overflow: hidden;
+zoom:1;
+}
+
+.s_post_header {
+float:none;
+}
+
+.s_post_title {
+display: block;
+}
+.s_post_subtitle {
+display: block;
+clear:right;
+}
+
+.s_post_title_1 {
+cursor: pointer;
+text-decoration: none;
+font-size: 120%;
+font-weight: bold;
+}
+
+.s_post_author {
+display: inline;
+float: left;
+font-style: italic;
+color: #999;
+}
+
+.s_post_date {
+display: inline;
+float: left;
+font-style: italic;
+color: #999;
+padding-left: 3pt;
+}
+
+.s_post_body {
+}
+
+.s_post_body_short_img {
+float:left;
+background-size:128px;
+background-clip:content-box;
+background-repeat:no-repeat;
+width:128px;
+height:128px;
+margin:2px 6px 6px 2px;
+cursor:pointer;
+}
+
+.s_post_body_short_cnt {
+}
+
+.s_post_image {
+}
+
+.s_post_commands {
+float:right;
+}
+
+.s_post_link, .s_post_link > a {
+display: inline;
+#float: left;
+font-style: italic;
+color: #999;
+padding-left: 3pt;
+cursor: pointer;
+}
+
+.s_post_resource .s_post_title_1 a, a:hover {
+color: #000;
+
+}
+
+.s_node_title_node {
+display:inline;
+float:left;
+}
+
+.s_node_commands {
+margin-bottom:10px;
+}
+
+.s_node_link {
+font-style: italic;
+color: #999;
+}
+
+.s_node_wall {
+height:200px;
+}
+
+.s_node_header {
+overflow:hidden; 
+position:relative; 
+left:20px; 
+top:20px; 
+background:url('/img/back_transp.png');
+padding-left:10px;
+}
+
+.s_node_header_em {
+overflow:hidden; 
+margin-left:9px;
+margin-bottom:10px;
+}
+.s_node_avatar {
+position:relative; 
+left:20px; 
+top:20px;
+}
+.s_post_votes_c {
+cursor: pointer;
+}
+
+.s_post_reshares_c {
+cursor: pointer;
+}
+
+.s_post_comments_c {
+cursor: pointer;
+}
+
+.s_comments {
+margin-left:20px;
+}
+
+.node_selected{
+background-color:grey;	
+}
+
+.notification {
+margin-bottom: 4px;
+}
+
+.ntf_unread {
+background-color: #eee;
+}
+
+.s_author_name {
+font-weight:bold;
+font-size:120%;
+}
+
+.s_author_title {
+font-style:italic;
+}
+
+.s_reshare_preview {
+height: 100px;
+overflow: auto;
+}
