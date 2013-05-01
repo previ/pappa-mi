@@ -1771,14 +1771,6 @@ class SocialPost(model.Model):
       for attach in Allegato.query().filter(Allegato.obj == self.key):
         attachments.append(attach)
       return attachments
-
-    @cached_property
-    def images(self):
-      imgs = list()
-      for a in self.attachments:
-        if a.isImage():
-          imgs.append(a.imgthumb())
-      return imgs
  
     def can_admin(self, user):
       if not user:
