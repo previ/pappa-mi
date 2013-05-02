@@ -93,7 +93,7 @@ Link pubblico:
 
     if len(feedback) > 0:
       sender = "'Pappa-Mi - " + node.name + " <node-" + str(node.key.id()) + "@pappa-mi.it>"
-      self.sendFeedbackMail( parseaddr(message.to)[1], parseaddr(message.sender)[1], post, feedback)
+      self.sendFeedbackMail( sender, parseaddr(message.sender)[1], post, feedback)
       #SendMail().send_mail(sender=message.sender, to=parseaddr(message.sender)[1], subject=post.title, text_body=feedback)
 
   def sendFeedbackMail(self, sender, dest, post, feedback) :
