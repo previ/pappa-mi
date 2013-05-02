@@ -1,0 +1,33 @@
+<li class="s_comment" data-comment-key="{{comment.key.urlsafe()}}" id="{{comment.key.id()}}">
+  <div class="s_post_avatar">
+   <img class="avatar" src="{{comment.commissario.avatar(cmsro)}}" title="{{comment.commissario.nomecompleto(cmsro)}}">
+  </div>
+  <div class="s_post_container">
+   <div class="s_post_header">			
+    <div class="s_post_subtitle">
+     <div class="s_post_author">{{comment.commissario.nome}}</div>
+     <div class="s_post_date">{{comment.extended_date()}}</div>
+     <div class="s_post_link"></div>
+    </div> 
+   </div>				
+   <div class="s_post_body">
+    <div class="s_post_content">{{comment.content}}</div>
+    <div class="s_edit_hollow"></div>
+   </div>				
+   <div class="s_post_feedback pull-left">
+    <span class="s_post_votes_c badge badge-success"{%if comment.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{comment.votes|count}}</span></span>
+   </div>				   
+   {% if user %} 
+   <div class="s_post_commands">
+   <button class="btn btn-normal btn-mini post_comment_vote" data-vote="1"{%if not comment.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+   <button class="btn btn-normal btn-mini post_comment_unvote" data-vote="0"{%if comment.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+    {%if comment.can_admin(user)%}
+    <button class="btn btn-normal btn-mini post_comment_del"><i class="icon-remove"></i>Elimina</button>
+    {%endif%}
+    {%if comment.can_admin(user)%}
+    <button class="btn btn-normal btn-mini post_comment_edit"><i class="icon-pencil"></i>Modifica</button>
+    {%endif%}
+   </div>		
+   {% endif%}							
+ </div>
+</li>	

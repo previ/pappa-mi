@@ -1,0 +1,99 @@
+﻿{% set testi = { "assaggio": ["", "Non accettabile", "Accettabile", "Gradevole"], 
+                 "gradimento": ["", "Rifiutato", "Parz. rifiutato", "Parz. accettato", "Accettato"],
+                 "cottura": ["", "Scarsa", "Giusta", "Eccessiva"], 
+                 "temperatura": ["","Scarsa", "Giusta", "Eccessiva"], 
+                 "maturazione": ["","Acerba", "Giusta", "Matura"], 
+                 "quantita": ["","Scarsa", "Giusta", "Abbondante"],
+                 "condito": ["No","Si", ""],
+                 "pulizia": ["","Scarso", "Mediocre", "Sufficiente", "Ottimo"],
+                 "distribuzione": ["","< 30 min.", "30 < 60 min.", "> 60 min."],
+                 "giudizio": ["","Insufficiente", "Sufficiente", "Buono"]
+                 }
+%}
+{% set cls = {   "assaggio": ["","label131", "label132", "label133"], 
+                 "gradimento": ["","label41", "label42", "label43", "label44"],
+                 "cottura": ["","label231", "label232", "label233"], 
+                 "temperatura": ["","label231", "label232", "label233"], 
+                 "maturazione": ["","label231", "label232", "label233"], 
+                 "quantita": ["","label131", "label132", "label133"],
+                 "condito": ["", "label232", ""],
+                 "pulizia": ["","label41", "label42", "label43", "label44"],
+                 "distribuzione": ["","label133", "label132", "label131"], 
+                 "giudizio": ["","label131", "label132", "label133"] 
+                 }
+%}
+{% macro label(t, a) -%}
+<span class="label labelbox {{cls[t][a]}}" title="{{testi[t][a]}}">&nbsp;&nbsp;&nbsp;</span>
+{%- endmacro %}
+<div>
+<table class="table">
+<tbody>
+<tr><td colspan="7" style="padding:0 0 0 0;">
+<table class="table table-condensed">
+<thead>
+<tr>
+<th>Piatto</th><th><i class="assaggio" title="Assaggio"></i></th><th><i class="gradimento" title="Gradimento"></i></th><th><i class="cottura" title="Cottura o Maturazione"></i></th><th><i class="temperatura" title="Temperatura"></i></th><th><i class="quantita" title="Quantit&agrave;"></i></th><th><i class="condito" title="Condito al momento"></i></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><i class="primo" title="Primo piatto"></i> {{isp.primoEffettivo}}</td><td>{{label("assaggio", isp.primoAssaggio)}}</td><td>{{label("gradimento", isp.primoGradimento)}}</td><td align="center">{{label("cottura", isp.primoCottura)}}</td><td>{{label("temperatura", isp.primoTemperatura)}}</td><td>{{label("quantita", isp.primoQuantita)}}</td><td>{{label("condito", isp.primoCondito)}}</td>
+</tr>
+<tr>
+<td><i class="secondo" title="Secondo piatto"></i> {{isp.secondoEffettivo}}</td><td>{{label("assaggio", isp.secondoAssaggio)}}</td><td>{{label("gradimento", isp.secondoGradimento)}}</td><td>{{label("cottura", isp.secondoCottura)}}</td><td>{{label("temperatura", isp.secondoTemperatura)}}</td><td>{{label("quantita", isp.secondoQuantita)}}</td><td></td>
+</tr>
+<tr>
+<td><i class="contorno" title="Contorno"></i> {{isp.contornoEffettivo}}</td><td>{{label("assaggio", isp.contornoAssaggio)}}</td><td>{{label("gradimento", isp.contornoGradimento)}}</td><td>{{label("cottura", isp.contornoCottura)}}</td><td>{{label("temperatura", isp.contornoTemperatura)}}</td><td>{{label("quantita", isp.contornoQuantita)}}</td><td>{{label("condito", isp.contornoCondito)}}</td>
+</tr>
+<tr>
+<td><i class="pane" title="Pane"></i> {{isp.paneTipo}}</td><td>{{label("assaggio", isp.paneAssaggio)}}</td><td>{{label("gradimento", isp.paneGradimento)}}</td><td></td><td></td><td>{{label("quantita", isp.paneQuantita)}}</td><td></td>
+</tr>
+<tr>
+<td><i class="dessert" title="Dessert"></i> {{isp.fruttaTipo}}</td><td>{{label("assaggio", isp.fruttaAssaggio)}}</td><td>{{label("gradimento", isp.fruttaGradimento)}}</td><td>{{label("maturazione", isp.fruttaMaturazione)}}</td><td></td><td>{{label("quantita", isp.fruttaQuantita)}}</td><td></td>
+</tr>
+</tbody>
+</table>
+<tr>
+<td rowspan="3"><i class="servizio" title="Servizio"></td><td colspan="2">Durata distribuzione: {{label("distribuzione", isp.arrivoDist)}}</td><td colspan="2">Durata pasto: {{label("distribuzione", isp.durataPasto)}}</td><td colspan="2"></td>
+</tr>
+<tr>
+<td>Pasti serviti totali: <span class="data">{{isp.numeroPastiTotale}}</span></td><td>ai Bambini: <span class="data">{{isp.numeroPastiBambini}}</span></td><td>Diete: <span class="data">{{isp.numeroPastiSpeciali}}</span></td><td colspan="3">Addetti: <span class="data">{{isp.numeroAddetti}}</span></td>
+</tr>
+<tr>
+<td>Smaltimento Rifiuti: {{label("pulizia", isp.smaltimentoRifiuti)}}</td><td>Pulizia C.Cottura: {{label("pulizia", isp.puliziaCentroCottura)}}</td><td>Pulizia Refettorio: {{label("pulizia", isp.puliziaRefettorio)}}</td><td colspan="3">Giudizio globale: {{label("giudizio", isp.giudizioGlobale)}}</td>
+</tr>
+<tr>
+<td>Note</td><td colspan="6"><div class="scroll" {% if preview %}style="height:40px; overflow:auto;"{% endif %}>{{isp.note|replace("\n","<br/>")}}</div></td>
+</tr>
+{% if isp.has_allegati %}
+<tr>
+ <td><i class="icon-file"></i> Allegati</td>
+ <td colspan="6">{%if preview%}
+  <div class="scroll" style="height:16px; overflow:none;">
+   <ul class="thumbnails">{%for allegato in isp.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{{allegato.nome}}</a></li>{%endfor%}
+   </ul>
+  </div>{%else%}
+  <div class="scroll">
+   <ul class="thumbnails">{%for allegato in isp.get_allegati%}
+    <li><a class="thumbnail" href="{{allegato.path()}}" target="new">{%if allegato.isImage()%}<img src="{{allegato.imgthumb()}}" alt="{{allegato.nome}}"/>{%else%}{{allegato.nome}}{%endif%}</a></li>{%endfor%}
+   </ul>
+  </div>  
+  {%endif%}
+ </td>
+</tr>
+{%endif%}
+</tbody>
+</table>
+{% if preview %}
+<div id="formnav" class="modal-footer modal-actions">
+ <form id="form1" action="/isp/isp" method="POST">
+  <input type="hidden" name="preview" value="{{preview}}">
+  <input type="hidden" id="act_last" name="last" value="">
+  <input type="hidden" id="node" name="node" value="">
+  <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
+  <button class="btn" type="reset" onclick="previewback();" style="float:right;">Indietro</button>
+ </form>
+</div>
+{% endif %}
+</div>
