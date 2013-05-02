@@ -46,6 +46,8 @@ class Const:
 ]
   SEARCH_LIMIT = 20
   EVENT = True
+  EMAIL_ADDR_MAIN = "'Pappa-Mi' <aiuto@pappa-mi.it>"
+  EMAIL_ADDR_NOTIFICATION = "'Pappa-Mi - Notifiche' <aiuto@pappa-mi.it>"
 
 
 class cached_property(object):

@@ -295,7 +295,7 @@ class EventHandler(BaseHandler):
            'roberto@pvri.com']
     
     if self.host == "www.pappa-mi.it" or user.get().email in test_emails:
-      mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
+      mail.send_mail(sender=Const.EMAIL_ADDR_NOTIFICATION,
       to=user.get().email,
       subject="[Pappa-Mi] Novità",
       body="",
