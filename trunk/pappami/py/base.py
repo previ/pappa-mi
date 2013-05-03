@@ -78,7 +78,7 @@ class BaseHandler(webapp.RequestHandler):
 
                        }
       html=template.render(template_values)
-      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+      time=(datetime.now()-memcache.get("FloodControl-"+str(self.get_current_user().key)))
 
       time=Const.SOCIAL_FLOOD_TIME-time.seconds
       response = {'response':'flooderror','time':time,'html':html}
