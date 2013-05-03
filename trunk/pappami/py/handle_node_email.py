@@ -49,8 +49,13 @@ class MailHandler(InboundMailHandler):
 
     node_id = None
     if "node" in to:
-      node_id = to[5:to.find('@')]
-      logging.info(node_id)
+      try:
+        node_id = to[5:to.find('@')]
+        logging.info(node_id)
+      except:
+        logging.info("node id not valid: " + to)
+        return
+        
     
     node = model.Key("SocialNode", int(node_id)).get()
 
