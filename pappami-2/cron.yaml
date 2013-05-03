@@ -1,6 +1,0 @@
-cron:
-- description: calcolo statistiche
-  url: /admin/stats/calc
-  schedule: every day 02:00
-  timezone: Europe/Rome
- 
