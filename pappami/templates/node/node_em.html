@@ -45,22 +45,22 @@
    <input type="hidden" id="form_user" name="user" value="{{user.key.urlsafe()}}"/>
    <a class="pull-right close" onclick="onOpenPostForm()" href="#">&times;</a>{%if node%} 	   
    <input type="hidden" id="form_node" name="node" value="{{node.key.urlsafe()}}"/>{%else%}
-   <div class="form_parent">
+   <div class="control-group">
     <label for="node">Argomento</label>
     <select class="required" name="node" id="form_node">
     {%for node in node_list%}<option value="{{node.key.urlsafe()}}">{{node.name}}</option>
     {%endfor%}
     </select>
    </div>{%endif%}
-   <div class="form_parent">
+   <div class="control-group">
 	   <label for="post_title_text">Titolo</label>
 	   <input class="span8 required" type="text" name="title" id="post_title_text">
    </div>
-   <div class="form_parent">
-	   <label id="post_content_label" for="content">Contenuto</label>
-	   <textarea id="post_content_text" class="required span8" name="content"></textarea>
+   <div class="control-group">
+	   <label for="post_content_text" for="content">Contenuto</label>
+	   <textarea class="required span8" id="post_content_text" name="content"></textarea>
    </div>
-   <div class="form_parent post_attachments">       
+   <div class="control-group post_attachments">       
     <label class="control-label" for="e_attach">Allegati</label>
     <input type="file" name="attach_file" id="p_attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
    </div>	   

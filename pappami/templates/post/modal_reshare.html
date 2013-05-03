@@ -8,17 +8,17 @@
   <input type="hidden" name="fullscreen" value="{{fullscreen}}"/>
   <input type="hidden" name="post" value=""/>
   <div class="modal-body">  
-   <div id="node_selector" class="form">
+   <div id="node_selector" class="control-group">
     <label id="post_content_label" for="content">Argomento</label>
     <select class="large required" id="node_selector" name="node">
     {%for sub in subs%}<option value="{{sub.key.parent().urlsafe()}}">{{sub.key.parent().get().name}}</option>{%endfor%}
     </select>
    </div>
-   <div id="post_title" class="form_parent">
+   <div id="post_title" class="control-group">
     <label id="post_content_label" for="titolo">Titolo</label>
     <input id="reshare_post_title_text" type="text" class="span5 required" name="title" value="{{post.title}}"/>
    </div>
-   <div id="post_content" class="form_parent">
+   <div id="post_content" class="control-group">
     <label id="post_content_label" for="content">Contenuto</label>
     <textarea id="reshare_post_content_text" class="comment_textarea required" name="content"></textarea>
    </div>

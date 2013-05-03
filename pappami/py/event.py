@@ -286,7 +286,9 @@ class EventHandler(BaseHandler):
       logging.info("Notification: " + str(n.event.get().type))
 
     template = jinja_environment.get_template("ntfctn/notifications_email.html")
-    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": cls.host})
+    logging.info("host: " + str(cls.host()))
+    host = cls.host()
+    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": host})
     
     test_emails = ['roberto.previtera@gmail.com',
            'aiuto@pappa-mi.it',
@@ -294,7 +296,7 @@ class EventHandler(BaseHandler):
            'muriel.verweij@gmail.com',
            'roberto@pvri.com']
     
-    if self.host == "www.pappa-mi.it" or user.get().email in test_emails:
+    if host == "www.pappa-mi.it" or user.get().email in test_emails:
       mail.send_mail(sender=Const.EMAIL_ADDR_NOTIFICATION,
       to=user.get().email,
       subject="[Pappa-Mi] Novità",

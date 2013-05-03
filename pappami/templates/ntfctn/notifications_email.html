@@ -27,7 +27,7 @@ padding-top: 6px;
       {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
     <li style="list-style-type: none;">
 	    <div class="">
-	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.id}}">messaggio</a> su {{post.key.parent().get().name}}
 	    </div>
 	    <div class=""> 
 		    <div style="float:left;padding-right:5px;">

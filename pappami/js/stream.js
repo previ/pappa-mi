@@ -83,7 +83,8 @@ function onSuccess(data){
 }
 
 function onError(jqXHR, textStatus, errorThrown){
-  console.log("textStatus: " + textStatus + " errorThrown: " + errorThrown);
+  window.console && console.log("textStatus: " + textStatus + " errorThrown: " + errorThrown);
+  //alert("textStatus: " + textStatus + " errorThrown: " + errorThrown)
   window.location.href="/";
 }
 
@@ -233,16 +234,16 @@ function onPostEdit(){
 	  ignore: "",
 	  errorClass: "error",
 	  errorPlacement: function(error, element) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.tooltip({title:error.text(), trigger:'manual'});
 	    item.tooltip('show');
 	  },
 	  highlight: function(element, errorClass, validClass) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.addClass(errorClass); 
 	  },
 	  unhighlight: function(element, errorClass, validClass) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.removeClass(errorClass); 
 	    $(element).tooltip('hide');
 	  },  
@@ -313,16 +314,16 @@ function onCommentEdit(){
     ignore: "",
     errorClass: "error",
     errorPlacement: function(error, element) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.tooltip({title:error.text(), trigger:'manual'});
       item.tooltip('show');
     },
     highlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.addClass(errorClass); 
     },
     unhighlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.removeClass(errorClass); 
       $(element).tooltip('hide');
     },  
@@ -402,7 +403,9 @@ function onPostExpand() {
 	  error: onError,
 	  success:function(data){
 	    post_item.html(data.html);
-	    initPost(post_item);
+	    $(document).ready(function(){
+	      initPost(post_item);
+	    });
 	  }});
   
 }
@@ -481,10 +484,8 @@ function onPostReshare() {
     success:function(data){
       var modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
-      modal_reshare.find('[data-loading-text]').button();
       $(document).ready(function () {
-	//modal_reshare = $("#tools").find("#post_reshare")
-	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
+        modal_reshare.find('[data-loading-text]').button();
 	modal_reshare.find('input[name="post"]').attr("value", post);
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
 	modal_reshare.find('form').ajaxForm({beforeSubmit: function() {modal_reshare.find('[data-loading-text]').button('loading');}, clearForm: true, dataType:'json', error: onError, success:function(data){
@@ -822,16 +823,16 @@ function initNode(node_key){
   ignore: "",
   errorClass: "error",
   errorPlacement: function(error, element) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.tooltip({title:error.text(), trigger:'manual'});
     item.tooltip('show');
   },
   highlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.addClass(errorClass); 
   },
   unhighlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.removeClass(errorClass); 
     $(element).tooltip('hide');
   },  
@@ -950,8 +951,10 @@ function loadNode(node_key, node_name) {
    if(data.response=="success"){
     $("#node_container").empty();   
     $("#node_container").append(data.html);
-    initNode(node_key);
-    loadPosts(node_key, "");
+    $(document).ready(function(){
+      initNode(node_key);
+      loadPosts(node_key, "");
+    });
    } 
   }
  });  
