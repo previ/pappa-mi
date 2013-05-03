@@ -37,9 +37,9 @@ from base import BasePage, config, handle_404, handle_500
 class LoginPage(BasePage):
 
   def get(self):
-    user = self.request.user if self.request.user else None
+    user = self.get_current_user()
     profiles = None
-    logging.info(self.request.user)
+    logging.info(self.get_current_user())
     commissario = self.getCommissario()
     if not commissario:
       template_values = dict()
@@ -63,7 +63,7 @@ class ProtectedPage(BasePage):
 
   def get(self):
     session = self.request.session if self.request.session else None
-    user = self.request.user if self.request.user else None
+    user = self.get_current_user()
     profiles = None
     emails = None
     if user:
@@ -308,7 +308,7 @@ class PwdChangePage(BasePage):
     password1 = self.request.get("password1")
     password2 = self.request.get("password2")
 
-    auth_id = models.User.generate_auth_id("password", self.request.user.email)
+    auth_id = models.User.generate_auth_id("password", self.get_current_user().email)
     userprofile = models.UserProfile.get_by_id(auth_id)
 
     if userprofile is None:
@@ -329,8 +329,8 @@ class RemoveAuthPage(BasePage):
   def get(self):
     strategy = self.request.get("p")
 
-    auth_id = self.request.user.has_auth_strategy(strategy)
-    self.request.user.remove_auth_strategy(auth_id)
+    auth_id = self.get_current_user().has_auth_strategy(strategy)
+    self.get_current_user().remove_auth_strategy(auth_id)
     error = "Ok"
 
     self.response.out.write(error)

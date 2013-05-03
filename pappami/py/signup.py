@@ -35,7 +35,7 @@ class SignupPreHandler(BasePage):
     form = CommissarioForm()
     form.nome.data=""
     form.cognome.data=""
-    user = self.request.user
+    user = self.get_current_user()
     if len(user.auth_ids) == 1: #ensure this is for first registration only
       user_info = models.UserProfile.get_by_id(user.auth_ids[0]).user_info.get("info")
       #logging.info("userinfo: " + str(user_info))
@@ -71,7 +71,7 @@ class SignupHandler(BasePage):
 
   @user_required
   def post(self):
-    user = self.request.user
+    user = self.get_current_user()
     #logging.info(user)
     form = CommissarioForm(self.request.POST)
 

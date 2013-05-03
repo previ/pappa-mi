@@ -79,7 +79,7 @@ class PostHandler(BasePage):
 class PostManageHandler(BaseHandler):
 
   def post(self):
-    user=self.request.user
+    user=self.get_current_user()
     cmd = self.request.get('cmd')
 
     # create a new 'original' post
@@ -421,7 +421,7 @@ class PostPaginationHandler(BaseHandler):
   def post(self):
     #logging.info("PostPaginationHandler")
     cmd=self.request.get("cmd")
-    user=self.request.user
+    user=self.get_current_user()
     cursor=self.request.get("cursor")
     cmsro = None
     cmsro = self.getCommissario(user)

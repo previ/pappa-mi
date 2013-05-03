@@ -348,7 +348,7 @@ class NotificationPaginationHandler(BaseHandler):
     return self.post()
   def post(self):
       cmd=self.request.get("cmd")
-      user=self.request.user
+      user=self.get_current_user()
       cursor=self.request.get("cursor")
       cmsro = None
       cmsro = self.getCommissario(user)
