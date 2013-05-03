@@ -111,9 +111,9 @@ function onFloodError(data,callback){
   });
   i=0
   time_left=data.time
-  span=$('.seconds_left')
-  time_left
-  floodUpdate()
+  span=$('.seconds_left');
+  //time_left
+  floodUpdate();
   floodErrorTimer=setInterval(function() {floodUpdate() }, 980);
 }
 
