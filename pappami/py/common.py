@@ -127,8 +127,10 @@ class Cache(object):
     self.name=cache_name
     self._lock = threading.RLock()
     self._cache = dict()
-    self._version = 0
-    memcache.incr(self.name + "-version", 0)
+    self._version = memcache.get(self.name + "-version")
+    if not self._version:
+      memcache.set(self.name + "-version", 0)
+      self._version = 0
     Cache.put_cache(self.name, self)
     super(Cache, self).__init__(*args, **kwargs)
 
@@ -138,8 +140,8 @@ class Cache(object):
   def put(self, name, obj):
     with self._lock:
       self._cache[name] = obj
-      self._version += 1
-      memcache.incr(self.name + "-version")
+      #self._version += 1
+      #memcache.incr(self.name + "-version") #non è necessario invalidare la cache su una put, la versione va gestita in modo esplicito 
 
   def clear(self, name):
     with self._lock:

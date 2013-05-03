@@ -10,7 +10,7 @@ import threading
 import math
 import jinja2
 import os
-from google.appengine.ext.ndb import model, Cursor
+from google.appengine.ext.ndb import model, Cursor, Future, tasklet
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
@@ -1827,8 +1827,13 @@ class SocialPost(model.Model):
       more = cache.get(cache_key + "-more")
       if not postlist:
         postlist = list()
-        posts, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
-        postlist = [p for p in posts]
+        postlist, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)        
+        #f_futures = list()
+        #for p in postlist:
+          #f_futures.append(cls.fetch_post_async(p))
+        #Future.wait_all(f_futures)
+
+        #postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
@@ -1843,14 +1848,24 @@ class SocialPost(model.Model):
       more = cache.get(cache_key + "-more")
       if not postlist:
         postlist = list()
-        posts, next_cursor, more = SocialPost.query().order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
-        postlist = [p for p in posts]
+        postlist, next_cursor, more = SocialPost.query().order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        #f_futures = list()
+        #for p in postlist:
+          #f_futures.append(cls.fetch_post_async(p))
+        #Future.wait_all(f_futures)
+        
+        #postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
         #logging.info("next_cursor: " + str(next_cursor))
       return postlist, next_cursor, more
 
+    @tasklet
+    def fetch_post_async(post):
+      yield post.votes
+      yield post.attachments
+    
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
       cache =  Cache.get_cache("UserStream")
