@@ -96,9 +96,9 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 					<form class="s_new_comment_form" action="/post/manage" method="post" novalidate="true">
 						<input type="hidden" name="cmd" value="create_comment"/>	
 						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
-						<div class="form_parent">
+						<div class="control-group">
 							<textarea id="comment_content_{{post.key.urlsafe()}}" class="s_post_comment" name="content"></textarea>
-							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio risposta in corso..."/>
+							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio..."/>
 						</div>
 					</form>
 				    </div>
@@ -115,10 +115,10 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 		<div class="s_modal_reshare"></div>
 		<div class="s_post_edit_form" style="display:none;"></div>
 		<div class="s_comment_edit_form" style="display:none;">
-			<form class="s_update_comment_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+			<form class="s_update_comment_form" action="/post/manage" method="post" class="form-stacked" novalidate="true">
 				<input type="hidden" name="cmd" value="update_comment"/>
 				<input type="hidden" name="comment" value=""/>
-				<div class="form_parent">
+				<div class="control-group">
 					<input class="s_comment_edit_content required" name="content" value="">
 				</div>
 				<div class="s_comment_commands">

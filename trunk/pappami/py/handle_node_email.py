@@ -23,8 +23,8 @@ from py.post import PostHandler
 
 class MailHandler(InboundMailHandler):
 
-  @property
-  def host(self):
+  @classmethod
+  def host(cls):
     if "test" in get_application_id():
       host = "test.pappa-mi.it"
     else:
@@ -97,7 +97,7 @@ Per poter pubblicare un messaggio è necessario prima iscriversi all'Argomento s
       feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
   
   Link pubblico:
-  """ + "http://" + self.host + "/post/" + post.id + """
+  """ + "http://" + self.host() + "/post/" + post.id + """
   
   """)
 

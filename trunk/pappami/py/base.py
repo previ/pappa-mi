@@ -35,6 +35,8 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
+from google.appengine.api.app_identity import *
+
 import httpagentparser
 
 from py.gviz_api import *
@@ -248,8 +250,8 @@ class BaseHandler(webapp.RequestHandler):
     else:
       return None
 
-  @property
-  def host(self):
+  @classmethod
+  def host(cls):
     if "test" in get_application_id():
       host = "test.pappa-mi.it"
     else:
