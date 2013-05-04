@@ -159,7 +159,7 @@ class PostManageHandler(BaseHandler):
                'post': post,
                'user': user,
                'cmsro':self.getCommissario(user),
-               'url': self.get_login_url_text()[0],
+               'url': '/eauth/login?next=/stream',
                'hide_comments': self.request.get('exp_comments') == 'false',
       }
 
