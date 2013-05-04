@@ -122,7 +122,6 @@ float:right;
 
 .s_post_link, .s_post_link > a {
 display: inline;
-#float: left;
 font-style: italic;
 color: #999;
 padding-left: 3pt;

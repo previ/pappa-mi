@@ -225,8 +225,12 @@ class NodeWidgetHandler(BasePage):
 
   def get(self, node_key):
     if self.request.get("cmd") == "get_by_cm":
-      node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
-      self.output_as_json({'node_key': node_key.urlsafe()})
+      try:
+        node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
+        self.output_as_json({'node_key': node_key.urlsafe()})
+      except:
+        logging.info("error retrieving node: " + self.request.get("cm"))
+        return
     elif node_key:
       template_values = dict()
 
