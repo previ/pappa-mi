@@ -886,7 +886,7 @@ class CMAdminHandler(BasePage):
       offset = int(self.request.get("offset"))
       SocialAdmin.migrate(what, offset, limit)
 
-    if self.request.get("cmd") == "vacuum_index":
+    if self.request.get("cmd") == "vacuum_node_index":
       index = search.Index(name="index-nodes")
       while True:
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
@@ -894,6 +894,7 @@ class CMAdminHandler(BasePage):
           break
         index.delete(doc_ids)
 
+    if self.request.get("cmd") == "vacuum_post_index":
       index = search.Index(name="index-posts")
       while True:
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
@@ -1132,7 +1133,7 @@ class SocialAdmin(object):
           node.put()
   
         logging.info("generate_nodes.cm")
-        c_futures = list()
+
         commissioni=Commissione.query().fetch()
         for i in commissioni:
           logging.info("node: " + i.nome)
@@ -1140,39 +1141,37 @@ class SocialAdmin(object):
           node = SocialNode(name = i.nome + " " + i.tipoScuola,
                           description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key])
           node.init_rank()
-          c_futures.append(node.put_async())
-        
-        Future.wait_all(c_futures)  
+          node.put()
 
         logging.info("generate_nodes.tag")
-        tags_mapping = {"salute": "Salute",
-                        "educazione alimentare": "Educazione alimentare",
-                        "commissioni mensa": "Commissioni Mensa",
-                        "dieta": "Diete speciali",
-                        "nutrizione": "Nutrizione",
-                        "milano ristorazione": "Milano",
-                        "eventi": "Eventi",
-                        "assemblea cittadina": "Commissioni Mensa",
-                        "mozzarella blu": "Commissioni Mensa",
-                        "dieta mediterranea": "Nutrizione",
-                        "commercio equo e solidale": "Generale",
-                        "celiaci": "Diete speciali",
-                        "centro cucina": "Commissioni Mensa",
-                        "tip of the week": "Commissioni Mensa",
-                        "rassegna stampa": "Generale",
-                        "": "Generale",
-                        }
-        for tag in tags_mapping:
-            logging.info("tag: " + tag)
-            node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
-            if not node:
-                node = SocialNode(name = tags_mapping[tag],
-                            description="Gruppo di discussione su " + tags_mapping[tag] )
-                node.init_rank()
-                node.put()
-            tags_mapping[tag] = node
+      tags_mapping = {"salute": "Salute",
+                      "educazione alimentare": "Educazione alimentare",
+                      "commissioni mensa": "Commissioni Mensa",
+                      "dieta": "Diete speciali",
+                      "nutrizione": "Nutrizione",
+                      "milano ristorazione": "Milano",
+                      "eventi": "Eventi",
+                      "assemblea cittadina": "Commissioni Mensa",
+                      "mozzarella blu": "Commissioni Mensa",
+                      "dieta mediterranea": "Nutrizione",
+                      "commercio equo e solidale": "Generale",
+                      "celiaci": "Diete speciali",
+                      "centro cucina": "Commissioni Mensa",
+                      "tip of the week": "Commissioni Mensa",
+                      "rassegna stampa": "Generale",
+                      "": "Generale",
+                      }
+      for tag in tags_mapping:
+        logging.info("tag: " + tag)
+        node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
+        if not node:
+            node = SocialNode(name = tags_mapping[tag],
+                        description="Gruppo di discussione su " + tags_mapping[tag] )
+            node.init_rank()
+            node.put()
+        tags_mapping[tag] = node
   
-        node_default = tags_mapping["rassegna stampa"]
+      node_default = tags_mapping["rassegna stampa"]
 
       if what == "subscriptions":
         #subscriptions
@@ -1202,7 +1201,7 @@ class SocialAdmin(object):
             if cm.zona:
               nodes = SocialNode.get_by_name(cm.citta.get().nome + " - Zona " + str(cm.zona))
               if len(nodes) > 0:
-                nodes[0].subscribe_user(cm.usera.get(), 1)
+                nodes[0].subscribe_user(co.usera.get(), 1)
 
 
       if what == "messages":
@@ -1217,7 +1216,7 @@ class SocialAdmin(object):
             for a in m.par.get().get_allegati:
               logging.info("msg.par.allegati")
               a.obj = post.key
-              a.put_async()
+              a.put()
 
           elif m.tipo == 201:
             #messaggi
@@ -1226,18 +1225,18 @@ class SocialAdmin(object):
                 node = tags_mapping[m.tags[0].nome]
             if not node:
                 node = node_default
-            post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
+            post=node.create_open_post(m.c_ua.get(), m.title, m.body, []).get()
             #allegati a messaggi
             for a in m.get_allegati:
               logging.info("msg.allegati")
               a.obj = post.key
-              a.put_async()
+              a.put()
 
 
           post.created = m.creato_il
           init_rank = post.created - Const.BASE_RANK
           post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
-          post.put_async()
+          post.put()
 
           #commenti
           if m.commenti:
@@ -1245,17 +1244,17 @@ class SocialAdmin(object):
             for mc in Messaggio.get_by_parent(m.key):
               comment = post.create_comment(mc.body, mc.c_ua.get())
               comment.created = mc.creato_il
-              comment.put_async()
+              comment.put()
               for v in mc.votes:
                 logging.info("msg.voti")
                 vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=comment.key, vote = v.voto)
-                vote.put_async()
+                vote.put()
 
           #voti
           for v in m.votes:
             logging.info("msg.voti")
             vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
-            vote.put_async()
+            vote.put()
 
       logging.info("migrate.end")
 
