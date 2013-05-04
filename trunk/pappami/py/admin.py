@@ -716,118 +716,118 @@ class CMAdminHandler(BasePage):
         zona = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2010,month=11, day=1), validitaA=date(year=2099,month=12, day=31))
         zona.put()
 
-        if self.request.get("cmd") == "getCommissari":
-          buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-          for c in Commissario.query():
-            if c.isCommissario():
-              buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-            
-          self.response.out.write(buff)        
-          return
-    
-        if self.request.get("cmd") == "getGenitori":
-          buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-          for c in Commissario.query():
-            if c.isGenitore():
-              buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-            
-          self.response.out.write(buff)
-          return
-    
-        if self.request.get("cmd") == "getIspezioni":
-          dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+    if self.request.get("cmd") == "getCommissari":
+      buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
+      for c in Commissario.query():
+        if c.isCommissario():
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
+        
+      self.response.out.write(buff)        
+      return
+
+    if self.request.get("cmd") == "getGenitori":
+      buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
+      for c in Commissario.query():
+        if c.isGenitore():
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
+        
+      self.response.out.write(buff)
+      return
+
+    if self.request.get("cmd") == "getIspezioni":
+      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
+        isp_str = ""
+        isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
+        isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
+        isp_str += str(isp.dataIspezione) + "\t"
+        isp_str += unicode(isp.primoPrevisto) + "\t"
+        isp_str += unicode(isp.primoEffettivo) + "\t"
+        isp_str += str(isp.primoDist) + "\t"
+        isp_str += str(isp.primoCondito) + "\t"
+        isp_str += str(isp.primoCottura) + "\t"
+        isp_str += str(isp.primoTemperatura) + "\t"
+        isp_str += str(isp.primoQuantita) + "\t"
+        isp_str += str(isp.primoAssaggio) + "\t"
+        isp_str += str(isp.primoGradimento) + "\t"
+        isp_str += unicode(isp.secondoPrevisto) + "\t"
+        isp_str += unicode(isp.secondoEffettivo) + "\t"
+        isp_str += str(isp.secondoDist) + "\t"
+        isp_str += str(isp.secondoCottura) + "\t"
+        isp_str += str(isp.secondoTemperatura) + "\t"
+        isp_str += str(isp.secondoQuantita) + "\t"
+        isp_str += str(isp.secondoAssaggio) + "\t"
+        isp_str += str(isp.secondoGradimento) + "\t"
+        isp_str += unicode(isp.contornoPrevisto) + "\t"
+        isp_str += unicode(isp.contornoEffettivo) + "\t"
+        isp_str += str(isp.contornoCondito) + "\t"
+        isp_str += str(isp.contornoCottura) + "\t"
+        isp_str += str(isp.contornoTemperatura) + "\t"
+        isp_str += str(isp.contornoQuantita) + "\t"
+        isp_str += str(isp.contornoAssaggio) + "\t"
+        isp_str += str(isp.contornoGradimento) + "\t"
+        isp_str += unicode(isp.fruttaTipo) + "\t"
+        isp_str += unicode(isp.fruttaServita) + "\t"
+        isp_str += str(isp.fruttaMaturazione) + "\t"
+        isp_str += str(isp.fruttaQuantita) + "\t"
+        isp_str += str(isp.fruttaAssaggio) + "\t"
+        isp_str += str(isp.fruttaGradimento) + "\t"
+        isp_str += unicode(isp.paneTipo) + "\t"
+        isp_str += str(isp.paneServito) + "\t"
+        isp_str += str(isp.paneQuantita) + "\t"
+        isp_str += str(isp.paneAssaggio) + "\t"
+        isp_str += str(isp.paneGradimento) + "\t"
+        isp_str += str(isp.giudizioGlobale) + "\t"
+        isp_str += "\n"
+        self.response.out.write(isp_str)
           
-          for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
-            isp_str = ""
-            isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
-            isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
-            isp_str += str(isp.dataIspezione) + "\t"
-            isp_str += unicode(isp.primoPrevisto) + "\t"
-            isp_str += unicode(isp.primoEffettivo) + "\t"
-            isp_str += str(isp.primoDist) + "\t"
-            isp_str += str(isp.primoCondito) + "\t"
-            isp_str += str(isp.primoCottura) + "\t"
-            isp_str += str(isp.primoTemperatura) + "\t"
-            isp_str += str(isp.primoQuantita) + "\t"
-            isp_str += str(isp.primoAssaggio) + "\t"
-            isp_str += str(isp.primoGradimento) + "\t"
-            isp_str += unicode(isp.secondoPrevisto) + "\t"
-            isp_str += unicode(isp.secondoEffettivo) + "\t"
-            isp_str += str(isp.secondoDist) + "\t"
-            isp_str += str(isp.secondoCottura) + "\t"
-            isp_str += str(isp.secondoTemperatura) + "\t"
-            isp_str += str(isp.secondoQuantita) + "\t"
-            isp_str += str(isp.secondoAssaggio) + "\t"
-            isp_str += str(isp.secondoGradimento) + "\t"
-            isp_str += unicode(isp.contornoPrevisto) + "\t"
-            isp_str += unicode(isp.contornoEffettivo) + "\t"
-            isp_str += str(isp.contornoCondito) + "\t"
-            isp_str += str(isp.contornoCottura) + "\t"
-            isp_str += str(isp.contornoTemperatura) + "\t"
-            isp_str += str(isp.contornoQuantita) + "\t"
-            isp_str += str(isp.contornoAssaggio) + "\t"
-            isp_str += str(isp.contornoGradimento) + "\t"
-            isp_str += unicode(isp.fruttaTipo) + "\t"
-            isp_str += unicode(isp.fruttaServita) + "\t"
-            isp_str += str(isp.fruttaMaturazione) + "\t"
-            isp_str += str(isp.fruttaQuantita) + "\t"
-            isp_str += str(isp.fruttaAssaggio) + "\t"
-            isp_str += str(isp.fruttaGradimento) + "\t"
-            isp_str += unicode(isp.paneTipo) + "\t"
-            isp_str += str(isp.paneServito) + "\t"
-            isp_str += str(isp.paneQuantita) + "\t"
-            isp_str += str(isp.paneAssaggio) + "\t"
-            isp_str += str(isp.paneGradimento) + "\t"
-            isp_str += str(isp.giudizioGlobale) + "\t"
-            isp_str += "\n"
-            self.response.out.write(isp_str)
-            
-          return
-    
-        if self.request.get("cmd") == "getNonconf":
-          dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
-          
-          for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
-            nc_str = ""
-            nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + "\t"
-            nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + "\t"
-            nc_str += str(nc.dataNonconf) + "\t"
-            nc_str += str(nc.tipo) + "\t"
-            nc_str += str(nc.richiestaCampionatura) + "\n"
-            self.response.out.write(nc_str)
-            
-          return
-    
-        if self.request.get("cmd") == "upCommissioni":
-          data = self.request.get("rawdata")
-          for line in data.split("\n"):
-            logging.info(line)
-            field = line.split("\t")
-            if len(field) > 14:
-              cm = Commissione()
-              cm.citta = model.Key(urlsafe=field[0])
-              cm.codiceScuola = fields[1]
-              cm.nome = fields[2]
-              cm.nomeScuola = fields[3]
-              cm.tipoScuola = fields[4]
-              cm.strada = fields[5]
-              cm.civico = fields[6]
-              cm.provincia = fields[7]
-              cm.cap = fields[8]
-              cm.zona = fields[9]
-              cm.distretto = fields[10]
-              cm.email = fields[11]
-              cm.telefono = fields[12]
-              cm.fax = fields[13]
-              geo = fields[14].split(',')
-              cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
-              cm.creato_da = users.get_current_user()
-              cm.creato_il = datetime.now()
-              cm.modificato_da = users.get_current_user()
-              cm.modificato_il = datetime.now()
-              cm.numCommissari = 0
-              cm.stato = 1
-              cm.put()
+        return
+  
+    if self.request.get("cmd") == "getNonconf":
+      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
+        nc_str = ""
+        nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + "\t"
+        nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + "\t"
+        nc_str += str(nc.dataNonconf) + "\t"
+        nc_str += str(nc.tipo) + "\t"
+        nc_str += str(nc.richiestaCampionatura) + "\n"
+        self.response.out.write(nc_str)
+        
+      return
+
+    if self.request.get("cmd") == "upCommissioni":
+      data = self.request.get("rawdata")
+      for line in data.split("\n"):
+        logging.info(line)
+        field = line.split("\t")
+        if len(field) > 14:
+          cm = Commissione()
+          cm.citta = model.Key(urlsafe=field[0])
+          cm.codiceScuola = fields[1]
+          cm.nome = fields[2]
+          cm.nomeScuola = fields[3]
+          cm.tipoScuola = fields[4]
+          cm.strada = fields[5]
+          cm.civico = fields[6]
+          cm.provincia = fields[7]
+          cm.cap = fields[8]
+          cm.zona = fields[9]
+          cm.distretto = fields[10]
+          cm.email = fields[11]
+          cm.telefono = fields[12]
+          cm.fax = fields[13]
+          geo = fields[14].split(',')
+          cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
+          cm.creato_da = users.get_current_user()
+          cm.creato_il = datetime.now()
+          cm.modificato_da = users.get_current_user()
+          cm.modificato_il = datetime.now()
+          cm.numCommissari = 0
+          cm.stato = 1
+          cm.put()
 
     if self.request.get("cmd") == "migSocial":
       #SocialUtils.msg_to_post()

@@ -217,7 +217,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.0.0 - 2013.04.19"
+    template_values["version"] = "3.0.0.25 - 2013.05.05"
     template_values["ctx"] = self.get_context()
 
 
