@@ -35,7 +35,7 @@
  <div id="node_title" class="s_node_header_em">
   {%if node%}<img class="avatar pull-left" src="{{node.image_avatar_path}}">{%endif%}
   <h3 style="display:inline;">{{node_name}}</h3>
-  {%if node%}{%if user%}<a class="pull-right s_node_link" style="margin-left:5px;" target="new" href="mailto:'Pappa-Mi - {{node.name}}' <node-{{node.key.id()}}@pappa-mi.it>">mail&nbsp;<i class="icon-envelope"></i></a>{%endif%}
+  {%if node%}{%if user and subscription%}<a class="pull-right s_node_link" style="margin-left:5px;" target="new" href="mailto:'Pappa-Mi - {{node.name}}' <node-{{node.key.id()}}@pappa-mi.it>">mail&nbsp;<i class="icon-envelope"></i></a>{%endif%}
   <a class="pull-right s_node_link" style="margin-left:5px;" target="new" href="/node/{{node.key.id()}}/rss">rss |</a>
   <a class="pull-right s_node_link" target="new" href="/node/{{node.key.id()}}">link a questo argomento |</a>{%endif%}
  </div>{%if user %}

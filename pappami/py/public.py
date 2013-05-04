@@ -46,7 +46,7 @@ class ActivityPublicHandler(BasePage):
     if message.par:
       post = SocialPost.get_by_resource(message.par)[0]
       if post:
-        self.redirect("/post/"+str(post.key.parent().id())+"-"+post.key.id())
+        self.redirect("/post/"+post.id)
 
   def post(self):
     return self.get()
