@@ -2,6 +2,12 @@
 $(document).ready(function () {
  $('.search_paginate').click(onSearchPaginate);
  $('.s_search').click(function(){$(this).button('loading');});
+ $( "#e_date_from_viz" ).datepicker({ altField: '#e_date_from', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d', onClose: function( selectedDate ) {
+        $( "#e_date_to_viz" ).datepicker( "option", "minDate", selectedDate );
+      } });
+ $( "#e_date_to_viz" ).datepicker({ altField: '#e_date_to', altFormat: 'yy-mm-dd', dateFormat: 'dd/mm/yy', minDate: new Date(2008, 9, 1), maxDate: '0d', onClose: function( selectedDate ) {
+        $( "#e_date_from_viz" ).datepicker( "option", "maxDate", selectedDate );
+      } });
  initPostList($('#search_result'));
 });
 </script>
@@ -31,28 +37,46 @@ $(document).ready(function () {
    <input type="hidden" name="advanced" value="true" id="a_s_adv">
    <input type="hidden" name="offset" value="0">
    <fieldset>
-   <div class="row span4">
-    <label for="a_s_text">Testo:</label>
-    <input type="text" name="query" value="{{query}}" id="a_s_text">
-    <label for="a_s_author">Autore:</label>
-    <input type="text" name="author" value="{{author}}" id="a_s_author">
-   </div>    
-   <div class="row span4"> 
-    <label for="a_s_node">Argomento / Scuola:</label>
-    <input type="text" name="node" value="{{node}}" id="a_s_node">
-    <label for="a_s_resource">Tipo:</label>
-    <select name="resources" id="a_s_resource">
-     <option value="">Tutti</option>
-     <option value="isp"{%if resources=='isp'%} selected{%endif%}>Ispezione</option>
-     <option value="nc"{%if resources=='nc'%} selected{%endif%}>Non conformità</option>
-     <option value="nota"{%if resources=='nota'%} selected{%endif%}>Nota</option>
-     <option value="dieta"{%if resources=='dieta'%} selected{%endif%}>Ispezione dieta</option>
-    </select>
-   </div>    
-   <div class="span4">
-    <label for="a_s_attach">Con allegati</label>
-    <input type="checkbox" name="attach" value="True" {%if attach%} checked {%endif%}id="a_s_attach">
-   </div>    
+    <div class="row">
+     <div class="span3">
+      <label for="a_s_text">Testo:</label>
+      <input class="span3" type="text" name="query" value="{{query}}" id="a_s_text">
+     </div>
+     <div class="span3">
+      <label for="a_s_node">Argomento / Scuola:</label>
+      <input class="span3" type="text" name="node" value="{{node}}" id="a_s_node">
+     </div>
+     <div class="span3">
+      <label for="a_s_resource">Tipo:</label>
+      <select class="span3"  name="resources" id="a_s_resource">
+       <option value="">Tutti</option>
+       <option value="isp"{%if resources=='isp'%} selected{%endif%}>Ispezione</option>
+       <option value="nc"{%if resources=='nc'%} selected{%endif%}>Non conformità</option>
+       <option value="nota"{%if resources=='nota'%} selected{%endif%}>Nota</option>
+       <option value="dieta"{%if resources=='dieta'%} selected{%endif%}>Ispezione dieta</option>
+      </select>
+     </div>
+     <div class="span3">
+      <label for="a_s_author">Autore:</label>
+      <input class="span3"  type="text" name="author" value="{{author}}" id="a_s_author">
+     </div>
+    </div>
+    <div class="row">
+     <div class="span3">
+      <label for="e_date_from_viz">Da data:</label>
+      <input class="span2" type="text" name="date_from_viz" value="{{date_from}}" id="e_date_from_viz">
+      <input type="hidden" name="date_from" value="{{date_from}}" id="e_date_from">
+     </div>
+     <div class="span3">
+      <label for="e_date_to_viz">A data:</label>
+      <input class="span2"  type="text" name="date_to_viz" value="{{date_to}}" id="e_date_to_viz">
+      <input type="hidden" name="date_to" value="{{date_to}}" id="e_date_to">
+     </div>
+     <div class="span3">
+      <label for="a_s_attach">Con allegati</label>
+      <input type="checkbox" name="attach" value="True" {%if attach%} checked {%endif%}id="a_s_attach">
+     </div>    
+    </div>
    </fieldset>
    <div class="form-actions">
     <button type="submit" class="btn btn-normal s_search" id="a_s_submit"data-loading-text="Caricamento...">Cerca</button>
