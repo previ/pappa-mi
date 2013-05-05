@@ -1,5 +1,5 @@
-application: test-pappa-mi-hr
-version: 1
+application: pappa-mi-hr
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: true
