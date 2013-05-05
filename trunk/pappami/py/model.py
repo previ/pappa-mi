@@ -915,7 +915,9 @@ class Dieta(model.Model):
            21:"menu privo di tutte le carni",
            22:"menu privo di carni bovine e suine",
            23:"menu privo di carni di origine animale",
-           24:"menu privo di carne e pesce"}
+           24:"menu privo di carne e pesce",
+           25:"dieta leggera",
+           26:"dieta personalizzata"}
 
   @classmethod
   def tipi(cls):
