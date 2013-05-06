@@ -79,6 +79,7 @@ cursor: pointer;
 text-decoration: none;
 font-size: 120%;
 font-weight: bold;
+margin-right:5px;
 }
 
 .s_post_author {
@@ -131,6 +132,10 @@ cursor: pointer;
 .s_post_resource .s_post_title_1 a, a:hover {
 color: #000;
 
+}
+
+.s_post_share_sn li {
+padding-left:20px;
 }
 
 .s_node_title_node {

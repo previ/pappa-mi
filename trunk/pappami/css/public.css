@@ -186,7 +186,7 @@ font-size:120%;
   background-image:url('/img/slider/slide3_l.jpg');
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 .carousel-slide-1 {
   background-image:url('/img/slider/slide1.jpg');
 }
@@ -331,10 +331,14 @@ font-size:120%;
     height: 270px;
   }
   .carousel-caption {
-    padding: 10px 20px;
+    position: absolute;
+    padding: 10px 10px;
   }
   .carousel-caption h1 {
-    font-size: 30px;
+    font-size: 24px;
+  }
+  .carousel-caption h2 {
+    font-size: 20px;
   }
   .carousel-caption .lead,
   .carousel-caption .btn {

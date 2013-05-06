@@ -100,7 +100,7 @@ class CommissioneForm(model_form(Commissione)):
   class Meta:
     model = Commissione
 
-class CommissarioForm(model_form(model=Commissario, exclude=['creato_il','creato_da','modificato_il','modificato_da', 'avatar_data', 'citta', 'privacy', 'notify'])):
+class CommissarioForm(model_form(model=Commissario, exclude=['creato_il','creato_da','modificato_il','modificato_da', 'avatar_data', 'citta', 'privacy', 'notify', 'user_email_lower'])):
   stored = False
 
 class SocialPostForm():

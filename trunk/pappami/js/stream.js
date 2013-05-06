@@ -1061,11 +1061,17 @@ function onResharesDetail() {
 
 function onAuthorDetail() {
   var author_pop = $(this);
-  var post_key = getPostKeyByElement($(this));
+  var key = ""
+  var comment_root = getCommentRootByElement($(this));
+  if(comment_root.length > 0) {
+   key = comment_root.attr('data-comment-key');   
+  } else {
+   key = getPostKeyByElement($(this));
+  }
 
  var data = {
   'cmd': 'author_detail',
-  'post': post_key
+  'key': key
   };
  $.ajax({
   type: 'POST',

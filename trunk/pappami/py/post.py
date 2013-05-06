@@ -72,7 +72,8 @@ class PostHandler(BasePage):
      "user": user,
      "node":node.get()
     }
-
+    
+    EventHandler.startTask()    
     return template_values
 
 
@@ -115,7 +116,6 @@ class PostManageHandler(BaseHandler):
       #self.output_as_json(response)
       self.getBase(template_values)
       EventHandler.startTask()
-
 
     # create a comment to a post
     # parameters: 'post'
@@ -335,11 +335,11 @@ class PostManageHandler(BaseHandler):
       self.output_as_json(response)
 
     if cmd== "author_detail":
-      post=model.Key(urlsafe=self.request.get('post')).get()
+      post_or_comment=model.Key(urlsafe=self.request.get('key')).get()
 
       template_values = {
         "cmsro":self.getCommissario(user),
-        "author": post.commissario,
+        "author": post_or_comment.commissario,
       }
 
       template = jinja_environment.get_template("post/author.html")
