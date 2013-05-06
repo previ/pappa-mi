@@ -8,7 +8,7 @@
 			<div class="s_post_header">		
 				{%if not reshare %}<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-chevron-down"></i></span></div>{%endif%}
 				<div class="s_post_title">
-					<span class="s_post_title_1 post_expand">{{post.title}}</span>
+					<span class="s_post_title_1 post_expand">{{post.title}}</span>{%if post.is_pinned()%}<span class="label label-important">in evidenza</span>{%endif%}
 				</div>
 				<div class="s_post_subtitle">
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>

@@ -46,15 +46,12 @@ class CMMenuWidgetHandler(CMMenuHandler):
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
         self.request.GET["cm"] = c.key.id()
 
-    self.createMenu(self.request,c,template_values)
-
-    if self.request.get("i") == "n":
-      template_values["main"] = 'widget/menu.html'
-    else:
+      self.createMenu(self.request,c,template_values)
+  
       template_values["main"] = 'widget/wmenu.html'
-
-    template_values["main"] = 'widget/wmenu.html'
-    self.getBase(template_values)
+      self.getBase(template_values)
+    else:
+      self.response.out.write("commissione non trovata.")
 
 
 class CMStatWidgetHandler(BasePage):

@@ -3,11 +3,20 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 </script>{%endif%}
 <div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}' data-fullscreen="{{fullscreen}}">
 	<div class="s_post"> 
-		<div class="s_post_avatar">
+		<div class="s_post_avatar s_popover" data-original-title="Informazioni" data-placement="right" data-trigger="manual" data-html="true" data-visible="false" data-container="body">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		</div>
 		<div class="s_post_container">
-			<div class="s_post_header">			
+			<div class="s_post_header">{#
+				<div class="pull-right btn-group dropdown s_post_share_sn">
+				 <a class="btn dropdown-toggle btn-small btn-link" data-toggle="dropdown" href="#"><i class="icon-share"></i>Condividi</a>
+				 <ul class="dropdown-menu">
+				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
+				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></li>
+				  <li><div class="g-plusone" data-size="medium" data-url="http://{{host}}/post/{{post.id}}"></div></li>
+				 </ul>
+				</div>#}			
 				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-chevron-up"></i></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
@@ -16,7 +25,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
 					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
 					<div class="s_post_date">{{post.extended_date()}}</div>
-					<div class="s_post_link"><a target="_new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
+					<div class="s_post_link"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
 				</div> 
 			</div>				
 			<div class="s_post_body">
