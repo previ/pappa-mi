@@ -694,8 +694,8 @@ class Ispezione(model.Model):
     return Ispezione.query().filter(Ispezione.dataIspezione == data).filter(Ispezione.commissione == cm).filter(Ispezione.turno == turno)
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione)
+  def get_by_cm(cls, cm, limit=10):    
+    return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione).fetch(limit)
 
   @cached_property
   def get_allegati(self):
@@ -736,8 +736,8 @@ class Nonconformita(model.Model):
   stato = model.IntegerProperty()
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
+  def get_by_cm(cls, cm, limit=10):
+    return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf).fetch(limit)
 
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
@@ -851,8 +851,8 @@ class Dieta(model.Model):
     return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno).filter(Dieta.tipoDieta==tipo)
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione)
+  def get_by_cm(cls, cm, limit=10):
+    return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione).fetch(limit)
 
   @cached_property
   def get_allegati(self):
@@ -978,8 +978,8 @@ class Nota(model.Model):
     return len(self.get_allegati) > 0
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota)
+  def get_by_cm(cls, cm, limit=10):
+    return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota).fetch(limit)
 
 class Allegato(model.Model):
   obj = model.KeyProperty()

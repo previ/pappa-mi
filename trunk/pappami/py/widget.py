@@ -192,31 +192,39 @@ class CMListWidgetHandler(BasePage):
       else:
         c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
 
-      isps = Ispezione.get_by_cm(c.key)
-      for isp in isps:
-        items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
+      items = memcache.get('widget-list-'+str(c.key.id()))
+      if not items:
+        items = list()
+        limit = 20
+        isps = Ispezione.get_by_cm(c.key, limit)
+        for isp in isps:
+          items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
+  
+        ncs = Nonconformita.get_by_cm(c.key, limit)
+        for nc in ncs:
+          items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
+  
+        diete = Dieta.get_by_cm(c.key)
+        for dieta in diete:
+          items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
+  
+        note = Nota.get_by_cm(c.key, limit)
+        for nota in note:
+          items.append(WidgetListitem(item=nota, date=nota.dataNota))
+  
+        items = sorted(items, key=lambda item: item.date, reverse=True)
+        memcache.set('widget-list-'+str(c.key.id()), items, 7200)
 
-      ncs = Nonconformita.get_by_cm(c.key)
-      for nc in ncs:
-        items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
-
-      diete = Dieta.get_by_cm(c.key)
-      for dieta in diete:
-        items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
-
-      note = Nota.get_by_cm(c.key)
-      for nota in note:
-        items.append(WidgetListitem(item=nota, date=nota.dataNota))
-
-      items = sorted(items, key=lambda item: item.date, reverse=True)
-
-    template_values["host"] = self.getHost()
-    template_values["items"] = items
-    template_values["scuola"] = c.desc()
-
-    template_values["main"] = 'widget/list.html'
-
-    self.getBase(template_values)
+      template_values["host"] = self.getHost()
+      template_values["items"] = items
+      template_values["scuola"] = c.desc()
+  
+      template_values["main"] = 'widget/list.html'
+  
+      self.getBase(template_values)
+    else:
+      self.response.out.write("commissione non trovata.")      
+      
 
 class NodeWidgetHandler(BasePage):
 
