@@ -175,7 +175,7 @@ class BaseHandler(webapp.RequestHandler):
       if user_agent.get("browser").get("name"):
         browser_name = user_agent.get("browser").get("name")
         browser_ver = user_agent.get("browser").get("version")
-        logging.info("Browser: " + browser_name + " version: " + browser_ver )
+        #logging.info("Browser: " + browser_name + " version: " + browser_ver )
 
         if unsupported_browsers.get(browser_name):
           u_b = unsupported_browsers.get(browser_name)
@@ -187,7 +187,7 @@ class BaseHandler(webapp.RequestHandler):
       if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
         template_values["welcome"] = "new"
       if commissario.ultimo_accesso_il and commissario.ultimo_accesso_il < datetime(year=2013, month=4, day=19) and self.request.url.find("/stream") != -1:
-        logging.info(str(self.request.url.find("/stream")))
+        #logging.info(str(self.request.url.find("/stream")))
         template_values["welcome"] = "returning"
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
@@ -217,7 +217,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.0.25 - 2013.05.05"
+    template_values["version"] = "3.0.1.28 - 2013.05.08"
     template_values["ctx"] = self.get_context()
 
 
@@ -482,7 +482,7 @@ def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(basePage.request.user)
-    logging.info(commissario)
+    #logging.info(commissario)
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:

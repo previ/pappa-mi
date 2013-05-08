@@ -7,16 +7,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		</div>
 		<div class="s_post_container">
-			<div class="s_post_header">{#
-				<div class="pull-right btn-group dropdown s_post_share_sn">
-				 <a class="btn dropdown-toggle btn-small btn-link" data-toggle="dropdown" href="#"><i class="icon-share"></i>Condividi</a>
-				 <ul class="dropdown-menu">
-				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
-				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></li>
-				  <li><div class="g-plusone" data-size="medium" data-url="http://{{host}}/post/{{post.id}}"></div></li>
-				 </ul>
-				</div>#}			
+			<div class="s_post_header">
 				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-chevron-up"></i></div>{%endif%}
 				<div class="s_post_title">
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
@@ -74,6 +65,17 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
 				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
 				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
+				{%if fullscreen and not edit%}
+				<div class="pull-right btn-group dropup s_post_share_sn">
+				 <a class="btn dropdown-toggle btn-normal btn-mini" data-toggle="dropdown" href="#"><i class="icon-share"></i> Condividi</a>
+				 <ul class="dropdown-menu">
+				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
+				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a></li>
+				  <li><div class="g-plusone" data-size="medium" data-url="http://{{host}}/post/{{post.id}}"></div></li>
+				  {%if post.images|length > 0%}<li><a href="//pinterest.com/pin/create/button/?url=http://{{host}}/post/{{host.id}}&media={{post.images[0]}}&description={{post.title}}" data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a></li>{%endif%}
+				 </ul>
+				</div>
+				{%endif%}
 				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
 				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
 			</div><!-- s_post_commands -->		
@@ -139,3 +141,25 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 		</div>
 	</div>
 </div> <!-- s_post_root -->		
+{%if fullscreen and not edit%}
+<!-- googleplus -->
+<script type="text/javascript">
+  window.___gcfg = {lang: 'it'};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<!-- twitter -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<!-- fb -->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=103254759720309";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+{%endif%}

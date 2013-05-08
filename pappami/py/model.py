@@ -1547,8 +1547,8 @@ class SocialNode(model.Model):
       new_post.resource=resources
       new_post.init_rank()
       new_post.put()
-      self.last_act=new_post.created
       self.calc_rank(SocialPost)
+      self.last_act=new_post.created
       self.put()
       comm=Commissario.get_by_user(author)
       new_post.subscribe_user(author)
@@ -1659,7 +1659,6 @@ class SocialNode(model.Model):
         return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
       else:
         return SocialNode.active_nodes().filter().iter(produce_cursors=True)
-
 
 
 class SocialPost(model.Model):

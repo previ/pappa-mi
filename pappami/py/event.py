@@ -339,7 +339,7 @@ class NotificationHandler(BasePage):
     cmsro = self.getCommissario(user)
 
     response = {'response': 'success',
-          'ntfy_num': len(self.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche))}
+          'ntfy_num': len(self.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche or cmsro.ultimo_accesso_il))}
     self.output_as_json(response)
 
 class NotificationPaginationHandler(BaseHandler):
