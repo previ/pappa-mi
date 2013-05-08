@@ -5337,3 +5337,7 @@ font-style:italic;
 height: 100px;
 overflow: auto;
 }
+
+.s_post_share_sn li {
+padding-left:20px;
+}

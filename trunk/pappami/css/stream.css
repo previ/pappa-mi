@@ -134,10 +134,6 @@ color: #000;
 
 }
 
-.s_post_share_sn li {
-padding-left:20px;
-}
-
 .s_node_title_node {
 display:inline;
 float:left;
@@ -215,4 +211,8 @@ font-style:italic;
 .s_reshare_preview {
 height: 100px;
 overflow: auto;
+}
+
+.s_post_share_sn li {
+padding-left:20px;
 }

@@ -45,7 +45,7 @@ class IspezioneForm(model_form(model=Ispezione, exclude=['creato_il','creato_da'
 class NonconformitaForm(model_form(model=Nonconformita, exclude=['creato_il','creato_da','modificato_il','modificato_da','commissario','anno','stato',"commissione"])):
   def validate_dataNonconf(form, field):
     dataNonconf = field.data
-    logging.info(dataNonconf)
+    #logging.info(dataNonconf)
     if Nonconformita.get_by_cm_data_turno(cm=form.commissione, data=dataNonconf, turno=form.turno.data).count() > 10 :
       logging.info("Esistona gia' 10 Non Conformita' per questa commissione con la stessa data e turno.")
       raise ValidationError("Esiste gia' 10 segnalazioni di Non Conformita' per questa commissione con la stessa data e turno.")

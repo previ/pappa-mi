@@ -257,10 +257,14 @@ class NodeWidgetHandler(BasePage):
 class CMGadgetHandler(BasePage):
 
   def get(self):
+    nodes = memcache.get('gadget_nodes')
+    if not nodes:
+      nodes = SocialNode.query().order(SocialNode.name).fetch()
+      memcache.set('gadget_nodes', nodes)
     template_values = dict()
     template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
-    template_values["nodes"] = SocialNode.query().order(SocialNode.name).fetch()
+    template_values["nodes"] = nodes
     self.getBase(template_values)
 
 

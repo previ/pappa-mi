@@ -285,7 +285,7 @@ class NonconfHandler(BasePage):
         memcache.delete("statsMese")
 
         node = SocialNode.get_nodes_by_resource(nc.commissione)[0]
-        template_values = PostHandler.create_post(node=node.key, user=self.get_current_user(), title="Non conformità", content=nc.note, resources=[nc.key])
+        template_values = PostHandler.create_post(node=node.key, user=self.get_current_user(), title="Non conformità", content=nc.note, resources=[nc.key], attachments=nc.allegati)
 
 
       #template = jinja_environment.get_template("post/post_item.html")
@@ -322,7 +322,7 @@ class NonconfHandler(BasePage):
         }
 
       else:
-        logging.info("data: %s", form.data)
+        #logging.info("data: %s", form.data)
         for f in form.errors :
           for e in form[f].errors:
             logging.info("errors: %s %s", f, e)
@@ -527,7 +527,6 @@ class NotaHandler(BasePage):
 
         node = SocialNode.get_nodes_by_resource(nota.commissione)[0]
         template_values = PostHandler.create_post(node=node.key, user=self.get_current_user(), title=nota.titolo, content=nota.note, resources=[nota.key], attachments=nota.allegati)
-
 
       #template = jinja_environment.get_template("post/post_item.html")
       #html=template.render(template_values)
