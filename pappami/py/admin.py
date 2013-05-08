@@ -381,7 +381,7 @@ class CMAdminHandler(BasePage):
 
     if self.request.get("cmd") == "initMenu":
       citta = Citta.query().get()
-      for menu in Menu.query().filter(Menu.tipoScuola=="Materna").filter(Menu.validitaA==datetime.datetime.strptime(self.request.get("offset"), "%Y-%m-%d")):
+      for menu in Menu.query().filter(Menu.tipoScuola=="Materna").filter(Menu.validitaA==datetime.strptime(self.request.get("offset"), "%Y-%m-%d")):
         logging.info("menu: " + str(menu.validitaA))
         nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
         if not nm:
@@ -735,7 +735,7 @@ class CMAdminHandler(BasePage):
       return
 
     if self.request.get("cmd") == "getIspezioni":
-      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      dataInizio = datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
       
       for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
         isp_str = ""
@@ -779,13 +779,14 @@ class CMAdminHandler(BasePage):
         isp_str += str(isp.paneAssaggio) + "\t"
         isp_str += str(isp.paneGradimento) + "\t"
         isp_str += str(isp.giudizioGlobale) + "\t"
+        isp_str += str(isp.numeroPastiTotale) + "\t"
         isp_str += "\n"
         self.response.out.write(isp_str)
           
-        return
+      return
   
     if self.request.get("cmd") == "getNonconf":
-      dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      dataInizio = datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
       
       for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
         nc_str = ""
