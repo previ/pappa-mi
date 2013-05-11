@@ -963,7 +963,7 @@ class Allegato(model.Model):
   @cached_property  
   def path(self):
     if self.isImage():
-      return images.get_serving_url(blob_key=self.blob_key) + "=s2560"
+      return images.get_serving_url(blob_key=self.blob_key)
     else:
       return "/blob/get?key=" + str(self.blob_key)
 

@@ -31,7 +31,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				<div class="s_post_attachs well">
 				 <div><i class="icon-file"></i> Allegati</div>
 				 <ul class="thumbnails">{%for attach in post.attachments%}
-				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}=s0" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
 				  </li>{%endfor%}
 				 </ul>
 				</div>			
