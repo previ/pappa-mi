@@ -25,22 +25,23 @@ from common import Const, Cache, Sanitizer, Channel
 class PostHandler(BasePage):
 
   def error(self):
-   self.response.clear()
-   self.response.set_status(404)
-   template = jinja_environment.get_template('404_custom.html')
-   c={"error": "Il post a cui stai provando ad accedere non esiste"}
-   t = template.render(c)
-   self.response.out.write(t)
+    self.response.clear()
+    self.response.set_status(404)
+    template = jinja_environment.get_template('404_custom.html')
+    c={"error": "Il post a cui stai provando ad accedere non esiste"}
+    t = template.render(c)
+    self.response.out.write(t)
 
 
   def get(self,node_id, post_id):
-    post = model.Key("SocialNode", int(node_id), 'SocialPost', int(post_id)).get()
-    node = post.key.parent().get()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    node = SocialNode.get_by_key(post.key.parent())
 
     current_user=self.get_current_user()
 
     template_values = {
              'content': 'post/post.html',
+             'node': node,
              'post': post,
              'user':current_user,
              'fullscreen': True,
@@ -154,8 +155,12 @@ class PostManageHandler(BaseHandler):
       self.success({'num': str(post_key.get().comments)})
 
     if cmd == "expand_post":
-      post = model.Key(urlsafe=self.request.get('post')).get()
+      post_key = model.Key(urlsafe=self.request.get('post'))
+      post = SocialPost.get_by_key(post_key)
+      node = SocialNode.get_by_key(post.key.parent())
+      
       template_values = {
+               'node': node,
                'post': post,
                'user': user,
                'cmsro':self.getCommissario(user),

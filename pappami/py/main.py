@@ -107,13 +107,6 @@ class MainPage(BasePage):
 
     return stats
 
-class CMSupportoHandler(BasePage):
-
-  def get(self):
-    template_values = dict()
-    template_values["content"] = "supporto.html"
-    self.getBase(template_values)
-
 class CMCondizioniHandler(BasePage):
 
   def get(self):
@@ -260,20 +253,13 @@ class AddCityHandler(BasePage):
   def get(self):
     self.redirect("https://docs.google.com/a/pappa-mi.it/spreadsheet/viewform?formkey=dGpyOHNISHBjQnZqWjUwSzdJU3hPMnc6MQ")
 
-class ContactusHandler(BasePage):
-
-  def get(self):
-    self.redirect("https://docs.google.com/spreadsheet/viewform?formkey=dE82eHdyRVJ0VVpNUVBCLXIwNDMwN1E6MQ#gid=0")
-
 app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/chi', ChiSiamoPage),
   ('/map', MapDataHandler),
   ('/calendario', CalendarioHandler),
-  ('/supporto', CMSupportoHandler),
   ('/condizioni', CMCondizioniHandler),
-  ('/citta', AddCityHandler),
-  ('/contattaci', ContactusHandler)
+  ('/citta', AddCityHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
