@@ -627,6 +627,25 @@ class CMAdminHandler(BasePage):
         except search.Error, e:
             pass
 
+    if self.request.get("cmd") == "deact_profile":
+      commissario = Commissario.get_by_email_lower(self.request.get("rawdata"))
+    
+      if commissario:
+        for commissione in commissario.commissioni():
+          commissario.unregister(commissione)
+          node = SocialNode.get_by_resource(commissione.key)[0]
+          if node:
+            node.unsubscribe_user(commissario.usera.get())
+      
+        for sp in SocialPostSubscription.get_by_user(commissario.usera.get()):
+          sp.key.delete()
+      
+        commissario.stato = 99
+        commissario.put()
+        commissario.set_cache()
+      
+        for ue in models.UserEmail.get_by_user(commissario.usera.id()):
+          ue.key.delete()
 
     template_values = {
       'content': 'admin/admin.html',
