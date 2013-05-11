@@ -40,13 +40,17 @@ class CMMenuWidgetHandler(CMMenuHandler):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
-        self.request.GET["cm"] = c.key.id()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+          self.request.GET["cm"] = c.key.id()
+        cm_cache.put(cmk, c)
 
-      self.createMenu(self.request,c,template_values)
+      self.createMenu(self.request, c, template_values)
   
       template_values["main"] = 'widget/wmenu.html'
       self.getBase(template_values)
@@ -72,11 +76,15 @@ class CMStatWidgetHandler(BasePage):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
-        self.request.GET["cm"] = c.key.id()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+          self.request.GET["cm"] = c.key.id()
+        cm_cache.put(cmk, c)
 
     self.createStat(self.request,c,template_values)
 
@@ -105,20 +113,20 @@ class CMStatWidgetHandler(BasePage):
     statCM = None
     if c:
       statCY = memcache.get("statCY" + str(c.citta.id))
-      if not statCC:
-        logging.info("statCY miss")
+      if not statCY:
+        #logging.info("statCY miss")
         statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=c.citta, timeId=year).get()
         memcache.set("statCY" + str(c.citta.id), statCY, 86400)
 
       statCC = memcache.get("statCC" + str(c.centroCucina.id))
       if not statCC:
-        logging.info("statCC miss")
+        #logging.info("statCC miss")
         statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=c.centroCucina, timeId=year).get()
         memcache.set("statCC" + str(c.centroCucina.id), statCC, 86400)
 
       statCM = memcache.get("statCM" + str(c.key.id))
       if not statCM:
-        logging.info("statCM miss")
+        #logging.info("statCM miss")
         statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=c.key, timeId=year).get()
         memcache.set("statCM" + str(c.key.id), statCM, 86400)
 
@@ -187,10 +195,14 @@ class CMListWidgetHandler(BasePage):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+        cm_cache.put(cmk, c)
 
       items = memcache.get('widget-list-'+str(c.key.id()))
       if not items:
@@ -234,7 +246,7 @@ class NodeWidgetHandler(BasePage):
         node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
         self.output_as_json({'node_key': node_key.urlsafe()})
       except:
-        logging.info("error retrieving node: " + self.request.get("cm"))
+        #logging.info("error retrieving node: " + self.request.get("cm"))
         return
     elif node_key:
       template_values = dict()

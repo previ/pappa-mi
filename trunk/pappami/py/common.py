@@ -78,7 +78,6 @@ class cached_property(object):
     if obj is None:
       return self
     if not hasattr(obj, "cache"):
-      #logging.info("cache.init")
       obj.cache = dict()
 
     with self.lock:
@@ -101,10 +100,52 @@ class cached_property(object):
 
       return value
 
-  def invalidate(self, obj):
-    del obj.cache[self.__name__]
 
+class memcached_property(object):
+  """A decorator that converts a function into a lazy property.
 
+  The function wrapped is called the first time to retrieve the result
+  and then that calculated result is used the next time you access
+  the value::
+
+      class Foo(object):
+
+          @memcached_property
+          def foo(self):
+              # calculate something important here
+              return 42
+  """
+
+  _default_value = object()
+
+  def __init__(self, func, name=None, doc=None):
+    self.__name__ = name or func.__name__
+    self.__module__ = func.__module__
+    self.__doc__ = doc or func.__doc__
+    self.func = func
+    self.lock = threading.RLock()
+
+  def __get__(self, obj, type=None):
+    if obj is None:
+      return self
+
+    with self.lock:
+      value = memcache.get(str(obj.id) + "-" + self.__name__)
+      if value is None:
+        value = self.func(obj)
+        memcache.set(str(obj.id) + "-" + self.__name__, value)
+
+      return value
+
+  def __set__(self, obj, value):
+    if obj is None:
+      return self
+
+    with self.lock:
+      if value is None and memcache.get(str(obj.id) + "-" + self.__name__) is not None:
+        memcache.delete(str(obj.id) + "-" + self.__name__)
+
+      return value
 
 # create a subclass and override the handler methods
 class Parser(HTMLParser):

@@ -217,7 +217,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.1.28 - 2013.05.08"
+    template_values["version"] = "3.0.2.29 - 2013.05.11"
     template_values["ctx"] = self.get_context()
 
 
@@ -309,7 +309,7 @@ class CMCommissioniDataHandler(BasePage):
 
 class CMMenuHandler(BasePage):
 
-  def createMenu(self,request,c,template_values):
+  def createMenu(self,request, c, template_values):
     menu = Menu();
 
     data = self.workingDay(datetime.now().date())
@@ -325,7 +325,7 @@ class CMMenuHandler(BasePage):
 
   def getMenu(self, data, c):
     offset = -1
-    citta = Citta.get_first()
+    citta = None
 
     if c and not c.getCentroCucina(data):
       return list()
@@ -334,8 +334,13 @@ class CMMenuHandler(BasePage):
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
 
-    #logging.info("offset: " + str(offset))
-    menu = memcache.get("menu-" + str(offset) + "-" + str(data))
+    if not citta:
+      citta = Citta.get_first()
+      
+    #menu = memcache.get("menu-" + str(offset) + "-" + str(data))
+    menu_cache = Cache.get_cache("Menu")
+    menu = menu_cache.get("menu-" + str(offset) + "-" + str(data))
+    
     if not menu:
       menu = list()
 
@@ -343,7 +348,9 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
 
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu)
+      #memcache.set("menu-" + str(offset) + "-" + str(data), menu)
+      menu_cache.put("menu-" + str(offset) + "-" + str(data), menu)
+      
     #logging.info(str(menu))
     return menu
 

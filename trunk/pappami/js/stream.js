@@ -209,6 +209,7 @@ function initComment(element) {
   element.find('.post_comment_edit').click(onCommentEdit);  
   element.find('.post_comment_vote').click(onCommentVote);    
   element.find('.post_comment_unvote').click(onCommentVote);  
+  element.find('.s_post_avatar').click(onAuthorDetail);
 }
 
 function onPostEdit(){
@@ -926,7 +927,7 @@ function addAttach() {
   var attach = $(this);
   var att_clone = attach.clone();
   att_clone.appendTo(attach.parent());
-  //att_clone.change(addAttach);
+  att_clone.change(addAttach);
 }
 
 function onMoreClick(){
@@ -1007,9 +1008,9 @@ function initPostList(list) {
   list.find('.post_unvote').click(onPostVote);      
   list.find('.post_reshare').click(onPostReshare);
   list.find('.post_expand').click(onPostExpand); 
-  list.find('.s_post_avatar').click(onAuthorDetail)  
-  list.find('.s_post_votes_c').click(onVotesDetail)
-  list.find('.s_post_reshares_c').click(onResharesDetail)
+  list.find('.s_post_avatar').click(onAuthorDetail);  
+  list.find('.s_post_votes_c').click(onVotesDetail);
+  list.find('.s_post_reshares_c').click(onResharesDetail);
 }
 
 function onVotesDetail() {

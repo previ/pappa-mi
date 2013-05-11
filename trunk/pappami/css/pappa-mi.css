@@ -5227,7 +5227,8 @@ padding-left: 3pt;
 
 .s_post_body_short_img {
 float:left;
-background-size:128px;
+background-size:128px; 
+background-position:center;
 background-clip:content-box;
 background-repeat:no-repeat;
 width:128px;

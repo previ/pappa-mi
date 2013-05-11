@@ -13,7 +13,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
 				</div> 
 				<div class="s_post_subtitle">
-					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
+					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{node.name}}</div>
 					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
 					<div class="s_post_date">{{post.extended_date()}}</div>
 					<div class="s_post_link"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
@@ -22,7 +22,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_body">
 				{%if post.display_content()%}<div class="s_post_content">{{post.content}}</div>{%endif%}
 				<div class="s_edit_hollow"></div>
-				{%for resource in post.resource%}
+				{%for resource in post.resources%}
 				<div class="s_post_resource well">
 				{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}
 				</div>			
@@ -31,7 +31,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				<div class="s_post_attachs well">
 				 <div><i class="icon-file"></i> Allegati</div>
 				 <ul class="thumbnails">{%for attach in post.attachments%}
-				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path()}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb()}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
 				  </li>{%endfor%}
 				 </ul>
 				</div>			
@@ -46,7 +46,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			
 			{% if user %} 
 			<div class="s_post_commands btn-toolbar">
-				{%if user and post.key.parent().get().subscriptions.get(user.key) and post.key.parent().get().subscriptions[user.key].can_admin or True%}
+				{%if user and node.subscriptions.get(user.key) and node.subscriptions[user.key].can_admin or True%}
 				<div class="btn-group dropup">
 				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
 				 <ul class="dropdown-menu">
