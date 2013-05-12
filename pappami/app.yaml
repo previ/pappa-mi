@@ -1,5 +1,5 @@
-application: test-pappa-mi-hr
-version: 28
+application: pappa-mi-hr
+version: 29
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -67,9 +67,9 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: /(.*\.(gif|png|jpg|txt|html))
+- url: /(.*\.(gif|png|jpg|txt|html|xml))
   static_files: static/\1
-  upload: static/(.*\.(gif|png|jpg|txt|html))
+  upload: static/(.*\.(gif|png|jpg|txt|html|xml))
 
 - url: /favicon.ico
   static_files: img/favicon.ico
