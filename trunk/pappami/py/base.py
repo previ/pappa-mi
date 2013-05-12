@@ -228,7 +228,7 @@ class BaseHandler(webapp.RequestHandler):
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
       return
-
+    
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
 

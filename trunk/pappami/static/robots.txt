@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
-Allow: /public/robot
+Disallow: /eauth/
+
 
