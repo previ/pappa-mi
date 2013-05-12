@@ -46,12 +46,15 @@ class DeactivateProfileHandler(BaseHandler):
 
       #commissario.privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 
+      #unregister cm
       for commissione in commissario.commissioni():
         commissario.unregister(commissione)
-        node = SocialNode.get_by_resource(commissione.key)[0]
-        if node:
-          node.unsubscribe_user(commissario.usera.get())
 
+      #unsubscribe nodes
+      for sn in SocialNodeSubscription.get_by_user(commissario.usera.get()):
+        sn.key.delete()
+        
+      #unsubscribe posts
       for sp in SocialPostSubscription.get_by_user(commissario.usera.get()):
         sp.key.delete()
 
