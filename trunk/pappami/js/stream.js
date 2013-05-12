@@ -175,7 +175,7 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content_' + post_root.find('.s_post_root').attr('data-post-key')).setContent('');
+    tinymce.get('comment_content_' + post_root.parent().find('.s_post_root').attr('data-post-key')).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);
