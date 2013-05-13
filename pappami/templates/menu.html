@@ -60,7 +60,7 @@ function slidenext() {
   <form class="form-vertical" id="f_chgscope" action="/menu" method="post">
     <label for="citta">Citt&agrave;</label>
     <select class="large required" id="citta" name="citta">
-    {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+    {%for cit in cittas%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
     </select>
     <label for="commissione_sel">Scuola (Commissione Mensa)</label>
     <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>

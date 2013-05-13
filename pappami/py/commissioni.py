@@ -23,15 +23,33 @@ from model import *
 class CommissioniHandler(BasePage):
 
   def get(self):
+    lat = 45.463681
+    lon = 9.188171
+    latlongstr = self.request.headers.get("X-AppEngine-CityLatLong")
+    logging.info("latlong: " + str(latlongstr))
+    if latlongstr:
+      latlong = latlongstr.split(",")
+      lat = float(latlong[0])
+      lon = float(latlong[1])
+
     template_values = dict()
-    geo = model.GeoPt(45.463681,9.188171)
+    geo = model.GeoPt(lat, lon)
     commissario = self.getCommissario()
-    citta = model.Key("Citta", self.get_context().get("citta_key")).get()
+    citta = None
+    if self.get_context().get("citta_key"):
+      citta = model.Key("Citta", self.get_context().get("citta_key")).get()
+      geo = citta.geo
+    
+    centri_cucina= list()
+    if citta:
+      centri_cucina = CentroCucina.query().filter(CentroCucina.citta == citta.key).order(CentroCucina.nome)
+      
     template_values["content"] = "map.html"
     template_values["limit"] = 100
     template_values["cittas"] = Citta.get_all()
     template_values["citta"] = citta
-    template_values["centriCucina"] = CentroCucina.query().filter(CentroCucina.citta == citta.key).order(CentroCucina.nome)
+    template_values["geo"] = geo
+    template_values["centriCucina"] = centri_cucina
     template_values['action'] = self.request.path
     self.getBase(template_values)
 

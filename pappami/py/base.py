@@ -120,9 +120,7 @@ class BaseHandler(webapp.RequestHandler):
           ctx["cm_name"] = str(commissario.commissione().desc())
       else:
         ctx["node"] = "news"
-        ctx["citta_key"] = Citta.get_first().key.id()
-        ctx["cm_key"] = Commissione.get_by_citta(Citta.get_first().key)[0].key.id()
-        ctx["cm_name"] = Commissione.get_by_citta(Citta.get_first().key)[0].desc()
+          
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
@@ -198,14 +196,6 @@ class BaseHandler(webapp.RequestHandler):
 
       template_values["channel"] = Channel.get_by_user(user)
 
-      #user.fullname = commissario.nomecompleto(commissario)
-      #user.title = commissario.titolo(commissario)
-      #user.avatar = commissario.avatar()
-      #logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
-
-      #logging.info("commissario: " + str(commissario.isCommissario()))
-      #logging.info("genitore: " + str(commissario.isGenitore()))
-
     template_values["cmsro"] = commissario
     url, url_linktext = self.get_login_url_text()
 
@@ -217,14 +207,9 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.2.29 - 2013.05.11"
+    template_values["version"] = "3.0.2.30 - 2013.05.13"
     template_values["ctx"] = self.get_context()
 
-
-    #logging.info("content: " + template_values["content"])
-    #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
-
-    #this is to avoid that a new user click on "enter" instead of "register" => she will be redirected to "signup" path until she complete the process, or logout
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
       return
