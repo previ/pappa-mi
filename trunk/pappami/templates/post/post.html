@@ -10,7 +10,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_header">
 				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-chevron-up"></i></div>{%endif%}
 				<div class="s_post_title">
-					<span class="s_post_title_1 post_collapse">{{post.title}}</span>
+					<span class="s_post_title_1 post_collapse" itemprop="name">{{post.title}}</span>
 				</div> 
 				<div class="s_post_subtitle">
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{node.name}}</div>
@@ -20,7 +20,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				</div> 
 			</div>				
 			<div class="s_post_body">
-				{%if post.display_content()%}<div class="s_post_content">{{post.content}}</div>{%endif%}
+				{%if post.display_content()%}<div class="s_post_content" itemprop="description">{{post.content}}</div>{%endif%}
 				<div class="s_edit_hollow"></div>
 				{%for resource in post.resources%}
 				<div class="s_post_resource well">
@@ -31,7 +31,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				<div class="s_post_attachs well">
 				 <div><i class="icon-file"></i> Allegati</div>
 				 <ul class="thumbnails">{%for attach in post.attachments%}
-				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}" itemprop="image"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
 				  </li>{%endfor%}
 				 </ul>
 				</div>			
@@ -72,7 +72,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
 				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a></li>
 				  <li><div class="g-plusone" data-size="medium" data-url="http://{{host}}/post/{{post.id}}"></div></li>
-				  {%if post.images|length > 0%}<li><a href="//pinterest.com/pin/create/button/?url=http://{{host}}/post/{{host.id}}&media={{post.images[0]}}&description={{post.title}}" data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a></li>{%endif%}
+				  {%if post.images|length > 0%}<li><a href="//pinterest.com/pin/create/button/?url=http://{{host}}/post/{{post.id}}&media={{post.images[0]}}&description={{post.title}}" data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a></li>{%endif%}
 				 </ul>
 				</div>
 				{%endif%}
