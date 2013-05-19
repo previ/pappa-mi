@@ -74,7 +74,7 @@ class DeactivateProfileHandler(BaseHandler):
 
 class CMProfiloHandler(BasePage):
 
-  @user_required
+  @reguser_required
   def get(self):
 
     commissario = self.getCommissario()
@@ -90,15 +90,20 @@ class CMProfiloHandler(BasePage):
     }
     self.getBase(template_values)
 
-  @user_required
+  @reguser_required
   def post(self):
-
+    #evita errato trattamento di una post che arriva come redirect di una password authentication
+    if not self.request.get("isform"):
+      self.redirect("/profilo")
+      return
+      
     commissario = self.getCommissario()
     if(commissario):
       form = CommissarioForm(self.request.POST, commissario)
       form.populate_obj(commissario)
-      form.citta = model.Key("Citta", int(self.request.get("citta")))
-
+      if self.request.get("citta"):
+        form.citta = model.Key("Citta", int(self.request.get("citta")))
+      
       privacy = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
       for what in range(0,len(privacy)):
         for who in range(0,len(privacy[0])):

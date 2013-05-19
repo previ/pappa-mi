@@ -249,7 +249,7 @@ class EventHandler(BaseHandler):
 
   @classmethod
   def send_notifications_channel(cls, user, notifications):
-    logging.info("Sending channel notification to user: " + user.get().email)
+    #logging.info("Sending channel notification to user: " + user.get().email)
 
     for n in notifications:
       event = n.event.get()
@@ -281,9 +281,9 @@ class EventHandler(BaseHandler):
 
   @classmethod
   def send_notifications_email(cls, user, notifications):
-    logging.info("Sending mail notification to user: " + user.get().email)
-    for n in notifications:
-      logging.info("Notification: " + str(n.event.get().type))
+    #logging.info("Sending mail notification to user: " + user.get().email)
+    #for n in notifications:
+      #logging.info("Notification: " + str(n.event.get().type))
 
     template = jinja_environment.get_template("ntfctn/notifications_email.html")
     logging.info("host: " + str(cls.host()))

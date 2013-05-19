@@ -2116,7 +2116,7 @@ class SocialNodeSubscription(model.Model):
 
     ntfy_period = model.IntegerProperty(default=0)
     has_ntfy = model.BooleanProperty(default=False)
-    last_ntfy_sent = model.DateTimeProperty(default=None)
+    last_ntfy_sent = model.DateTimeProperty(auto_now_add=True)
     ntfy = model.IntegerProperty(default=0)
     #last_ntfy_access = model.DateTimeProperty(default=None)
 
@@ -2163,9 +2163,17 @@ class SocialNodeSubscription(model.Model):
     @classmethod
     def get_by_ntfy(cls):
       subs = list()
-      for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).fetch():
-        #logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
-        if (sub.ntfy_period == 0 and sub.last_ntfy_sent < datetime.now()) or (sub.ntfy_period > 0 and (datetime.now() - sub.last_ntfy_sent).days % sub.ntfy_period == 0):
+      for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).order(SocialNodeSubscription.user).fetch():
+
+        #if (sub.ntfy_period >= 0 and (not sub.last_ntfy_sent or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())):
+          #subs.append(sub)
+        if not sub.last_ntfy_sent:
+          sub.last_ntfy_sent = datetime.combine(sub.starting_date, time(hour=0,minute=0))
+        if (sub.ntfy_period == 0 or #case period==immediate
+            (sub.ntfy_period > 0 and #case period == dayly or weekly
+             (sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now()) and #last_sent older then period
+             (datetime.now().hour >=4 and datetime.now().hour <=5) and #ensure processing is on nightly job (5:00 gmt)
+             ((datetime.today() - sub.last_ntfy_sent).days % sub.ntfy_period == 0))): #ensure weekly report does trigger weekly
           subs.append(sub)
       return subs
 
