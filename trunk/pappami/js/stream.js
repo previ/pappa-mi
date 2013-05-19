@@ -467,6 +467,7 @@ function onOpenPostForm(){
 }
 
 function onOpenPostFormCancel() {
+  $('#new_post_form .post_attachments .clone').remove();
   $("#new_post").slideUp()
 }
 	
@@ -857,6 +858,7 @@ function initNode(node_key){
   */
   $("#main_stream_list").prepend(data)
   $("#open_post_submit").button("reset");
+  $('#new_post_form .post_attachments .clone').remove();
   var post_root = $("#main_stream_list li:first-child");
   initPostList(post_root);
   tinymce.get('post_content_text').setContent('');
@@ -926,6 +928,7 @@ function onOpenNotifications(event) {
 function addAttach() {
   var attach = $(this);
   var att_clone = attach.clone();
+  att_clone.addClass("clone");
   att_clone.appendTo(attach.parent());
   att_clone.change(addAttach);
 }

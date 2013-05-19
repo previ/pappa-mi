@@ -445,6 +445,25 @@ class CMAdminHandler(BasePage):
         
       return
 
+    if self.request.get("cmd") == "fixnodeperm":
+      what = self.request.get("kind")
+      if what == "node":
+        for n in SocialNode.query():
+          if n.default_admin == True or n.default_comment == False:
+            n.default_admin = False
+            n.default_comment = True
+            n.put()
+
+      if what == "sub":
+        limit = int(self.request.get("limit"))
+        offset = int(self.request.get("offset"))
+            
+        for ns in SocialNodeSubscription.query().fetch(limit=limit, offset=offset):
+          if ns.can_admin == True or ns.can_comment == False:
+            ns.can_admin = False
+            ns.can_comment = True
+            ns.put_async()
+          
     if self.request.get("cmd") == "upCommissioni":
       data = self.request.get("rawdata")
       for line in data.split("\n"):

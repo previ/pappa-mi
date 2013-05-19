@@ -44,7 +44,7 @@ class NodeHandler(BaseHandler):
       self.redirect('/')
       return
       
-    node=model.Key('SocialNode', long(node_id)).get()
+    node = SocialNode.get_by_key(model.Key('SocialNode', long(node_id)))
 
     user=self.get_current_user()
 
@@ -309,6 +309,12 @@ class NodePaginationHandler(BaseHandler):
 class NodeFeedHandler(BasePage):
 
   def get(self, node_id):
+    try:
+      n_l = long(node_id)
+    except ValueError:
+      logging.info("invalid node_id: " + str(node_id))
+      self.redirect('/')
+      return
 
     node=model.Key('SocialNode', long(node_id)).get()
     postlist, next_curs, more = SocialPost.get_by_node_rank(node=node.key, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
