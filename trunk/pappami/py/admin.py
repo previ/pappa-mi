@@ -468,10 +468,10 @@ class CMAdminHandler(BasePage):
       data = self.request.get("rawdata")
       for line in data.split("\n"):
         logging.info(line)
-        field = line.split("\t")
-        if len(field) > 14:
+        fields = line.split("\t")
+        if len(fields) > 14:
           cm = Commissione()
-          cm.citta = model.Key(urlsafe=field[0])
+          cm.citta = model.Key(urlsafe=fields[0])
           cm.codiceScuola = fields[1]
           cm.nome = fields[2]
           cm.nomeScuola = fields[3]
@@ -487,13 +487,20 @@ class CMAdminHandler(BasePage):
           cm.fax = fields[13]
           geo = fields[14].split(',')
           cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
-          cm.creato_da = users.get_current_user()
+          #cm.creato_da = users.get_current_user()
           cm.creato_il = datetime.now()
-          cm.modificato_da = users.get_current_user()
+          #cm.modificato_da = users.get_current_user()
           cm.modificato_il = datetime.now()
           cm.numCommissari = 0
           cm.stato = 1
           cm.put()
+          node = SocialNode(name = cm.nome + " " + cm.tipoScuola,
+                          description="Gruppo di discussione per la scuola " + cm.tipoScuola + " " + cm.nome + " di " + cm.citta.get().nome, resource=[cm.key])
+          node.init_rank()
+          node.put()
+          node.init_rank()
+          node.put()
+          
 
     if self.request.get("cmd") == "migSocial":
       #SocialUtils.msg_to_post()

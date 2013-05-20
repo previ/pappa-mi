@@ -1586,6 +1586,7 @@ class SocialNode(model.Model):
       sub.put()
 
       Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+      Cache.get_cache("UserNode").clear("UserNode-" + str(current_user.key.id()))
       return sub
 
     def unsubscribe_user(self, current_user):
@@ -1593,6 +1594,7 @@ class SocialNode(model.Model):
       if subscription is not None:
         subscription.key.delete()
         Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+        Cache.get_cache("UserNode").clear("UserNode-" + str(current_user.key.id()))
 
       else:
         raise users.UserNotFoundError
