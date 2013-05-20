@@ -286,7 +286,7 @@ class EventHandler(BaseHandler):
       #logging.info("Notification: " + str(n.event.get().type))
 
     template = jinja_environment.get_template("ntfctn/notifications_email.html")
-    logging.info("host: " + str(cls.host()))
+    #logging.info("host: " + str(cls.host()))
     host = cls.host()
     html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": host})
     
