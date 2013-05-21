@@ -709,10 +709,14 @@ function redraw_node(node_root) {
   if( subscribed == 'true' ) {
 	node_root.find('#subscribe_btn').html('Disiscriviti');
 	node_root.find('#sub_prop').removeAttr("disabled");
+	node_root.find('#add_new').removeAttr("disabled");
+	node_root.find('#add_new').removeAttr("title");
 	node_root.find('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
   } else {
 	node_root.find('#sub_prop').attr("disabled", "true");
+	node_root.find('#add_new').attr("disabled", "true");
 	node_root.find('#subscribe_btn').html('Iscriviti');
+	node_root.find('#add_new').attr("title", "Iscriviti per aggiungere un messaggio");
   }
 }
 
@@ -814,9 +818,7 @@ function onNodeClick(){
    $("#node_title > a").hide();
  }
  node_item.parent().addClass("active");
- //key=node_item.attr('data-node-key');
  $("#node_container").empty();
- //loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
  loadNode(key, node_name);
 }
 
