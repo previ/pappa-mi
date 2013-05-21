@@ -1327,7 +1327,7 @@ class SocialNode(model.Model):
 
     resource = model.KeyProperty(repeated=True)
 
-    created = model.DateTimeProperty(auto_now=True)
+    created = model.DateTimeProperty(auto_now_add=True)
     rank = model.IntegerProperty()
 
     @classmethod
@@ -1790,7 +1790,10 @@ class SocialPost(model.Model):
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
         if sub:
           sub_cache.put(cache_key, sub)
-      return (sub and sub.can_comment) or self.author == user.key
+      return ((sub and sub.can_comment) or #case 1: user is subscribed and authorized
+              (self.author == user.key) or #case 2: user is author
+              (not sub and self.key.parent().get().default_comment) #case 3: user is NOT subscribed, use node default permission
+              ) 
 
     @cached_property
     def subscriptions(self):
@@ -2181,10 +2184,10 @@ class SocialNodeSubscription(model.Model):
 
 
 class SocialComment(model.Model):
-    author=model.KeyProperty(kind=models.User)
-    content=model.TextProperty(default="",indexed=False)
+    author = model.KeyProperty(kind=models.User)
+    content = model.TextProperty(default="",indexed=False)
     #public_reference=model.StringProperty(default="")
-    created=model.DateTimeProperty(auto_now_add=True)
+    created = model.DateTimeProperty(auto_now_add=True)
 
     def _post_put_hook(self, future):
       Cache.get_cache("SocialPostStream").clear_all()

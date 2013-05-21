@@ -13,7 +13,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 					<span class="s_post_title_1 post_collapse" itemprop="name">{{post.title}}</span>
 				</div> 
 				<div class="s_post_subtitle">
-					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{node.name}}</div>
+					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}"{%if fullscreen%}< style="cursor:pointer;" onclick="location.href='/node/{{node.id}}'"{%endif%}>{{node.name}}</div>
 					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
 					<div class="s_post_date">{{post.extended_date()}}</div>
 					<div class="s_post_link"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
