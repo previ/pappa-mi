@@ -1,0 +1,165 @@
+{%if fullscreen and not edit%}<script type="text/javascript">
+$(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}}'))});
+</script>{%endif%}
+<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}' data-node-key='{{post.key.parent().urlsafe()}}' data-fullscreen="{{fullscreen}}">
+	<div class="s_post"> 
+		<div class="s_post_avatar s_popover" data-original-title="Informazioni" data-placement="right" data-trigger="manual" data-html="true" data-visible="false" data-container="body">
+			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+		</div>
+		<div class="s_post_container">
+			<div class="s_post_header">
+				{%if not fullscreen%}<div class="post_collapse pull-right btn-link">Comprimi post<i class="icon-chevron-up"></i></div>{%endif%}
+				<div class="s_post_title">
+					<span class="s_post_title_1 post_collapse" itemprop="name">{{post.title}}</span>
+				</div> 
+				<div class="s_post_subtitle">
+					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}"{%if fullscreen%}< style="cursor:pointer;" onclick="location.href='/node/{{node.id}}'"{%endif%}>{{node.name}}</div>
+					<div class="s_post_author">&nbsp;di {{post.commissario.nome}}</div>
+					<div class="s_post_date">{{post.extended_date()}}</div>
+					<div class="s_post_link"><a target="new" href="/post/{{post.key.parent().id()}}-{{post.key.id()}}">link a questo post</a></div>
+				</div> 
+			</div>				
+			<div class="s_post_body">
+				{%if post.display_content()%}<div class="s_post_content" itemprop="description">{{post.content}}</div>{%endif%}
+				<div class="s_edit_hollow"></div>
+				{%for resource in post.resources%}
+				<div class="s_post_resource well">
+				{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}
+				</div>			
+				{%endfor%}	
+				{% if post.attachments|count > 0 %}
+				<div class="s_post_attachs well">
+				 <div><i class="icon-file"></i> Allegati</div>
+				 <ul class="thumbnails">{%for attach in post.attachments%}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}" itemprop="image"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  </li>{%endfor%}
+				 </ul>
+				</div>			
+				{% endif %}  
+				{%if not fullscreen%}<div class="post_collapse btn-link">Comprimi post<i class="icon-arrow-up"></i></div>{% endif %}
+			</div>		
+			<div class="s_post_feedback pull-left">
+			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
+			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i><span class="s_post_reshares"> {{post.reshares|count}}</span></span>
+			 <span class="s_post_comments_c post_comments_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comment_num">{{post.comments}}</span></span>
+			</div>
+			
+			{% if user %} 
+			<div class="s_post_commands btn-toolbar">
+				{%if user and node.subscriptions.get(user.key) and node.subscriptions[user.key].can_admin or True%}
+				<div class="btn-group dropup">
+				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
+				 <ul class="dropdown-menu">
+				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
+				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
+				  <li><a class="post_pin" data-days="7" href="#">Settimana</a></li>
+				  <li><a class="post_pin" data-days="30" href="#">Mese</a></li>
+				 </ul>
+				</div>
+				{%endif%}
+				{%if post.can_admin(user)%}
+				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
+				{%endif%}
+				{%if post.can_admin(user)%}
+				<button class="btn btn-normal btn-mini post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
+				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
+				{%if fullscreen and not edit%}
+				<div class="pull-right btn-group dropup s_post_share_sn">
+				 <a class="btn dropdown-toggle btn-normal btn-mini" data-toggle="dropdown" href="#"><i class="icon-share"></i> Condividi</a>
+				 <ul class="dropdown-menu">
+				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
+				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a></li>
+				  <li><div class="g-plusone" data-size="medium" data-url="http://{{host}}/post/{{post.id}}"></div></li>
+				  {%if post.images|length > 0%}<li><a href="//pinterest.com/pin/create/button/?url=http://{{host}}/post/{{post.id}}&media={{post.images[0]}}&description={{post.title}}" data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a></li>{%endif%}
+				 </ul>
+				</div>
+				{%endif%}
+				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+			</div><!-- s_post_commands -->		
+			{% endif%}			
+		</div>	<!-- s_post_container -->		
+		<div class="s_post_comments">
+			<ul class="s_comment_list unstyled"{%if hide_comments%} style="display:none;"{%endif%}>
+				{%for comment in post.comment_list%}
+				{%include "post/comment.html"%}
+				{%endfor%}
+			</ul>
+			{%if post.can_comment(user)%}	
+			<ul class="unstyled s_comment_form"> <!--comment_form-->
+				<li class="s_comment s_comment_placeholder">
+				 <input type="text" class="span6 show_comment_form" placeholder="Scrivi un commento"/>
+				</li>
+				<li class="s_comment s_comment_form thumbnail" style="display:none;">
+				  <div class="s_post_avatar">
+				   <img class="avatar" src="{{cmsro.avatar(cmsro)}}" title="{{cmsro.avatar(cmsro)}}">
+				  </div>
+				  <div class="s_post_container">
+				   <div class="s_post_header">			
+				    <div class="s_post_title"></div> 
+				    <div class="s_post_author">{{cmsro.nomecompleto(cmsro)}}</div>
+				    <div class="s_post_date"></div>
+				    <div class="s_post_link"></div>
+				   </div>				
+				   <div class="s_post_body">
+				    <div class="s_post_content">		
+					<form class="s_new_comment_form" action="/post/manage" method="post" novalidate="true">
+						<input type="hidden" name="cmd" value="create_comment"/>	
+						<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>	
+						<div class="control-group">
+							<textarea id="comment_content_{{post.key.urlsafe()}}" class="s_post_comment" name="content"></textarea>
+							<input class="btn btn-primary s_comment_submit" type="submit" value="Invia" data-loading-text="Invio..."/>
+						</div>
+					</form>
+				    </div>
+				   </div>
+				  </div>
+				</li>
+			</ul>
+			{%endif%}{%if not user %} 
+   <div><a class="btn btn-primary" href="{{url}}">Accedi &raquo;</a> oppure <a class="btn btn-success" href="/signup">Registrati &raquo;</a> per inserire un commento.</div>
+   {%endif%}
+		</div> <!-- s_post_comments -->		
+	</div> <!-- s_post -->	
+	<div class="s_post_tools">
+		<div class="s_modal_reshare"></div>
+		<div class="s_post_edit_form" style="display:none;"></div>
+		<div class="s_comment_edit_form" style="display:none;">
+			<form class="s_update_comment_form" action="/post/manage" method="post" class="form-stacked" novalidate="true">
+				<input type="hidden" name="cmd" value="update_comment"/>
+				<input type="hidden" name="comment" value=""/>
+				<div class="control-group">
+					<input class="s_comment_edit_content required" name="content" value="">
+				</div>
+				<div class="s_comment_commands">
+					<button type="submit" class="btn btn-info post_comment_submit">Conferma</button>	
+					<button type="button" class="btn btn-normal post_comment_cancel">Annulla</button>			
+				</div>
+			</form>
+		</div>
+	</div>
+</div> <!-- s_post_root -->		
+{%if fullscreen and not edit%}
+<!-- googleplus -->
+<script type="text/javascript">
+  window.___gcfg = {lang: 'it'};
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<!-- twitter -->
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<!-- fb -->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=103254759720309";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+{%endif%}

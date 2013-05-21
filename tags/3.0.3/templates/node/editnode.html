@@ -1,0 +1,98 @@
+<script> 
+$(function(){
+ // Initialize Slides
+ // DOM Ready
+
+ var date = new Date("{{data1}}");
+ init_value = "{{ctx.cm_key}}";
+ $('#citta').change(oncitychanged);
+ oncitychanged();
+ 
+ $('input[name="attach_file"]').change(addAttach);
+ $('.post_attach_delete').click(onAttachDelete);   
+});
+</script>
+<h2>Modifica Nodo</h2>
+<div id="new_node_form">
+ <div class="row">
+  <div class="span8">
+   <form action="/node/edit/{{node.key.id()}}" method="POST" id="form0" enctype="multipart/form-data" novalidate class="form-horizontal">
+    <label>Nome</label>
+    <input cols="80" class="span8 required" name="name" id="node_title_text" value="{{node.name}}">    
+    <label>Descrizione</label>
+    <textarea rows="4" class="span8 required" name="description" id="node_description_text">{{node.description}}</textarea>
+    <legend>Permessi predefiniti all'iscrizione dell'utente:</legend>
+    <div class="control-group">
+     <label for="perm_reply">Commentare un post</label>
+     <select class="span1 required" id="perm_reply" name="default_reply">
+      <option value="True"{%if node.default_comment%} selected{%endif%}>Si</option>
+      <option value="False"{%if not node.default_comment%} selected{%endif%}>No</option>
+     </select>
+     <label for="perm_post">Creare un post</label>
+     <select class="span1 required" id="perm_post" name="default_post" >
+      <option value="True"{%if node.default_post%} selected{%endif%}>Si</option>
+      <option value="False"{%if not node.default_post%} selected{%endif%}>No</option>
+     </select>
+     <label for="perm_admin">Amministrare</label>
+     <select class="span1 required" id="perm_admin" name="default_admin">
+      <option value="True"{%if node.default_admin%} selected{%endif%}>Si</option>
+      <option value="False"{%if not node.default_admin%} selected{%endif%}>No</option>
+     </select>
+    </div>
+    <legend>Risorse</legend>
+    {%for r in range(0, node.resource|length)%}
+    {{node.resource[r]}}
+    {%if node.resource[r].kind() == "Commissione"%}
+    Commissione: {{node.resource[r].get().nome}}
+    {%endif%}
+    {%if node.resource[r].kind() == "Citta"%}
+    Città: {{node.resource[r].get().nome}}
+    {%endif%}
+    {%endfor%}
+    <div class="s_post_attachs well">
+     <div><i class="icon-file"></i> Allegati</div>
+     <ul class="thumbnails">{%for attach in node.attachments%}
+      <li class="thumbnail s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}<span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Elimina</span>
+      </li>{%endfor%}
+      <li class="thumbnail s_attach"><input type="file" name="attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+      <span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Cancella</span></li>
+     </ul>
+    </div>			
+
+    <legend>Aggiungi risorsa Città:</legend>
+    <div class="control-group">
+     <label for="city">Città</label>
+     <select class="large" id="city" name="city">
+      <option value="0">Nessuna</option>
+      {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and node.get_resource('Citta') and cit.key.id() == node.get_resource('Citta').id()%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+     </select>
+    </div>			
+    <legend>Aggiungi risorsa Commissione:</legend>
+    <div class="control-group">
+     <label for="citta">Città</label>
+     <select class="large required" id="citta" name="citta">
+      {%for cit in citta%}<option value="{{cit.key.id()}}"{%if node.get_resource('Commissione') and node.get_resource('Commissione').get().citta.id()==cit.key.id()%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
+     </select>
+     <label for="commissione_sel">Scuola (Commissione Mensa)</label>
+     <div class="input">
+      <input class="" id="commissione_sel" name="commissione_sel" value=""/>
+      <input type="hidden" id="cm" name="cm" value="0"/>
+     </div>
+    </div>
+    {%if node.get_resource('Commissione')%}
+    <div class="control-group">
+    <div class="span3 btn btn-info">
+     {{node.get_resource('Commissione').get().desc()}}
+     <span class="pull-right" onclick="$(this).parent().remove()">x</span>
+     <input type="hidden" value="{{node.get_resource('Commissione').id()}}">
+    </div>
+    </div>
+    {%endif%}
+    <div class="form-actions">
+     <input type="submit" class="btn btn-primary" value="Salva">
+     <button type="reset" class="btn">Annulla</button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>

@@ -1,0 +1,46 @@
+<script type="text/javascript">
+$(document).ready(function() { 
+  $("#form0").validate({
+    rules: {
+      password: {
+        required: true,
+        minlength: 6
+      },
+      password2: {
+        required: true,
+        minlength: 6
+      }
+    }
+  });
+  
+  $('#form0').ajaxForm({success: function(data) {
+    if(data == "Ok") {
+      $("#message").html('<div id="message" class="alert alert-info fade in"><a class="close" data-dismiss="alert" href="#">&times;</a>Password cambiata</div>');
+    } else {
+      $("#message").html('<div id="message" class="alert alert-error fade in"><a class="close" data-dismiss="alert" href="#">&times;</a>'+data+'</div>');
+    }
+    $("#message").alert();    
+    }
+  });
+});
+</script>
+<div class="row">
+  <div class="span11">
+    <legend>Inserisci la nuova password</legend>
+    <div class="password-form">
+      <form id="form0" method="POST" action="/eauth/pwdrecch" class="horizontal-form" novalidate>
+      <input type="hidden" name="key" value="{{key}}" />
+        <fieldset class="control-group">
+          <label for="email" class="control-label">Nuova password</label>
+          <div class="controls"><input type="password" name="password1" class="span3 required password" /></div>
+          <label for="email" class="control-label">Ripeti nuova password</label>
+          <div class="controls"><input type="password" name="password2" class="span3 required password" /></div>
+        </fieldset>
+        <fieldset class="form-actions">
+          <button type="submit" class="btn">Cambia password</button>
+        </fieldset>
+        <div id="message"></div>
+      </form>
+    </div>
+  </div>
+</div>
