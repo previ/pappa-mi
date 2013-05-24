@@ -39,7 +39,6 @@ class LoginPage(BasePage):
   def get(self):
     user = self.get_current_user()
     profiles = None
-    logging.info(self.get_current_user())
     commissario = self.getCommissario()
     if not commissario:
       template_values = dict()
@@ -51,7 +50,7 @@ class LoginPage(BasePage):
         template_values.update({'messages': messages})
 
       self.getBase(template_values)
-    elif commissario and commissario.is_deactivated:
+    elif commissario and commissario.is_deactivated():
       self.redirect("/signup")
     else:
       nxt = self.request.get("nxt") if self.request.get("nxt") else "/"
