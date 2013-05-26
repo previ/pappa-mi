@@ -35,6 +35,7 @@ class Const:
     'code',
     'em',
     'i',
+    'iframe',
     'li',
     'ol',
     'strong',
@@ -42,7 +43,7 @@ class Const:
     'img',
     'p',
     'div',
-    'br',
+    'br'
 ]
   SEARCH_LIMIT = 20
   EVENT = True
@@ -223,7 +224,7 @@ class Cache(object):
 
 
 class Sanitizer(object):
-  sanitizer = Cleaner(allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False)
+  sanitizer = Cleaner(allow_tags=Const.ALLOWED_TAGS, remove_unknown_tags=False, embedded=False, frames=False)
   texter = Cleaner(allow_tags=[''],remove_unknown_tags=False)
 
   @classmethod

@@ -40,7 +40,11 @@ class MailHandler(InboundMailHandler):
     feedback = list()    
     content = ""
     for body in html_bodies:
-      content = Sanitizer.sanitize(body[1].decode())
+      logging.info(str(body))
+      try:
+        content = Sanitizer.sanitize(body[1].decode())
+      except:
+        pass
     if content == "":
       for body in text_bodies:
         content = Sanitizer.text("<p>"+body[1].decode()+"</p>")
@@ -50,61 +54,66 @@ class MailHandler(InboundMailHandler):
     node_id = None
     if "node" in to:
       try:
-        node_id = to[5:to.find('@')]
+        node_id = int(to[5:to.find('@')])
         logging.info(node_id)
       except:
         logging.info("node id not valid: " + to)
         return
+    else:
+      return
         
     
-    node = model.Key("SocialNode", int(node_id)).get()
-
     user = None
-    commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
-    if commissario:
-      user = commissario.usera.get()
-      
-    if not node.is_user_subscribed(user):
-      logging.info('user is not subscribed to node: ' + node.name)
-      feedback.append(u"Spiacenti, non risultate iscritti all'Argomento: " + node.name + u"""
-      
-Per poter pubblicare un messaggio è necessario prima iscriversi all'Argomento sul sito Pappa-Mi.
-
-""")
-      subject = "Messaggio non pubblicato: " + message.subject
+    node = model.Key("SocialNode", node_id).get()
+    if not node:
+      feedback.append(u"Spiacenti, Argomento non trovato")
     else:
       
-      #allegati
-      attachments = list()
-      if hasattr(message, 'attachments'):
-        for attach in message.attachments :
-          allegato = Allegato()
-          #allegato.obj = nota.key
-          allegato.nome = self.decode(attach[0])
-          logging.info("allegato: " + allegato.nome)
-          allegato_decode = attach[1].decode()
-          if len(allegato_decode) > 5000000:
-            logging.info("attachment too big")
-            feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 5MB\r\n")
-          elif len(allegato_decode) < 5000:
-            logging.info("attachment too small")
-          else:
-            logging.info('uploading attachment')
-            blob = Blob()
-            blob.create(allegato.nome)
-            allegato.blob_key = blob.write(allegato_decode)
-          attachments.append(allegato)
-      
-      template_values = PostHandler.create_post(node=node.key, user=user, title=message.subject, content=content, resources=[], attachments=attachments)
-      post = template_values["postlist"][0]
-      subject = "Messaggio pubblicato: " + post.title
-      
-      feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
-  
-  Link pubblico:
-  """ + "http://" + self.host() + "/post/" + post.id + """
+      commissario = Commissario.get_by_email_lower(parseaddr(message.sender)[1].lower())
+      if commissario:
+        user = commissario.usera.get()
+        
+      if not node.is_user_subscribed(user):
+        logging.info('user is not subscribed to node: ' + node.name)
+        feedback.append(u"Spiacenti, non risultate iscritti all'Argomento: " + node.name + u"""
+        
+  Per poter pubblicare un messaggio è necessario prima iscriversi all'Argomento sul sito Pappa-Mi.
   
   """)
+        subject = "Messaggio non pubblicato: " + message.subject
+      else:
+        
+        #allegati
+        attachments = list()
+        if hasattr(message, 'attachments'):
+          for attach in message.attachments :
+            allegato = Allegato()
+            #allegato.obj = nota.key
+            allegato.nome = self.decode(attach[0])
+            logging.info("allegato: " + allegato.nome)
+            allegato_decode = attach[1].decode()
+            if len(allegato_decode) > 5000000:
+              logging.info("attachment too big")
+              feedback.append("Non è stato possibile salvare l'allegato " + allegato.nome + " perche' troppo grande, il limite per gli allegati e' 5MB\r\n")
+            elif len(allegato_decode) < 5000:
+              logging.info("attachment too small")
+            else:
+              logging.info('uploading attachment')
+              blob = Blob()
+              blob.create(allegato.nome)
+              allegato.blob_key = blob.write(allegato_decode)
+            attachments.append(allegato)
+        
+        template_values = PostHandler.create_post(node=node.key, user=user, title=message.subject, content=content, resources=[], attachments=attachments)
+        post = template_values["postlist"][0]
+        subject = "Messaggio pubblicato: " + post.title
+        
+        feedback.append( """Il tuo messaggio e' stato pubblicato correttamente ed e' visibile al seguente link:
+    
+    Link pubblico:
+    """ + "http://" + self.host() + "/post/" + post.id + """
+    
+    """)
 
 
     if len(feedback) > 0:
