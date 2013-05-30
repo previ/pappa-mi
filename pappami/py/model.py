@@ -1410,7 +1410,7 @@ class SocialNode(model.Model):
     @cached_property
     def image_avatar_path(self):
       for a in self.attachments:
-        if a.size < 16384:
+        if 'avatar' in a.nome:
           return a.path + "=s128"
       
       if len(self.resources) > 0:
@@ -1421,7 +1421,7 @@ class SocialNode(model.Model):
     @cached_property
     def image_wall_path(self):
       for a in self.attachments:
-        if a.size > 16384:
+        if 'wall' in a.nome:
           return a.path + "=s1170"
       
       if len(self.resources) > 0:
