@@ -43,7 +43,7 @@ class Const:
     'img',
     'p',
     'div',
-    'br'
+    'br',
 ]
   SEARCH_LIMIT = 20
   EVENT = True
