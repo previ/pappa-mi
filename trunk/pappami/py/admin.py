@@ -445,6 +445,28 @@ class CMAdminHandler(BasePage):
         
       return
 
+    if self.request.get("cmd") == "getStat":
+      anno = int(self.request.get("year"))
+      query = StatisticheIspezioni.query().filter(StatisticheIspezioni.timeId==anno)
+      for s in query:
+        s_str = ""
+        s_str += ((s.centroCucina.get().nome) if s.centroCucina else "") + "\t"
+        s_str += ((s.commissione.get().nome + " - " + s.commissione.get().tipoScuola) if s.commissione else "") + "\t"
+        s_str += str(s.primoAssaggioNorm()) + "\t"
+        s_str += str(s.primoGradimentoNorm()) + "\t"
+        s_str += str(s.secondoAssaggioNorm()) + "\t"
+        s_str += str(s.secondoGradimentoNorm()) + "\t"
+        s_str += str(s.contornoAssaggioNorm()) + "\t"
+        s_str += str(s.contornoGradimentoNorm()) + "\t"
+        s_str += str(s.fruttaAssaggioNorm()) + "\t"
+        s_str += str(s.fruttaGradimentoNorm()) + "\t"
+        s_str += str(s.giudizioGlobaleNorm()) + "\t"
+        s_str += str(s.numeroPastiTotale) + "\t"
+        s_str += str(s.numeroSchede) + "\t"
+        s_str += "\n"
+        self.response.out.write(s_str)
+      return
+
     if self.request.get("cmd") == "fixnodeperm":
       what = self.request.get("kind")
       if what == "node":

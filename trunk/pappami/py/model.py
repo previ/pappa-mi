@@ -2217,7 +2217,7 @@ class SocialComment(model.Model):
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
-      return sub and (sub.can_admin or self.author == user.key)
+      return ((sub and sub.can_admin) or self.author == user.key)
 
     @cached_property
     def votes(self):
