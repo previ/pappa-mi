@@ -52,7 +52,7 @@ $(function(){
     <div class="s_post_attachs well">
      <div><i class="icon-file"></i> Allegati</div>
      <ul class="thumbnails">{%for attach in node.attachments%}
-      <li class="thumbnail s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path()}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb()}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}<span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Elimina</span>
+      <li class="thumbnail s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}<span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Elimina</span>
       </li>{%endfor%}
       <li class="thumbnail s_attach"><input type="file" name="attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
       <span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Cancella</span></li>

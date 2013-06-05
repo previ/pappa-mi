@@ -10,13 +10,13 @@ import threading
 import math
 import jinja2
 import os
-from google.appengine.ext.ndb import model, Cursor
+from google.appengine.ext.ndb import model, Cursor, Future, tasklet
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 from google.appengine.api import users
 
 import base
-from common import cached_property, Const, Cache, Sanitizer
+from common import cached_property, memcached_property, Const, Cache, Sanitizer
 from engineauth import models
 from py.blob import *
 
@@ -216,16 +216,11 @@ class Commissario(model.Model):
     commissario = memcache.get("commissario-"+str(user.key.id()))
     if not commissario:
       commissario = cls.query().filter(Commissario.usera == user.key).get()
-      #if not commissario and user.email:
-        #commissario = cls.query().filter(Commissario.user == users.User(user.email)).get()
-        #if commissario:
-          #commissario.usera = user.key
-          #commissario.put()
-      memcache.add("commissario-"+str(user.key.id()), commissario)
+      memcache.set("commissario-"+str(user.key.id()), commissario)
     return commissario
 
   def set_cache(self):
-    memcache.delete("commissario-"+str(self.usera.id()))
+    memcache.set("commissario-"+str(self.usera.id()), self)
 
   @classmethod
   def get_all(cls, offset=0, limit=100):
@@ -243,6 +238,10 @@ class Commissario(model.Model):
   def get_by_email_lower(cls, email):
     return Commissario.query().filter(Commissario.user_email_lower == email).get()
 
+  @property
+  def id(self):
+    return self.key.id()
+  
   def is_registered(self, cm):
     return CommissioneCommissario.query().filter(CommissioneCommissario.commissario == self.key).filter(CommissioneCommissario.commissione == cm).get() is not None
 
@@ -694,21 +693,8 @@ class Ispezione(model.Model):
     return Ispezione.query().filter(Ispezione.dataIspezione == data).filter(Ispezione.commissione == cm).filter(Ispezione.turno == turno)
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione)
-
-  @cached_property
-  def get_allegati(self):
-    if not self.allegati:
-      self.allegati = list()
-      if self.key:
-        for allegato in Allegato.query().filter(Allegato.obj == self.key):
-          self.allegati.append(allegato)
-    return self.allegati
-
-  @cached_property
-  def has_allegati(self):
-    return len(self.get_allegati) > 0
+  def get_by_cm(cls, cm, limit=10):    
+    return Ispezione.query().filter(Ispezione.commissione == cm).order(-Ispezione.dataIspezione).fetch(limit)
 
 class Nonconformita(model.Model):
   def __init__(self, language='en', *args, **kwargs):
@@ -736,8 +722,8 @@ class Nonconformita(model.Model):
   stato = model.IntegerProperty()
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf)
+  def get_by_cm(cls, cm, limit=10):
+    return Nonconformita.query().filter(Nonconformita.commissione == cm).order(-Nonconformita.dataNonconf).fetch(limit)
 
   @classmethod
   def get_by_cm_data_turno(cls, cm, data, turno):
@@ -752,19 +738,6 @@ class Nonconformita(model.Model):
   @property
   def restype(self):
     return "nc"
-
-  @cached_property
-  def get_allegati(self):
-    if not self.allegati:
-      self.allegati = list()
-      if self.key:
-        for allegato in Allegato.query().filter(Allegato.obj == self.key):
-          self.allegati.append(allegato)
-    return self.allegati
-
-  @cached_property
-  def has_allegati(self):
-    return len(self.get_allegati) > 0
 
   _tipi_n = {1:0,
            2:1,
@@ -851,21 +824,8 @@ class Dieta(model.Model):
     return Dieta.query().filter(Dieta.dataIspezione==data).filter(Dieta.commissione==cm).filter(Dieta.turno==turno).filter(Dieta.tipoDieta==tipo)
 
   @classmethod
-  def get_by_cm(cls, cm):
-    return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione)
-
-  @cached_property
-  def get_allegati(self):
-    if not self.allegati:
-      self.allegati = list()
-      if self.key:
-        for allegato in Allegato.query().filter(Allegato.obj == self.key):
-          self.allegati.append(allegato)
-    return self.allegati
-
-  @cached_property
-  def has_allegati(self):
-    return len(self.get_allegati) > 0
+  def get_by_cm(cls, cm, limit=10):
+    return Dieta.query().filter(Dieta.commissione == cm).order(-Dieta.dataIspezione).fetch(limit)
 
   _tipi_n = {1:0,
            2:1,
@@ -915,7 +875,9 @@ class Dieta(model.Model):
            21:"menu privo di tutte le carni",
            22:"menu privo di carni bovine e suine",
            23:"menu privo di carni di origine animale",
-           24:"menu privo di carne e pesce"}
+           24:"menu privo di carne e pesce",
+           25:"dieta leggera",
+           26:"dieta personalizzata"}
 
   @classmethod
   def tipi(cls):
@@ -962,22 +924,9 @@ class Nota(model.Model):
     else:
       return self.note.replace("\n","<br/>")
 
-  @cached_property
-  def get_allegati(self):
-    if not self.allegati:
-      self.allegati = list()
-      if self.key:
-        for allegato in Allegato.query().filter(Allegato.obj == self.key):
-          self.allegati.append(allegato)
-    return self.allegati
-
-  @cached_property
-  def has_allegati(self):
-    return len(self.get_allegati) > 0
-
   @classmethod
-  def get_by_cm(cls, cm):
-    return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota)
+  def get_by_cm(cls, cm, limit=10):
+    return Nota.query().filter(Nota.commissione == cm).order(-Nota.dataNota).fetch(limit)
 
 class Allegato(model.Model):
   obj = model.KeyProperty()
@@ -1002,10 +951,16 @@ class Allegato(model.Model):
   def contentType(self):
     return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
 
+  @property
+  def id(self):
+    return str(self.key.id())
+  
+  @cached_property  
   def imgthumb(self):
     if self.isImage():
       return images.get_serving_url(blob_key=self.blob_key,size=128)
 
+  @cached_property  
   def path(self):
     if self.isImage():
       return images.get_serving_url(blob_key=self.blob_key)
@@ -1022,7 +977,7 @@ class Allegato(model.Model):
            ".doc":"application/msword",
            ".pdf":"application/msword"}
 
-  @cached_property
+  @property
   def size(self):
     blob = Blob()
     blob.open(self.blob_key)
@@ -1372,8 +1327,17 @@ class SocialNode(model.Model):
 
     resource = model.KeyProperty(repeated=True)
 
-    created = model.DateTimeProperty(auto_now=True)
+    created = model.DateTimeProperty(auto_now_add=True)
     rank = model.IntegerProperty()
+
+    @classmethod
+    def get_by_key(cls, key):
+      node_cache = Cache.get_cache('SocialNode')
+      node = node_cache.get(key)
+      if not node:
+        node = key.get()
+        node_cache.put(key, node)
+      return node
 
     @classmethod
     def get_by_name(cls, name):
@@ -1415,15 +1379,29 @@ class SocialNode(model.Model):
     def get_by_resource(cls, res):
       return SocialNode.query().filter(SocialNode.resource==res).fetch()
 
+    @property
+    def id(self):
+      return str(self.key.id())
+
     @cached_property
     def subscriptions(self):
+      #logging.info("subscriptions")
       subs = dict()
       for s in SocialNodeSubscription.query(ancestor=self.key).fetch():
         subs[s.user] = s
       return subs
 
     @cached_property
+    def resources(self):
+      #logging.info("resources")
+      resources = list()
+      for r in self.resource:
+        resources.append(r)
+      return resources
+
+    @cached_property
     def attachments(self):
+      #logging.info("attachments")      
       attachments = list()
       for attach in Allegato.query().filter(Allegato.obj == self.key):
         attachments.append(attach)
@@ -1432,22 +1410,22 @@ class SocialNode(model.Model):
     @cached_property
     def image_avatar_path(self):
       for a in self.attachments:
-        if a.size < 16384:
-          return a.path()+"=s128"
-
-      if len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].get().restype + "_avatar.jpg"
+        if 'avatar' in a.nome:
+          return a.path + "=s128"
+      
+      if len(self.resources) > 0:
+        return "/img/avatar/node_" + self.resources[0].get().restype + "_avatar.jpg"
       else:
         return "/img/avatar/node_default_avatar.jpg"
 
     @cached_property
     def image_wall_path(self):
       for a in self.attachments:
-        if a.size > 16384:
-          return a.path()+"=s1170"
+        if 'wall' in a.nome:
+          return a.path + "=s1170"
       
-      if len(self.resource) > 0:
-        return "/img/avatar/node_" + self.resource[0].get().restype + "_wall.jpg"
+      if len(self.resources) > 0:
+        return "/img/avatar/node_" + self.resources[0].get().restype + "_wall.jpg"
       else:
         return "/img/avatar/node_default_wall.jpg"
 
@@ -1493,10 +1471,16 @@ class SocialNode(model.Model):
         return None
 
     def _post_put_hook(self, future):
-      Cache.get_cache("SocialPost").clear_all()
-      Cache.get_cache("UserStream").clear_all()
-
       node=future.get_result().get()
+      
+      Cache.get_cache("SocialNodeStream").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      Cache.get_cache("SocialNode").clear(node.key)
+      #node.attachments = None
+      #node.resources = None
+      #node.image_avatar_path = None
+      #node.image_wall_path = None
+      
       fields = [search.TextField(name='name', value=node.name),
        search.HtmlField(name='description', value=node.description)]
       if node.geo:
@@ -1545,8 +1529,8 @@ class SocialNode(model.Model):
       new_post.resource=resources
       new_post.init_rank()
       new_post.put()
-      self.last_act=new_post.created
       self.calc_rank(SocialPost)
+      self.last_act=new_post.created
       self.put()
       comm=Commissario.get_by_user(author)
       new_post.subscribe_user(author)
@@ -1602,6 +1586,7 @@ class SocialNode(model.Model):
       sub.put()
 
       Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+      Cache.get_cache("UserNode").clear("UserNode-" + str(current_user.key.id()))
       return sub
 
     def unsubscribe_user(self, current_user):
@@ -1609,6 +1594,7 @@ class SocialNode(model.Model):
       if subscription is not None:
         subscription.key.delete()
         Cache.get_cache("SocialNodeSubscription").clear("UserNodeSubscription-" + str(current_user.key.id()))
+        Cache.get_cache("UserNode").clear("UserNode-" + str(current_user.key.id()))
 
       else:
         raise users.UserNotFoundError
@@ -1637,13 +1623,6 @@ class SocialNode(model.Model):
       else:
         return "<option selected value='True'>S&igrave;</option>\n<option selected value='False'>No</option>"
 
-    def get_latest_post(self):
-      last_post=memcache.get("last_post_"+str(self.key.id()))
-      if not last_post:
-        last_post=SocialPost.query(ancestor=self.key).order(-SocialPost.created).fetch(1)
-        memcache.add("last_post_"+str(self.key.id()),last_post)
-      return last_post
-
     @classmethod
     def get_all_cursor(cls, cursor):
       if cursor and cursor != "":
@@ -1657,7 +1636,6 @@ class SocialNode(model.Model):
         return SocialNode.active_nodes().filter().iter(start_cursor=Cursor.from_websafe_string(cursor), produce_cursors=True)
       else:
         return SocialNode.active_nodes().filter().iter(produce_cursors=True)
-
 
 
 class SocialPost(model.Model):
@@ -1699,11 +1677,19 @@ class SocialPost(model.Model):
       return summary
 
     @cached_property
+    def resources(self):
+      #logging.info("resources")
+      resources = list()
+      for r in self.resource:
+        resources.append(r)
+      return resources
+
+    @cached_property
     def images(self):
       imgs = list()
       for a in self.attachments:
         if a.isImage():
-          imgs.append(a.imgthumb())
+          imgs.append(a.imgthumb)
       imgs.extend(Sanitizer.images(self.content))
       return imgs
 
@@ -1741,7 +1727,16 @@ class SocialPost(model.Model):
     @property
     def id(self):
       return str(self.key.parent().id()) + "-" + str(self.key.id())
-    
+
+    @classmethod
+    def get_by_key(cls, key):
+      post_cache = Cache.get_cache('SocialPost')
+      post = post_cache.get(key)
+      if not post:
+        post = key.get()
+        post_cache.put(post.key, post)
+      return post
+      
     @classmethod
     def get_by_resource(cls, res):
       return SocialPost.query().filter(SocialPost.resource==res).fetch()
@@ -1752,14 +1747,15 @@ class SocialPost(model.Model):
 
     @cached_property
     def votes(self):
+      #logging.info("votes")
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
-      #logging.info(str(len(votes)))
       return votes
 
     @cached_property
     def reshares(self):
+      #logging.info("reshares")
       reshares = list()
       for p in self.get_by_resource(self.key):
         reshares.append(p)
@@ -1767,6 +1763,7 @@ class SocialPost(model.Model):
 
     @cached_property
     def attachments(self):
+      #logging.info("attachments")
       attachments = list()
       for attach in Allegato.query().filter(Allegato.obj == self.key):
         attachments.append(attach)
@@ -1793,10 +1790,14 @@ class SocialPost(model.Model):
         sub = SocialNodeSubscription.query(ancestor=self.key.parent()).filter(SocialNodeSubscription.user==user.key).get()
         if sub:
           sub_cache.put(cache_key, sub)
-      return (sub and sub.can_comment) or self.author == user.key
+      return ((sub and sub.can_comment) or #case 1: user is subscribed and authorized
+              (self.author == user.key) or #case 2: user is author
+              (not sub and self.key.parent().get().default_comment) #case 3: user is NOT subscribed, use node default permission
+              ) 
 
     @cached_property
     def subscriptions(self):
+      #logging.info("post.subscriptions")      
       subs = dict()
       for s in SocialPostSubscription.query(ancestor=self.key).fetch():
         subs[s.user] = s
@@ -1820,15 +1821,26 @@ class SocialPost(model.Model):
 
     @classmethod
     def get_by_node_rank(cls, node, page, start_cursor=None):
-      cache = Cache.get_cache("SocialPost")
-      cache_key = "SocialPost-" + str(node.id()) + "-" + str(start_cursor)
+      cache = Cache.get_cache("SocialNodeStream")
+      cache_key = "SocialNodeStream-" + str(node.id()) + "-" + str(start_cursor)
       postlist = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       more = cache.get(cache_key + "-more")
       if not postlist:
         postlist = list()
-        posts, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
-        postlist = [p for p in posts]
+        postlist, next_cursor, more = SocialPost.query(ancestor=node).order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)        
+      
+        post_cache = Cache.get_cache("SocialPost")
+        for p in postlist:
+          if not post_cache.get(p.key):
+            post_cache.put(p.key, p)
+        
+        #f_futures = list()
+        #for p in postlist:
+          #f_futures.append(cls.fetch_post_async(p))
+        #Future.wait_all(f_futures)
+
+        #postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
@@ -1836,21 +1848,31 @@ class SocialPost(model.Model):
 
     @classmethod
     def get_by_rank(cls, page, start_cursor=None):
-      cache = Cache.get_cache("SocialPost")
-      cache_key = "SocialPost-" + "news" + "-" + str(start_cursor)
+      cache = Cache.get_cache("SocialNodeStream")
+      cache_key = "SocialNodeStream-" + "news" + "-" + str(start_cursor)
       postlist = cache.get(cache_key)
       next_cursor = cache.get(cache_key + "-next_cursor")
       more = cache.get(cache_key + "-more")
       if not postlist:
         postlist = list()
-        posts, next_cursor, more = SocialPost.query().order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
-        postlist = [p for p in posts]
+        postlist, next_cursor, more = SocialPost.query().order(-SocialPost.rank).fetch_page(page, start_cursor=start_cursor)
+        #f_futures = list()
+        #for p in postlist:
+          #f_futures.append(cls.fetch_post_async(p))
+        #Future.wait_all(f_futures)
+        
+        #postlist = [p for p in posts]
         cache.put(cache_key, postlist)
         cache.put(cache_key + "-next_cursor", next_cursor)
         cache.put(cache_key + "-more", more)
         #logging.info("next_cursor: " + str(next_cursor))
       return postlist, next_cursor, more
 
+    @tasklet
+    def fetch_post_async(post):
+      yield post.votes
+      yield post.attachments
+    
     @classmethod
     def get_user_stream(cls, user, page, start_cursor=None):
       cache =  Cache.get_cache("UserStream")
@@ -1973,7 +1995,7 @@ class SocialPost(model.Model):
       self.key.parent().get().calc_rank(Vote)
       self.key.parent().get().put()
 
-      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("SocialNodeStream").clear_all()
       Cache.get_cache("UserStream").clear_all()
 
     def can_vote(self, user):
@@ -2010,10 +2032,15 @@ class SocialPost(model.Model):
 
     @classmethod
     def _post_put_hook(cls, future):
-      Cache.get_cache("SocialPost").clear_all()
-      Cache.get_cache("UserStream").clear_all()
-
       post=future.get_result().get()
+      Cache.get_cache("SocialNodeStream").clear_all()
+      Cache.get_cache("UserStream").clear_all()
+      Cache.get_cache("SocialPost").clear(post.key)
+      
+      post.content_summary = None
+      post.attachments = None
+      post.images = None
+      post.resources = None
 
       resource = ""
       for r in post.resource:
@@ -2052,7 +2079,7 @@ class SocialPost(model.Model):
 
     @classmethod
     def _pre_delete_hook(cls, key):
-      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("SocialNodeStream").clear_all()
       Cache.get_cache("UserStream").clear_all()
 
       index = search.Index(name='index-posts')
@@ -2094,7 +2121,7 @@ class SocialNodeSubscription(model.Model):
 
     ntfy_period = model.IntegerProperty(default=0)
     has_ntfy = model.BooleanProperty(default=False)
-    last_ntfy_sent = model.DateTimeProperty(default=None)
+    last_ntfy_sent = model.DateTimeProperty(auto_now_add=True)
     ntfy = model.IntegerProperty(default=0)
     #last_ntfy_access = model.DateTimeProperty(default=None)
 
@@ -2141,23 +2168,32 @@ class SocialNodeSubscription(model.Model):
     @classmethod
     def get_by_ntfy(cls):
       subs = list()
-      for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).fetch():
-        #logging.info(sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())
-        if sub.last_ntfy_sent is None or sub.last_ntfy_sent + timedelta(days=sub.ntfy_period) < datetime.now():
+      for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).order(SocialNodeSubscription.user).fetch():
+
+        #if (sub.ntfy_period >= 0 and (not sub.last_ntfy_sent or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())):
+          #subs.append(sub)
+        if not sub.last_ntfy_sent:
+          sub.last_ntfy_sent = datetime.combine(sub.starting_date, time(hour=0,minute=0))
+        if (sub.ntfy_period == 0 or #case period==immediate
+            (sub.ntfy_period > 0 and #case period == dayly or weekly
+             (sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now()) and #last_sent older then period
+             (datetime.now().hour >=4 and datetime.now().hour <=5) and #ensure processing is on nightly job (5:00 gmt)
+             ((datetime.today() - sub.last_ntfy_sent).days % sub.ntfy_period == 0))): #ensure weekly report does trigger weekly
           subs.append(sub)
       return subs
 
 
 class SocialComment(model.Model):
-    author=model.KeyProperty(kind=models.User)
-    content=model.TextProperty(default="",indexed=False)
+    author = model.KeyProperty(kind=models.User)
+    content = model.TextProperty(default="",indexed=False)
     #public_reference=model.StringProperty(default="")
-    created=model.DateTimeProperty(auto_now_add=True)
+    created = model.DateTimeProperty(auto_now_add=True)
 
     def _post_put_hook(self, future):
-      Cache.get_cache("SocialPost").clear_all()
+      Cache.get_cache("SocialPostStream").clear_all()
       Cache.get_cache("UserStream").clear_all()
-      future.get_result().get().key.parent().get().reset_comment_list()
+      Cache.get_cache("SocialPost").clear(future.get_result().parent())
+      future.get_result().parent().get().reset_comment_list()
 
     def extended_date(self):
       delta = datetime.now() - self.created
@@ -2181,7 +2217,7 @@ class SocialComment(model.Model):
       if not sub:
         sub = SocialNodeSubscription.query(ancestor=self.key.parent().parent()).filter(SocialNodeSubscription.user==user.key).get()
         sub_cache.put(cache_key, sub)
-      return sub and (sub.can_admin or self.author == user.key)
+      return ((sub and sub.can_admin) or self.author == user.key)
 
     @cached_property
     def votes(self):

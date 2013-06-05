@@ -8,7 +8,7 @@
 			<div class="s_post_header">		
 				{%if not reshare %}<div class="pull-right"><span class="btn-link post_expand">Espandi post<i class="icon-chevron-down"></i></span></div>{%endif%}
 				<div class="s_post_title">
-					<span class="s_post_title_1 post_expand">{{post.title}}</span>
+					<span class="s_post_title_1 post_expand">{{post.title}}</span>{%if post.is_pinned()%}<span class="label label-important">in evidenza</span>{%endif%}
 				</div>
 				<div class="s_post_subtitle">
 					<div class="s_node_title_node label" data-node-key="{{post.key.parent().urlsafe()}}">{{post.key.parent().get().name}}</div>
@@ -18,14 +18,9 @@
 				</div>
 			</div>
 			<div class="s_post_body">{%if post.has_summary()%}
-			{%if post.images|length>0%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}')"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
+			{%if post.images|length>0%}<div class="post_expand s_post_body_short_img thumbnail img-rounded" style="background-image:url('{{post.images[0]}}');"></div>{%endif%}<div class="s_post_body_short_cnt">{{post.content_summary}}
 			<span class="btn-link post_expand">...continua a leggere »</span></div>
 			{%else%}{{post.content}}{%endif%}</div>
-			{%if subscription%}									
-			<div class="s_post_commands">
-				{%if subscription.can_admin%}<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>{%endif%}
-			</div>		
-			{%endif%}
 			<div class="s_post_feedback pull-left">
 			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
 			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i> <span class="s_post_reshares">{{post.reshares|count}}</span></span>

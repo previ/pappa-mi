@@ -1,5 +1,5 @@
 application: test-pappa-mi-hr
-version: 1
+version: 31
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -11,7 +11,7 @@ derived_file_type:
 
 builtins:
 - remote_api: on 
-- appstats: off
+- appstats: on
 - deferred: on
 
 libraries:
@@ -67,9 +67,9 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: /(.*\.(gif|png|jpg|txt|html))
+- url: /(.*\.(gif|png|jpg|txt|html|xml))
   static_files: static/\1
-  upload: static/(.*\.(gif|png|jpg|txt|html))
+  upload: static/(.*\.(gif|png|jpg|txt|html|xml))
 
 - url: /favicon.ico
   static_files: img/favicon.ico

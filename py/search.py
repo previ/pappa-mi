@@ -33,6 +33,10 @@ class SearchHandler(BaseHandler):
         query += " resources:" + self.request.get("resources")
       if self.request.get("attach"):
         query += " attach:" + self.request.get("attach")
+      if self.request.get("date_from"):
+        query += " date>=" + self.request.get("date_from")
+      if self.request.get("date_to"):
+        query += " date<=" + self.request.get("date_to")
       if self.request.get("offset"):
         offset = int(self.request.get('offset'))
 
@@ -59,6 +63,9 @@ class SearchHandler(BaseHandler):
       "node": self.request.get("node"),
       "resources": self.request.get("resources"),
       "attach": self.request.get("attach"),
+      "date_from": self.request.get("date_from"),
+      "date_to": self.request.get("date_to"),
+      "author": self.request.get("author"),
       "advanced": self.request.get("advanced"),
       "offset": offset,
       "lim": limit,

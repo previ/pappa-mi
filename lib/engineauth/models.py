@@ -232,6 +232,7 @@ class User(ndb.Expando):
         if auth_id in self.auth_ids:
             return self
         if self.__class__.get_by_auth_id(auth_id):
+            logging.info("DuplicatePropertyError: " + str(auth_id))
             raise DuplicatePropertyError(value=['auth_id'])
         else:
             self.auth_ids.append(auth_id)

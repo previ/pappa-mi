@@ -19,11 +19,20 @@
 			<div class="s_post_body">
 				{%if post.display_content()%}<div class="post_content" id="post_content_{{post.key.urlsafe()}}">{{post.content}}</div>{%endif%}
 				<div class="edit_hollow" id="edit_hollow_{{post.key.urlsafe()}}"></div>
-				{%for resource in post.resource%}
+				{%for resource in post.resources%}
 				<div class="post_resource">
 				{%include "resources/" + post.resource[loop.index-1].get().restype + ".html"%}
 				</div>			
 				{%endfor%}	
+				{% if post.attachments|count > 0 %}
+				<div class="s_post_attachs well">
+				 <div><i class="icon-file"></i> Allegati</div>
+				 <ul class="thumbnails">{%for attach in post.attachments%}
+				  <li class="s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}
+				  </li>{%endfor%}
+				 </ul>
+				</div>			
+				{% endif %}  
 			</div>									
 		</div>			
 	</div>			

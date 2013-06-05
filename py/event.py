@@ -249,7 +249,7 @@ class EventHandler(BaseHandler):
 
   @classmethod
   def send_notifications_channel(cls, user, notifications):
-    logging.info("Sending channel notification to user: " + user.get().email)
+    #logging.info("Sending channel notification to user: " + user.get().email)
 
     for n in notifications:
       event = n.event.get()
@@ -281,12 +281,14 @@ class EventHandler(BaseHandler):
 
   @classmethod
   def send_notifications_email(cls, user, notifications):
-    logging.info("Sending mail notification to user: " + user.get().email)
-    for n in notifications:
-      logging.info("Notification: " + str(n.event.get().type))
+    #logging.info("Sending mail notification to user: " + user.get().email)
+    #for n in notifications:
+      #logging.info("Notification: " + str(n.event.get().type))
 
     template = jinja_environment.get_template("ntfctn/notifications_email.html")
-    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": cls.host})
+    #logging.info("host: " + str(cls.host()))
+    host = cls.host()
+    html=template.render({"cmsro":Commissario.get_by_user(user.get()), "notifications":notifications, "host": host})
     
     test_emails = ['roberto.previtera@gmail.com',
            'aiuto@pappa-mi.it',
@@ -294,8 +296,8 @@ class EventHandler(BaseHandler):
            'muriel.verweij@gmail.com',
            'roberto@pvri.com']
     
-    if self.host == "www.pappa-mi.it" or user.get().email in test_emails:
-      mail.send_mail(sender="Pappa-Mi <aiuto@pappa-mi.it>",
+    if host == "www.pappa-mi.it" or user.get().email in test_emails:
+      mail.send_mail(sender=Const.EMAIL_ADDR_NOTIFICATION,
       to=user.get().email,
       subject="[Pappa-Mi] Novità",
       body="",
@@ -337,7 +339,7 @@ class NotificationHandler(BasePage):
     cmsro = self.getCommissario(user)
 
     response = {'response': 'success',
-          'ntfy_num': len(self.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche))}
+          'ntfy_num': len(self.retrieve_new_notifications(user.key, cmsro.ultimo_accesso_notifiche or cmsro.ultimo_accesso_il))}
     self.output_as_json(response)
 
 class NotificationPaginationHandler(BaseHandler):
@@ -346,7 +348,7 @@ class NotificationPaginationHandler(BaseHandler):
     return self.post()
   def post(self):
       cmd=self.request.get("cmd")
-      user=self.request.user
+      user=self.get_current_user()
       cursor=self.request.get("cursor")
       cmsro = None
       cmsro = self.getCommissario(user)

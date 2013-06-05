@@ -72,3 +72,12 @@ $('button.btn-ing').popover({
 });
 $('button.btn-nut').popover({});
 </script>
+{%if not menu%}
+    <div class="item active" id="1">
+     <div class="row">
+      <div class="span9">
+       <div class="offset2 alert alert-info">Selezionare una Città e una Scuola</div>
+      </div>
+     </div>
+    </div>
+{%endif%}

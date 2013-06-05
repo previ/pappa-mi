@@ -362,472 +362,167 @@ class CMAdminHandler(BasePage):
   @toplevel
   def get(self):
 
-    """
-    Pappa-Mi 1 to 2.0 migration
-    1.deploy app with citta = TextProperty
-    2.initCity1
-    3.deploy app with citta = ReferenceProperty
-    4.initCity2
-    5.initAuthR
-    6.initAuth
-    7.initMenu
-    8.initStream
-    """
-
-    if self.request.get("cmd") == "initConfig":
-      dummy = Configurazione(nome="dummyname", valore="dummyvalue")
-      dummy.put()
-      return
-
-    if self.request.get("cmd") == "initMenu":
-      citta = Citta.query().get()
-      for menu in Menu.query().filter(Menu.tipoScuola=="Materna").filter(Menu.validitaA==datetime.datetime.strptime(self.request.get("offset"), "%Y-%m-%d")):
-        logging.info("menu: " + str(menu.validitaA))
-        nm = MenuNew.query().filter(Menu.validitaA==menu.validitaA).get()
-        if not nm:
-          nm = MenuNew()
-          nm.validitaDa = menu.validitaDa
-          nm.validitaA = menu.validitaA
-          nm.citta = citta.key
-          nm.put()
-        piatto = Piatto.query().filter(Piatto.nome==menu.primo).get()
-        if not piatto:
-          piatto = Piatto()
-          piatto.nome = menu.primo
-          piatto.calorie = 200
-          piatto.proteine = 30
-          piatto.carboidrati = 40
-          piatto.grassi = 30
-          piatto.gi = 10
-          piatto.put()
-          logging.info("piatto.primo.put")
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
-        if not piattoGiorno:
-          piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm.key
-          piattoGiorno.tipo = "p"
-          piattoGiorno.piatto = piatto.key
-          piattoGiorno.giorno = menu.giorno
-          piattoGiorno.settimana = menu.settimana
-          piattoGiorno.put()
-          logging.info("piattogiorno.primo.put")
-        piatto = Piatto.query().filter(Piatto.nome==menu.secondo).get()
-        if not piatto:
-          piatto = Piatto()
-          piatto.nome = menu.secondo
-          piatto.calorie = 200
-          piatto.proteine = 30
-          piatto.carboidrati = 40
-          piatto.grassi = 30
-          piatto.gi = 10
-          piatto.put()
-          logging.info("piatto.secondo.put")
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
-        if not piattoGiorno:
-          piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm.key
-          piattoGiorno.tipo = "s"
-          piattoGiorno.piatto = piatto.key
-          piattoGiorno.giorno = menu.giorno
-          piattoGiorno.settimana = menu.settimana
-          piattoGiorno.put()
-          logging.info("piattogiorno.secondo.put")
-        piatto = Piatto.query().filter(Piatto.nome==menu.contorno).get()
-        if not piatto:
-          piatto = Piatto()
-          piatto.nome = menu.contorno
-          piatto.calorie = 200
-          piatto.proteine = 30
-          piatto.carboidrati = 40
-          piatto.grassi = 30
-          piatto.gi = 10
-          piatto.put()
-          logging.info("piatto.contorno.put")
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
-        if not piattoGiorno:
-          piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm.key
-          piattoGiorno.tipo = "c"
-          piattoGiorno.piatto = piatto.key
-          piattoGiorno.giorno = menu.giorno
-          piattoGiorno.settimana = menu.settimana
-          piattoGiorno.put()
-          logging.info("piattogiorno.contorno.put")
-        piatto = Piatto.query().filter(Piatto.nome == menu.dessert).get()
-        if not piatto:
-          piatto = Piatto()
-          piatto.nome = menu.dessert
-          piatto.calorie = 200
-          piatto.proteine = 30
-          piatto.carboidrati = 40
-          piatto.grassi = 30
-          piatto.gi = 10
-          piatto.put()
-          logging.info("piatto.dessert.put")
-        piattoGiorno = PiattoGiorno.query().filter(PiattoGiorno.menu==nm.key).filter(PiattoGiorno.piatto==piatto.key).filter(PiattoGiorno.giorno==menu.giorno).filter(PiattoGiorno.settimana==menu.settimana).get()
-        if not piattoGiorno:
-          piattoGiorno = PiattoGiorno()
-          piattoGiorno.menu = nm.key
-          piattoGiorno.tipo = "d"
-          piattoGiorno.piatto = piatto.key
-          piattoGiorno.giorno = menu.giorno
-          piattoGiorno.settimana = menu.settimana
-          piattoGiorno.put()
-          logging.info("piattogiorno.dessert.put")
-      self.response.out.write("initMenu Ok")
-      return
-
-    if self.request.get("cmd") == "initCity1":
-      for cm in Commissione.query().filter(Commissione.citta=="Milano"):
-        cm.citta = None
-        cm.put()
-
-      for cc in CentroCucina.query():
-        cc.citta = None
-        cc.put()
-      self.response.out.write("initCity1 Ok")
-      return
-
-    if self.request.get("cmd") == "initCity2":
-      c = Citta.query().get()
-      if not c:
-        c = Citta()
-        c.nome = "Milano"
-        c.codice = "F205"
-        c.provincia = "MI"
-        c.geo = model.GeoPt(45.463681,9.188171)
-        c.put()
-      for cm in Commissione.query().filter(Commissione.citta==None):
-        cm.citta = c.key
-        cm.put_async()
-
-      for cc in CentroCucina.query():
-        cc.citta = c.key
-        cc.put_async()
-
-      for cs in Commissario.query():
-        cs.citta = c.key
-        cs.put_async()
-      self.response.out.write("initCity2 Ok")
-      return
-
-    if self.request.get("cmd") == "initStream1":
-      offset = 0
-      limit = 100
-      if self.request.get("offset"):
-        offset = int(self.request.get("offset"))
-
-      if self.request.get("kind") == "isp":
-        for isp in Ispezione.query().fetch(offset=offset, limit=limit):
-          logging.info(isp)
-          messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
-          messaggio.put()
-      elif self.request.get("kind") == "nc":
-        for nc in Nonconformita.query().fetch(offset=offset, limit=limit):
-          logging.info(nc)
-          messaggio = Messaggio(par = nc.key, root = nc.key, grp = nc.commissione, tipo = 102, livello = 0, c_ua = nc.commissario.get().usera, creato_il = nc.creato_il, modificato_il = nc.modificato_il)
-          messaggio.put()
-      elif self.request.get("kind") == "dieta":
-        for dieta in Dieta.query().fetch(offset=offset, limit=limit):
-          logging.info(dieta)
-          messaggio = Messaggio(par = dieta.key, root = dieta.key, grp = dieta.commissione, tipo = 103, livello = 0, c_ua = dieta.commissario.get().usera, creato_il = dieta.creato_il, modificato_il = dieta.creato_il)
-          messaggio.put()
-      elif self.request.get("kind") == "nota":
-        for nota in Nota.query().fetch(offset=offset, limit=limit):
-          logging.info(nota)
-          messaggio = Messaggio(par = nota.key, root = nota.key, grp = nota.commissione, tipo = 104, livello = 0, c_ua = nota.commissario.get().usera, creato_il = nota.creato_il, modificato_il = nota.creato_il)
-          messaggio.put()
-      self.response.out.write("initStream Ok")
-      return
-
-    if self.request.get("cmd") == "initStream2":
-      for msg in Messaggio().query():
-        if msg.tipo in range(101, 104):
-          msg.grp = msg.root.get().commissione
-          msg.put_async()
-      self.response.out.write("initStream 2 Ok")
-      return
-
-    if self.request.get("cmd") == "initStream3":
-      for msg in Messaggio().query():
-        if msg.c_ua is None:
-          a_id = models.User.generate_auth_id('google', msg.creato_da.user_id(), 'legacy')
-          logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)
-          if ua:
-            logging.info("email: " + str(ua.email))
-            msg.c_ua = ua.key
-          msg.put()
-      self.response.out.write("initStream 3 Ok")
-      return
-
-    if self.request.get("cmd") == "initStream4":
-      for v in Voto().query():
-        if v.c_ua is None:
-          a_id = models.User.generate_auth_id('google', v.creato_da.user_id(), 'legacy')
-          logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)
-          if ua:
-            logging.info("email: " + str(ua.email))
-            v.c_ua = ua.key
-          v.put()
-      for t in Tag().query():
-        if t.c_ua is None:
-          a_id = models.User.generate_auth_id('google', t.creato_da.user_id(), 'legacy')
-          logging.info("auth_id: " + str(a_id))
-          ua = models.User.get_by_auth_id(a_id)
-          if ua:
-            logging.info("email: " + str(ua.email))
-            t.c_ua = ua.key
-          t.put()
-      self.response.out.write("initStream 4 Ok")
-      return
-
-    if self.request.get("cmd") == "fixStream":
-      for isp in Ispezione().query():
-        msgs = Messaggio.query().filter(Messaggio.par==isp.key).filter(Messaggio.tipo==101)
-        if msgs.count() == 0:
-          logging.info("Missing: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
-          messaggio = Messaggio(par = isp.key, root = isp.key, grp = isp.commissione, tipo = 101, livello = 0, c_ua = isp.commissario.get().usera, creato_il = isp.creato_il, modificato_il = isp.modificato_il)
-          messaggio.put()
-        elif msgs.count() == 2:
-          logging.info("Duplicate: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
-          msgs.get().key.delete()
-        elif msgs.count() > 2:
-          logging.info("Multiple: " + str(isp.commissione.get().nome) + " " + str(isp.dataIspezione))
-      self.response.out.write("fixStream 2 Ok")
-      return
-
-    if self.request.get("cmd") == "fixIsp":
-      for isp in Ispezione().query().filter(Ispezione.creato_il==None):
-        isp.creato_il = isp.modificato_il
-        isp.put()
-      self.response.out.write("fixIsp Ok")
-      return
-
-    if self.request.get("cmd") == "fixTagObj":
-      for tagobj in TagObj().query():
-        obj = tagobj.obj.get()
-        if obj:
-          tagobj.creato_il = tagobj.obj.get().creato_il
-          tagobj.put()
-      self.response.out.write("fixTagObj Ok")
-      return
-
-    if self.request.get("cmd") == "initAuthR":
-      logging.info("initAuth")
-      offset = int(self.request.get("offset"))
-      for c in Commissario.query().filter().fetch(limit=100, offset=offset):
-        c.usera = None
-        c.put()
-      self.response.out.write("initAuthR Ok")
-      return
-
-
-    if self.request.get("cmd") == "initAuth":
-      logging.info("initAuth")
-      offset = int(self.request.get("offset"))
-      for c in Commissario.query().filter().fetch(limit=50, offset=offset):
-        if c.usera is None:
-          logging.info("initAuth.1: " + str(c.user.email()))
-          auth_id = models.User.generate_auth_id('google', c.user.user_id(), 'legacy')
-          user_info = {
-              'auth_id': auth_id,
-              'uid': c.user.user_id(), # Unique ID to the service provider
-              'info': {
-                  'id': c.user.user_id(),
-                  'displayName': c.nome + " " + c.cognome,
-                  'name': {
-                      'formatted': c.nome + " " + c.cognome,
-                      'familyName': c.cognome,
-                      'givenName': c.nome,
-                      },
-                  'emails': [
-                      {
-                          'value': c.user.email(),
-                          'verified': True
-                      }
-                  ]
-              },
-              'extra': {
-              }
-          }
-          profile = models.UserProfile.get_or_create(auth_id, user_info)
-          usera = models.User.get_or_create_by_profile(profile)
-          c.usera = usera.key
-          c.avatar_url = "/img/default_avatar_" + str(random.randint(0, 7)) + ".png"
-          c.put()
-      self.response.out.write("initAuth Ok")
-      return
-
-    if self.request.get("cmd") == "resetEmailPrivacy":
+    if self.request.get("cmd") == "getCommissari":
+      buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
       for c in Commissario.query():
-        c.privacy = [[0,0,0],[1,1,1],[0,1,1],[1,1,1],[0,1,1]]
-        c.put()
-
-      self.response.out.write("Ok")
+        if c.isCommissario():
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
+        
+      self.response.out.write(buff)        
       return
 
-    if self.request.get("cmd") == "initEmailLower":
-      for c in Commissario.query().filter(Commissario.user_email_lower==None):
-        c.user_email_lower = c.usera.get().email.lower()
-        c.put()
-
-      self.response.out.write("Ok")
+    if self.request.get("cmd") == "getGenitori":
+      buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
+      for c in Commissario.query():
+        if c.isGenitore():
+          buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
+        
+      self.response.out.write(buff)
       return
 
-
-    if self.request.get("cmd") == "initAnno":
-      d2008da = date(2008,9,1)
-      d2008a = date(2009,7,31)
-      d2009da = date(2009,9,1)
-      d2009a = date(2010,7,31)
-      d2010da = date(2010,9,1)
-      d2010a = date(2011,7,31)
-      for isp in Ispezione.query() :
-        if isp.dataIspezione >= d2008da and isp.dataIspezione < d2008a :
-          isp.anno = 2008
-        if isp.dataIspezione >= d2009da and isp.dataIspezione < d2009a :
-          isp.anno = 2009
-        if isp.dataIspezione >= d2010da and isp.dataIspezione < d2010a :
-          isp.anno = 2010
-        isp.put()
-      for nc in Nonconformita.query() :
-        if nc.dataNonconf >= d2008da and nc.dataNonconf < d2008a :
-          nc.anno = 2008
-        if nc.dataNonconf >= d2009da and nc.dataNonconf < d2009a :
-          nc.anno = 2009
-        if nc.dataNonconf >= d2010da and nc.dataNonconf < d2010a :
-          nc.anno = 2010
-        nc.put()
-      return
-
-
-    if self.request.get("cmd") == "initZone":
-      for cc in CentroCucina.query():
-        ccZona = CentroCucinaZona(centroCucina = cc, zona = cc.menuOffset + 1, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
-        ccZona.put()
-      for cm in Commissione.query():
-        cmCC = CommissioneCentroCucina(commissione = cm, centroCucina = cm.centroCucina, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2099,month=12, day=31))
-        cmCC.put()
-      for z in range(1,5):
-        zonaOld = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2008,month=3, day=1), validitaA=date(year=2010,month=10, day=31))
-        zonaOld.put()
-        zona = ZonaOffset(zona = z, offset = 4-z, validitaDa=date(year=2010,month=11, day=1), validitaA=date(year=2099,month=12, day=31))
-        zona.put()
-
-        if self.request.get("cmd") == "getCommissari":
-          buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-          for c in Commissario.query():
-            if c.isCommissario():
-              buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Commissari attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-            
-          self.response.out.write(buff)        
-          return
-    
-        if self.request.get("cmd") == "getGenitori":
-          buff = "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Group Membership,E-mail 1 - Type,E-mail 1 - Value\r"
-          for c in Commissario.query():
-            if c.isGenitore():
-              buff = buff + c.nome + " " + c.cognome + "," + c.nome + ",," + c.cognome + ",,,,,,,,,,,,,,,,,,,,,,,Genitori attivi Pappa-Mi ::: * My Contacts,* ," + c.user_email_lower + "\r"
-            
-          self.response.out.write(buff)
-          return
-    
-        if self.request.get("cmd") == "getIspezioni":
-          dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+    if self.request.get("cmd") == "getIspezioni":
+      dataInizio = datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
+        isp_str = ""
+        isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
+        isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
+        isp_str += str(isp.dataIspezione) + "\t"
+        isp_str += unicode(isp.primoPrevisto) + "\t"
+        isp_str += unicode(isp.primoEffettivo) + "\t"
+        isp_str += str(isp.primoDist) + "\t"
+        isp_str += str(isp.primoCondito) + "\t"
+        isp_str += str(isp.primoCottura) + "\t"
+        isp_str += str(isp.primoTemperatura) + "\t"
+        isp_str += str(isp.primoQuantita) + "\t"
+        isp_str += str(isp.primoAssaggio) + "\t"
+        isp_str += str(isp.primoGradimento) + "\t"
+        isp_str += unicode(isp.secondoPrevisto) + "\t"
+        isp_str += unicode(isp.secondoEffettivo) + "\t"
+        isp_str += str(isp.secondoDist) + "\t"
+        isp_str += str(isp.secondoCottura) + "\t"
+        isp_str += str(isp.secondoTemperatura) + "\t"
+        isp_str += str(isp.secondoQuantita) + "\t"
+        isp_str += str(isp.secondoAssaggio) + "\t"
+        isp_str += str(isp.secondoGradimento) + "\t"
+        isp_str += unicode(isp.contornoPrevisto) + "\t"
+        isp_str += unicode(isp.contornoEffettivo) + "\t"
+        isp_str += str(isp.contornoCondito) + "\t"
+        isp_str += str(isp.contornoCottura) + "\t"
+        isp_str += str(isp.contornoTemperatura) + "\t"
+        isp_str += str(isp.contornoQuantita) + "\t"
+        isp_str += str(isp.contornoAssaggio) + "\t"
+        isp_str += str(isp.contornoGradimento) + "\t"
+        isp_str += unicode(isp.fruttaTipo) + "\t"
+        isp_str += unicode(isp.fruttaServita) + "\t"
+        isp_str += str(isp.fruttaMaturazione) + "\t"
+        isp_str += str(isp.fruttaQuantita) + "\t"
+        isp_str += str(isp.fruttaAssaggio) + "\t"
+        isp_str += str(isp.fruttaGradimento) + "\t"
+        isp_str += unicode(isp.paneTipo) + "\t"
+        isp_str += str(isp.paneServito) + "\t"
+        isp_str += str(isp.paneQuantita) + "\t"
+        isp_str += str(isp.paneAssaggio) + "\t"
+        isp_str += str(isp.paneGradimento) + "\t"
+        isp_str += str(isp.giudizioGlobale) + "\t"
+        isp_str += str(isp.numeroPastiTotale) + "\t"
+        isp_str += "\n"
+        self.response.out.write(isp_str)
           
-          for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
-            isp_str = ""
-            isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
-            isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
-            isp_str += str(isp.dataIspezione) + "\t"
-            isp_str += unicode(isp.primoPrevisto) + "\t"
-            isp_str += unicode(isp.primoEffettivo) + "\t"
-            isp_str += str(isp.primoDist) + "\t"
-            isp_str += str(isp.primoCondito) + "\t"
-            isp_str += str(isp.primoCottura) + "\t"
-            isp_str += str(isp.primoTemperatura) + "\t"
-            isp_str += str(isp.primoQuantita) + "\t"
-            isp_str += str(isp.primoAssaggio) + "\t"
-            isp_str += str(isp.primoGradimento) + "\t"
-            isp_str += unicode(isp.secondoPrevisto) + "\t"
-            isp_str += unicode(isp.secondoEffettivo) + "\t"
-            isp_str += str(isp.secondoDist) + "\t"
-            isp_str += str(isp.secondoCottura) + "\t"
-            isp_str += str(isp.secondoTemperatura) + "\t"
-            isp_str += str(isp.secondoQuantita) + "\t"
-            isp_str += str(isp.secondoAssaggio) + "\t"
-            isp_str += str(isp.secondoGradimento) + "\t"
-            isp_str += unicode(isp.contornoPrevisto) + "\t"
-            isp_str += unicode(isp.contornoEffettivo) + "\t"
-            isp_str += str(isp.contornoCondito) + "\t"
-            isp_str += str(isp.contornoCottura) + "\t"
-            isp_str += str(isp.contornoTemperatura) + "\t"
-            isp_str += str(isp.contornoQuantita) + "\t"
-            isp_str += str(isp.contornoAssaggio) + "\t"
-            isp_str += str(isp.contornoGradimento) + "\t"
-            isp_str += unicode(isp.fruttaTipo) + "\t"
-            isp_str += unicode(isp.fruttaServita) + "\t"
-            isp_str += str(isp.fruttaMaturazione) + "\t"
-            isp_str += str(isp.fruttaQuantita) + "\t"
-            isp_str += str(isp.fruttaAssaggio) + "\t"
-            isp_str += str(isp.fruttaGradimento) + "\t"
-            isp_str += unicode(isp.paneTipo) + "\t"
-            isp_str += str(isp.paneServito) + "\t"
-            isp_str += str(isp.paneQuantita) + "\t"
-            isp_str += str(isp.paneAssaggio) + "\t"
-            isp_str += str(isp.paneGradimento) + "\t"
-            isp_str += str(isp.giudizioGlobale) + "\t"
-            isp_str += "\n"
-            self.response.out.write(isp_str)
+      return
+  
+    if self.request.get("cmd") == "getNonconf":
+      dataInizio = datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+      
+      for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
+        nc_str = ""
+        nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + "\t"
+        nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + "\t"
+        nc_str += str(nc.dataNonconf) + "\t"
+        nc_str += str(nc.tipo) + "\t"
+        nc_str += str(nc.richiestaCampionatura) + "\n"
+        self.response.out.write(nc_str)
+        
+      return
+
+    if self.request.get("cmd") == "getStat":
+      anno = int(self.request.get("year"))
+      query = StatisticheIspezioni.query().filter(StatisticheIspezioni.timeId==anno)
+      for s in query:
+        s_str = ""
+        s_str += ((s.centroCucina.get().nome) if s.centroCucina else "") + "\t"
+        s_str += ((s.commissione.get().nome + " - " + s.commissione.get().tipoScuola) if s.commissione else "") + "\t"
+        s_str += str(s.primoAssaggioNorm()) + "\t"
+        s_str += str(s.primoGradimentoNorm()) + "\t"
+        s_str += str(s.secondoAssaggioNorm()) + "\t"
+        s_str += str(s.secondoGradimentoNorm()) + "\t"
+        s_str += str(s.contornoAssaggioNorm()) + "\t"
+        s_str += str(s.contornoGradimentoNorm()) + "\t"
+        s_str += str(s.fruttaAssaggioNorm()) + "\t"
+        s_str += str(s.fruttaGradimentoNorm()) + "\t"
+        s_str += str(s.giudizioGlobaleNorm()) + "\t"
+        s_str += str(s.numeroPastiTotale) + "\t"
+        s_str += str(s.numeroSchede) + "\t"
+        s_str += "\n"
+        self.response.out.write(s_str)
+      return
+
+    if self.request.get("cmd") == "fixnodeperm":
+      what = self.request.get("kind")
+      if what == "node":
+        for n in SocialNode.query():
+          if n.default_admin == True or n.default_comment == False:
+            n.default_admin = False
+            n.default_comment = True
+            n.put()
+
+      if what == "sub":
+        limit = int(self.request.get("limit"))
+        offset = int(self.request.get("offset"))
             
-          return
-    
-        if self.request.get("cmd") == "getNonconf":
-          dataInizio = datetime.datetime.strptime(self.request.get("offset"),Const.DATE_FORMAT).date()
+        for ns in SocialNodeSubscription.query().fetch(limit=limit, offset=offset):
+          if ns.can_admin == True or ns.can_comment == False:
+            ns.can_admin = False
+            ns.can_comment = True
+            ns.put_async()
           
-          for nc in Nonconformita.query().filter(Nonconformita.dataNonconf > dataInizio).order(Nonconformita.dataNonconf):
-            nc_str = ""
-            nc_str += ((nc.commissione.get().nome + " - " + nc.commissione.get().tipoScuola) if nc.commissione else "") + "\t"
-            nc_str += (nc.commissario.get().usera.get().email if nc.commissario.get().usera else "") + "\t"
-            nc_str += str(nc.dataNonconf) + "\t"
-            nc_str += str(nc.tipo) + "\t"
-            nc_str += str(nc.richiestaCampionatura) + "\n"
-            self.response.out.write(nc_str)
-            
-          return
-    
-        if self.request.get("cmd") == "upCommissioni":
-          data = self.request.get("rawdata")
-          for line in data.split("\n"):
-            logging.info(line)
-            field = line.split("\t")
-            if len(field) > 14:
-              cm = Commissione()
-              cm.citta = model.Key(urlsafe=field[0])
-              cm.codiceScuola = fields[1]
-              cm.nome = fields[2]
-              cm.nomeScuola = fields[3]
-              cm.tipoScuola = fields[4]
-              cm.strada = fields[5]
-              cm.civico = fields[6]
-              cm.provincia = fields[7]
-              cm.cap = fields[8]
-              cm.zona = fields[9]
-              cm.distretto = fields[10]
-              cm.email = fields[11]
-              cm.telefono = fields[12]
-              cm.fax = fields[13]
-              geo = fields[14].split(',')
-              cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
-              cm.creato_da = users.get_current_user()
-              cm.creato_il = datetime.now()
-              cm.modificato_da = users.get_current_user()
-              cm.modificato_il = datetime.now()
-              cm.numCommissari = 0
-              cm.stato = 1
-              cm.put()
+    if self.request.get("cmd") == "upCommissioni":
+      data = self.request.get("rawdata")
+      for line in data.split("\n"):
+        logging.info(line)
+        fields = line.split("\t")
+        if len(fields) > 14:
+          cm = Commissione()
+          cm.citta = model.Key(urlsafe=fields[0])
+          cm.codiceScuola = fields[1]
+          cm.nome = fields[2]
+          cm.nomeScuola = fields[3]
+          cm.tipoScuola = fields[4]
+          cm.strada = fields[5]
+          cm.civico = fields[6]
+          cm.provincia = fields[7]
+          cm.cap = fields[8]
+          cm.zona = fields[9]
+          cm.distretto = fields[10]
+          cm.email = fields[11]
+          cm.telefono = fields[12]
+          cm.fax = fields[13]
+          geo = fields[14].split(',')
+          cm.geo = model.GeoPt(lat=float(geo[0]), lon=float(geo[1]))
+          #cm.creato_da = users.get_current_user()
+          cm.creato_il = datetime.now()
+          #cm.modificato_da = users.get_current_user()
+          cm.modificato_il = datetime.now()
+          cm.numCommissari = 0
+          cm.stato = 1
+          cm.put()
+          node = SocialNode(name = cm.nome + " " + cm.tipoScuola,
+                          description="Gruppo di discussione per la scuola " + cm.tipoScuola + " " + cm.nome + " di " + cm.citta.get().nome, resource=[cm.key])
+          node.init_rank()
+          node.put()
+          node.init_rank()
+          node.put()
+          
 
     if self.request.get("cmd") == "migSocial":
       #SocialUtils.msg_to_post()
@@ -886,7 +581,15 @@ class CMAdminHandler(BasePage):
       offset = int(self.request.get("offset"))
       SocialAdmin.migrate(what, offset, limit)
 
-    if self.request.get("cmd") == "vacuum_index":
+    if self.request.get("cmd") == "init_last_ntfy":
+      limit = int(self.request.get("limit"))
+      s_futures = list()
+      for s in SocialNodeSubscription.query().filter(SocialNodeSubscription.last_ntfy_sent==None).fetch(limit):
+        s.last_ntfy_sent = datetime(s.starting_date.year, s.starting_date.month, s.starting_date.day)
+        s_futures.append(s.put_async())
+      Future.wait_all(s_futures)
+      
+    if self.request.get("cmd") == "vacuum_node_index":
       index = search.Index(name="index-nodes")
       while True:
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
@@ -894,6 +597,7 @@ class CMAdminHandler(BasePage):
           break
         index.delete(doc_ids)
 
+    if self.request.get("cmd") == "vacuum_post_index":
       index = search.Index(name="index-posts")
       while True:
         doc_ids = [doc.doc_id for doc in index.get_range(ids_only=True)]
@@ -971,6 +675,31 @@ class CMAdminHandler(BasePage):
         except search.Error, e:
             pass
 
+    if self.request.get("cmd") == "deact_profile":
+      data = self.request.get("rawdata")
+      for email in data.splitlines():
+        logging.info("deactivating: " + email)
+        commissario = Commissario.get_by_email_lower(email)
+        
+        if commissario:
+          for commissione in commissario.commissioni():
+            commissario.unregister(commissione)
+        
+          #unsubscribe nodes
+          for sn in SocialNodeSubscription.get_by_user(commissario.usera.get()):
+            sn.key.delete()
+  
+          for sp in SocialPostSubscription.get_by_user(commissario.usera.get()):
+            sp.key.delete()
+        
+          commissario.stato = 99
+          commissario.put()
+          commissario.set_cache()
+        
+          for ue in models.UserEmail.get_by_user(commissario.usera.id()):
+            ue.key.delete()
+          
+          logging.info("deactivated: " + email)
 
     template_values = {
       'content': 'admin/admin.html',
@@ -1132,7 +861,7 @@ class SocialAdmin(object):
           node.put()
   
         logging.info("generate_nodes.cm")
-        c_futures = list()
+
         commissioni=Commissione.query().fetch()
         for i in commissioni:
           logging.info("node: " + i.nome)
@@ -1140,39 +869,37 @@ class SocialAdmin(object):
           node = SocialNode(name = i.nome + " " + i.tipoScuola,
                           description="Gruppo di discussione per la scuola " + i.tipoScuola + " " + i.nome + " di " + c.nome, resource=[i.key])
           node.init_rank()
-          c_futures.append(node.put_async())
-        
-        Future.wait_all(c_futures)  
+          node.put()
 
         logging.info("generate_nodes.tag")
-        tags_mapping = {"salute": "Salute",
-                        "educazione alimentare": "Educazione alimentare",
-                        "commissioni mensa": "Commissioni Mensa",
-                        "dieta": "Nutrizione",
-                        "nutrizione": "Nutrizione",
-                        "milano ristorazione": "Milano",
-                        "eventi": "Eventi",
-                        "assemblea cittadina": "Commissioni Mensa",
-                        "mozzarella blu": "Commissioni Mensa",
-                        "dieta mediterranea": "Nutrizione",
-                        "commercio equo e solidale": "Generale",
-                        "celiaci": "Nutrizione",
-                        "centro cucina": "Commissioni Mensa",
-                        "tip of the week": "Commissioni Mensa",
-                        "rassegna stampa": "Generale",
-                        "": "Generale",
-                        }
-        for tag in tags_mapping:
-            logging.info("tag: " + tag)
-            node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
-            if not node:
-                node = SocialNode(name = tags_mapping[tag],
-                            description="Gruppo di discussione su " + tags_mapping[tag] )
-                node.init_rank()
-                node.put()
-            tags_mapping[tag] = node
+      tags_mapping = {"salute": "Salute",
+                      "educazione alimentare": "Educazione alimentare",
+                      "commissioni mensa": "Commissioni Mensa",
+                      "dieta": "Diete speciali",
+                      "nutrizione": "Nutrizione",
+                      "milano ristorazione": "Milano",
+                      "eventi": "Eventi",
+                      "assemblea cittadina": "Commissioni Mensa",
+                      "mozzarella blu": "Commissioni Mensa",
+                      "dieta mediterranea": "Nutrizione",
+                      "commercio equo e solidale": "Generale",
+                      "celiaci": "Diete speciali",
+                      "centro cucina": "Commissioni Mensa",
+                      "tip of the week": "Commissioni Mensa",
+                      "rassegna stampa": "Generale",
+                      "": "Generale",
+                      }
+      for tag in tags_mapping:
+        logging.info("tag: " + tag)
+        node = SocialNode.query().filter(SocialNode.name==tags_mapping[tag]).get()
+        if not node:
+            node = SocialNode(name = tags_mapping[tag],
+                        description="Gruppo di discussione su " + tags_mapping[tag] )
+            node.init_rank()
+            node.put()
+        tags_mapping[tag] = node
   
-        node_default = tags_mapping["rassegna stampa"]
+      node_default = tags_mapping["rassegna stampa"]
 
       if what == "subscriptions":
         #subscriptions
@@ -1202,7 +929,7 @@ class SocialAdmin(object):
             if cm.zona:
               nodes = SocialNode.get_by_name(cm.citta.get().nome + " - Zona " + str(cm.zona))
               if len(nodes) > 0:
-                nodes[0].subscribe_user(cm.usera.get(), 1)
+                nodes[0].subscribe_user(co.usera.get(), 1)
 
 
       if what == "messages":
@@ -1217,7 +944,7 @@ class SocialAdmin(object):
             for a in m.par.get().get_allegati:
               logging.info("msg.par.allegati")
               a.obj = post.key
-              a.put_async()
+              a.put()
 
           elif m.tipo == 201:
             #messaggi
@@ -1226,18 +953,18 @@ class SocialAdmin(object):
                 node = tags_mapping[m.tags[0].nome]
             if not node:
                 node = node_default
-            post=node.create_open_post(m.c_ua.get(), m.title, m.body, [], []).get()
+            post=node.create_open_post(m.c_ua.get(), m.title, m.body, []).get()
             #allegati a messaggi
             for a in m.get_allegati:
               logging.info("msg.allegati")
               a.obj = post.key
-              a.put_async()
+              a.put()
 
 
           post.created = m.creato_il
           init_rank = post.created - Const.BASE_RANK
           post.rank = init_rank.seconds + (init_rank.days*Const.DAY_SECONDS)
-          post.put_async()
+          post.put()
 
           #commenti
           if m.commenti:
@@ -1245,17 +972,17 @@ class SocialAdmin(object):
             for mc in Messaggio.get_by_parent(m.key):
               comment = post.create_comment(mc.body, mc.c_ua.get())
               comment.created = mc.creato_il
-              comment.put_async()
+              comment.put()
               for v in mc.votes:
                 logging.info("msg.voti")
                 vote = Vote(c_u = v.c_ua, c_d = v.creato_il, ref=comment.key, vote = v.voto)
-                vote.put_async()
+                vote.put()
 
           #voti
           for v in m.votes:
             logging.info("msg.voti")
             vote = Vote(c_u = v.c_ua, c_d = m.creato_il, ref=post.key, vote = v.voto)
-            vote.put_async()
+            vote.put()
 
       logging.info("migrate.end")
 

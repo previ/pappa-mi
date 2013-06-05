@@ -27,11 +27,11 @@ padding-top: 6px;
       {%for ntfy in notifications%}{%if ntfy.event.get().type == "post"%}{%set post = ntfy.event.get().source.get()%}
     <li style="list-style-type: none;">
 	    <div class="">
-	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.key.parent().id()}}-{{post.key.id()}}">messaggio</a> su {{post.key.parent().get().name}}
+	    {{post.commissario.nomecompleto(cmsro)}} ha aggiunto un <a href="http://{{host}}/post/{{post.id}}">messaggio</a> su {{post.key.parent().get().name}}
 	    </div>
 	    <div class=""> 
 		    <div style="float:left;padding-right:5px;">
-			    <img style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{%if 'http' not in post.commissario.nomecompleto(cmsro)%}http://{{host}}/{%endif%}{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
+			    <img style="display: inline-block;width: 48px;max-width: 48px;height: 48px;vertical-align: top;margin-right: 6px;border-radius: 6px;border: none;" src="{%if 'http' not in post.commissario.avatar(cmsro)%}http://{{host}}/{%endif%}{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
 		    </div>
 		    <div style="overflow:hidden;zoom:1;">
 			    <div>			

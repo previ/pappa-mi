@@ -172,6 +172,11 @@ indexes:
 
 - kind: SocialNodeSubscription
   properties:
+  - name: has_ntfy
+  - name: user
+
+- kind: SocialNodeSubscription
+  properties:
   - name: user
   - name: latest_post_date
     direction: desc
