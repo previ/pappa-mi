@@ -79,6 +79,7 @@ cursor: pointer;
 text-decoration: none;
 font-size: 120%;
 font-weight: bold;
+margin-right:5px;
 }
 
 .s_post_author {
@@ -122,7 +123,6 @@ float:right;
 
 .s_post_link, .s_post_link > a {
 display: inline;
-#float: left;
 font-style: italic;
 color: #999;
 padding-left: 3pt;
@@ -211,4 +211,8 @@ font-style:italic;
 .s_reshare_preview {
 height: 100px;
 overflow: auto;
+}
+
+.s_post_share_sn li {
+padding-left:20px;
 }

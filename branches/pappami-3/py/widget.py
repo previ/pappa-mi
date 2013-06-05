@@ -40,21 +40,22 @@ class CMMenuWidgetHandler(CMMenuHandler):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
-        self.request.GET["cm"] = c.key.id()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+          self.request.GET["cm"] = c.key.id()
+        cm_cache.put(cmk, c)
 
-    self.createMenu(self.request,c,template_values)
-
-    if self.request.get("i") == "n":
-      template_values["main"] = 'widget/menu.html'
-    else:
+      self.createMenu(self.request, c, template_values)
+  
       template_values["main"] = 'widget/wmenu.html'
-
-    template_values["main"] = 'widget/wmenu.html'
-    self.getBase(template_values)
+      self.getBase(template_values)
+    else:
+      self.response.out.write("commissione non trovata.")
 
 
 class CMStatWidgetHandler(BasePage):
@@ -75,11 +76,15 @@ class CMStatWidgetHandler(BasePage):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
-        self.request.GET["cm"] = c.key.id()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+          self.request.GET["cm"] = c.key.id()
+        cm_cache.put(cmk, c)
 
     self.createStat(self.request,c,template_values)
 
@@ -108,20 +113,20 @@ class CMStatWidgetHandler(BasePage):
     statCM = None
     if c:
       statCY = memcache.get("statCY" + str(c.citta.id))
-      if not statCC:
-        logging.info("statCY miss")
+      if not statCY:
+        #logging.info("statCY miss")
         statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=c.citta, timeId=year).get()
         memcache.set("statCY" + str(c.citta.id), statCY, 86400)
 
       statCC = memcache.get("statCC" + str(c.centroCucina.id))
       if not statCC:
-        logging.info("statCC miss")
+        #logging.info("statCC miss")
         statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=c.centroCucina, timeId=year).get()
         memcache.set("statCC" + str(c.centroCucina.id), statCC, 86400)
 
       statCM = memcache.get("statCM" + str(c.key.id))
       if not statCM:
-        logging.info("statCM miss")
+        #logging.info("statCM miss")
         statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=c.key, timeId=year).get()
         memcache.set("statCM" + str(c.key.id), statCM, 86400)
 
@@ -167,7 +172,7 @@ class WidgetListitem:
     u = "#"
     post = SocialPost.get_by_resource(self.item.key)[0]
     if post > 0:
-      u = "/post/"+post.key.urlsafe()
+      u = "/post/"+post.id
     return u
 
 
@@ -190,43 +195,59 @@ class CMListWidgetHandler(BasePage):
     c = None
     if self.request.get("cm"):
       cmk = self.request.get("cm")
-      if cmk.isnumeric():
-        c = model.Key("Commissione", int(self.request.get("cm"))).get()
-      else:
-        c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+      cm_cache = Cache.get_cache('CMWidget')
+      c = cm_cache.get(cmk)
+      if not c:
+        if cmk.isnumeric():
+          c = model.Key("Commissione", int(self.request.get("cm"))).get()
+        else:
+          c = model.Key("Commissione", model.Key(urlsafe=self.request.get("cm")).id()).get()
+        cm_cache.put(cmk, c)
 
-      isps = Ispezione.get_by_cm(c.key)
-      for isp in isps:
-        items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
+      items = memcache.get('widget-list-'+str(c.key.id()))
+      if not items:
+        items = list()
+        limit = 20
+        isps = Ispezione.get_by_cm(c.key, limit)
+        for isp in isps:
+          items.append(WidgetListitem(item=isp, date=isp.dataIspezione))
+  
+        ncs = Nonconformita.get_by_cm(c.key, limit)
+        for nc in ncs:
+          items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
+  
+        diete = Dieta.get_by_cm(c.key)
+        for dieta in diete:
+          items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
+  
+        note = Nota.get_by_cm(c.key, limit)
+        for nota in note:
+          items.append(WidgetListitem(item=nota, date=nota.dataNota))
+  
+        items = sorted(items, key=lambda item: item.date, reverse=True)
+        memcache.set('widget-list-'+str(c.key.id()), items, 7200)
 
-      ncs = Nonconformita.get_by_cm(c.key)
-      for nc in ncs:
-        items.append(WidgetListitem(item=nc, date=nc.dataNonconf))
-
-      diete = Dieta.get_by_cm(c.key)
-      for dieta in diete:
-        items.append(WidgetListitem(item=dieta, date=dieta.dataIspezione))
-
-      note = Nota.get_by_cm(c.key)
-      for nota in note:
-        items.append(WidgetListitem(item=nota, date=nota.dataNota))
-
-      items = sorted(items, key=lambda item: item.date, reverse=True)
-
-    template_values["host"] = self.getHost()
-    template_values["items"] = items
-    template_values["scuola"] = c.desc()
-
-    template_values["main"] = 'widget/list.html'
-
-    self.getBase(template_values)
+      template_values["host"] = self.getHost()
+      template_values["items"] = items
+      template_values["scuola"] = c.desc()
+  
+      template_values["main"] = 'widget/list.html'
+  
+      self.getBase(template_values)
+    else:
+      self.response.out.write("commissione non trovata.")      
+      
 
 class NodeWidgetHandler(BasePage):
 
   def get(self, node_key):
     if self.request.get("cmd") == "get_by_cm":
-      node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
-      self.output_as_json({'node_key': node_key.urlsafe()})
+      try:
+        node_key = SocialNode.get_by_resource(model.Key("Commissione", int(self.request.get("cm"))))[0].key
+        self.output_as_json({'node_key': node_key.urlsafe()})
+      except:
+        #logging.info("error retrieving node: " + self.request.get("cm"))
+        return
     elif node_key:
       template_values = dict()
 
@@ -248,10 +269,14 @@ class NodeWidgetHandler(BasePage):
 class CMGadgetHandler(BasePage):
 
   def get(self):
+    nodes = memcache.get('gadget_nodes')
+    if not nodes:
+      nodes = SocialNode.query().order(SocialNode.name).fetch()
+      memcache.set('gadget_nodes', nodes)
     template_values = dict()
     template_values["main"] = "widget/gadget.xml"
     template_values["host"] = self.getHost()
-    template_values["nodes"] = SocialNode.query().order(SocialNode.name).fetch()
+    template_values["nodes"] = nodes
     self.getBase(template_values)
 
 

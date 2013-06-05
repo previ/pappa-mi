@@ -35,6 +35,8 @@ from webapp2_extras import sessions_memcache
 from google.appengine.ext.webapp.util import login_required
 from google.appengine.api import images
 from google.appengine.api import mail
+from google.appengine.api.app_identity import *
+
 import httpagentparser
 
 from py.gviz_api import *
@@ -76,7 +78,7 @@ class BaseHandler(webapp.RequestHandler):
 
                        }
       html=template.render(template_values)
-      time=(datetime.now()-memcache.get("FloodControl-"+str(self.request.user.key)))
+      time=(datetime.now()-memcache.get("FloodControl-"+str(self.get_current_user().key)))
 
       time=Const.SOCIAL_FLOOD_TIME-time.seconds
       response = {'response':'flooderror','time':time,'html':html}
@@ -118,9 +120,7 @@ class BaseHandler(webapp.RequestHandler):
           ctx["cm_name"] = str(commissario.commissione().desc())
       else:
         ctx["node"] = "news"
-        ctx["citta_key"] = Citta.get_first().key.id()
-        ctx["cm_key"] = Commissione.get_by_citta(Citta.get_first().key)[0].key.id()
-        ctx["cm_name"] = Commissione.get_by_citta(Citta.get_first().key)[0].desc()
+          
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
@@ -173,7 +173,7 @@ class BaseHandler(webapp.RequestHandler):
       if user_agent.get("browser").get("name"):
         browser_name = user_agent.get("browser").get("name")
         browser_ver = user_agent.get("browser").get("version")
-        logging.info("Browser: " + browser_name + " version: " + browser_ver )
+        #logging.info("Browser: " + browser_name + " version: " + browser_ver )
 
         if unsupported_browsers.get(browser_name):
           u_b = unsupported_browsers.get(browser_name)
@@ -185,7 +185,7 @@ class BaseHandler(webapp.RequestHandler):
       if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
         template_values["welcome"] = "new"
       if commissario.ultimo_accesso_il and commissario.ultimo_accesso_il < datetime(year=2013, month=4, day=19) and self.request.url.find("/stream") != -1:
-        logging.info(str(self.request.url.find("/stream")))
+        #logging.info(str(self.request.url.find("/stream")))
         template_values["welcome"] = "returning"
       if( commissario.ultimo_accesso_il is None or datetime.now() - commissario.ultimo_accesso_il > timedelta(minutes=60) ):
         commissario.ultimo_accesso_il = datetime.now()
@@ -195,14 +195,6 @@ class BaseHandler(webapp.RequestHandler):
       template_values["genitore"] = commissario.isGenitore()
 
       template_values["channel"] = Channel.get_by_user(user)
-
-      #user.fullname = commissario.nomecompleto(commissario)
-      #user.title = commissario.titolo(commissario)
-      #user.avatar = commissario.avatar()
-      #logging.info("nome:" + commissario.titolo(commissario) + " id: " + str(commissario.usera.id()))
-
-      #logging.info("commissario: " + str(commissario.isCommissario()))
-      #logging.info("genitore: " + str(commissario.isGenitore()))
 
     template_values["cmsro"] = commissario
     url, url_linktext = self.get_login_url_text()
@@ -215,18 +207,13 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.0.0 - 2013.04.19"
+    template_values["version"] = "3.0.3.31 - 2013.05.21"
     template_values["ctx"] = self.get_context()
 
-
-    #logging.info("content: " + template_values["content"])
-    #self.response.write(self.jinja2.render_template(template_values["main"], context=template_values))
-
-    #this is to avoid that a new user click on "enter" instead of "register" => she will be redirected to "signup" path until she complete the process, or logout
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
       return
-
+    
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
 
@@ -248,8 +235,8 @@ class BaseHandler(webapp.RequestHandler):
     else:
       return None
 
-  @property
-  def host(self):
+  @classmethod
+  def host(cls):
     if "test" in get_application_id():
       host = "test.pappa-mi.it"
     else:
@@ -307,7 +294,7 @@ class CMCommissioniDataHandler(BasePage):
 
 class CMMenuHandler(BasePage):
 
-  def createMenu(self,request,c,template_values):
+  def createMenu(self,request, c, template_values):
     menu = Menu();
 
     data = self.workingDay(datetime.now().date())
@@ -323,7 +310,7 @@ class CMMenuHandler(BasePage):
 
   def getMenu(self, data, c):
     offset = -1
-    citta = Citta.get_first()
+    citta = None
 
     if c and not c.getCentroCucina(data):
       return list()
@@ -332,8 +319,13 @@ class CMMenuHandler(BasePage):
       offset = c.getCentroCucina(data).getMenuOffset(data)
       citta = c.citta
 
-    #logging.info("offset: " + str(offset))
-    menu = memcache.get("menu-" + str(offset) + "-" + str(data))
+    if not citta:
+      citta = Citta.get_first()
+      
+    #menu = memcache.get("menu-" + str(offset) + "-" + str(data))
+    menu_cache = Cache.get_cache("Menu")
+    menu = menu_cache.get("menu-" + str(offset) + "-" + str(data))
+    
     if not menu:
       menu = list()
 
@@ -341,7 +333,9 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
 
-      memcache.set("menu-" + str(offset) + "-" + str(data), menu)
+      #memcache.set("menu-" + str(offset) + "-" + str(data), menu)
+      menu_cache.put("menu-" + str(offset) + "-" + str(data), menu)
+      
     #logging.info(str(menu))
     return menu
 
@@ -480,7 +474,7 @@ def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
     commissario = basePage.getCommissario(basePage.request.user)
-    logging.info(commissario)
+    #logging.info(commissario)
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/eauth/login?next="+basePage.request.url)
     else:

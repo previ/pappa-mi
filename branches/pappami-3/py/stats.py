@@ -66,6 +66,12 @@ class CMStatsHandler(BasePage):
     return self.get()
 
   def get(self):
+    cy_key = None
+    if self.get_context().get("citta_key"):
+      cy_key = model.Key("Citta", self.get_context().get("citta_key"))
+    if self.request.get("citta"):
+      cy_key = model.Key("Citta", int(self.request.get("citta")))
+
     template_values = dict()
     self.getBase(template_values)
 
@@ -95,205 +101,210 @@ class CMStatsHandler(BasePage):
     anni = sorted(anni)
 
 
-    cy_key = model.Key("Citta", self.get_context().get("citta_key"))
+    cy_key = self.get_context().get("citta_key")
+    if cy_key:
+      cy_key = model.Key("Citta", self.get_context().get("citta_key"))
     if self.request.get("citta"):
       cy_key = model.Key("Citta", int(self.request.get("citta")))
 
-    statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=cy_key, timeId=anno).get()
-
-    #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
-    #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
-    cm_key = self.get_context().get("cm_key")
-    if cm_key:
-      cm = model.Key("Commissione", cm_key).get()
-    if self.request.get("cm"):
-      cm = model.Key("Commissione", int(self.request.get("cm"))).get()
-    if cm:
-      cc = cm.getCentroCucina(now)
-      statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
-      statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
-    stats = [statCY,statCC,statCM]
-
-    z_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Scarso"),
-               "2": ("number", "Sufficiente"),
-               "3": ("number", "Discreto"),
-               "4": ("number", "Buono")}
-
-    g_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "< 25%"),
-               "2": ("number", "25% < 50%"),
-               "3": ("number", "50% < 75%"),
-               "4": ("number", ">75%")}
-
-    a_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Non Accettabile"),
-               "2": ("number", "Accettabile"),
-               "3": ("number", "Gradevole")}
-
-    c_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Scarsa"),
-               "2": ("number", "Corretta"),
-               "3": ("number", "Eccessiva")}
-
-    t_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Freddo"),
-               "2": ("number", "Corretta"),
-               "3": ("number", "Caldo")}
-
-    q_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Scarso"),
-               "2": ("number", "Giusta"),
-               "3": ("number", "Abbondante")}
-
-    d_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "< 10min"),
-               "2": ("number", "10min - 20min"),
-               "3": ("number", "> 20min")}
-
-    m_desc = {"group": ("string", "Gruppo"),
-               "1": ("number", "Acerba"),
-               "2": ("number", "Corretta"),
-               "3": ("number", "Matura")}
-
-    gg_table = self.getTable(stats,"giudizioGlobale",a_desc)
-    zr_table = self.getTable(stats,"puliziaRefettorio",z_desc)
-    zc_table = self.getTable(stats,"puliziaCentroCottura",z_desc)
-    sr_table = self.getTable(stats,"smaltimentoRifiuti",z_desc)
-    dp_table = self.getTable(stats,"durataPasto",d_desc)
-
-    pg_table = self.getTable(stats,"primoGradimento",g_desc)
-    pa_table = self.getTable(stats,"primoAssaggio",a_desc)
-    pc_table = self.getTable(stats,"primoCottura",c_desc)
-    pt_table = self.getTable(stats,"primoTemperatura",t_desc)
-    pq_table = self.getTable(stats,"primoQuantita",q_desc)
-    pd_table = self.getTable(stats,"primoDist",d_desc)
-
-    sg_table = self.getTable(stats,"secondoGradimento",g_desc)
-    sa_table = self.getTable(stats,"secondoAssaggio",a_desc)
-    sc_table = self.getTable(stats,"secondoCottura",c_desc)
-    st_table = self.getTable(stats,"secondoTemperatura",t_desc)
-    sq_table = self.getTable(stats,"secondoQuantita",q_desc)
-    sd_table = self.getTable(stats,"secondoDist",d_desc)
-
-    cg_table = self.getTable(stats,"contornoGradimento",g_desc)
-    ca_table = self.getTable(stats,"contornoAssaggio",a_desc)
-    cc_table = self.getTable(stats,"contornoCottura",c_desc)
-    ct_table = self.getTable(stats,"contornoTemperatura",t_desc)
-    cq_table = self.getTable(stats,"contornoQuantita",q_desc)
-
-    bg_table = self.getTable(stats,"paneGradimento",g_desc)
-    ba_table = self.getTable(stats,"paneAssaggio",a_desc)
-    bq_table = self.getTable(stats,"paneQuantita",q_desc)
-
-    fg_table = self.getTable(stats,"fruttaGradimento",g_desc)
-    fa_table = self.getTable(stats,"fruttaAssaggio",a_desc)
-    fm_table = self.getTable(stats,"fruttaMaturazione",m_desc)
-    fq_table = self.getTable(stats,"fruttaQuantita",q_desc)
-
-    a_desc = {"tipo": ("string", "Descrizione"),
-               "count": ("number", "Numero")}
-
-    a_stat = statCY
-    if statCC:
-      a_stat = statCC
-    if statCM:
-      a_stat = statCM
-    aa_data = list()
-    if a_stat:
-      for a_idx in range(0, len(a_stat.ambiente)):
-        aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
-    aa_table = DataTable(a_desc)
-    aa_table.LoadData(aa_data)
-
-    nc_desc = {"tipo": ("string", "Tipo"),
-               "count": ("number", "Occorrenze")}
-
-    if cm:
-      ncstat = StatisticheNonconf.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
-    else:
-      ncstat = StatisticheNonconf.get_cy_cc_cm_time(cy=statCY.citta, timeId=anno).get()
-
-    nc_table = DataTable(nc_desc)
-    if ncstat is not None:
-      nc_data = list()
-      nci = Nonconformita();
-      for nd in ncstat.getTipiPos():
-        nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
-      nc_table.LoadData(nc_data)
-
-    di_desc = {"time": ("string", "Settimane"),
-               "schede": ("number", "Schede"),
-               "nonconf": ("number", "Non Conformita")}
-    di_data = list()
-
-    if a_stat:
-      for w in range(len(a_stat.numeroSchedeSettimana)):
-        if ncstat is not None:
-          di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
-        else:
-          di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": 0})
-    di_table = DataTable(di_desc)
-    di_table.LoadData(di_data)
-
-    cm_desc = {"tipo": ("string", "Tipo Scuola"),
-               "iscritte": ("number", "Iscritte"),
-               "totali": ("number", "Totali")}
-    cm_data = list()
-    for cm_t in ["Materna", "Primaria", "Secondaria"]:
-      cm_data.append({"tipo": cm_t, "iscritte": Commissione.query().filter(Commissione.numCommissari > 0).filter(Commissione.tipoScuola == cm_t).count(),
-                                    "totali": Commissione.query().filter(Commissione.tipoScuola == cm_t).count()})
-    cm_table = DataTable(cm_desc)
-    cm_table.LoadData(cm_data)
-
-    template_values["anni"] = anni
-    template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
-    template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "iscritte", "totali"))
-    template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
-    template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
-    template_values["zr_table"] = zr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["zc_table"] = zc_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["sr_table"] = sr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["dp_table"] = dp_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["gg_table"] = gg_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["pc_table"] = pc_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["pt_table"] = pt_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["pq_table"] = pq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["pd_table"] = pd_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["sg_table"] = sg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["sa_table"] = sa_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["sc_table"] = sc_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["st_table"] = st_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["sq_table"] = sq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["sd_table"] = sd_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["cg_table"] = cg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["ca_table"] = ca_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["cc_table"] = cc_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["ct_table"] = ct_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["cq_table"] = cq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["bg_table"] = bg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["ba_table"] = ba_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["bq_table"] = bq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["fg_table"] = fg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
-    template_values["fa_table"] = fa_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["fm_table"] = fm_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["fq_table"] = fq_table.ToJSon(columns_order=("group", "1", "2", "3"))
-    template_values["statCY"] = statCY
-    template_values["statCC"] = statCC
-    template_values["statCM"] = statCM
     template_values['action'] = self.request.path
     template_values["content"] = "stats/stats.html"
     template_values["cmsro"] = self.getCommissario()
     template_values["citta"] = Citta.get_all()
     template_values["anno"] = anno
-    self.get_context()["anno"] = anno
 
-    if cm:
-      self.get_context()["citta_key"] = cm.citta.id()
-      self.get_context()["cm_key"] = cm.key.id()
-      self.get_context()["cm_name"] = cm.desc()
+    if cy_key:
+      statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=cy_key, timeId=anno).get()
+  
+      #if(self.request.get("cm") == "" and len(self.getCommissario(users.get_current_user()).commissioni())):
+      #  cm = self.getCommissario(users.get_current_user()).commissioni()[0]
+      cm_key = self.get_context().get("cm_key")
+      if cm_key:
+        cm = model.Key("Commissione", cm_key).get()
+      if self.request.get("cm"):
+        cm = model.Key("Commissione", int(self.request.get("cm"))).get()
+      if cm:
+        cc = cm.getCentroCucina(now)
+        statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
+        statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
+      stats = [statCY,statCC,statCM]
+  
+      z_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Scarso"),
+                 "2": ("number", "Sufficiente"),
+                 "3": ("number", "Discreto"),
+                 "4": ("number", "Buono")}
+  
+      g_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "< 25%"),
+                 "2": ("number", "25% < 50%"),
+                 "3": ("number", "50% < 75%"),
+                 "4": ("number", ">75%")}
+  
+      a_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Non Accettabile"),
+                 "2": ("number", "Accettabile"),
+                 "3": ("number", "Gradevole")}
+  
+      c_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Scarsa"),
+                 "2": ("number", "Corretta"),
+                 "3": ("number", "Eccessiva")}
+  
+      t_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Freddo"),
+                 "2": ("number", "Corretta"),
+                 "3": ("number", "Caldo")}
+  
+      q_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Scarso"),
+                 "2": ("number", "Giusta"),
+                 "3": ("number", "Abbondante")}
+  
+      d_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "< 10min"),
+                 "2": ("number", "10min - 20min"),
+                 "3": ("number", "> 20min")}
+  
+      m_desc = {"group": ("string", "Gruppo"),
+                 "1": ("number", "Acerba"),
+                 "2": ("number", "Corretta"),
+                 "3": ("number", "Matura")}
+  
+      gg_table = self.getTable(stats,"giudizioGlobale",a_desc)
+      zr_table = self.getTable(stats,"puliziaRefettorio",z_desc)
+      zc_table = self.getTable(stats,"puliziaCentroCottura",z_desc)
+      sr_table = self.getTable(stats,"smaltimentoRifiuti",z_desc)
+      dp_table = self.getTable(stats,"durataPasto",d_desc)
+  
+      pg_table = self.getTable(stats,"primoGradimento",g_desc)
+      pa_table = self.getTable(stats,"primoAssaggio",a_desc)
+      pc_table = self.getTable(stats,"primoCottura",c_desc)
+      pt_table = self.getTable(stats,"primoTemperatura",t_desc)
+      pq_table = self.getTable(stats,"primoQuantita",q_desc)
+      pd_table = self.getTable(stats,"primoDist",d_desc)
+  
+      sg_table = self.getTable(stats,"secondoGradimento",g_desc)
+      sa_table = self.getTable(stats,"secondoAssaggio",a_desc)
+      sc_table = self.getTable(stats,"secondoCottura",c_desc)
+      st_table = self.getTable(stats,"secondoTemperatura",t_desc)
+      sq_table = self.getTable(stats,"secondoQuantita",q_desc)
+      sd_table = self.getTable(stats,"secondoDist",d_desc)
+  
+      cg_table = self.getTable(stats,"contornoGradimento",g_desc)
+      ca_table = self.getTable(stats,"contornoAssaggio",a_desc)
+      cc_table = self.getTable(stats,"contornoCottura",c_desc)
+      ct_table = self.getTable(stats,"contornoTemperatura",t_desc)
+      cq_table = self.getTable(stats,"contornoQuantita",q_desc)
+  
+      bg_table = self.getTable(stats,"paneGradimento",g_desc)
+      ba_table = self.getTable(stats,"paneAssaggio",a_desc)
+      bq_table = self.getTable(stats,"paneQuantita",q_desc)
+  
+      fg_table = self.getTable(stats,"fruttaGradimento",g_desc)
+      fa_table = self.getTable(stats,"fruttaAssaggio",a_desc)
+      fm_table = self.getTable(stats,"fruttaMaturazione",m_desc)
+      fq_table = self.getTable(stats,"fruttaQuantita",q_desc)
+  
+      a_desc = {"tipo": ("string", "Descrizione"),
+                 "count": ("number", "Numero")}
+  
+      a_stat = statCY
+      if statCC:
+        a_stat = statCC
+      if statCM:
+        a_stat = statCM
+      aa_data = list()
+      if a_stat:
+        for a_idx in range(0, len(a_stat.ambiente)):
+          aa_data.append({"tipo": a_stat.ambiente_desc[a_idx], "count": a_stat.ambiente[a_idx]})
+      aa_table = DataTable(a_desc)
+      aa_table.LoadData(aa_data)
+  
+      nc_desc = {"tipo": ("string", "Tipo"),
+                 "count": ("number", "Occorrenze")}
+  
+      if cm:
+        ncstat = StatisticheNonconf.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
+      else:
+        ncstat = StatisticheNonconf.get_cy_cc_cm_time(cy=statCY.citta, timeId=anno).get()
+  
+      nc_table = DataTable(nc_desc)
+      if ncstat is not None:
+        nc_data = list()
+        nci = Nonconformita();
+        for nd in ncstat.getTipiPos():
+          nc_data.append({"tipo": nci.tipi()[nd], "count": ncstat.getData(nd)})
+        nc_table.LoadData(nc_data)
+  
+      di_desc = {"time": ("string", "Settimane"),
+                 "schede": ("number", "Schede"),
+                 "nonconf": ("number", "Non Conformita")}
+      di_data = list()
+  
+      if a_stat:
+        for w in range(len(a_stat.numeroSchedeSettimana)):
+          if ncstat is not None:
+            di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": ncstat.numeroNonconfSettimana[w]})
+          else:
+            di_data.append({"time": w, "schede": a_stat.numeroSchedeSettimana[w], "nonconf": 0})
+      di_table = DataTable(di_desc)
+      di_table.LoadData(di_data)
+  
+      cm_desc = {"tipo": ("string", "Tipo Scuola"),
+                 "iscritte": ("number", "Iscritte"),
+                 "totali": ("number", "Totali")}
+      cm_data = list()
+      for cm_t in ["Materna", "Primaria", "Secondaria"]:
+        cm_data.append({"tipo": cm_t, "iscritte": Commissione.query().filter(Commissione.numCommissari > 0).filter(Commissione.tipoScuola == cm_t).count(),
+                                      "totali": Commissione.query().filter(Commissione.tipoScuola == cm_t).count()})
+      cm_table = DataTable(cm_desc)
+      cm_table.LoadData(cm_data)
+  
+      template_values["anni"] = anni
+      template_values["aa_table"] = aa_table.ToJSon(columns_order=("tipo", "count"))
+      template_values["cm_data"] = cm_table.ToJSon(columns_order=("tipo", "iscritte", "totali"))
+      template_values["di_table"] = di_table.ToJSon(columns_order=("time", "schede", "nonconf"))
+      template_values["nc_table"] = nc_table.ToJSon(columns_order=("tipo", "count"))
+      template_values["zr_table"] = zr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["zc_table"] = zc_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["sr_table"] = sr_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["dp_table"] = dp_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["gg_table"] = gg_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["pg_table"] = pg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["pa_table"] = pa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["pc_table"] = pc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["pt_table"] = pt_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["pq_table"] = pq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["pd_table"] = pd_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["sg_table"] = sg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["sa_table"] = sa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["sc_table"] = sc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["st_table"] = st_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["sq_table"] = sq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["sd_table"] = sd_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["cg_table"] = cg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["ca_table"] = ca_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["cc_table"] = cc_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["ct_table"] = ct_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["cq_table"] = cq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["bg_table"] = bg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["ba_table"] = ba_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["bq_table"] = bq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["fg_table"] = fg_table.ToJSon(columns_order=("group", "1", "2", "3", "4"))
+      template_values["fa_table"] = fa_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["fm_table"] = fm_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["fq_table"] = fq_table.ToJSon(columns_order=("group", "1", "2", "3"))
+      template_values["statCY"] = statCY
+      template_values["statCC"] = statCC
+      template_values["statCM"] = statCM
+      template_values["cmsro"] = self.getCommissario()
+      self.get_context()["anno"] = anno
+  
+      if cm:
+        self.get_context()["citta_key"] = cm.citta.id()
+        self.get_context()["cm_key"] = cm.key.id()
+        self.get_context()["cm_name"] = cm.desc()
 
     super(CMStatsHandler, self).getBase(template_values)
 

@@ -1,7 +1,7 @@
 ﻿<script type="text/javascript">
 var limit = {{limit}};
 $(document).ready(function () {
-  load({{citta.geo.lat}},{{citta.geo.lon}});
+  load({{geo.lat}},{{geo.lon}});
 });      
 </script>
 {%set tab_map="active"%}
@@ -11,7 +11,7 @@ $(document).ready(function () {
 <ul class="nav nav-tabs">
 <li class="dropdown">
  <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
-  Commissioni presso le Scuole di <b id="l_citta">{{citta.nome}}</b><i class="caret"></i>
+  {%if citta%}Commissioni presso le Scuole di <b id="l_citta">{{citta.nome}}</b>{%else%}Seleziona una Città{%endif%}<i class="caret"></i>
  </a>
  <ul class="dropdown-menu dropdown-large">
   <form class="form-vertical" id="f_chgscope" action="/commissioni" method="post">

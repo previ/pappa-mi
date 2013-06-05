@@ -25,22 +25,23 @@ from common import Const, Cache, Sanitizer, Channel
 class PostHandler(BasePage):
 
   def error(self):
-   self.response.clear()
-   self.response.set_status(404)
-   template = jinja_environment.get_template('404_custom.html')
-   c={"error": "Il post a cui stai provando ad accedere non esiste"}
-   t = template.render(c)
-   self.response.out.write(t)
+    self.response.clear()
+    self.response.set_status(404)
+    template = jinja_environment.get_template('404_custom.html')
+    c={"error": "Il post a cui stai provando ad accedere non esiste"}
+    t = template.render(c)
+    self.response.out.write(t)
 
 
   def get(self,node_id, post_id):
-    post = model.Key("SocialNode", int(node_id), 'SocialPost', int(post_id)).get()
-    node = post.key.parent().get()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    node = SocialNode.get_by_key(post.key.parent())
 
     current_user=self.get_current_user()
 
     template_values = {
              'content': 'post/post.html',
+             'node': node,
              'post': post,
              'user':current_user,
              'fullscreen': True,
@@ -72,14 +73,15 @@ class PostHandler(BasePage):
      "user": user,
      "node":node.get()
     }
-
+    
+    EventHandler.startTask()    
     return template_values
 
 
 class PostManageHandler(BaseHandler):
 
   def post(self):
-    user=self.request.user
+    user=self.get_current_user()
     cmd = self.request.get('cmd')
 
     # create a new 'original' post
@@ -115,7 +117,6 @@ class PostManageHandler(BaseHandler):
       #self.output_as_json(response)
       self.getBase(template_values)
       EventHandler.startTask()
-
 
     # create a comment to a post
     # parameters: 'post'
@@ -154,12 +155,16 @@ class PostManageHandler(BaseHandler):
       self.success({'num': str(post_key.get().comments)})
 
     if cmd == "expand_post":
-      post = model.Key(urlsafe=self.request.get('post')).get()
+      post_key = model.Key(urlsafe=self.request.get('post'))
+      post = SocialPost.get_by_key(post_key)
+      node = SocialNode.get_by_key(post.key.parent())
+      
       template_values = {
+               'node': node,
                'post': post,
                'user': user,
                'cmsro':self.getCommissario(user),
-               'url': self.get_login_url_text()[0],
+               'url': '/eauth/login?next=/stream',
                'hide_comments': self.request.get('exp_comments') == 'false',
       }
 
@@ -335,11 +340,11 @@ class PostManageHandler(BaseHandler):
       self.output_as_json(response)
 
     if cmd== "author_detail":
-      post=model.Key(urlsafe=self.request.get('post')).get()
+      post_or_comment=model.Key(urlsafe=self.request.get('key')).get()
 
       template_values = {
         "cmsro":self.getCommissario(user),
-        "author": post.commissario,
+        "author": post_or_comment.commissario,
       }
 
       template = jinja_environment.get_template("post/author.html")
@@ -421,7 +426,7 @@ class PostPaginationHandler(BaseHandler):
   def post(self):
     #logging.info("PostPaginationHandler")
     cmd=self.request.get("cmd")
-    user=self.request.user
+    user=self.get_current_user()
     cursor=self.request.get("cursor")
     cmsro = None
     cmsro = self.getCommissario(user)

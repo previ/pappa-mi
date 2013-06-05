@@ -59,8 +59,8 @@ var tiny_mce_opts = {
   theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
   font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
   theme : "advanced",
-  plugins : "autolink, autoresize", 
-  theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,undo,redo",
+  plugins : "autolink,autoresize,media", 
+  theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,image,media,undo,redo",
   theme_advanced_buttons2 : "",
   theme_advanced_buttons3 : "",			
   theme_advanced_toolbar_location : "top",
@@ -83,7 +83,8 @@ function onSuccess(data){
 }
 
 function onError(jqXHR, textStatus, errorThrown){
-  console.log("textStatus: " + textStatus + " errorThrown: " + errorThrown);
+  window.console && console.log("textStatus: " + textStatus + " errorThrown: " + errorThrown);
+  //alert("textStatus: " + textStatus + " errorThrown: " + errorThrown)
   window.location.href="/";
 }
 
@@ -110,9 +111,9 @@ function onFloodError(data,callback){
   });
   i=0
   time_left=data.time
-  span=$('.seconds_left')
-  time_left
-  floodUpdate()
+  span=$('.seconds_left');
+  //time_left
+  floodUpdate();
   floodErrorTimer=setInterval(function() {floodUpdate() }, 980);
 }
 
@@ -174,7 +175,7 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content_' + post_root.find('.s_post_root').attr('data-post-key')).setContent('');
+    tinymce.get('comment_content_' + post_root.parent().find('.s_post_root').attr('data-post-key')).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);
@@ -208,6 +209,7 @@ function initComment(element) {
   element.find('.post_comment_edit').click(onCommentEdit);  
   element.find('.post_comment_vote').click(onCommentVote);    
   element.find('.post_comment_unvote').click(onCommentVote);  
+  element.find('.s_post_avatar').click(onAuthorDetail);
 }
 
 function onPostEdit(){
@@ -233,16 +235,16 @@ function onPostEdit(){
 	  ignore: "",
 	  errorClass: "error",
 	  errorPlacement: function(error, element) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.tooltip({title:error.text(), trigger:'manual'});
 	    item.tooltip('show');
 	  },
 	  highlight: function(element, errorClass, validClass) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.addClass(errorClass); 
 	  },
 	  unhighlight: function(element, errorClass, validClass) {
-	    var item = $(element).parents(".form_parent");
+	    var item = $(element).parents(".control-group");
 	    item.removeClass(errorClass); 
 	    $(element).tooltip('hide');
 	  },  
@@ -313,16 +315,16 @@ function onCommentEdit(){
     ignore: "",
     errorClass: "error",
     errorPlacement: function(error, element) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.tooltip({title:error.text(), trigger:'manual'});
       item.tooltip('show');
     },
     highlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.addClass(errorClass); 
     },
     unhighlight: function(element, errorClass, validClass) {
-      var item = $(element).parents(".form_parent");
+      var item = $(element).parents(".control-group");
       item.removeClass(errorClass); 
       $(element).tooltip('hide');
     },  
@@ -402,7 +404,9 @@ function onPostExpand() {
 	  error: onError,
 	  success:function(data){
 	    post_item.html(data.html);
-	    initPost(post_item);
+	    $(document).ready(function(){
+	      initPost(post_item);
+	    });
 	  }});
   
 }
@@ -463,6 +467,7 @@ function onOpenPostForm(){
 }
 
 function onOpenPostFormCancel() {
+  $('#new_post_form .post_attachments .clone').remove();
   $("#new_post").slideUp()
 }
 	
@@ -481,10 +486,8 @@ function onPostReshare() {
     success:function(data){
       var modal_reshare = post_root.find(".s_post_tools").find(".s_modal_reshare");
       modal_reshare.html(data.html);
-      modal_reshare.find('[data-loading-text]').button();
       $(document).ready(function () {
-	//modal_reshare = $("#tools").find("#post_reshare")
-	//$("#modal_reshare").find('#b_post_reshare_submit').click(onPostReshareSubmit);
+        modal_reshare.find('[data-loading-text]').button();
 	modal_reshare.find('input[name="post"]').attr("value", post);
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
 	modal_reshare.find('form').ajaxForm({beforeSubmit: function() {modal_reshare.find('[data-loading-text]').button('loading');}, clearForm: true, dataType:'json', error: onError, success:function(data){
@@ -706,10 +709,14 @@ function redraw_node(node_root) {
   if( subscribed == 'true' ) {
 	node_root.find('#subscribe_btn').html('Disiscriviti');
 	node_root.find('#sub_prop').removeAttr("disabled");
+	node_root.find('#add_new').removeAttr("disabled");
+	node_root.find('#add_new').removeAttr("title");
 	node_root.find('#ntfy_period_'+ ntfy_period + ' > i').css('visibility', 'visible');
   } else {
 	node_root.find('#sub_prop').attr("disabled", "true");
+	node_root.find('#add_new').attr("disabled", "true");
 	node_root.find('#subscribe_btn').html('Iscriviti');
+	node_root.find('#add_new').attr("title", "Iscriviti per aggiungere un messaggio");
   }
 }
 
@@ -811,9 +818,7 @@ function onNodeClick(){
    $("#node_title > a").hide();
  }
  node_item.parent().addClass("active");
- //key=node_item.attr('data-node-key');
  $("#node_container").empty();
- //loadPosts(key,$("#main_stream_"+key).attr('next_cursor'))
  loadNode(key, node_name);
 }
 
@@ -822,16 +827,16 @@ function initNode(node_key){
   ignore: "",
   errorClass: "error",
   errorPlacement: function(error, element) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.tooltip({title:error.text(), trigger:'manual'});
     item.tooltip('show');
   },
   highlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.addClass(errorClass); 
   },
   unhighlight: function(element, errorClass, validClass) {
-    var item = $(element).parents(".form_parent");
+    var item = $(element).parents(".control-group");
     item.removeClass(errorClass); 
     $(element).tooltip('hide');
   },  
@@ -855,6 +860,7 @@ function initNode(node_key){
   */
   $("#main_stream_list").prepend(data)
   $("#open_post_submit").button("reset");
+  $('#new_post_form .post_attachments .clone').remove();
   var post_root = $("#main_stream_list li:first-child");
   initPostList(post_root);
   tinymce.get('post_content_text').setContent('');
@@ -924,8 +930,9 @@ function onOpenNotifications(event) {
 function addAttach() {
   var attach = $(this);
   var att_clone = attach.clone();
+  att_clone.addClass("clone");
   att_clone.appendTo(attach.parent());
-  //att_clone.change(addAttach);
+  att_clone.change(addAttach);
 }
 
 function onMoreClick(){
@@ -950,8 +957,10 @@ function loadNode(node_key, node_name) {
    if(data.response=="success"){
     $("#node_container").empty();   
     $("#node_container").append(data.html);
-    initNode(node_key);
-    loadPosts(node_key, "");
+    $(document).ready(function(){
+      initNode(node_key);
+      loadPosts(node_key, "");
+    });
    } 
   }
  });  
@@ -1004,9 +1013,9 @@ function initPostList(list) {
   list.find('.post_unvote').click(onPostVote);      
   list.find('.post_reshare').click(onPostReshare);
   list.find('.post_expand').click(onPostExpand); 
-  list.find('.s_post_avatar').click(onAuthorDetail)  
-  list.find('.s_post_votes_c').click(onVotesDetail)
-  list.find('.s_post_reshares_c').click(onResharesDetail)
+  list.find('.s_post_avatar').click(onAuthorDetail);  
+  list.find('.s_post_votes_c').click(onVotesDetail);
+  list.find('.s_post_reshares_c').click(onResharesDetail);
 }
 
 function onVotesDetail() {
@@ -1058,11 +1067,17 @@ function onResharesDetail() {
 
 function onAuthorDetail() {
   var author_pop = $(this);
-  var post_key = getPostKeyByElement($(this));
+  var key = ""
+  var comment_root = getCommentRootByElement($(this));
+  if(comment_root.length > 0) {
+   key = comment_root.attr('data-comment-key');   
+  } else {
+   key = getPostKeyByElement($(this));
+  }
 
  var data = {
   'cmd': 'author_detail',
-  'post': post_key
+  'key': key
   };
  $.ajax({
   type: 'POST',

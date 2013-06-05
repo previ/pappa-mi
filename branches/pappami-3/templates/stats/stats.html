@@ -6,10 +6,11 @@
 google.load('visualization', '1.1', {'packages' : ['corechart']});
 
 $(function(){
-{%if statCY%}
   init1();
+    {%if statCY%}
+
   init2();
-{%endif%}
+  {%endif%}
 
  init_value = "{{ctx.cm_key}}";
   
@@ -59,10 +60,11 @@ var fm_data;
 var fq_data;
 var fd_data;
 
-
 function init1() {
-  // Create and populate the data table.
-  
+
+  {%if statCY%}
+
+  // Create and populate the data table.  
   cm_data = new google.visualization.DataTable({{cm_data}});
   dati_ins = new google.visualization.DataTable({{di_table}});
   aa_data = new google.visualization.DataTable({{aa_table}});
@@ -103,7 +105,7 @@ function init1() {
   fm_data = new google.visualization.DataTable({{fm_table}});
   fq_data = new google.visualization.DataTable({{fq_table}});
   fd_data = new google.visualization.DataTable({{fd_table}});
-
+  {%endif%}
 
   $("#d_loading").hide();
   $("#stat_container").show();
@@ -114,7 +116,7 @@ function init1() {
 <ul class="nav nav-tabs">
 <li class="dropdown">
  <a id="dropdown" class="dropdown-toggle dropdown-form" data-toggle="dropdown" href="#">
-  Statistiche dal <b>{{statCY.dataInizio}}</b> al <b>{{statCY.dataFine}}{%if statCM%} {{statCM.commissione.get().desc()}}{%endif%}</b><b class="caret"></b>
+  {%if statCY%}Statistiche dal <b>{{statCY.dataInizio}}</b> al <b>{{statCY.dataFine}}</b>{%if statCM%} Scuola <b>{{statCM.commissione.get().desc()}}</b>{%endif%} Città di <b>{{statCY.citta.get().nome}}</b><b class="caret"></b>{%else%}Seleziona una Città{%endif%}
  </a>
  <ul class="dropdown-menu dropdown-large">
   <form class="form-vertical" id="f_chgscope" action="/stats" method="post">
@@ -222,5 +224,9 @@ function init1() {
  </div>
 </div>
 {%else%}
+{%if ctx.cm_key%}
 <div class="alert alert-info">Non esistono dati per la Citt&agrave; selezionata.</div>
+{%else%}
+<div class="alert alert-info">Seleziona una Città</div>
+{%endif%}
 {%endif%}
