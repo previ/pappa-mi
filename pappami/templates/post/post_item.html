@@ -1,5 +1,4 @@
-{% for post in postlist%}
-<li class="s_post_item{%if post.is_pinned()%} s_post_pinned{%endif%}">
+{% for post in postlist%}<li class="s_post_item{%if post.is_pinned()%} s_post_pinned{%endif%}">
 	<div class="s_post_root" data-post-key='{{post.key.urlsafe()}}'> 
 		<div class="s_post_avatar s_popover" data-original-title="Informazioni" data-placement="right" data-trigger="manual" data-html="true" data-visible="false" data-container="body">
 			<img class="avatar" src="{{post.commissario.avatar(cmsro)}}" title="{{post.commissario.nomecompleto(cmsro)}}">
