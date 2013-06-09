@@ -675,7 +675,7 @@ class Ispezione(model.Model):
         }
 
   def sommario(self):
-    sommario = ""
+    sommario = "<p>Ispezione del " + self.data() + "</p>"
     sommario += '<i class="primo" title="Primo piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.primoAssaggio] + '" title="' + self.testi['assaggio'][self.primoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.primoGradimento] + '" title="' + self.testi['gradimento'][self.primoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
     sommario += '<i class="secondo" title="Secondo piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.secondoAssaggio] + '" title="' + self.testi['assaggio'][self.secondoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.secondoGradimento] + '" title="' + self.testi['gradimento'][self.secondoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
     sommario += '<i class="contorno" title="Contorno piatto"></i>' + '<span class="label labelbox ' + self.cls['assaggio'][self.contornoAssaggio] + '" title="' + self.testi['assaggio'][self.contornoAssaggio] + '">&nbsp;&nbsp;&nbsp;</span>' + '&nbsp;<span class="label labelbox ' + self.cls['gradimento'][self.contornoGradimento] + '" title="' + self.testi['gradimento'][self.contornoGradimento] + '">&nbsp;&nbsp;&nbsp;</span>'
@@ -733,7 +733,7 @@ class Nonconformita(model.Model):
     return datetime.strftime(self.dataNonconf, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
-    return u"Non conformità: <strong>" + self.tipoNome() + "</strong> Richiesta campionatura: <strong>" + ("Si" if self.richiestaCampionatura == 1 else "No") + "</strong>"
+    return u"Non conformità del " + self.data() + ": <strong>" + self.tipoNome() + "</strong> Richiesta campionatura: <strong>" + ("Si" if self.richiestaCampionatura == 1 else "No") + "</strong>"
 
   @property
   def restype(self):
@@ -813,7 +813,7 @@ class Dieta(model.Model):
     return datetime.strftime(self.dataIspezione, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
-    return "Dieta sanitaria: <strong>" + self.tipoNome() + "</strong>"
+    return "Dieta sanitaria del " + self.data() + ": <strong>" + self.tipoNome() + "</strong>"
 
   @property
   def restype(self):
@@ -911,7 +911,7 @@ class Nota(model.Model):
     return datetime.strftime(self.dataNota, Const.ACTIVITY_DATE_FORMAT)
 
   def sommario(self):
-    return ""
+    return "Nota del " + self.data() + " "
 
   @property
   def restype(self):
