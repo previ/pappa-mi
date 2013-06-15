@@ -67,7 +67,7 @@ class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
             logging.info("blog.404")
             self.error(404)
         else:
-            logging.info("blog.200")
+            #logging.info("blog.200")
             self.send_blob(blob_info)
 
 

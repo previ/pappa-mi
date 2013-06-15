@@ -1521,8 +1521,9 @@ class SocialNode(model.Model):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
           raise base.FloodControlException
-
-      new_post= SocialPost(parent=self.key)
+      
+      first, last = SocialPost.allocate_ids(1, parent=self.key)
+      new_post= SocialPost(parent=self.key, id=first)
       new_post.author=author.key
       new_post.content=content
       new_post.title=title
@@ -1946,7 +1947,8 @@ class SocialPost(model.Model):
       if floodControl:
         raise base.FloodControlException
 
-      new_comment= SocialComment(parent=self.key)
+      first, last = SocialComment.allocate_ids(1, parent=self.key)
+      new_comment= SocialComment(parent=self.key, id=first)
       new_comment.author=author.key
       new_comment.content=content
       new_comment.put()

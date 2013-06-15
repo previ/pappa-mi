@@ -58,6 +58,18 @@ class MobilePrivateHandler(BasePage):
   def get(self):
 
     template_values = {
+      "main": "mobile/main.html"
+    }
+    self.getBase(template_values)
+  def post(self):
+    return self.get()
+
+class MobileMenuHandler(BasePage):
+
+  @reguser_required_mobile
+  def get(self):
+
+    template_values = {
       "main": "mobile/menu.html"
     }
     self.getBase(template_values)
@@ -67,6 +79,7 @@ class MobilePrivateHandler(BasePage):
 
 app = webapp.WSGIApplication([
     ('/mobile', MobileHandler),
+    ('/mobile/menu', MobileMenuHandler),
     ('/mobile/priv', MobilePrivateHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
