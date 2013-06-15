@@ -9,8 +9,7 @@
                  "distribuzione": ["","< 30 min.", "30 < 60 min.", "> 60 min."],
                  "giudizio": ["","Insufficiente", "Sufficiente", "Buono"]
                  }
-%}
-{% set cls = {   "assaggio": ["","label131", "label132", "label133"], 
+%}{% set cls = {   "assaggio": ["","label131", "label132", "label133"], 
                  "gradimento": ["","label41", "label42", "label43", "label44"],
                  "cottura": ["","label231", "label232", "label233"], 
                  "temperatura": ["","label231", "label232", "label233"], 
@@ -21,11 +20,10 @@
                  "distribuzione": ["","label133", "label132", "label131"], 
                  "giudizio": ["","label131", "label132", "label133"] 
                  }
-%}
-{% macro label(t, a) -%}
+%}{% macro label(t, a) -%}
 <span class="label labelbox {{cls[t][a]}}" title="{{testi[t][a]}}">&nbsp;&nbsp;&nbsp;</span>
-{%- endmacro %}
-<div>
+{%- endmacro %}<div>
+<h4>{{isp.commissione.get().desc()}} - Ispezione del {{isp.dataIspezione}}</h4>
 <table class="table">
 <tbody>
 <tr><td colspan="7" style="padding:0 0 0 0;">

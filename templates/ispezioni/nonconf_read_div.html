@@ -1,11 +1,9 @@
 <div class="form-vertical">
-{% if preview %}
  <div class="row">
   <div class="span8">
-   <h3>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.data()}} - Turno {{nc.turno}}</h3>
+   <h4>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.data()}} - Turno {{nc.turno}}</h4>
   </div>
  </div>
-{% endif %} 
  <div class="row">
   <div class="span8">
    <h4><small>Tipo Non Conformit&agrave;</small><br/> {{nc.tipoNome()}}</h4>

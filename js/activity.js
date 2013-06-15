@@ -75,14 +75,12 @@ function opennewwiz(url) {
 	url : url + "val", 
 	dataType : 'text',
 	success : function(data){
-	  if(data != "Ok") {	    
-	    $("#formwiz-container").html('<div id="formwiz-error" class="alert alert-error fade in" style="display:none;"><a class="close" data-dismiss="alert" href="#">&times;</a>'+data+'</div>');
-	    $("#formwiz-error").show();
-	    $("#formwiz-error").alert();
-	    //$('#formwiz-error').dialog({ modal: true, width: "40em", zIndex: 3, autoOpen: false,  buttons: [
-	    //  { text: "Ok",
-	    //	click: function() { $(this).dialog("close"); $('#formwiz-error').text(''); } } ] });
-	    //$('#formwiz-error').dialog('open');	    
+	  if(data != "Ok") {	  
+	    $("#error-container").text(data);
+	    $('#error-container').dialog({ modal: true, width: "40em", zIndex: 3, title: 'Attenzione', autoOpen: false,  buttons: [
+	      { text: "Ok",
+	    	click: function() { $(this).dialog("close"); $('#error-container').text(''); } } ] });
+	    $('#error-container').dialog('open');	    
 	    return false; //return false to stop the wizard from going forward to the next step (this will always happen)
 	  } else {
 	    $("#formwiz-error").alert("close");
