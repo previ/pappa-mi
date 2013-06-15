@@ -1,24 +1,17 @@
 $("#page-menu").bind('pageinit', function(event, entry) {
   //$("page-menu").find('span[data-v-title]').text("Pappa Mi");    
 
-  veespo.ready(function(){
+  $.ajax({url:"/api/getuser", 
+	  dataType:'json',
+	  success:function(data) { 
 
-    $.ajax({url:"/api/getuser", 
-	    dataType:'json',
-	    success:function(data) { 
+    userpappami = data;
+    now = new Date()
+    initUI(userpappami, userpappami.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
+    
+    $('#user').text(userpappami.fullname);
 
-      userpappami = data;
-      now = new Date()
-      initUI(userpappami, userpappami.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-      
-      $('#user').text(userpappami.fullname);
-      veespo.set.group("group-pappa-mi");
-      veespo.set.lang("it");
-      veespo.set.userId("uid-" + userpappami.id);
-      veespo.set.userName(userpappami.fullname);
-
-    }});    
-  });
+  }});    
  
 });
 
@@ -39,7 +32,7 @@ function getNextBizDay(date) {
 }
 
 function getDateFromStr(date_str) {
-  date_v = date_str.split("-");
+  var date_v = date_str.split("-");
   date = new Date(date_v[0], date_v[1]-1, date_v[2]);
   return date;
 }
@@ -56,20 +49,20 @@ $(document).bind( "pageloadfailed", function( event, data ){
  
 $("#page-menu").bind('swipeleft', function(event) {
   $.mobile.showPageLoadingMsg();
-  var cur_date = $('#data');    
-  var cur_sk = $('#cm').find("option[selected]='true'");    
-  date = getDateFromStr(cur_date.attr("value"));
-  next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
-  if(next_date) initUI(userpappami, cur_sk.attr("value").substring("sk-pappa-mi-".length), next_date);
+  var cur_date = $('#data');   
+  var cur_sk = $('#cm');    
+  var date = getDateFromStr(cur_date.val());
+  var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
+  if(next_date) initUI(userpappami, cur_sk.val().substring("sk-pappa-mi-".length), next_date);
 });
   
 $("#page-menu").bind('swiperight', function(event) {
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');    
   var cur_sk = $('#cm');    
-  date = getDateFromStr(cur_date.attr("value"));
+  date = getDateFromStr(cur_date.val());
   next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
-  if(next_date) initUI(userpappami, cur_sk.attr("value").substring("sk-pappa-mi-".length), next_date);
+  if(next_date) initUI(userpappami, cur_sk.val().substring("sk-pappa-mi-".length), next_date);
 });
 
 $("#page-menu").bind('pagebeforeshow', function(event){ 
@@ -78,14 +71,8 @@ $("#page-menu").bind('pagebeforeshow', function(event){
   if (pappami.resetMenu){
     //entry.refs.menuAnc.empty();
   } else {*/
-    var lrt = veespo.get.lastSavedTargetId();
-    $("#page-menu").find('span[data-role]="button"').each(function(){
+    $("#page-menu").find('span[data-role="button"]').each(function(){
       var e = $(this);
-      var id = mutils.geu(e, "data-veespo-id", "att");
-      if (id == lrt){
-	console.log("setting data icon for: " + lrt);
-	e.find(".ui-icon").addClass("ui-icon-check").removeClass("ui-icon-plus");
-      }
     });
   //}  
 }); 
@@ -167,12 +154,8 @@ function loadMenu() {
     
     $.mobile.hidePageLoadingMsg();
        
-    $('#menu').find('span[data-role]="button"').bind('tap', function(evt){
-      var e  = mutils.event.elem(evt);
-      var id = mutils.geu(e, "data-veespo-id", "att");
+    $('#menu').find('span[data-role="button"]').bind('tap', function(evt){
       var title = getDish(id.substring('demo-pappa-mi-'.length)).desc1;
-      veespo.set.target(id, "group-pappa-mi", title);
-      veespo.display(back,back);
     });
   }});
 }
