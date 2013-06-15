@@ -1,0 +1,32 @@
+{% set providers = [
+  ('google', '/auth/google'),
+  ('facebook', '/auth/facebook'),
+  ('twitter', '/auth/twitter'),
+  ('linkedin', '/auth/linkedin'),
+  ('windowslive', '/auth/windowslive')
+] -%}
+<div id="avatar_dialog" class="row span4" style="display:none;">
+{%if cmsro%}
+  <img id="avatar_edit" src="{%if cmsro%}{{cmsro.avatar(cmsro,myself=True, size='big')}}{%else%}{{form.avatar_url.data}}{%endif%}" class="avatar-big"/>
+  <form id="avatar_form" action="/profilo/avatar" method="post">
+    <input type="hidden" name="cmd" value="upload"/>
+    <div class="control-group">
+      <div class="controls">      
+        <label>Carica una immagine:</label>
+        <input type="file" id="avatar_file" name="avatar_file" allow="image/jpeg, image/png, image/gif"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">      
+        {% for p, u in providers %}{%if user.has_auth_strategy(p) %} {% set hasimage=True %}{% endif %} {% endfor %}
+        {%if hasimage %}<label>Oppure usa una delle immagini di questi account:</label>{% endif %}
+        {% for p, u in providers %}{%if user.has_auth_strategy(p) %}        
+          <button class="btn btn-normal" onclick="getimage('{{ p }}'); return false;"><img src="/img/eauth/{{ p }}.png"/> Aggiorna da {{ p }}</button>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </form> 
+  {% else %}
+  <div class="alert alert-info">Per poter modificare l'immagine &egrave; necessario completare prima la registrazione.</div>
+  {% endif %}
+</div>

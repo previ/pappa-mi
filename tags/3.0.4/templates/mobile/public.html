@@ -1,0 +1,51 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <link rel="apple-touch-icon" href="/img/logo_57.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/img/logo_72.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/img/logo_114.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
+
+<!--  original -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+  
+  <title>Pappa-Mi Come si mangia ascuola</title>
+</head> 
+
+<body> 
+<script>
+$(document).bind( "pageloadfailed", function( event, data ){
+
+	// Let the framework know we're going to handle things.
+	event.preventDefault();
+
+	window.location.href="/eauth/login?next="+data.absUrl;
+	//$.mobile.changePage("#page-login");
+	data.deferred.reject( data.absUrl, data.options );
+});  
+
+</script>
+<div data-role="page" id="page-public">
+ <div data-role="header">
+  <a href="/mobile" rel="external" data-icon="home" data-role="button">Home</a>
+  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
+ </div> 
+ <div data-role="content">
+    <h2>Pappa-Mi mobile</h2>
+    <a data-role="button" href="/mobile/priv"><img src="/img/mobile/menu.jpg"/><br/>Leggi e vota il Menù</a>
+  </div>
+</div>
+
+</body>
+
+</html>
