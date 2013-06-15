@@ -122,7 +122,8 @@ class NodeCreateHandler(BaseHandler):
       self.getBase(template_values)
 
     def post(self):
-      node=SocialNode()
+      first, last = SocialNode.allocate_ids(1)
+      node=SocialNode(id=first)
       node.name=Sanitizer.text(self.request.get("name"))
       node.description=Sanitizer.sanitize(self.request.get("description"))
       node.default_comment=bool(self.request.get("default_comment"))
