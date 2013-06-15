@@ -51,7 +51,7 @@ class IspezioneValidationHandler(BasePage):
 
     message = "Ok"
     if Ispezione.get_by_cm_data_turno(model.Key("Commissione", int(cm_id)), dataIspezione, turno).get() :
-      message = "<ul><li>Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno.</li></ul>"
+      message = "Esiste gia una scheda di ispezione per questa commissione con la stessa data e turno."
 
     self.response.out.write(message)
 

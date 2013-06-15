@@ -279,6 +279,7 @@ class PostManageHandler(BaseHandler):
       clean_content = Sanitizer.sanitize(self.request.get("content"))
 
       rs_post_key=post.reshare(node.key,user,clean_content,clean_title)
+      EventHandler.startTask()
       
       if self.request.get("fullscreen"):
         self.success({'response': 'success', 'url': "/post/"+str(rs_post_key.parent().id())+"-"+str(rs_post_key.id())})

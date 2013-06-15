@@ -21,12 +21,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			</div>				
 			<div class="s_post_body">
 				{%if post.display_content()%}<div class="s_post_content" itemprop="description">{{post.content}}</div>{%endif%}
-				<div class="s_edit_hollow"></div>
-				{%for resource in post.resources%}
-				<div class="s_post_resource well">
-				{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}
-				</div>			
-				{%endfor%}	
+				<div class="s_edit_hollow"></div>{%for resource in post.resources%}
+				 <div class="s_post_resource well">{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}</div>{%endfor%}	
 				{% if post.attachments|count > 0 %}
 				<div class="s_post_attachs well">
 				 <div><i class="icon-file"></i> Allegati</div>
@@ -42,8 +38,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			 <span class="s_post_votes_c badge badge-success"{%if post.votes|count == 0%} style="display:none;"{%endif%}><i class="icon-star icon-white"></i> <span class="s_post_votes">{{post.votes|count}}</span></span>
 			 <span class="s_post_reshares_c badge badge-info"{%if post.reshares|count == 0%} style="display:none;"{%endif%}><i class="icon-share-alt icon-white"></i><span class="s_post_reshares"> {{post.reshares|count}}</span></span>
 			 <span class="s_post_comments_c post_comments_expand badge badge-info"{%if post.comments == 0%} style="display:none;"{%endif%}><i class="icon-comment icon-white"></i> <span class="s_post_comment_num">{{post.comments}}</span></span>
-			</div>
-			
+			</div>			
 			{% if user %} 
 			<div class="s_post_commands btn-toolbar">
 				{%if user and node.subscriptions.get(user.key) and node.subscriptions[user.key].can_admin or True%}
