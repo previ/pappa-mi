@@ -50,22 +50,14 @@ function onChannelMessage(m) {
 }
 
 var tiny_mce_opts = {
-  // Location of TinyMCE script
-  script_url : '/js/tiny_mce/tiny_mce.js',     
   // General options
   width : "100%",
-  //height: "300px",
-  content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
-  theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
-  font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
-  theme : "advanced",
-  plugins : "autolink,autoresize,media", 
-  theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,image,media,undo,redo",
-  theme_advanced_buttons2 : "",
-  theme_advanced_buttons3 : "",			
-  theme_advanced_toolbar_location : "top",
-  theme_advanced_toolbar_align : "left",
-  theme_advanced_resizing : false     
+  autoresize_min_height: 100,
+  theme : "modern",
+  plugins : "autolink,autoresize,link,image,media", 
+  menubar: false,
+  statusbar : false,
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo",
 };
 
 // Flood control

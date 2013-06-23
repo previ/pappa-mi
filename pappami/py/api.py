@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright Pappa-Mi Org.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,21 +27,25 @@ import wsgiref.handlers
 import webapp2 as webapp
 
 from google.appengine.ext.ndb import model
-import webapp2 as webapp
 from google.appengine.api import memcache
 
-from py.gviz_api import *
 from py.model import *
-from py.form import IspezioneForm, NonconformitaForm
-from py.base import BasePage, CMMenuHandler, config, handle_404, handle_500
 
-TIME_FORMAT = "%H:%M"
-DATE_FORMAT = "%Y-%m-%d"
+def post_as_json(post, cmsro):
+  return {'id': post.id,
+          'author': {'id': str(post.author.id()),
+                     'name': post.commissario.nomecompleto(cmsro),
+                     'avatar': post.commissario.avatar(cmsro)},
+          'ext_date': post.extended_date(),
+          'title': post.title,
+          'content': post.content}
+
 
 class UserApiHandler(BasePage):
 
   @reguser_required
   def get(self):
+    user = self.get_current_user()
     co = self.getCommissario()
     user_schools = list()
     for cm in co.commissioni():
@@ -52,14 +56,127 @@ class UserApiHandler(BasePage):
                 'schools': user_schools}
     self.output_as_json(user_api)
 
+
+class NodeListApiHandler(BaseHandler):
+
+  def get(self):
+    user = self.get_current_user()
+    subs = list()
+    if user:
+      subs = SocialNodeSubscription.get_nodes_by_user(user)
+
+    user_nodes = list()
+    for n in SocialNodeSubscription.get_nodes_by_user(user):
+      user_nodes.append({'id': str(n.id),
+                         'name': n.name})
+    active_nodes = list()
+    for n in SocialNode.get_most_active():
+      active_nodes.append({'id': str(n.id),
+                           'name': n.name})
+    recent_nodes = list()
+    for n in SocialNode.get_most_recent():
+      recent_nodes.append({'id': str(n.id),
+                           'name': n.name})
+
+    response = {
+      'subs_nodes': user_nodes,
+      'active_nodes': active_nodes,
+      'recent_nodes': recent_nodes,
+      }
+
+    self.output_as_json(response)
+    
+    return
+
+class NodeApiHandler(BaseHandler):
+
+  def get(self, node_id, cursor = None):
+    node = None
+    next_curs_key = ""
+    more = False
+    user = self.get_current_user()
+    if node_id=="news":
+      if not cursor or cursor == "undefined":
+        postlist, next_curs, more = SocialPost.get_news_stream(page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+      else:
+        postlist, next_curs, more = SocialPost.get_news_stream(page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+      if next_curs:
+        next_curs_key = next_curs.urlsafe()
+    elif node_id=="all" and user:
+      if not cursor or cursor == "undefined":
+        postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+      else:
+        postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=cursor)
+      next_curs_key = next_curs
+    else:
+      node=model.Key("SocialNode", int(node_id))
+
+      if not cursor or cursor == "undefined":
+        postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=None)
+      else:
+        postlist, next_curs, more = SocialPost.get_by_node_rank(node=node, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=Cursor(urlsafe=cursor))
+      if next_curs:
+        next_curs_key = next_curs.urlsafe()
+
+      if user and node.get().get_subscription(user.key):
+        node.get().get_subscription(user.key).reset_ntfy()
+    
+    response =  { 'node_id': node_id,
+                  'posts': [],
+                  'next_cursor': next_curs_key
+                 }
+    cmsro = self.getCommissario()
+    for post in postlist:
+      response['posts'].append(post_as_json(post, cmsro))
+    if user and node:
+      user_subscription = node.get().get_subscription(user.key)
+      subscription = {
+        'can_admin': user_subscription.can_admin,
+        'can_post': user_subscription.can_post,
+        'can_comment': user_subscription.can_comment,       
+      }
+      response["subscription"]=subscription
+
+    if not more:
+      response['eof'] = 'true'
+    self.output_as_json(response)
+
+class PostApiHandler(BaseHandler):
+
+  def get(self, node_id, post_id):
+    cmsro = self.getCommissario()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    response = post_as_json(post, cmsro)
+    self.output_as_json(response)
+
+  def post(self):
+    user = self.get_current_user()
+    cmsro = self.getCommissario()
+    node=model.Key("SocialNode", int(self.request.get('node'))).get()
+
+    if not node.get_subscription(user.key).can_post:
+      logging.info("post not enabled")
+      return
+    
+    clean_title = Sanitizer.text(self.request.get("title"))
+    clean_content = Sanitizer.sanitize(self.request.get("content"))
+    post_key=node.create_open_post(content=clean_content,title=clean_title,author=user)
+
+    Allegato.process_attachments(self.request, post_key)
+
+    EventHandler.startTask()
+
+    response = post_as_json(post_key.get(), cmsro)
+    self.output_as_json(response)
+
 class MenuApiHandler(CMMenuHandler):
 
   @reguser_required
-  def get(self):
+  def get(self, school_id, date):
 
     menu_api = []
-    data = datetime.strptime(self.request.get("date"),Const.DATE_FORMAT).date()
-    c = model.Key("Commissione", int(self.request.get("school"))).get()
+    data = datetime.strptime(date,Const.DATE_FORMAT).date()
+    c = model.Key("Commissione", int(school_id)).get()
     menus = self.getMenu(data, c)
     if len(menus):
       menu = self.getMenu(data, c)[0]
@@ -79,10 +196,25 @@ class MenuApiHandler(CMMenuHandler):
 
     self.output_as_json(menu_api)
 
+class TestApiHandler(BaseHandler):
+
+  @reguser_required
+  def get(self):
+    template_values = {
+      'content': "apitest.html",
+      'user': self.get_current_user(),
+      'cmsro': self.getCommissario()
+    }
+    self.getBase(template_values)
 
 app = webapp.WSGIApplication([
-    ('/api/getuser', UserApiHandler),
-    ('/api/getmenu', MenuApiHandler)
+    ('/api/user/current', UserApiHandler),
+    ('/api/node/list', NodeListApiHandler),
+    ('/api/node/(.*)/stream/(.*)', NodeApiHandler),
+    ('/api/post/(.*)-(.*)', PostApiHandler),
+    ('/api/post/create', PostApiHandler),
+    ('/api/menu/(.*)/(.*)', MenuApiHandler),
+    ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404

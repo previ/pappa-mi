@@ -30,7 +30,15 @@
  <div data-role="content">
  </div>
  <div id="menu"></div>
- <!--div data-role="footer" data-position="fixed"><h3 id="user"></h3></div-->
+ <div data-role="footer" data-id="foo1" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+	    <li><a data-icon="star" href="/mobile/stream">Attività</a></li>
+	    <li><a class="ui-btn-active" data-icon="bars" href="/mobile/menu">Menù</a></li>
+	    <li><a data-icon="alert" href="/mobile/commissioni">Commissioni</a></li>
+	  </ul>
+	</div><!-- /navbar -->
+ </div><!-- /footer -->	
 </div>
 <div data-role="page" id="page-settings" data-v-templates='p-spot-settings'></div>
 
@@ -43,7 +51,6 @@
     <a href="dialog/index.html" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
-
 </body>
 
 <!--  original -->
