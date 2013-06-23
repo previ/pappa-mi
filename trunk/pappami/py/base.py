@@ -1,6 +1,7 @@
 ﻿#!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Pappa-Mi org
+# Authors: R.Previtera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -207,7 +208,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.3.31 - 2013.05.21"
+    template_values["version"] = "3.1.0.32 - 2013.06.16"
     template_values["ctx"] = self.get_context()
 
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):

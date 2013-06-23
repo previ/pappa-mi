@@ -10,6 +10,21 @@ $("#page-menu").bind('pageinit', function(event, entry) {
     initUI(userpappami, userpappami.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
     
     $('#user').text(userpappami.fullname);
+      
+  }});    
+ 
+});
+
+$("#page-stream").bind('pageinit', function(event, entry) {
+  //$("page-menu").find('span[data-v-title]').text("Pappa Mi");    
+
+  $.ajax({url:"/api/getuser", 
+	  dataType:'json',
+	  success:function(data) { 
+
+    userpappami = data;    
+    $('#user').text(userpappami.fullname);
+    $('[data-role="content"]').text(userpappami.fullname);
 
   }});    
  

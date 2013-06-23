@@ -1,0 +1,36 @@
+<script>
+$(document).ready(function(){
+ $('form').ajaxForm({clearForm: true, success: function(data) {
+  $('#output').text(data);
+ }});
+});
+</script>
+<h2>Pappa-Mi API Test</h2>
+<div class="row">
+ <div class="span6">
+ <legend>Current User</legend>
+ <form action="/api/user/current" method="get">
+ <button type="submit" class="btn btn-normal">/api/user/current</button>
+ </form>
+ <legend>Node List</legend>
+ <form action="/api/node/list" method="get">
+ <button type="submit" class="btn btn-normal">/api/node/list</button>
+ </form>
+ <legend>User Stream</legend>
+ <form action="/api/node/all/stream/" method="get">
+ <button type="submit" class="btn btn-normal">/api/node/all/stream/</button>
+ </form>
+ <legend>Public Stream</legend>
+ <form action="/api/node/news/stream/" method="get">
+ <button type="submit" class="btn btn-normal">/api/node/news/stream/</button>
+ </form>
+ <legend>Node N Stream</legend>
+ <form action="/api/node/N/stream/" method="get">
+ <button type="submit" class="btn btn-normal">/api/node/N/stream/</button>
+ <input type="text" name="node_id" onchange="$(this).parent().attr('action', '/api/node/'+$(this).val()+'/stream/')">
+ </form>
+ </div>
+ <div class="span6">
+ <div id="output"></div>
+ </div>
+</div>

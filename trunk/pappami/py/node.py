@@ -66,7 +66,7 @@ class NodeListHandler(BaseHandler):
     user = self.get_current_user()
     subs = list()
     if user:
-        subs = SocialNodeSubscription.get_nodes_by_user(user)
+      subs = SocialNodeSubscription.get_nodes_by_user(user)
 
     template_values = {
       'content': 'node/nodelist.html',
