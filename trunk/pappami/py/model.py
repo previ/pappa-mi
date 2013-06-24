@@ -469,13 +469,27 @@ class Piatto(model.Model):
       settimane[pg.settimana][pg.tipo] = pg.piatto.get()
     return settimane
 
-
+  def ingredienti(self, tipoScuola):
+    ingredienti = list()
+    factor = Ingrediente.factors[tipoScuola]
+    for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==self.key):
+      ing = p_i.ingrediente.get()
+      qty = p_i.quantita
+      ingredienti.append({'nome': ing.nome,
+                          'quantita': p_i.quantita * factor})
+    return ingredienti
+  
+    
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
   #stato = model.IntegerProperty()
 
 class Ingrediente(model.Model):
   nome = model.StringProperty()
+
+  factors = {'Materna': 0.625,
+             'Primaria': 0.875,
+             'Secondaria': 1.0}
 
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
