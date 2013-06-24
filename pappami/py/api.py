@@ -88,6 +88,26 @@ class NodeListApiHandler(BaseHandler):
     self.output_as_json(response)
     
     return
+  
+class UserOnlineListApiHandler(BasePage):
+
+  @reguser_required
+  def get(self):
+    cmsro = self.getCommissario()
+    users_json = dict()
+    users = memcache.get('OnlineUsers')
+    if users:
+      for u_i, u_t in users.iteritems():
+        user = model.Key('User', int(u_i)).get()
+        cmo = Commissario.get_by_user(user)
+        users_json[u_i] = {'name': cmo.nomecompleto(cmsro),
+                          'avatar': cmo.avatar(cmsro),
+                          'last_connect': str(u_t)}
+        if len(cmsro.commissioni()) > 0:
+          users_json[u_i]['school'] = cmo.commissioni()[0].nome
+        
+    self.output_as_json(users_json)
+      
 
 class NodeApiHandler(BaseHandler):
 
@@ -179,22 +199,25 @@ class MenuApiHandler(CMMenuHandler):
     data = datetime.strptime(date,Const.DATE_FORMAT).date()
     c = model.Key("Commissione", int(school_id)).get()
     menus = self.getMenu(data, c)
-    logging.info(menus)
     if len(menus):
       menu = self.getMenu(data, c)[0]
       menu_api = [
         { 'id': menu.primo.key.id(),
           'desc1': menu.primo.nome,
-          'desc2': 'primo'},
+          'desc2': 'primo',
+          'contents': menu.primo.ingredienti(c.tipoScuola) },
         { 'id': menu.secondo.key.id(),
           'desc1': menu.secondo.nome,
-          'desc2': 'secondo' },
+          'desc2': 'secondo',
+          'contents': menu.secondo.ingredienti(c.tipoScuola)  },
         { 'id': menu.contorno.key.id(),
           'desc1': menu.contorno.nome,
-          'desc2': 'contorno' },
+          'desc2': 'contorno',
+          'contents': menu.contorno.ingredienti(c.tipoScuola)  },
         { 'id': menu.dessert.key.id(),
           'desc1': menu.dessert.nome,
-          'desc2': 'dessert' }];
+          'desc2': 'dessert',
+          'contents': menu.dessert.ingredienti(c.tipoScuola)  }];
 
     self.output_as_json(menu_api)
 
@@ -209,6 +232,11 @@ class TestApiHandler(BaseHandler):
     }
     self.getBase(template_values)
 
+  @reguser_required
+  def post(self):
+    return self.get()
+
+
 app = webapp.WSGIApplication([
     ('/api/user/current', UserApiHandler),
     ('/api/node/list', NodeListApiHandler),
@@ -216,6 +244,7 @@ app = webapp.WSGIApplication([
     ('/api/post/(.*)-(.*)', PostApiHandler),
     ('/api/post/create', PostApiHandler),
     ('/api/menu/(.*)/(.*)', MenuApiHandler),
+    ('/api/user/online/list', UserOnlineListApiHandler),
     ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
