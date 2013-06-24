@@ -30,6 +30,7 @@ from google.appengine.ext.ndb import model
 from google.appengine.api import memcache
 
 from py.model import *
+from event import EventHandler
 
 def post_as_json(post, cmsro):
   return {'id': post.id,
@@ -178,6 +179,7 @@ class MenuApiHandler(CMMenuHandler):
     data = datetime.strptime(date,Const.DATE_FORMAT).date()
     c = model.Key("Commissione", int(school_id)).get()
     menus = self.getMenu(data, c)
+    logging.info(menus)
     if len(menus):
       menu = self.getMenu(data, c)[0]
       menu_api = [
