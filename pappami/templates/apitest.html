@@ -3,6 +3,28 @@ $(document).ready(function(){
  $('form').ajaxForm({clearForm: true, success: function(data) {
   $('#output').text(data);
  }});
+ $('#node_stream_node_id').change(function(){
+   $(this).parent().attr('action', '/api/node/'+$(this).val()+'/stream/');
+   $(this).parent().find('button').text('/api/node/'+$(this).val()+'/stream/');
+  });
+ $('#post_post_id').change(function(){
+   $(this).parent().attr('action', '/api/post/'+$(this).val());
+   $(this).parent().find('button').text('/api/post/'+$(this).val());
+  });
+ $('#menu_school').change(function(){
+   var school_id = $(this).val();
+   var date = $(this).siblings('#menu_date').val();
+   var action = '/api/menu/'+school_id+'/'+date
+   $(this).parent().attr('action', action);
+   $(this).parent().find('button').text(action);
+  });
+ $('#menu_date').change(function(){
+   var school_id = $(this).siblings('#menu_school').val();
+   var date = $(this).val();
+   var action = '/api/menu/'+school_id+'/'+date
+   $(this).parent().attr('action', action);
+   $(this).parent().find('button').text(action);
+  });
 });
 </script>
 <h2>Pappa-Mi API Test</h2>
@@ -27,8 +49,33 @@ $(document).ready(function(){
  <legend>Node N Stream</legend>
  <form action="/api/node/N/stream/" method="get">
  <button type="submit" class="btn btn-normal">/api/node/N/stream/</button>
- <input type="text" name="node_id" onchange="$(this).parent().attr('action', '/api/node/'+$(this).val()+'/stream/')">
+ <input type="text" name="node_id" id="node_stream_node_id">
  </form>
+ <legend>Post M Detail</legend>
+ <form action="/api/post/P" method="get">
+ <button type="submit" class="btn btn-normal">/api/post/P</button>
+ <input type="text" name="post_id" id="post_post_id">
+ </form>
+ <legend>Post Create</legend>
+ <form action="/api/post/create" method="post" enctype="multipart/form-data">
+ <label for="post_node">Node id</label>
+ <input type="text" name="node" id="post_node">
+ <label for="post_title">Title</label>
+ <input type="text" name="title" id="post_title">
+ <label for="post_content">Content</label>
+ <input type="text" name="content" id="post_content">
+ <label for="attach_file">Attachment</label>
+ <input type="file" name="attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+ <button type="submit" class="btn btn-normal">/api/post/create</button>
+ </form>
+ <legend>Menu [school/date] Detail</legend>
+ <form action="/api/menu/school/date" method="get">
+ <label for="school">School id</label>
+ <input type="text" name="school" id="menu_school">
+ <label for="date">Date [yyyy-mm-dd]</label>
+ <input type="text" name="date" id="menu_date">
+ <button type="submit" class="btn btn-normal">/api/menu/school/date</button>
+ </form> 
  </div>
  <div class="span6">
  <div id="output"></div>
