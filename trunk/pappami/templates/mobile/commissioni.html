@@ -21,24 +21,28 @@
 <body> 
 
 <!-- app -->
-<div data-role="page" id="page-menu">
+<div data-role="page" id="page-main">
  <div data-role="header">
-  <a href="/mobile" rel="external" data-icon="home" data-role="button" data-iconpos="notext"></a>
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi - Menù</h1>
+ <a href="#left-panel" data-theme="z" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="false" class="ui-icon-nodisc">Open left panel</a>
+  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
   <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop"></a>
  </div> 
  <div data-role="content">
  </div>
- <div id="menu"></div>
- <div data-role="footer" data-id="foo1" data-position="fixed">
-	<div data-role="navbar">
-	  <ul>
-	    <li><a data-icon="star" href="/mobile/stream" data-ajax="false">Attività</a></li>
-	    <li><a class="ui-btn-active" data-icon="bars" href="/mobile/menu" data-ajax="false">Menù</a></li>
-	    <li><a data-icon="alert" href="/mobile/commissioni" data-ajax="false">Commissioni</a></li>
-	  </ul>
-	</div><!-- /navbar -->
- </div><!-- /footer -->	
+ <div data-role="panel" data-display="overlay" id="left-panel" data-theme="b">
+  <p>Argomenti</p>
+  <a href="#" data-rel="close" data-role="button" data-mini="true" data-inline="true" data-icon="delete" data-iconpos="right">Close</a>
+ </div><!-- /panel -->
+
+  <div data-role="footer" data-id="foo1" data-position="fixed">
+	  <div data-role="navbar">
+		  <ul>
+			  <li><a data-icon="star" href="/mobile/stream">Attività</a></li>
+			  <li><a data-icon="bars" href="/mobile/menu">Menù</a></li>
+			  <li><a class="ui-btn-active" data-icon="alert" href="/mobile/commissioni">Commissioni</a></li>
+		  </ul>
+	  </div><!-- /navbar -->
+  </div><!-- /footer -->
 </div>
 <div data-role="page" id="page-settings" data-v-templates='p-spot-settings'></div>
 
@@ -51,6 +55,7 @@
     <a href="dialog/index.html" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
+
 </body>
 
 <!--  original -->

@@ -38,6 +38,17 @@ $(document).ready(function(){
  <form action="/api/user/online/list" method="get">
  <button type="submit" class="btn btn-normal">/api/user/online/list</button>
  </form>
+ <legend>Message Users in a City</legend>
+ <form action="/api/user/message" method="post">
+ <input type="text" name="message" id="message_text">
+ <button type="submit" class="btn btn-normal">/api/user/message</button>
+ </form>
+ <legend>Message User</legend>
+ <form action="/api/user/message" method="post">
+ <input type="text" name="user_id" id="message_user_id">
+ <input type="text" name="message" id="message_text">
+ <button type="submit" class="btn btn-normal">/api/user/message</button>
+ </form>
  <legend>Node List</legend>
  <form action="/api/node/list" method="get">
  <button type="submit" class="btn btn-normal">/api/node/list</button>

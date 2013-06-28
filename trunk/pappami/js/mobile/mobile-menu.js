@@ -1,7 +1,6 @@
 $("#page-menu").bind('pageinit', function(event, entry) {
-  //$("page-menu").find('span[data-v-title]').text("Pappa Mi");    
 
-  $.ajax({url:"/api/getuser", 
+  $.ajax({url:"/api/user/current", 
 	  dataType:'json',
 	  success:function(data) { 
 
@@ -16,19 +15,127 @@ $("#page-menu").bind('pageinit', function(event, entry) {
 });
 
 $("#page-stream").bind('pageinit', function(event, entry) {
-  //$("page-menu").find('span[data-v-title]').text("Pappa Mi");    
 
-  $.ajax({url:"/api/getuser", 
+  $.ajax({url:"/api/user/current", 
 	  dataType:'json',
 	  success:function(data) { 
 
     userpappami = data;    
     $('#user').text(userpappami.fullname);
-    $('[data-role="content"]').text(userpappami.fullname);
+    //$('[data-role="content"]').text(userpappami.fullname);
 
   }});    
- 
+
+  $.ajax({url:"/api/node/list", 
+	  dataType:'json',
+	  success:function(data) { 
+    var node_lists = $('#node_lists');
+    if( data.subs_nodes.length) {
+      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      var node_list_select = $('#node_select');
+      for (var n = 0; n < data.subs_nodes.length;n++) {
+	var node = data.subs_nodes[n];
+	var li = $('<li></li>');
+	var a = $('<a href="#"></a>').attr('data-node-id', node.id).text(node.name).on('click', onNodeClick);
+	li.append(a);
+	node_list.append(li);
+	node_list_select.append($('<option></option>').attr('value', node.id).text(node.name));
+      }
+      node_lists.append('<p>Miei argomenti</p>');
+      node_lists.append(node_list)
+    }
+    if( data.active_nodes.length) {
+      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      for (var n = 0; n < (data.active_nodes.length > 5 ? 5 : data.active_nodes.length);n++) {
+	node = data.active_nodes[n];
+	node_list.append($('<li></li>').attr('data-node-id', node.id).text(node.name));
+      }
+      node_lists.append('<p>Attivi</p>');
+      node_lists.append(node_list)
+    }
+    if( data.recent_nodes.length) {
+      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      for (var n = 0; n < (data.recent_nodes.length > 5 ? 5 : data.recent_nodes.length);n++) {
+	node = data.recent_nodes[n];
+	node_list.append($('<li></li>').attr('data-node-id', node.id).text(node.name));
+      }
+      node_lists.append('<p>Recenti</p>');
+      node_lists.append(node_list);
+    }
+
+    $('#page-stream').trigger("create");
+  }});
+  loadNode('news');
 });
+
+function loadPost(post_id) {
+  $.ajax({url:"/api/post/"+post_id, 
+	  dataType:'json',
+	  success:function(data) { 
+    var page_post_detail = $('#page-post-detail');
+    var post = data;    
+    page_post_detail.find('#title').html(post.title);
+    page_post_detail.find('#content').html(post.content);
+    page_post_detail.find('#date').text(post.ext_date);
+    page_post_detail.trigger("create");
+  }});    
+}
+
+function onNodeClick() {
+  console.log(this);
+  var node_id = $(this).attr('data-node-id');
+  $('#stream').empty();
+  loadNode(node_id);
+  var node_list_select = $('#node_select');
+  node_list_select.find('option').removeAttr('selected')
+  node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
+  $('#page-post-new').trigger("create");
+  $('#post_save').on("click", function() {
+    var node_id = $('#page-post-new [name="node"]').val();
+    var title = $('#page-post-new [name="title"]').val();
+    var content = $('#page-post-new [name="content"]').val();
+    var data = {'node':node_id, 'title':title, 'content': content }
+    $.ajax({url:"/api/post/create", 
+	    type: "POST",
+	    data: data,
+	    dataType:'json',
+	    success:function(data) {
+	      //alert(data);  
+	    }});
+  });
+  
+}
+function loadNode(node_id, cursor) {
+  console.log(node_id);
+  cursor = cursor ? cursor : ""
+  $.ajax({url:"/api/node/"+node_id+"/stream/" + cursor, 
+	  dataType:'json',
+	  success:function(data) {
+    for (p in data.posts) {
+      post = data.posts[p];
+      console.log(post.title)
+      stream = $('<ul data-role="listview" data-inset="true"></ul>')
+
+      var li = $('<li></li>');
+      var a = $('<a href="#page-post-detail" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
+	loadPost($(this).attr('data-post-id'));
+      });
+      a.append($('<h2></h2>').text(post.title))
+       .append($('<p></p>').html(post.content_summary.substring(0, 50)))
+       .append($('<p class="ui-li-aside"></p>').html(post.node.name));
+      if(post.images.length > 0) {
+       a.append($('<img></img>').attr('src', post.images[0]))
+      }
+      stream.prepend(
+       li.append(a)
+      );
+      $('#stream').append(stream);
+    }
+    $('#load_more').on('click', function(){loadNode(node_id, data.next_cursor);});
+    $('#page-stream').trigger("create");
+  }});
+  
+}
 
 function getPrevBizDay(date) {
   var dt = date;
@@ -133,13 +240,11 @@ function loadMenu() {
   
   var date = $('#data').val(); 
   var cm = $('#cm').val();
-  var params = {'date': date, 'school': cm.substring("sk-pappa-mi-".length) };
   
   var date_d = getDateFromStr(date);
   var today = getPrevBizDay(new Date());
   
-  $.ajax({url:"/api/getmenu",
-	data: params,
+  $.ajax({url:"/api/menu/"+cm.substring("sk-pappa-mi-".length)+'/'+date,
 	dataType:'json',
 	success:function(data) { 
     menu = data;
