@@ -37,9 +37,13 @@ def post_as_json(post, cmsro):
           'author': {'id': str(post.author.id()),
                      'name': post.commissario.nomecompleto(cmsro),
                      'avatar': post.commissario.avatar(cmsro)},
+          'node': {'id': str(post.key.parent().id()),
+                   'name': post.key.parent().get().name},
           'ext_date': post.extended_date(),
           'title': post.title,
-          'content': post.content}
+          'content_summary': post.content_summary,
+          'content': post.content,
+          'images': post.images}
 
 
 class UserApiHandler(BasePage):
@@ -107,6 +111,34 @@ class UserOnlineListApiHandler(BasePage):
           users_json[u_i]['school'] = cmo.commissioni()[0].nome
         
     self.output_as_json(users_json)
+
+class UserMessageApiHandler(BasePage):
+
+  @reguser_required
+  def post(self):
+    current_user = self.get_current_user()
+    cmsro = self.getCommissario()
+    logging.info('message')
+    user_id = self.request.get('user_id')
+    message_text = self.request.get('message')
+    users = list()
+    if user_id:
+      users.append(model.Key('User', int(user_id)).get())
+    else:
+      user_ids = memcache.get('OnlineUsers').keys() 
+      for user_id in user_ids:
+        if user_id != current_user.key.id():
+          users.append(model.Key('User', int(user_id)).get())
+        
+    for user in users: 
+      message = { 'type': "Message",
+            'user': cmsro.nomecompleto(Commissario.get_by_user(user)),
+            'message_text': message_text
+            }
+      json_msg = json.dumps(message)
+      Channel.send_message(user, json_msg)
+    
+    return
       
 
 class NodeApiHandler(BaseHandler):
@@ -245,6 +277,7 @@ app = webapp.WSGIApplication([
     ('/api/post/create', PostApiHandler),
     ('/api/menu/(.*)/(.*)', MenuApiHandler),
     ('/api/user/online/list', UserOnlineListApiHandler),
+    ('/api/user/message', UserMessageApiHandler),
     ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

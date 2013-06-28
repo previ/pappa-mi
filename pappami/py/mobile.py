@@ -45,7 +45,9 @@ DATE_FORMAT = "%Y-%m-%d"
 class MobileHandler(BasePage):
 
   def get(self):
-
+    if self.get_current_user():
+      self.redirect('/mobile/stream')
+      
     template_values = {
       "main": "mobile/public.html"
     }
