@@ -26,9 +26,11 @@
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
   <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop"></a>
  </div> 
- <div data-role="content" class="stream-page">
-  <a data-role="button" href="#page-post-new" id="create_new">Nuovo messaggio</a>
-  <div id="stream"></div>
+ <div data-role="content">
+  <a data-role="button" data-transition="flip" href="#page-post-new" id="create_new">Nuovo messaggio</a>
+  <div id="stream" class="stream-page">
+    <ul id="post_list" data-role="listview" data-inset="true"></ul>
+  </div>
   <button id="load_more">Carica altri</button>
  </div>
  <div data-role="panel" data-display="overlay" id="node-panel" data-theme="b">

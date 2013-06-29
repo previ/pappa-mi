@@ -62,7 +62,6 @@ $("#page-stream").bind('pageinit', function(event, entry) {
       node_lists.append('<p>Recenti</p>');
       node_lists.append(node_list);
     }
-
     $('#page-stream').trigger("create");
   }});
   loadNode('news');
@@ -89,7 +88,15 @@ function onNodeClick() {
   var node_list_select = $('#node_select');
   node_list_select.find('option').removeAttr('selected')
   node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
-  $('#page-post-new').trigger("create");
+  $('#page-post-new').trigger("create");  
+}
+
+function loadNode(node_id, cursor) {
+  console.log(node_id);
+  cursor = cursor ? cursor : ""
+  $('#post_list').attr('data-node-id', node_id);
+  $('#load_more').on('click', function(){loadPostList($('#post_list').attr('data-node-id'), $('#post_list').attr('data-next-cursor'));});
+  loadPostList(node_id);
   $('#post_save').on("click", function() {
     var node_id = $('#page-post-new [name="node"]').val();
     var title = $('#page-post-new [name="title"]').val();
@@ -100,43 +107,45 @@ function onNodeClick() {
 	    data: data,
 	    dataType:'json',
 	    success:function(data) {
-	      //alert(data);  
+	      post = data;
+	      $('#post_list').prepend(createPostItem(post));
+	      $('#page-stream').trigger("create");
+	      $.mobile.navigate( "#page-stream" );
 	    }});
   });
-  
+
 }
-function loadNode(node_id, cursor) {
-  console.log(node_id);
+
+function loadPostList(node_id, cursor) {
   cursor = cursor ? cursor : ""
   $.ajax({url:"/api/node/"+node_id+"/stream/" + cursor, 
 	  dataType:'json',
 	  success:function(data) {
+    stream = $('#post_list')
     for (p in data.posts) {
-      post = data.posts[p];
-      console.log(post.title)
-      stream = $('<ul data-role="listview" data-inset="true"></ul>')
-
-      var li = $('<li></li>');
-      var a = $('<a href="#page-post-detail" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
-	loadPost($(this).attr('data-post-id'));
-      });
-      a.append($('<h2></h2>').text(post.title))
-       .append($('<p></p>').html(post.content_summary.substring(0, 50)))
-       .append($('<p class="ui-li-aside"></p>').html(post.node.name));
-      if(post.images.length > 0) {
-       a.append($('<img></img>').attr('src', post.images[0]))
-      }
-      stream.prepend(
-       li.append(a)
-      );
-      $('#stream').append(stream);
+      post = data.posts[p];      
+      stream.append(createPostItem(post));
     }
-    $('#load_more').on('click', function(){loadNode(node_id, data.next_cursor);});
+    $('#post_list').attr('data-next-cursor', data.next_cursor);
     $('#page-stream').trigger("create");
   }});
   
 }
 
+function createPostItem(post) {
+  var li = $('<li></li>');
+  var a = $('<a href="#page-post-detail" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
+    loadPost($(this).attr('data-post-id'));
+  });
+  a.append($('<h2></h2>').text(post.title))
+   .append($('<p></p>').html(post.content_summary.substring(0, 50)))
+   .append($('<p class="ui-li-aside"></p>').html(post.node.name));
+  if(post.images.length > 0) {
+   a.append($('<img></img>').attr('src', post.images[0]))
+  }
+  li.append(a);
+  return li;
+}
 function getPrevBizDay(date) {
   var dt = date;
   while(dt.getDay()>5 || dt.getDay()==0) {
@@ -254,6 +263,7 @@ function loadMenu() {
       list.push(menu[k]);
     };
   
+    /*
     var template = '';
     template += '<table class="pappa-mi-menu">';
     template += '{{#list}}'; 
@@ -268,7 +278,23 @@ function loadMenu() {
     template += '</tr>';
     template += '{{/list}}'; 
     template += '</table>';
-  
+    */
+        var template = '';
+    template += '<ul data-role="listview" data-inset="true" class="pappa-mi-menu">';
+    template += '{{#list}}'; 
+    template += '<li data-veespo-id="demo-pappa-mi-{{id}}">';
+    template += '{{desc1}}';
+    template += '<span class="ui-li-aside-"><span data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</span>';
+    
+    if(today.getTime() >= date_d.getTime()) {
+      template += '<span data-role="button" data-inline="true" data-mini="true" data-icon="table" data-iconpos="right">Stat</span><span data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</span>';
+    } else {
+      template += '<span data-role="button" data-inline="true" data-mini="true" data-icon="table" data-iconpos="right" class="ui-disabled">Stat</span><span data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right" class="ui-disabled">Vota</span>';
+    }
+    template += '</span></li>';
+    template += '{{/list}}'; 
+    template += '</ul>';
+
     var html = $(Mustache.to_html(template, {list:list} ));
     $('#menu').html($(html)).trigger("create");
     
