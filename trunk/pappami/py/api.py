@@ -118,9 +118,9 @@ class UserMessageApiHandler(BasePage):
   def post(self):
     current_user = self.get_current_user()
     cmsro = self.getCommissario()
-    logging.info('message')
     user_id = self.request.get('user_id')
     message_text = self.request.get('message')
+    logging.info('user_id: ' + str(user_id) + ' message: ' + message_text)
     users = list()
     if user_id:
       users.append(model.Key('User', int(user_id)).get())
@@ -131,11 +131,12 @@ class UserMessageApiHandler(BasePage):
           users.append(model.Key('User', int(user_id)).get())
         
     for user in users: 
-      message = { 'type': "Message",
+      message = { 'type': "message",
             'user': cmsro.nomecompleto(Commissario.get_by_user(user)),
-            'message_text': message_text
+            'body': message_text
             }
       json_msg = json.dumps(message)
+      logging.info(json_msg)
       Channel.send_message(user, json_msg)
     
     return
