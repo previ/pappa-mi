@@ -40,7 +40,7 @@ function getNotificationsNum() {
 }
 
 function onChannelMessage(m) {
-  var m = jQuery.parseJSON(m.data)
+  var m = jQuery.parseJSON(m.data);
   getNotificationsNum();
   var textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
   $.pnotify({

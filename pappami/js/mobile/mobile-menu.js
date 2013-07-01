@@ -16,6 +16,7 @@ $("#page-menu").bind('pageinit', function(event, entry) {
 
 $("#page-stream").bind('pageinit', function(event, entry) {
 
+  $.mobile.showPageLoadingMsg();
   $.ajax({url:"/api/user/current", 
 	  dataType:'json',
 	  success:function(data) { 
@@ -31,40 +32,89 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 	  success:function(data) { 
     var node_lists = $('#node_lists');
     if( data.subs_nodes.length) {
-      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      var c = $('<div data-role="collapsible"></div>');
+      c.append('<h2>Miei argomenti</h2>');
+      node_lists.append(c);
+      var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
       var node_list_select = $('#node_select');
       for (var n = 0; n < data.subs_nodes.length;n++) {
 	var node = data.subs_nodes[n];
-	var li = $('<li></li>');
+	var li = $('<li data-mini="true"></li>');
 	var a = $('<a href="#"></a>').attr('data-node-id', node.id).text(node.name).on('click', onNodeClick);
 	li.append(a);
 	node_list.append(li);
 	node_list_select.append($('<option></option>').attr('value', node.id).text(node.name));
       }
-      node_lists.append('<p>Miei argomenti</p>');
-      node_lists.append(node_list)
+      c.append(node_list)
     }
     if( data.active_nodes.length) {
-      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      var c = $('<div data-role="collapsible"></div>');
+      c.append('<h2>Più attivi</h2>');
+      node_lists.append(c);
+      var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
       for (var n = 0; n < (data.active_nodes.length > 5 ? 5 : data.active_nodes.length);n++) {
 	node = data.active_nodes[n];
-	node_list.append($('<li></li>').attr('data-node-id', node.id).text(node.name));
+	var li = $('<li data-mini="true"></li>');
+	var a = $('<a href="#"></a>').attr('data-node-id', node.id).text(node.name).on('click', onNodeClick);
+	li.append(a);
+	node_list.append(li);
       }
-      node_lists.append('<p>Attivi</p>');
-      node_lists.append(node_list)
+      c.append(node_list)
     }
     if( data.recent_nodes.length) {
-      var node_list = $('<ul data-role="listview" data-inset="true"></ul>');
+      var c = $('<div data-role="collapsible"></div>');
+      c.append('<h2>Più recenti</h2>');
+      node_lists.append(c);
+      var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
       for (var n = 0; n < (data.recent_nodes.length > 5 ? 5 : data.recent_nodes.length);n++) {
 	node = data.recent_nodes[n];
-	node_list.append($('<li></li>').attr('data-node-id', node.id).text(node.name));
+	var li = $('<li data-mini="true"></li>');
+	var a = $('<a href="#"></a>').attr('data-node-id', node.id).text(node.name).on('click', onNodeClick);
+	li.append(a);
+	node_list.append(li);
       }
-      node_lists.append('<p>Recenti</p>');
-      node_lists.append(node_list);
+      c.append(node_list);
     }
     $('#page-stream').trigger("create");
   }});
   loadNode('news');
+});
+
+var channel = "";
+
+$("#page-commissioni").bind('pageinit', function(event, entry) {
+  $.mobile.showPageLoadingMsg();
+  $.ajax({url:"/api/user/current", 
+	  dataType:'json',
+	  success:function(data) { 
+
+    userpappami = data;    
+    $('#user').text(userpappami.fullname);
+  }});    
+
+  $.ajax({url:"/api/user/online/list", 
+	  dataType:'json',
+	  success:function(data) { 
+    var users_online = data;
+    var user_list = $('#user_list');
+    user_list.append('<li data-role="list-divider">In linea</li>');
+    for ( user_id in users_online ) {
+      var user = users_online[user_id];
+      var li = $('<li></li>');
+      var a = $('<a href="#"></a>').attr('data-node-id', user.id).text(user.name).on('click', onUserClick);
+      li.append(a);
+      user_list.append(li);
+    }
+    $('#page-commissioni').trigger("create");
+  }});
+  
+  $('#message_send').on('click', onMessageSend);
+  
+  var channel_id = $('body').attr('data-channel-id');
+  if(channel == "" && channel_id != "") {
+    channel = openChannel(channel_id);
+  }
+
 });
 
 function loadPost(post_id) {
@@ -83,12 +133,58 @@ function loadPost(post_id) {
 function onNodeClick() {
   console.log(this);
   var node_id = $(this).attr('data-node-id');
-  $('#stream').empty();
+  $('#post_list').empty();
   loadNode(node_id);
   var node_list_select = $('#node_select');
   node_list_select.find('option').removeAttr('selected')
   node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
   $('#page-post-new').trigger("create");  
+}
+
+function onUserClick() {
+  console.log(this);
+  var user_id = $(this).attr('data-user-id');
+  $('#page').trigger("create");  
+}
+
+function onMessageSend() {
+  console.log(this);
+  var user_id = $(this).attr('data-user-id');
+  var message = $('#message').val();
+  var data = {'user': user_id,
+	      'message': message}
+  $.ajax({url:"/api/user/message", 
+	  type: "POST",
+	  data: data,
+	  dataType:'json',
+	  success:function(data) {
+	    alert(data);
+	  }});
+  
+  $('#page-commissioni').trigger("create");  
+}
+
+function onChannelMessage(m){
+  console.log(m.data);
+  var m = jQuery.parseJSON(m.data);
+  var textmessage=""
+  if(m.type=='message') {
+    textmessage = '<strong>'+m.user+'</strong>: '+m.body;
+  } else if(m.type=='post'|| m.type=='comment') {
+    textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
+  }
+  $('#message_list').append($('<li></li>').append(textmessage));
+  $('#page-commissioni').trigger('create');
+}
+
+function openChannel(channel_id) {
+    channel = new goog.appengine.Channel(channel_id);
+    var socket = channel.open();
+    socket.onopen = function (){/*alert("channel opened")*/};
+    socket.onmessage = onChannelMessage;
+    socket.onerror = function (){/*alert("error")*/};
+    socket.onclose = function (){/*alert("channel closed")*/};
+    return socket;
 }
 
 function loadNode(node_id, cursor) {
@@ -118,6 +214,7 @@ function loadNode(node_id, cursor) {
 
 function loadPostList(node_id, cursor) {
   cursor = cursor ? cursor : ""
+  $.mobile.showPageLoadingMsg();
   $.ajax({url:"/api/node/"+node_id+"/stream/" + cursor, 
 	  dataType:'json',
 	  success:function(data) {
@@ -128,6 +225,7 @@ function loadPostList(node_id, cursor) {
     }
     $('#post_list').attr('data-next-cursor', data.next_cursor);
     $('#page-stream').trigger("create");
+    $.mobile.hidePageLoadingMsg();
   }});
   
 }
@@ -137,12 +235,12 @@ function createPostItem(post) {
   var a = $('<a href="#page-post-detail" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
   });
-  a.append($('<h2></h2>').text(post.title))
-   .append($('<p></p>').html(post.content_summary.substring(0, 50)))
-   .append($('<p class="ui-li-aside"></p>').html(post.node.name));
   if(post.images.length > 0) {
    a.append($('<img></img>').attr('src', post.images[0]))
   }
+  a.append($('<h2></h2>').text(post.title))
+   .append($('<p></p>').html(post.content_summary.substring(0, 50)))
+   .append($('<p class="ui-li-aside"></p>').html(post.node.name));
   li.append(a);
   return li;
 }
@@ -279,7 +377,7 @@ function loadMenu() {
     template += '{{/list}}'; 
     template += '</table>';
     */
-        var template = '';
+    var template = '';
     template += '<ul data-role="listview" data-inset="true" class="pappa-mi-menu">';
     template += '{{#list}}'; 
     template += '<li data-veespo-id="demo-pappa-mi-{{id}}">';

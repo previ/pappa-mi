@@ -84,7 +84,7 @@ class MobileCommissioniHandler(BasePage):
   def get(self):
 
     template_values = {
-      "main": "mobile/main.html"
+      "main": "mobile/commissioni.html"
     }
     self.getBase(template_values)
   def post(self):

@@ -13,24 +13,42 @@
   <link rel="apple-touch-icon" sizes="72x72" href="/img/logo_72.png">
   <link rel="apple-touch-icon" sizes="114x114" href="/img/logo_114.png">
   <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
-
-  
   <title>Pappa-Mi Mobile</title>
+<!--  original -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<link rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css" />
+<link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />  
+<link rel="stylesheet" href="/css/mobile.css" />  
+
+<!--  original -->
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+<script src="/js/mobile/mustache.js"></script>
+
 </head> 
 
-<body> 
+<body data-channel-id="{{channel}}"> 
 
 <!-- app -->
-<div data-role="page" id="page-main">
+<div data-role="page" id="page-commissioni">
  <div data-role="header">
  <a href="#left-panel" data-theme="z" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="false" class="ui-icon-nodisc">Open left panel</a>
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
   <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop"></a>
  </div> 
  <div data-role="content">
+  <ul id="message_list" data-role="listview"></ul>
+  <div data-role="fieldcontain" class="ui-hide-label">
+   <label for="message">Messaggio:</label>
+   <input type="text" name="message" id="message" value="" placeholder="Messaggio"/>
+   <button id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="a">Invia</a>  
+   <button data-icon="delete" data-rel="" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+  </div>
  </div>
  <div data-role="panel" data-display="overlay" id="left-panel" data-theme="b">
-  <p>Argomenti</p>
+  <ul id="user_list" data-role="listview" data-inset="true" data-divider-theme="d">
+  </ul>
   <a href="#" data-rel="close" data-role="button" data-mini="true" data-inline="true" data-icon="delete" data-iconpos="right">Close</a>
  </div><!-- /panel -->
 
@@ -38,7 +56,7 @@
 	  <div data-role="navbar">
 		  <ul>
 			  <li><a data-icon="star" href="/mobile/stream">Attività</a></li>
-			  <li><a data-icon="bars" href="/mobile/menu">Menù</a></li>
+			  <li><a data-icon="bar" href="/mobile/menu">Menù</a></li>
 			  <li><a class="ui-btn-active" data-icon="alert" href="/mobile/commissioni">Commissioni</a></li>
 		  </ul>
 	  </div><!-- /navbar -->
@@ -55,21 +73,7 @@
     <a href="dialog/index.html" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
-
 </body>
-
-<!--  original -->
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
-<link rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css" />
-<link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />  
-<link rel="stylesheet" href="/css/mobile.css" />  
-
-<!--  original -->
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
-<script src="/js/mobile/mustache.js"></script>
-
 <!--  pages pappa mi-->
 <script src="/js/mobile/mobile-menu.js"></script>
-
 </html>
