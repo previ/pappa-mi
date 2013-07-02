@@ -1,17 +1,12 @@
+"use strict"
+var current_user = "";
+
 $("#page-menu").bind('pageinit', function(event, entry) {
 
-  $.ajax({url:"/api/user/current", 
-	  dataType:'json',
-	  success:function(data) { 
-
-    userpappami = data;
-    now = new Date()
-    initUI(userpappami, userpappami.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-    
-    $('#user').text(userpappami.fullname);
-      
-  }});    
- 
+  var now = new Date()
+  initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
+  
+  $('#user').text(current_user.fullname); 
 });
 
 $("#page-stream").bind('pageinit', function(event, entry) {
@@ -21,9 +16,9 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 	  dataType:'json',
 	  success:function(data) { 
 
-    userpappami = data;    
-    $('#user').text(userpappami.fullname);
-    //$('[data-role="content"]').text(userpappami.fullname);
+    current_user = data;    
+    $('#user').text(current_user.fullname);
+    //$('[data-role="content"]').text(current_user.fullname);
 
   }});    
 
@@ -82,30 +77,27 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 
 var channel = "";
 
-$("#page-commissioni").bind('pageinit', function(event, entry) {
+$("#page-notifiche").bind('pageinit', function(event, entry) {
   $.mobile.showPageLoadingMsg();
-  $.ajax({url:"/api/user/current", 
-	  dataType:'json',
-	  success:function(data) { 
-
-    userpappami = data;    
-    $('#user').text(userpappami.fullname);
-  }});    
 
   $.ajax({url:"/api/user/online/list", 
 	  dataType:'json',
 	  success:function(data) { 
     var users_online = data;
     var user_list = $('#user_list');
+    var user_to = $('#user_to');
     user_list.append('<li data-role="list-divider">In linea</li>');
-    for ( user_id in users_online ) {
+    for ( var user_id in users_online ) {
       var user = users_online[user_id];
       var li = $('<li></li>');
-      var a = $('<a href="#"></a>').attr('data-node-id', user.id).text(user.name).on('click', onUserClick);
+      var a = $('<a href="#"></a>').attr('data-user-id', user_id).text(user.name).on('click', onUserClick);
       li.append(a);
       user_list.append(li);
+      console.log(a.attr('data-user-id'));
+      user_to.append($('<option></option>').attr('value', user_id).text("A: " + user.name));
     }
-    $('#page-commissioni').trigger("create");
+    user_list.listview('refresh');
+    user_to.selectmenu();
   }});
   
   $('#message_send').on('click', onMessageSend);
@@ -138,30 +130,30 @@ function onNodeClick() {
   var node_list_select = $('#node_select');
   node_list_select.find('option').removeAttr('selected')
   node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
-  $('#page-post-new').trigger("create");  
+  node_list_select.selectmenu();  
 }
 
 function onUserClick() {
   console.log(this);
   var user_id = $(this).attr('data-user-id');
-  $('#page').trigger("create");  
+  var user_to = $('#user_to');
+  user_to.find('option').removeAttr('selected')
+  user_to.selectmenu('refresh'); 
+  user_to.find('option[value="'+user_id+'"]').attr('selected', 'true');
+  user_to.selectmenu('refresh');    
 }
 
 function onMessageSend() {
-  console.log(this);
-  var user_id = $(this).attr('data-user-id');
+  var user_id = $('#user_to').val();
   var message = $('#message').val();
   var data = {'user': user_id,
 	      'message': message}
-  $.ajax({url:"/api/user/message", 
+  $.ajax({url:"/api/message/send", 
 	  type: "POST",
 	  data: data,
 	  dataType:'json',
 	  success:function(data) {
-	    alert(data);
 	  }});
-  
-  $('#page-commissioni').trigger("create");  
 }
 
 function onChannelMessage(m){
@@ -174,7 +166,7 @@ function onChannelMessage(m){
     textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
   }
   $('#message_list').append($('<li></li>').append(textmessage));
-  $('#page-commissioni').trigger('create');
+  $('#message_list').listview('refresh');
 }
 
 function openChannel(channel_id) {
@@ -203,9 +195,9 @@ function loadNode(node_id, cursor) {
 	    data: data,
 	    dataType:'json',
 	    success:function(data) {
-	      post = data;
+	      var post = data;
 	      $('#post_list').prepend(createPostItem(post));
-	      $('#page-stream').trigger("create");
+	      $('#post_list').listview("refresh");
 	      $.mobile.navigate( "#page-stream" );
 	    }});
   });
@@ -218,13 +210,13 @@ function loadPostList(node_id, cursor) {
   $.ajax({url:"/api/node/"+node_id+"/stream/" + cursor, 
 	  dataType:'json',
 	  success:function(data) {
-    stream = $('#post_list')
-    for (p in data.posts) {
-      post = data.posts[p];      
-      stream.append(createPostItem(post));
+    var post_list = $('#post_list');
+    for (var p in data.posts) {
+      var post = data.posts[p];      
+      post_list.append(createPostItem(post));
     }
     $('#post_list').attr('data-next-cursor', data.next_cursor);
-    $('#page-stream').trigger("create");
+    post_list.listview("refresh");
     $.mobile.hidePageLoadingMsg();
   }});
   
@@ -262,7 +254,7 @@ function getNextBizDay(date) {
 
 function getDateFromStr(date_str) {
   var date_v = date_str.split("-");
-  date = new Date(date_v[0], date_v[1]-1, date_v[2]);
+  var date = new Date(date_v[0], date_v[1]-1, date_v[2]);
   return date;
 }
 
@@ -282,21 +274,21 @@ $("#page-menu").bind('swipeleft', function(event) {
   var cur_sk = $('#cm');    
   var date = getDateFromStr(cur_date.val());
   var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
-  if(next_date) initUI(userpappami, cur_sk.val().substring("sk-pappa-mi-".length), next_date);
+  if(next_date) initUI(current_user, cur_sk.val(), next_date);
 });
   
 $("#page-menu").bind('swiperight', function(event) {
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');    
   var cur_sk = $('#cm');    
-  date = getDateFromStr(cur_date.val());
-  next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
-  if(next_date) initUI(userpappami, cur_sk.val().substring("sk-pappa-mi-".length), next_date);
+  var date = getDateFromStr(cur_date.val());
+  var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
+  if(next_date) initUI(current_user, cur_sk.val(), next_date);
 });
 
 $("#page-menu").bind('pagebeforeshow', function(event){ 
   console.log("Schools page...");
-  /*$("#page-menu").find('span[data-v-title]').text(userpappami.fullname);
+  /*$("#page-menu").find('span[data-v-title]').text(current_user.fullname);
   if (pappami.resetMenu){
     //entry.refs.menuAnc.empty();
   } else {*/
@@ -311,19 +303,19 @@ var back = function(){
   return false;
 };
 
-function initUI(userpappami, sk, dt) {
+function initUI(current_user, sk, dt) {
   var params = $('<fieldset id="params" data-role="controlgroup" data-type="vertical"><select id="cm" name="school" data-mini="true" data-native-menu="false"/><select id="data" name="cm" data-mini="true" data-native-menu="false"/></fieldset>');
   //var params = $('<select id="cm" name="school" data-mini="true" data-native-menu="true"/><div data-role="controlgroup" data-type="horizontal"><a href="#" data-role="button" data-mini="true" data-inline="true" data-icon="arrow-l">&nbsp</a><select id="data" name="data" data-role="button" data-mini="true" data-inline="true" data-native-menu="true"/><a href="#" data-inline="true" data-mini="true" data-role="button" data-icon="arrow-r" data-iconpos="right">&nbsp</a></div>');
   var sel_sk = params.find("#cm");
   var sel_date = params.find("#data");
   
-  for( school in userpappami.schools) {
-    sel_sk.append( $("<option>").attr("value", "sk-pappa-mi-" + userpappami.schools[school].id).text(userpappami.schools[school].name));
+  for( var school in current_user.schools) {
+    sel_sk.append( $("<option>").attr("value", current_user.schools[school].id).text(current_user.schools[school].name));
   }     
-  sel_sk.find("option[value='" + "sk-pappa-mi-" + sk + "']").attr("selected",1);
+  sel_sk.find("option[value='" + sk + "']").attr("selected",1);
   
-  for( i=-7;i<=7;i++) {
-   date = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()-i);
+  for( var i=-7;i<=7;i++) {
+   var date = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()-i);
 
    if(date.getDay()<6 && date.getDay()>0) {
     var d = $("<option>");
@@ -351,7 +343,7 @@ function loadMenu() {
   var date_d = getDateFromStr(date);
   var today = getPrevBizDay(new Date());
   
-  $.ajax({url:"/api/menu/"+cm.substring("sk-pappa-mi-".length)+'/'+date,
+  $.ajax({url:"/api/menu/"+ cm +'/'+date,
 	dataType:'json',
 	success:function(data) { 
     menu = data;
@@ -380,35 +372,54 @@ function loadMenu() {
     var template = '';
     template += '<ul data-role="listview" data-inset="true" class="pappa-mi-menu">';
     template += '{{#list}}'; 
-    template += '<li data-veespo-id="demo-pappa-mi-{{id}}">';
+    template += '<li data-dish-id="{{id}}">';
     template += '{{desc1}}';
-    template += '<span class="ui-li-aside-"><span data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</span>';
+    template += '<div data-role="controlgroup" data-type="horizontal"><a class="dish_info" data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</a>';
     
     if(today.getTime() >= date_d.getTime()) {
-      template += '<span data-role="button" data-inline="true" data-mini="true" data-icon="table" data-iconpos="right">Stat</span><span data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</span>';
+      template += '<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</a>';
     } else {
-      template += '<span data-role="button" data-inline="true" data-mini="true" data-icon="table" data-iconpos="right" class="ui-disabled">Stat</span><span data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right" class="ui-disabled">Vota</span>';
+      template += '<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right" class="ui-disabled">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right" class="ui-disabled">Vota</a>';
     }
-    template += '</span></li>';
+    template += '</div></li>';
     template += '{{/list}}'; 
     template += '</ul>';
 
     var html = $(Mustache.to_html(template, {list:list} ));
-    $('#menu').html($(html)).trigger("create");
+    $('#menu').html(html).trigger("create");
+    $('.dish_info').on('click', onDishInfo);
+    $('.dish_stat').on('click', onDishStat);
+    $('.dish_vote').on('click', onDishVote);
     
     $.mobile.hidePageLoadingMsg();
-       
-    $('#menu').find('span[data-role="button"]').bind('tap', function(evt){
-      var title = getDish(id.substring('demo-pappa-mi-'.length)).desc1;
-    });
-  }});
+    }});
 }
 
+function onDishInfo() {
+  var dish_id = $(this).parents('li').attr('data-dish-id');
+  var dish_name = getDish(dish_id).desc1
+  $('#dish_name').text(dish_name);
+  $.mobile.navigate( "#page-dish-detail" );
+}
+
+function onDishStat() {
+  var dish_id = $(this).parents('li').attr('data-dish-id');
+  var dish_name = getDish(dish_id).desc1
+  $('#dish_name').text(dish_name);
+  $.mobile.navigate( "#page-dish-detail" );
+}
+
+function onDishVote() {
+  var dish_id = $(this).parents('li').attr('data-dish-id');
+  var dish_name = getDish(dish_id).desc1
+  $('#dish_name').text(dish_name);
+  $.mobile.navigate( "#page-dish-detail" );
+}
 /*
  * Torna l'oggetto relativo al id del piatto passato
  */
 function getDish(id){
-  for(dish in menu) {
+  for(var dish in menu) {
     if(menu[dish].id == id){
       return menu[dish];
     }

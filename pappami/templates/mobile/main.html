@@ -23,6 +23,7 @@
 <!--  original -->
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script src="/js/mobile/mustache.js"></script>
 
 </head> 
@@ -34,27 +35,12 @@
  <div data-role="header">
   <a href="#node-panel" data-theme="b" data-icon="arrow-r" data-iconpos="left" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
-  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop"></a>
+  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
  </div> 
  <div data-role="content">
   <a data-role="button" data-transition="flip" href="#page-post-new" id="create_new">Nuovo messaggio</a>
   <div id="stream" class="stream-page">
-    <ul id="post_list" data-role="listview" data-inset="true">
-    <!--li><a href="#">
-        <img src="../../_assets/img/album-bb.jpg">
-        <h2>Broken Bells</h2>
-        <p>Broken Bells</p></a>
-    </li>
-    <li><a href="#">
-        <img src="../../_assets/img/album-hc.jpg">
-        <h2>Warning</h2>
-        <p>Hot Chip</p></a>
-    </li>
-    <li><a href="#">
-        <img src="../../_assets/img/album-p.jpg">
-        <h2>Wolfgang Amadeus Phoenix</h2>
-        <p>Phoenix</p></a>
-    </li--></ul>
+    <ul id="post_list" data-role="listview" data-inset="true"></ul>
   </div>
   <button data-role="button" id="load_more">Carica altri</button>
  </div>
@@ -66,13 +52,14 @@
   <div data-role="footer" data-id="foo1" data-position="fixed">
 	  <div data-role="navbar">
 		  <ul>
-			  <li><a class="ui-btn-active" data-icon="star" href="/mobile/stream" data-ajax="false">Attività</a></li>
-			  <li><a data-icon="bars" href="/mobile/menu" data-ajax="false">Menù</a></li>
-			  <li><a data-icon="alert" href="/mobile/commissioni" data-ajax="false">Commissioni</a></li>
+			  <li><a class="ui-btn-active" data-icon="star" href="#page-stream">Attività</a></li>
+			  <li><a data-icon="grid" href="#page-menu">Menù</a></li>
+			  <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 		  </ul>
 	  </div><!-- /navbar -->
   </div><!-- /footer -->
 </div>
+
 <div data-role="page" id="page-post-detail">
  <div data-role="header">
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
@@ -116,14 +103,88 @@
   </div>
 </div>
 
-<div data-role="page" id="page-settings" data-v-templates='p-spot-settings'></div>
-<div data-role="dialog" id="page-profile">
+<div data-role="page" id="page-menu">
+ <div data-role="header">
+  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi - Menù</h1>
+  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
+ </div> 
+ <div data-role="content">
+ </div>
+ <div id="menu"></div>
+ <div data-role="footer" data-id="foo1" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
+	    <li><a class="ui-btn-active" data-icon="grid" href="#page-menu">Menù</a></li>
+	    <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
+	  </ul>
+	</div><!-- /navbar -->
+ </div><!-- /footer -->	
+</div>
+<div data-role="page" id="page-dish-detail">
   <div data-role="header" data-theme="d">
-  <h1>Profilo</h1>
+   <h1 id="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
-    <p>Profilo: <span id="user"></span></p>
-    <a href="dialog/index.html" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
+    <table data-role="table" class="ui-responsive table-stroke">
+      <thead>
+	<tr>
+	  <th data-priority="1">Ingrediente</th>
+	  <th data-priority="2">Qt.à</th>
+	</tr>
+      </thead>
+      <tbody id="dish_components">
+      </tbody>
+    </table>
+    <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
+  </div>
+</div>
+
+
+<div data-role="page" id="page-notifiche">
+ <div data-role="header">
+  <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="left" data-shadow="false" data-iconshadow="true">Utenti</a>
+  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
+  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
+ </div> 
+ <div data-role="content">
+  <ul id="message_list" data-role="listview"></ul>
+  <div data-role="fieldcontain" class="ui-hide-label">
+   <label for="user_to">Per:</label>
+   <select name="user_to" id="user_to" data-mini="true">
+   <option value="">A: tutti</option>
+   </select>
+   <label for="message">Messaggio:</label>
+   <input type="text" name="message" id="message" data-mini="true" value="" placeholder="Messaggio"/>
+   <button id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="a">Invia</a>  
+   <button data-icon="delete" data-rel="" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+  </div>
+ </div>
+ <div data-role="panel" data-display="overlay" id="user-panel" data-theme="b">
+  <ul id="user_list" data-role="listview" data-inset="true" data-divider-theme="d">
+  </ul>
+  <a href="#" data-rel="close" data-role="button" data-mini="true" data-inline="true" data-icon="delete" data-iconpos="right">Close</a>
+ </div><!-- /panel -->
+
+ <div data-role="footer" data-id="foo1" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
+	    <li><a data-icon="grid" href="#page-menu">Menù</a></li>
+	    <li><a class="ui-btn-active" data-icon="alert" href="#page-notifiche">Notifiche</a></li>
+	  </ul>
+	</div><!-- /navbar -->
+ </div><!-- /footer -->	
+</div>
+
+<div data-role="dialog" id="page-profile">
+  <div data-role="header" data-theme="d">
+  <h1>Profilo utente</h1>
+  </div>
+  <div data-role="content" data-theme="c">
+    <p><span id="user"></span></p>
+    <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a>  
+    <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
 
