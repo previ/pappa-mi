@@ -265,6 +265,28 @@ class MenuApiHandler(CMMenuHandler):
 
     self.output_as_json(menu_api)
 
+class DishApiHandler(CMMenuHandler):
+
+  @reguser_required
+  def get(self, dish_id, school_id):
+    details = dict()
+    factors = {'Materna': 0.625,
+               'Primaria': 0.875,
+               'Secondaria': 1.0}
+    factor = 1.0
+    if school_id:
+      cm = model.Key('Commissione', int(school_id)).get()
+      factor = factors[cm.tipoScuola]
+    piatto_key = model.Key("Piatto", int(dish_id))
+    details['dish'] = piatto_key.get().nome
+    details['components'] = list()
+    for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
+      ing = p_i.ingrediente.get()
+      qty = p_i.quantita
+      details['components'].append({'name': ing.nome,
+                                     'qty': p_i.quantita * factor})
+    json.dump(details, self.response.out)
+
 class TestApiHandler(BaseHandler):
 
   @reguser_required
@@ -288,6 +310,7 @@ app = webapp.WSGIApplication([
     ('/api/post/(.*)-(.*)', PostApiHandler),
     ('/api/post/create', PostApiHandler),
     ('/api/menu/(.*)/(.*)', MenuApiHandler),
+    ('/api/dish/(.*)/(.*)', DishApiHandler),
     ('/api/user/online/list', UserOnlineListApiHandler),
     ('/api/message/send', MessageSendApiHandler),
     ('/api/message/list', MessageListApiHandler),

@@ -343,7 +343,7 @@ function loadMenu() {
   var date_d = getDateFromStr(date);
   var today = getPrevBizDay(new Date());
   
-  $.ajax({url:"/api/menu/"+ cm +'/'+date,
+  $.ajax({url:"/api/menu/" + cm +'/'+date,
 	dataType:'json',
 	success:function(data) { 
     menu = data;
@@ -397,9 +397,24 @@ function loadMenu() {
 
 function onDishInfo() {
   var dish_id = $(this).parents('li').attr('data-dish-id');
+  var school_id = $('#cm').val();
   var dish_name = getDish(dish_id).desc1
   $('#dish_name').text(dish_name);
-  $.mobile.navigate( "#page-dish-detail" );
+
+  $.ajax({url:"/api/dish/"+dish_id+"/"+school_id, 
+	  type: "GET",
+	  dataType:'json',
+	  success:function(data) {
+	    var dish_info = data;
+	    var components = dish_info["components"];
+	    for (var nc in components) {
+	      var comp = components[nc];
+	      var tr = $('<tr></tr>').append('<td>' + comp['name'] + '</td>'+'<td>' + comp['qty'] + '</td>');
+	      $('#dish_components').append(tr);
+	    }
+	    //$('#dish_table').table('refresh');
+  	    $.mobile.navigate( "#page-dish-detail" );
+	  }});  
 }
 
 function onDishStat() {
