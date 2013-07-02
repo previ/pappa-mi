@@ -112,10 +112,13 @@ class UserOnlineListApiHandler(BasePage):
         
     self.output_as_json(users_json)
 
-class UserMessageApiHandler(BasePage):
+class MessageSendApiHandler(BasePage):
 
   @reguser_required
   def post(self):
+    messages = memcache.get('Messages')
+    if not messages:
+      messages = dict()
     current_user = self.get_current_user()
     cmsro = self.getCommissario()
     user_id = self.request.get('user_id')
@@ -124,23 +127,31 @@ class UserMessageApiHandler(BasePage):
     users = list()
     if user_id:
       users.append(model.Key('User', int(user_id)).get())
+      users.append(self.get_current_user())
     else:
       user_ids = memcache.get('OnlineUsers').keys() 
       for user_id in user_ids:
-        if user_id != current_user.key.id():
-          users.append(model.Key('User', int(user_id)).get())
+        users.append(model.Key('User', int(user_id)).get())
         
     for user in users: 
       message = { 'type': "message",
             'user': cmsro.nomecompleto(Commissario.get_by_user(user)),
             'body': message_text
             }
+      messages[user.key.id()] = message
       json_msg = json.dumps(message)
       logging.info(json_msg)
       Channel.send_message(user, json_msg)
-    
+    memcache.set('Messages', messages)
     return
       
+class MessageListApiHandler(BasePage):
+
+  @reguser_required
+  def get(self):
+    messages = memcache.get('Messages')
+    if messages:
+      pass
 
 class NodeApiHandler(BaseHandler):
 
@@ -278,7 +289,8 @@ app = webapp.WSGIApplication([
     ('/api/post/create', PostApiHandler),
     ('/api/menu/(.*)/(.*)', MenuApiHandler),
     ('/api/user/online/list', UserOnlineListApiHandler),
-    ('/api/user/message', UserMessageApiHandler),
+    ('/api/message/send', MessageSendApiHandler),
+    ('/api/message/list', MessageListApiHandler),
     ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

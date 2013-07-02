@@ -45,57 +45,19 @@ DATE_FORMAT = "%Y-%m-%d"
 class MobileHandler(BasePage):
 
   def get(self):
+    template_values = {}
     if self.get_current_user():
-      self.redirect('/mobile/stream')
+      template_values["main"] = "mobile/main.html"
+    else:
+      template_values["main"] = "mobile/public.html"
       
-    template_values = {
-      "main": "mobile/public.html"
-    }
-    self.getBase(template_values)
-  def post(self):
-    return self.get()
-
-class MobileStreamHandler(BasePage):
-
-  @reguser_required_mobile
-  def get(self):
-
-    template_values = {
-      "main": "mobile/main.html"
-    }
-    self.getBase(template_values)
-  def post(self):
-    return self.get()
-
-class MobileMenuHandler(BasePage):
-
-  @reguser_required_mobile
-  def get(self):
-
-    template_values = {
-      "main": "mobile/menu.html"
-    }
-    self.getBase(template_values)
-  def post(self):
-    return self.get()
-
-class MobileCommissioniHandler(BasePage):
-
-  def get(self):
-
-    template_values = {
-      "main": "mobile/commissioni.html"
-    }
     self.getBase(template_values)
   def post(self):
     return self.get()
 
 
 app = webapp.WSGIApplication([
-    ('/mobile', MobileHandler),
-    ('/mobile/stream', MobileStreamHandler),
-    ('/mobile/menu', MobileMenuHandler),
-    ('/mobile/commissioni', MobileCommissioniHandler)
+    ('/mobile', MobileHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
