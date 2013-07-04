@@ -2,7 +2,6 @@
 var current_user = "";
 
 $("#page-menu").bind('pageinit', function(event, entry) {
-
   var now = new Date()
   initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
   
@@ -77,7 +76,7 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 
 var channel = "";
 
-$("#page-notifiche").bind('pageinit', function(event, entry) {
+$("#page-notifiche").bind('pageinit', function(event, entry) { 
   $.mobile.showPageLoadingMsg();
 
   $.ajax({url:"/api/user/online/list", 
@@ -115,9 +114,26 @@ function loadPost(post_id) {
 	  success:function(data) { 
     var page_post_detail = $('#page-post-detail');
     var post = data;    
+    page_post_detail.find('#date').text(post.ext_date);
     page_post_detail.find('#title').html(post.title);
     page_post_detail.find('#content').html(post.content);
-    page_post_detail.find('#date').text(post.ext_date);
+    var res_list = $('<ul></ul>').empty();
+    for (var rn in post.resources) {
+      var res = post.resources[rn]
+      res_list.append($('<li></li>').append($('<a></a>').attr('href', res.url).text(res.desc)));
+    }      
+    page_post_detail.find('#resources').html(res_list);
+    var att_list = $('<ul></ul>').empty();
+    for (var an in post.attachments) {
+      var att = post.attachments[an]
+      if (att.imgthumb) {
+	att_list.append($('<li></li>').append($('<a></a>').attr('href', att.url).append($('<img></img>').attr('src', att.imgthumb))));
+      } else {
+	att_list.append($('<li></li>').append($('<a></a>').attr('href', att.url).text(att.desc)));
+      }
+    }      
+    page_post_detail.find('#attachments').html(att_list);
+    
     page_post_detail.trigger("create");
   }});    
 }
@@ -185,23 +201,12 @@ function loadNode(node_id, cursor) {
   $('#post_list').attr('data-node-id', node_id);
   $('#load_more').on('click', function(){loadPostList($('#post_list').attr('data-node-id'), $('#post_list').attr('data-next-cursor'));});
   loadPostList(node_id);
-  $('#post_save').on("click", function() {
-    var node_id = $('#page-post-new [name="node"]').val();
-    var title = $('#page-post-new [name="title"]').val();
-    var content = $('#page-post-new [name="content"]').val();
-    var data = {'node':node_id, 'title':title, 'content': content }
-    $.ajax({url:"/api/post/create", 
-	    type: "POST",
-	    data: data,
-	    dataType:'json',
-	    success:function(data) {
-	      var post = data;
-	      $('#post_list').prepend(createPostItem(post));
-	      $('#post_list').listview("refresh");
-	      $.mobile.navigate( "#page-stream" );
-	    }});
-  });
-
+  $('#form_post_new').ajaxForm({dataType:'json', success:function(data) {
+      var post = data;
+      $('#post_list').prepend(createPostItem(post));
+      $('#post_list').listview("refresh");
+      $.mobile.navigate( "#page-stream" );
+  }});
 }
 
 function loadPostList(node_id, cursor) {
@@ -326,7 +331,7 @@ function initUI(current_user, sk, dt) {
    }
   }
   
-  $('#page-menu').find('[data-role="content"]').html(params).trigger("create");
+  $('#menu_form').html(params).trigger("create");
   
   sel_date.change( loadMenu );
   sel_sk.change( loadMenu );
@@ -347,46 +352,26 @@ function loadMenu() {
 	dataType:'json',
 	success:function(data) { 
     menu = data;
-  
-    var list = [];
-    for (var k in menu){
-      list.push(menu[k]);
-    };
-  
-    /*
-    var template = '';
-    template += '<table class="pappa-mi-menu">';
-    template += '{{#list}}'; 
-    template += '<tr data-veespo-id="demo-pappa-mi-{{id}}">';
-    template += '<td class="left">{{desc1}}</td>';
     
-    if(today.getTime() >= date_d.getTime()) {
-      template += '<td class="right"><span data-role="button" data-mini="true" data-icon="plus" data-iconpos="right">Vota</span></td>';
-    } else {
-      template += '<td class="right"><span data-role="button" data-mini="true" data-icon="plus" data-iconpos="right" class="ui-disabled">Vota</span></td>';
+    var ul = $('#menu_list').empty();
+    for (var dish_id in menu) {
+      var dish =menu[dish_id];
+      var li = $('<li></li>').attr('data-dish-id', dish.id);
+      li.text(dish.desc1);
+      var cg = $('<div data-role="controlgroup" data-type="horizontal">');
+      cg.append('<a class="dish_info" data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</a>');
+      cg.append('<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</a>');
+      if(today.getTime() < date_d.getTime()) {
+	cg.find('.dish_stat').attr('disabled', true);
+	cg.find('.dish_vote').attr('disabled', true);
+      }
+      li.append(cg);
+      ul.append(li);
     }
-    template += '</tr>';
-    template += '{{/list}}'; 
-    template += '</table>';
-    */
-    var template = '';
-    template += '<ul data-role="listview" data-inset="true" class="pappa-mi-menu">';
-    template += '{{#list}}'; 
-    template += '<li data-dish-id="{{id}}">';
-    template += '{{desc1}}';
-    template += '<div data-role="controlgroup" data-type="horizontal"><a class="dish_info" data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</a>';
-    
-    if(today.getTime() >= date_d.getTime()) {
-      template += '<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</a>';
-    } else {
-      template += '<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right" class="ui-disabled">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right" class="ui-disabled">Vota</a>';
-    }
-    template += '</div></li>';
-    template += '{{/list}}'; 
-    template += '</ul>';
+    $('#menu_list').trigger("create");
+    ul.listview('refresh');
 
-    var html = $(Mustache.to_html(template, {list:list} ));
-    $('#menu').html(html).trigger("create");
+    $('#menu').trigger("create");
     $('.dish_info').on('click', onDishInfo);
     $('.dish_stat').on('click', onDishStat);
     $('.dish_vote').on('click', onDishVote);
@@ -405,6 +390,7 @@ function onDishInfo() {
 	  type: "GET",
 	  dataType:'json',
 	  success:function(data) {
+	    $('#dish_components').empty();
 	    var dish_info = data;
 	    var components = dish_info["components"];
 	    for (var nc in components) {
@@ -412,7 +398,6 @@ function onDishInfo() {
 	      var tr = $('<tr></tr>').append('<td>' + comp['name'] + '</td>'+'<td>' + comp['qty'] + '</td>');
 	      $('#dish_components').append(tr);
 	    }
-	    //$('#dish_table').table('refresh');
   	    $.mobile.navigate( "#page-dish-detail" );
 	  }});  
 }

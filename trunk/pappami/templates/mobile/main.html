@@ -23,6 +23,8 @@
 <!--  original -->
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery.form.js"></script> 
+
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script src="/js/mobile/mustache.js"></script>
 
@@ -81,6 +83,7 @@
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
  </div> 
   <div data-role="content" data-theme="c">
+  <form id="form_post_new" action="/api/post/create" method="post" enctype="multipart/form-data">
     <div data-role="fieldcontain" class="ui-hide-label">
       <label for="title">Argomento:</label>
       <select name="node" id="node_select" data-mini="true">
@@ -96,10 +99,11 @@
     </div>
     <div data-role="fieldcontain" class="ui-hide-label">
       <label for="attach">Allega:</label>
-      <input type="file" name="attach" id="attach" value="" placeholder="Allega"/>
+      <input type="file" name="attach_file" placeholder="Allega..." allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
     </div>
-    <a href="#" id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Salva</a>  
+    <button id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Salva</button>  
     <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+  </form>
   </div>
 </div>
 
@@ -109,8 +113,9 @@
   <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
  </div> 
  <div data-role="content">
+  <div id="menu_form"></div>
+  <ul id="menu_list" data-role="listview" data-inset="true"></ul>
  </div>
- <div id="menu"></div>
  <div data-role="footer" data-id="foo1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>

@@ -159,7 +159,7 @@ class BaseHandler(webapp.RequestHandler):
     if self.request.url.find("beta") != -1:
       self.redirect("http://www.pappa-mi.it")
 
-    if (self.request.url.find("m.") != -1 or self.request.url.find("mobile.") != -1) and self.request.url.find("/mobile") == -1:
+    if (self.request.url.find("m.") != -1 or self.request.url.find("mobile.") != -1) and self.request.url.find("/mobile") == -1 and not self.request.url.find("/signup") != -1:
       self.redirect("/mobile")
 
     user = self.get_current_user()

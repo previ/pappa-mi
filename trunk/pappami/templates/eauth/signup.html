@@ -34,7 +34,7 @@ $(document).ready(function() {
   ('linkedin', '/auth/linkedin'),
   ('windowslive', '/auth/windowslive'),  
 ] -%}
-<div class="row">
+<div class="row auth">
   <div class="span12">
     <legend>Scegli uno dei seguenti account per registrarti</legend>
     <div class="well">
@@ -51,17 +51,17 @@ $(document).ready(function() {
       <div class="span4 well">
         <form id="form0" method="POST" action="/eauth/signup" class="horizontal-form">
           <fieldset class="control-group">
-            <label for="email" class="control-label">Email</label>
-            <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
+            <label for="email" class="control-label hidden-phone">Email</label>
+            <div class="controls"><input type="text" name="email" class="span3 required email" placeholder="Email"/></div>
           </fieldset>
           <fieldset class="control-group">
-            <label for="password" class="control-label">Password</label>
-            <div class="controls"><input type="password" name="password" class="span3 required" /></div>
-            <label for="password2" class="control-label">Verifica Password</label>
-            <div class="controls"><input type="password" name="password2" class="span3 required" /></div>
+            <label for="password" class="control-label hidden-phone">Password</label>
+            <div class="controls"><input type="password" name="password" class="span3 required" placeholder="Password"/></div>
+            <label for="password2" class="control-label hidden-phone">Verifica Password</label>
+            <div class="controls"><input type="password" name="password2" class="span3 required" placeholder="Verifica Password"/></div>
           </fieldset>
           <fieldset class="control-group">
-            <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}}</label>
+            <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}} = ?</label>
             <div class="controls"><input type="input" name="c" class="span1 required" /></div>
           </fieldset>
           <fieldset class="">
@@ -79,7 +79,7 @@ $(document).ready(function() {
           {% endif %}
         </form>
       </div>
-      <div class="span6">
+      <div class="span6 hidden-phone">
         <div class="alert alert-info"><strong>Importante:</strong> Chi era gi&agrave; iscritto a Pappa-Mi deve accedere utilizzando "Google"</div>
       </div>        
     </div>
