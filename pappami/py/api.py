@@ -43,8 +43,28 @@ def post_as_json(post, cmsro):
           'title': post.title,
           'content_summary': post.content_summary,
           'content': post.content,
-          'images': post.images}
+          'resource': resources_as_json(post),
+          'images': post.images,
+          'attachments': attachments_as_json(post) }
 
+def resources_as_json(post):
+  resources = list()
+  for r in post.resources:
+    resources.append({'id': r.id(),
+                      'desc': (r.get().title if r.get().restype == "post" else r.get().sommario()),
+                      'url': '/post/'+post.id}) 
+  return resources
+
+def attachments_as_json(post):
+  attachments = list()
+  for a in post.attachments:
+    att = {'id': a.key.id(),
+           'desc': a.nome,
+           'url': a.path}
+    if a.isImage():
+      att['imgthumb'] = a.imgthumb
+    attachments.append(att) 
+  return attachments
 
 class UserApiHandler(BasePage):
 
@@ -277,14 +297,9 @@ class DishApiHandler(CMMenuHandler):
     if school_id:
       cm = model.Key('Commissione', int(school_id)).get()
       factor = factors[cm.tipoScuola]
-    piatto_key = model.Key("Piatto", int(dish_id))
-    details['dish'] = piatto_key.get().nome
-    details['components'] = list()
-    for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
-      ing = p_i.ingrediente.get()
-      qty = p_i.quantita
-      details['components'].append({'name': ing.nome,
-                                     'qty': p_i.quantita * factor})
+    piatto = model.Key("Piatto", int(dish_id)).get()
+    details['dish'] = piatto.nome
+    details['components'] = piatto.ingredienti(cm.tipoScuola)
     json.dump(details, self.response.out)
 
 class TestApiHandler(BaseHandler):

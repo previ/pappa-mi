@@ -475,8 +475,9 @@ class Piatto(model.Model):
     for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==self.key):
       ing = p_i.ingrediente.get()
       qty = p_i.quantita
-      ingredienti.append({'nome': ing.nome,
-                          'quantita': p_i.quantita * factor})
+      ingredienti.append({'name': ing.nome,
+                          'qty': round(p_i.quantita * factor, 1)})
+    ingredienti.sort(key=lambda item: item.get('qty'), reverse=True)
     return ingredienti
   
     
@@ -1966,11 +1967,10 @@ class SocialPost(model.Model):
     def unsubscribe_user(self, user):
       subscription=self.subscriptions.get(user.key)
       if subscription is not None:
-         subscription.key.delete()
-         self.subscriptions = None
-
+        subscription.key.delete()
+        self.subscriptions = None
       else:
-          raise users.UserNotFoundError
+        raise users.UserNotFoundError
 
     def create_comment(self,content,author):
       floodControl=memcache.get("FloodControl-"+str(author.key))

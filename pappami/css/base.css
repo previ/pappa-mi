@@ -562,6 +562,35 @@ font-weight: bold;
     height: 30px;
 }
 
+@media (max-width: 480px) {
+  .auth .provider-btn {
+      display: inline;
+      list-style: none;
+      padding: 0px;
+  }
+  .auth .provider-btn .btn img {
+      width: 48px;
+      height: 16px;
+  }
+  .auth legend {
+    font-size: 100%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  .auth .well {
+    padding: 5px;
+    margin: 5px;
+  }
+  .auth ul {
+  padding: 0px;
+  margin: 0px;
+  }
+  .auth .provider-btn a {
+  padding: 0px;
+  margin: 0px;
+  }
+}
+
 .carousel-control {
   top:50%;
 }
