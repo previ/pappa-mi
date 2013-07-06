@@ -5021,16 +5021,17 @@ font-weight: bold;
       padding: 0px;
   }
   .auth .provider-btn .btn img {
-      width: 48px;
-      height: 16px;
+      width: 90px;
+      height: 30px;
   }
   .auth legend {
-    font-size: 100%;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    font-size: 90%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    line-height: 30px;
   }
   .auth .well {
-    padding: 1px;
+    padding: 2px;
     margin: 2px;
   }
   .auth ul {

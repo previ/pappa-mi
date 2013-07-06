@@ -334,10 +334,8 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
 
-      #memcache.set("menu-" + str(offset) + "-" + str(data), menu)
       menu_cache.put("menu-" + str(offset) + "-" + str(data), menu)
       
-    #logging.info(str(menu))
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):

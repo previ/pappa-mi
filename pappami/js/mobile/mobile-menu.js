@@ -1,11 +1,24 @@
 "use strict"
 var current_user = "";
+var guest_user_id = 0;
+
+function isUserLogged() {
+ return current_user.id != guest_user_id
+}
+
+$(document).ready(function(){
+  var channel_id = $('body').attr('data-channel-id');
+  if(channel == "" && channel_id != "") {
+    channel = openChannel(channel_id);
+  }
+});
 
 $("#page-menu").bind('pageinit', function(event, entry) {
   var now = new Date()
+
   initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
   
-  $('#user').text(current_user.fullname); 
+  $('#user').text(user.fullname); 
 });
 
 $("#page-stream").bind('pageinit', function(event, entry) {
@@ -16,8 +29,8 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 	  success:function(data) { 
 
     current_user = data;    
-    $('#user').text(current_user.fullname);
-    //$('[data-role="content"]').text(current_user.fullname);
+    $('.user_info').append($('<img class="avatar"></img>').attr('src', current_user.avatar));
+    $('.user_info').append($('<span></span>').text(current_user.fullname));
 
   }});    
 
@@ -25,12 +38,23 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 	  dataType:'json',
 	  success:function(data) { 
     var node_lists = $('#node_lists');
+    var c = $('<div data-role="collapsible"></div>');
+    c.append('<h2>Miei argomenti</h2>');
+    node_lists.append(c);
+    var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
+    var node_list_select = $('#node_select');
+    c.append(node_list);
+
+    if(isUserLogged()) {
+      var all = $('<li data-mini="true"><a href="#" data-node-id="all">I tuoi argomenti</a></li>');
+      all.find('a').on('click', onNodeClick);
+      node_list.append(all);
+    }
+
+    var news = $('<li data-mini="true"><a href="#" data-node-id="news">Tutte le novità</a></li>');
+    news.find('a').on('click', onNodeClick);
+    node_list.append(news);
     if( data.subs_nodes.length) {
-      var c = $('<div data-role="collapsible"></div>');
-      c.append('<h2>Miei argomenti</h2>');
-      node_lists.append(c);
-      var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
-      var node_list_select = $('#node_select');
       for (var n = 0; n < data.subs_nodes.length;n++) {
 	var node = data.subs_nodes[n];
 	var li = $('<li data-mini="true"></li>');
@@ -69,6 +93,9 @@ $("#page-stream").bind('pageinit', function(event, entry) {
       }
       c.append(node_list);
     }
+    if(isUserLogged()) {
+      $('#page-stream-content').prepend('<a data-role="button" data-transition="flip" href="#page-post-new" id="create_new">Nuovo messaggio</a>');
+    }
     $('#page-stream').trigger("create");
   }});
   loadNode('news');
@@ -105,7 +132,6 @@ $("#page-notifiche").bind('pageinit', function(event, entry) {
   if(channel == "" && channel_id != "") {
     channel = openChannel(channel_id);
   }
-
 });
 
 function loadPost(post_id) {
@@ -132,9 +158,9 @@ function loadPost(post_id) {
 	att_list.append($('<li></li>').append($('<a></a>').attr('href', att.url).text(att.desc)));
       }
     }      
-    page_post_detail.find('#attachments').html(att_list);
-    
+    page_post_detail.find('#attachments').html(att_list);    
     page_post_detail.trigger("create");
+    $.mobile.navigate('#page-post-detail');
   }});    
 }
 
@@ -229,7 +255,7 @@ function loadPostList(node_id, cursor) {
 
 function createPostItem(post) {
   var li = $('<li></li>');
-  var a = $('<a href="#page-post-detail" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
+  var a = $('<a href="#" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
   });
   if(post.images.length > 0) {
@@ -293,14 +319,9 @@ $("#page-menu").bind('swiperight', function(event) {
 
 $("#page-menu").bind('pagebeforeshow', function(event){ 
   console.log("Schools page...");
-  /*$("#page-menu").find('span[data-v-title]').text(current_user.fullname);
-  if (pappami.resetMenu){
-    //entry.refs.menuAnc.empty();
-  } else {*/
     $("#page-menu").find('span[data-role="button"]').each(function(){
       var e = $(this);
     });
-  //}  
 }); 
 
 var back = function(){
@@ -341,7 +362,6 @@ function initUI(current_user, sk, dt) {
 
 var menu = {};
 function loadMenu() {
-  
   var date = $('#data').val(); 
   var cm = $('#cm').val();
   
@@ -357,15 +377,8 @@ function loadMenu() {
     for (var dish_id in menu) {
       var dish =menu[dish_id];
       var li = $('<li></li>').attr('data-dish-id', dish.id);
-      li.text(dish.desc1);
-      var cg = $('<div data-role="controlgroup" data-type="horizontal">');
-      cg.append('<a class="dish_info" data-role="button" data-inline="true" data-mini="true" data-icon="info" data-iconpos="right">Info</a>');
-      cg.append('<a class="dish_stat" data-role="button" data-inline="true" data-mini="true" data-icon="bars" data-iconpos="right">Stat</a><a class="dish_vote" data-role="button" data-inline="true" data-mini="true" data-icon="check" data-iconpos="right">Vota</a>');
-      if(today.getTime() < date_d.getTime()) {
-	cg.find('.dish_stat').attr('disabled', true);
-	cg.find('.dish_vote').attr('disabled', true);
-      }
-      li.append(cg);
+      var a = $('<a class="dish_info" href=""></a>').text(dish.desc1);
+      li.append(a);
       ul.append(li);
     }
     $('#menu_list').trigger("create");
@@ -398,22 +411,21 @@ function onDishInfo() {
 	      var tr = $('<tr></tr>').append('<td>' + comp['name'] + '</td>'+'<td>' + comp['qty'] + '</td>');
 	      $('#dish_components').append(tr);
 	    }
+	    $('#page-dish-detail').attr('data-dish-id', dish_id);
   	    $.mobile.navigate( "#page-dish-detail" );
 	  }});  
 }
 
 function onDishStat() {
-  var dish_id = $(this).parents('li').attr('data-dish-id');
+  var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
   var dish_name = getDish(dish_id).desc1
-  $('#dish_name').text(dish_name);
-  $.mobile.navigate( "#page-dish-detail" );
+  alert("Stats for: " + dish_name);
 }
 
 function onDishVote() {
-  var dish_id = $(this).parents('li').attr('data-dish-id');
+  var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
   var dish_name = getDish(dish_id).desc1
-  $('#dish_name').text(dish_name);
-  $.mobile.navigate( "#page-dish-detail" );
+  alert("Vote for: " + dish_name);
 }
 /*
  * Torna l'oggetto relativo al id del piatto passato

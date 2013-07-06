@@ -87,8 +87,9 @@ class ProtectedPage(BasePage):
 class LogoutPage(BasePage):
 
   def get(self):
+    dest = self.request.get("next") if self.request.get("next") else "/"      
     self.response.delete_cookie('_eauth')
-    self.redirect("/")
+    self.redirect(dest)
 
 class SignupPage(BasePage):
 

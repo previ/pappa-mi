@@ -47,7 +47,8 @@ class MobileHandler(BasePage):
   def get(self):
     template_values = {}
     if self.get_current_user():
-      template_values["main"] = "mobile/main.html"
+      self.redirect('/mobile/app')
+      return
     else:
       template_values["main"] = "mobile/public.html"
       
@@ -55,9 +56,19 @@ class MobileHandler(BasePage):
   def post(self):
     return self.get()
 
+class AppMobileHandler(BasePage):
+
+  def get(self):
+    template_values = {}
+    template_values["main"] = "mobile/main.html"
+      
+    self.getBase(template_values)
+  def post(self):
+    return self.get()
 
 app = webapp.WSGIApplication([
-    ('/mobile', MobileHandler)
+    ('/mobile', MobileHandler),
+    ('/mobile/app', AppMobileHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
