@@ -68,17 +68,24 @@ def attachments_as_json(post):
 
 class UserApiHandler(BasePage):
 
-  @reguser_required
   def get(self):
     user = self.get_current_user()
-    co = self.getCommissario()
-    user_schools = list()
-    for cm in co.commissioni():
-      user_schools.append({'id': str(cm.key.id()),
-                        'name': cm.desc()})
-    user_api = {'id': str(co.usera.id()),
-                'fullname': str(co.nomecompleto(None,True)),
-                'schools': user_schools}
+    user_api = {'id': 0,
+                'fullname': 'Ospite',
+                'type': 'O',
+                'avatar': "/img/default_avatar.png",
+                'schools': [{'id': 2212, 'name': 'Muzio Primaria'}]}
+    if user:
+      co = self.getCommissario()
+      user_schools = list()
+      for cm in co.commissioni():
+        user_schools.append({'id': str(cm.key.id()),
+                          'name': cm.desc()})
+      user_api = {'id': str(co.usera.id()),
+                  'fullname': str(co.nomecompleto(None,True)),
+                  'type': 'C' if co.stato == 1 else "G",
+                  'avatar': str(co.avatar(co,48)),
+                  'schools': user_schools}
     self.output_as_json(user_api)
 
 
@@ -86,14 +93,15 @@ class NodeListApiHandler(BaseHandler):
 
   def get(self):
     user = self.get_current_user()
-    subs = list()
+    user_nodes = list()
     if user:
       subs = SocialNodeSubscription.get_nodes_by_user(user)
 
-    user_nodes = list()
-    for n in SocialNodeSubscription.get_nodes_by_user(user):
-      user_nodes.append({'id': str(n.id),
-                         'name': n.name})
+      user_nodes = list()
+      for n in SocialNodeSubscription.get_nodes_by_user(user):
+        user_nodes.append({'id': str(n.id),
+                           'name': n.name})
+
     active_nodes = list()
     for n in SocialNode.get_most_active():
       active_nodes.append({'id': str(n.id),
@@ -193,6 +201,10 @@ class NodeApiHandler(BaseHandler):
       else:
         postlist, next_curs, more = SocialPost.get_user_stream(user=user, page=Const.ACTIVITY_FETCH_LIMIT, start_cursor=cursor)
       next_curs_key = next_curs
+    elif node_id=="all" and not user:
+      postlist = list()
+      next_curs=None
+      more = False
     else:
       node=model.Key("SocialNode", int(node_id))
 
@@ -256,15 +268,14 @@ class PostApiHandler(BaseHandler):
 
 class MenuApiHandler(CMMenuHandler):
 
-  @reguser_required
   def get(self, school_id, date):
 
     menu_api = []
     data = datetime.strptime(date,Const.DATE_FORMAT).date()
     c = model.Key("Commissione", int(school_id)).get()
     menus = self.getMenu(data, c)
-    if len(menus):
-      menu = self.getMenu(data, c)[0]
+    if len(menus) > 0 and menus[0].primo.key:
+      menu = menus[0]
       menu_api = [
         { 'id': menu.primo.key.id(),
           'desc1': menu.primo.nome,
@@ -287,7 +298,6 @@ class MenuApiHandler(CMMenuHandler):
 
 class DishApiHandler(CMMenuHandler):
 
-  @reguser_required
   def get(self, dish_id, school_id):
     details = dict()
     factors = {'Materna': 0.625,
@@ -301,6 +311,38 @@ class DishApiHandler(CMMenuHandler):
     details['dish'] = piatto.nome
     details['components'] = piatto.ingredienti(cm.tipoScuola)
     json.dump(details, self.response.out)
+
+class CityListApiHandler(BaseHandler):
+
+  def get(self):
+
+    cities = memcache.get("City")
+    if not cities:
+      cities = list()
+      cs = Citta.get_all()
+      for c in cs:
+        cities.append({'id': str(c.key.id()), 'name':c.nome})
+
+      memcache.add("City", cities)
+
+    self.output_as_json(cities)   
+    return
+
+class SchoolListApiHandler(BaseHandler):
+
+  def get(self, city_id):
+
+    schools = memcache.get("Schools-" + city_id)
+    if not schools:
+      schools = list()
+      cms = Commissione.get_by_citta(model.Key('Citta', int(city_id)))
+      for cm in cms:
+        schools.append({'id': str(cm.key.id()), 'name':cm.nome + ' - ' + cm.tipoScuola})
+
+      memcache.add("Schools-" + city_id, schools)
+
+    self.output_as_json(schools)   
+    return
 
 class TestApiHandler(BaseHandler):
 
@@ -329,6 +371,8 @@ app = webapp.WSGIApplication([
     ('/api/user/online/list', UserOnlineListApiHandler),
     ('/api/message/send', MessageSendApiHandler),
     ('/api/message/list', MessageListApiHandler),
+    ('/api/city/list', CityListApiHandler),    
+    ('/api/school/(.*)/list', SchoolListApiHandler),    
     ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

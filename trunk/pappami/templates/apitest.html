@@ -25,6 +25,25 @@ $(document).ready(function(){
    $(this).parent().attr('action', action);
    $(this).parent().find('button').text(action);
   });
+  $('#menu_city').change(function(){
+   $(this).parent().attr('action', '/api/school/'+$(this).val()+'/list');
+   $(this).parent().find('button').text('/api/school/'+$(this).val()+'/list');
+  });
+  $('#dish_dish').change(function(){
+   var dish_id = $('#dish_dish').val();
+   var school_id = $('#dish_school').val();
+   var action = '/api/dish/'+dish_id+'/'+school_id
+   $(this).parent().attr('action', action);
+   $(this).parent().find('button').text(action);
+  });
+  $('#dish_school').change(function(){
+   var dish_id = $('#dish_dish').val();
+   var school_id = $('#dish_school').val();
+   var action = '/api/dish/'+dish_id+'/'+school_id
+   $(this).parent().attr('action', action);
+   $(this).parent().find('button').text(action);
+  });
+
 });
 </script>
 <h2>Pappa-Mi API Test</h2>
@@ -85,11 +104,29 @@ $(document).ready(function(){
  </form>
  <legend>Menu [school/date] Detail</legend>
  <form action="/api/menu/school/date" method="get">
- <label for="school">School id</label>
- <input type="text" name="school" id="menu_school">
- <label for="date">Date [yyyy-mm-dd]</label>
- <input type="text" name="date" id="menu_date">
- <button type="submit" class="btn btn-normal">/api/menu/school/date</button>
+  <label for="school">School id</label>
+  <input type="text" name="school" id="menu_school">
+  <label for="date">Date [yyyy-mm-dd]</label>
+  <input type="text" name="date" id="menu_date">
+  <button type="submit" class="btn btn-normal">/api/menu/school/date</button>
+ </form> 
+ <legend>Dish [dish/school] Detail</legend>
+ <form action="/api/dish/:dish_id/:school_id" method="get">
+  <label for="dish">Dish id</label>
+  <input type="text" name="dish" id="dish_dish">
+  <label for="school">School id</label>
+  <input type="text" name="school" id="dish_school">
+  <button type="submit" class="btn btn-normal">/api/dish/:dish_id/:school_id</button>
+ </form> 
+ <legend>Cities</legend>
+ <form action="/api/city/list" method="get">
+  <button type="submit" class="btn btn-normal">/api/city/list</button>
+ </form> 
+ <legend>Schools</legend>
+ <form action="/api/schools/:city/list" method="get">
+ <label for="school">City id</label>
+ <input type="text" name="city" id="menu_city">
+ <button type="submit" class="btn btn-normal">/api/schools/:city/list</button>
  </form> 
  </div>
  <div class="span6">

@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css" />
 <link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />  
 <link rel="stylesheet" href="/css/mobile.css" />  
+<!--link rel="stylesheet" href="/css/mobile_extra.css" /-->  
 
 <!--  original -->
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -35,20 +36,19 @@
 <!-- app -->
 <div data-role="page" id="page-stream">
  <div data-role="header">
-  <a href="#node-panel" data-theme="b" data-icon="arrow-r" data-iconpos="left" data-shadow="false" data-iconshadow="true">Argomenti</a>
+  <a href="#node-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
-  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
  </div> 
- <div data-role="content">
-  <a data-role="button" data-transition="flip" href="#page-post-new" id="create_new">Nuovo messaggio</a>
+ <div id="page-stream-content" data-role="content">
   <div id="stream" class="stream-page">
     <ul id="post_list" data-role="listview" data-inset="true"></ul>
   </div>
   <button data-role="button" id="load_more">Carica altri</button>
  </div>
- <div data-role="panel" data-display="overlay" id="node-panel" data-theme="b">
-  <div id="node_lists" data-role="collapsible-set" data-theme="b" data-content-theme="d">  </div>
-  <a href="#" data-rel="close" data-role="button" data-mini="true" data-inline="true" data-icon="delete" data-iconpos="right">Close</a>
+ <div data-role="panel" data-display="reveal" id="node-panel" data-theme="b">
+  <div class="user_info"></div>
+  <div id="node_lists" data-role="collapsible-set" data-theme="b" data-content-theme="d"></div>
+  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
   <div data-role="footer" data-id="foo1" data-position="fixed">
@@ -109,8 +109,8 @@
 
 <div data-role="page" id="page-menu">
  <div data-role="header">
+  <a href="#menu-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi - Menù</h1>
-  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
  </div> 
  <div data-role="content">
   <div id="menu_form"></div>
@@ -125,12 +125,22 @@
 	  </ul>
 	</div><!-- /navbar -->
  </div><!-- /footer -->	
+ <div data-role="panel" data-display="reveal" id="menu-panel" data-theme="b">
+  <div class="user_info"></div>
+  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+ </div><!-- /panel -->
 </div>
 <div data-role="page" id="page-dish-detail">
   <div data-role="header" data-theme="d">
    <h1 id="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
+    <div>
+    <fieldset class="ui-grid-a">
+      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="bars" data-iconpos="left">Stat</a></div>
+      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">Vota</a></div>
+    </fieldset>
+    </div>
     <table id="dish_table" data-role="table" class="ui-responsive table-stroke">
       <thead>
 	<tr>
@@ -148,9 +158,8 @@
 
 <div data-role="page" id="page-notifiche">
  <div data-role="header">
-  <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="left" data-shadow="false" data-iconshadow="true">Utenti</a>
+  <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Utenti</a>
   <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>Pappa-Mi</h1>
-  <a href="#page-profile" data-icon="gear" data-theme="b" data-iconpos="notext" data-rel="dialog" data-transition="pop" class="ui-btn-right"></a>
  </div> 
  <div data-role="content">
   <ul id="message_list" data-role="listview"></ul>
@@ -166,9 +175,10 @@
   </div>
  </div>
  <div data-role="panel" data-display="overlay" id="user-panel" data-theme="b">
+  <div class="user_info"></div>
   <ul id="user_list" data-role="listview" data-inset="true" data-divider-theme="d">
   </ul>
-  <a href="#" data-rel="close" data-role="button" data-mini="true" data-inline="true" data-icon="delete" data-iconpos="right">Close</a>
+  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
  <div data-role="footer" data-id="foo1" data-position="fixed">
