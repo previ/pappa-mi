@@ -18,3 +18,44 @@ border-radius: 24px;
 border: none;
 cursor: pointer;
 }
+.ui-listview .ui-li-icon {
+left: 8px;
+top: 8px;
+border-radius: 3px;
+}
+
+.s_post_title {
+margin-left:16px;
+}
+
+.s_post_node {
+display:inline;
+}
+.s_post_author {
+display:inline;
+}
+.s_post_date {
+display:inline;
+}
+
+@media (max-width: 480px) {
+.s_post_title {
+font-size:12px;
+overflow:hidden;
+}
+
+.s_post_node {
+display:block;
+font-size:10px;
+margin-top:-8px;
+margin-bottom:-2px;
+}
+.s_post_author {
+display:inline;
+font-size:8px;
+}
+.s_post_date {
+display:inline;
+font-size:8px;
+}
+}

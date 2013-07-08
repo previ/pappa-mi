@@ -89,7 +89,9 @@ class LogoutPage(BasePage):
   def get(self):
     dest = self.request.get("next") if self.request.get("next") else "/"      
     self.response.delete_cookie('_eauth')
+    del self.request.cookies['_eauth']
     self.redirect(dest)
+    return
 
 class SignupPage(BasePage):
 

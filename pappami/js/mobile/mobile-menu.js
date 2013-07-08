@@ -16,6 +16,9 @@ $(document).ready(function(){
 $("#page-menu").bind('pageinit', function(event, entry) {
   var now = new Date()
 
+  if(current_user=="") {
+    window.location.href="/mobile/app";
+  }
   initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
   
   $('#user').text(user.fullname); 
@@ -39,7 +42,7 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 	  success:function(data) { 
     var node_lists = $('#node_lists');
     var c = $('<div data-role="collapsible"></div>');
-    c.append('<h2>Miei argomenti</h2>');
+    c.append('<h2>I tuoi argomenti</h2>');
     node_lists.append(c);
     var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
     var node_list_select = $('#node_select');
@@ -105,6 +108,10 @@ var channel = "";
 
 $("#page-notifiche").bind('pageinit', function(event, entry) { 
   $.mobile.showPageLoadingMsg();
+
+  if(current_user=="") {
+    window.location.href="/mobile/app";
+  }
 
   $.ajax({url:"/api/user/online/list", 
 	  dataType:'json',
@@ -172,7 +179,8 @@ function onNodeClick() {
   var node_list_select = $('#node_select');
   node_list_select.find('option').removeAttr('selected')
   node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
-  node_list_select.selectmenu();  
+  node_list_select.selectmenu(); 
+  $('#node-panel').panel('close');
 }
 
 function onUserClick() {
@@ -254,6 +262,7 @@ function loadPostList(node_id, cursor) {
 }
 
 function createPostItem(post) {
+  var lit = $('<li data-role="list-divider"><img src="'+post.author.avatar+'" alt="Autore" style="margin-right:16px;" class="ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,20)+'</span><span class="ui-li-aside"><div class="s_post_node">' + post.node.name +'</div><div class="s_post_author"> di '+ post.author.name + ' </div><div class="s_post_date">' + post.ext_date +'</div></span></li>');
   var li = $('<li></li>');
   var a = $('<a href="#" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
@@ -261,11 +270,10 @@ function createPostItem(post) {
   if(post.images.length > 0) {
    a.append($('<img></img>').attr('src', post.images[0]))
   }
-  a.append($('<h2></h2>').text(post.title))
-   .append($('<p></p>').html(post.content_summary.substring(0, 50)))
-   .append($('<p class="ui-li-aside"></p>').html(post.node.name));
+  a.append($('<span style="zoom:0.7;overflow:hidden;"></span>').append(post.content_summary));
+  //a.append($('<p class="ui-li-aside"><small>' + post.node.name +' di '+ post.author.name + ' ' + post.ext_date +'</small></p>'));
   li.append(a);
-  return li;
+  return [lit, li]
 }
 function getPrevBizDay(date) {
   var dt = date;
