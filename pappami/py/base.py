@@ -156,11 +156,17 @@ class BaseHandler(webapp.RequestHandler):
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
       self.redirect("http://www.pappa-mi.it")
 
-    if ((self.request.url.find("m.") != -1 or 
-         self.request.url.find("mobile.") != -1) and 
-        self.request.url.find("/mobile") == -1 and 
-        not (self.request.url.find("/signup") != -1 )):
+    logging.info(self.request.url)
+    uri = self.request.url[self.request.url.find('//')+2:]
+    logging.info(uri)
+
+    if ((uri.find("m.") != -1 or 
+         uri.find("mobile.") != -1) and 
+        uri.find("/mobile") == -1 and 
+        not (uri.find("/signup") != -1)):
+      logging.info("going mobile")
       self.redirect("/mobile")
+      return
 
     user = self.get_current_user()
 

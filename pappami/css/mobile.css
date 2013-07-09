@@ -18,9 +18,12 @@ border-radius: 24px;
 border: none;
 cursor: pointer;
 }
-.ui-listview .ui-li-icon {
-left: 8px;
-top: 8px;
+
+.s_post_list .ui-li .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li {
+display: inline;
+}
+
+.s_post_avatar {
 border-radius: 3px;
 }
 
@@ -35,6 +38,19 @@ display:inline;
 display:inline;
 }
 .s_post_date {
+display:inline;
+}
+
+.s_post_d_title {
+}
+
+.s_post_d_node {
+display:inline;
+}
+.s_post_d_author {
+display:inline;
+}
+.s_post_d_date {
 display:inline;
 }
 
@@ -57,5 +73,10 @@ font-size:8px;
 .s_post_date {
 display:inline;
 font-size:8px;
+}
+.s_post_content {
+margin-left:4px;
+zoom:0.8;
+overflow:hidden;"
 }
 }
