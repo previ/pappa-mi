@@ -147,16 +147,18 @@ function loadPost(post_id) {
 	  success:function(data) { 
     var page_post_detail = $('#page-post-detail');
     var post = data;    
+    page_post_detail.find('#author').text(post.author.name);
+    page_post_detail.find('#avatar').attr('href', post.author.avatar);
     page_post_detail.find('#date').text(post.ext_date);
     page_post_detail.find('#title').html(post.title);
     page_post_detail.find('#content').html(post.content);
-    var res_list = $('<ul></ul>').empty();
+    var res_list = $('<ul class="unstyled"></ul>').empty();
     for (var rn in post.resources) {
       var res = post.resources[rn]
       res_list.append($('<li></li>').append($('<a></a>').attr('href', res.url).text(res.desc)));
     }      
     page_post_detail.find('#resources').html(res_list);
-    var att_list = $('<ul></ul>').empty();
+    var att_list = $('<ul class="unstyled"></ul>').empty();
     for (var an in post.attachments) {
       var att = post.attachments[an]
       if (att.imgthumb) {
@@ -262,7 +264,7 @@ function loadPostList(node_id, cursor) {
 }
 
 function createPostItem(post) {
-  var lit = $('<li data-role="list-divider"><img src="'+post.author.avatar+'" alt="Autore" style="margin-right:16px;" class="ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,20)+'</span><span class="ui-li-aside"><div class="s_post_node">' + post.node.name +'</div><div class="s_post_author"> di '+ post.author.name + ' </div><div class="s_post_date">' + post.ext_date +'</div></span></li>');
+  var lit = $('<li data-role="list-divider"><img src="'+post.author.avatar+'" alt="Autore" style="left:8px;top:8px;" class="ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,20)+'</span><span class="ui-li-aside"><div class="s_post_node">' + post.node.name +'</div><div class="s_post_author"> di '+ post.author.name + ' </div><div class="s_post_date">' + post.ext_date +'</div></span></li>');
   var li = $('<li></li>');
   var a = $('<a href="#" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
@@ -270,7 +272,7 @@ function createPostItem(post) {
   if(post.images.length > 0) {
    a.append($('<img></img>').attr('src', post.images[0]))
   }
-  a.append($('<span style="zoom:0.7;overflow:hidden;"></span>').append(post.content_summary));
+  a.append($('<span class="s_post_content"></span>').append(post.content_summary));
   //a.append($('<p class="ui-li-aside"><small>' + post.node.name +' di '+ post.author.name + ' ' + post.ext_date +'</small></p>'));
   li.append(a);
   return [lit, li]

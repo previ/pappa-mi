@@ -46,7 +46,7 @@ function onChannelMessage(m) {
     textmessage = '<strong>'+m.user+'</strong>: '+m.body;
   } else if(m.type=='post'|| m.type=='comment') {
     getNotificationsNum();
-    var textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
+    textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
   }
   $.pnotify({
     title: 'Notifica',
@@ -62,7 +62,7 @@ var tiny_mce_opts = {
   plugins : "autolink,autoresize,link,image,media", 
   menubar: false,
   statusbar : false,
-  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo",
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
 };
 
 // Flood control

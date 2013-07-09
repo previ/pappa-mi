@@ -66,7 +66,7 @@ def attachments_as_json(post):
     attachments.append(att) 
   return attachments
 
-class UserApiHandler(BasePage):
+class UserApiHandler(BaseHandler):
 
   def get(self):
     user = self.get_current_user()
@@ -121,7 +121,7 @@ class NodeListApiHandler(BaseHandler):
     
     return
   
-class UserOnlineListApiHandler(BasePage):
+class UserOnlineListApiHandler(BaseHandler):
 
   @reguser_required
   def get(self):
@@ -140,7 +140,7 @@ class UserOnlineListApiHandler(BasePage):
         
     self.output_as_json(users_json)
 
-class MessageSendApiHandler(BasePage):
+class MessageSendApiHandler(BaseHandler):
 
   @reguser_required
   def post(self):
@@ -173,7 +173,7 @@ class MessageSendApiHandler(BasePage):
     memcache.set('Messages', messages)
     return
       
-class MessageListApiHandler(BasePage):
+class MessageListApiHandler(BaseHandler):
 
   @reguser_required
   def get(self):
@@ -344,6 +344,14 @@ class SchoolListApiHandler(BaseHandler):
     self.output_as_json(schools)   
     return
 
+class ConfigApiHandler(BaseHandler):
+
+  def get(self):
+    config = {'apihost': 'api.pappa-mi.it',
+              'apiversion': '1.0',
+              'appname': 'Pappa-Mi'}
+    self.output_as_json(config)
+
 class TestApiHandler(BaseHandler):
 
   @reguser_required
@@ -373,6 +381,7 @@ app = webapp.WSGIApplication([
     ('/api/message/list', MessageListApiHandler),
     ('/api/city/list', CityListApiHandler),    
     ('/api/school/(.*)/list', SchoolListApiHandler),    
+    ('/api/config', ConfigApiHandler),
     ('/api/test', TestApiHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

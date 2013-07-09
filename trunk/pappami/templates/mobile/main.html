@@ -42,14 +42,14 @@
  </div> 
  <div id="page-stream-content" data-role="content">
   <div id="stream" class="stream-page">
-    <ul id="post_list" data-role="listview" data-inset="true"></ul>
+    <ul id="post_list" class="s_post_list" data-role="listview" data-inset="true"></ul>
   </div>
   <button data-role="button" id="load_more">Carica altri</button>
  </div>
  <div data-role="panel" data-display="reveal" id="node-panel" data-theme="b">
   <div class="user_info"></div>
   <div id="node_lists" data-role="collapsible-set" data-theme="b" data-content-theme="d"></div>
-  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
   <div data-role="footer" data-id="foo1" data-position="fixed">
@@ -69,8 +69,12 @@
  </div> 
   <div data-role="content" data-theme="c">
     <h2 id="title"></h2>
-    <div id="date"></div>
-    <div id="content"></div>
+    <div>
+      <div class="s_post_d_node" id="node"></div>
+      <div class="s_post_d_author" id="author"></div>
+      <div class="s_post_d_date" id="date"></div>
+    </div>
+    <div class="s_post_d_content" id="content"></div>
     <div id="resources"></div>
     <div id="attachments"></div>
     <button href="#" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
@@ -128,7 +132,7 @@
  </div><!-- /footer -->	
  <div data-role="panel" data-display="reveal" id="menu-panel" data-theme="b">
   <div class="user_info"></div>
-  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 </div>
 <div data-role="page" id="page-dish-detail">
@@ -179,7 +183,7 @@
   <div class="user_info"></div>
   <ul id="user_list" data-role="listview" data-inset="true" data-divider-theme="d">
   </ul>
-  <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
  <div data-role="footer" data-id="foo1" data-position="fixed">
@@ -199,7 +203,7 @@
   </div>
   <div data-role="content" data-theme="c">
     <p><span id="user"></span></p>
-    <a href="/eauth/logout?next=/mobile" data-role="button" data-ajax="false" data-theme="c">Esci</a>  
+    <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a>  
     <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
