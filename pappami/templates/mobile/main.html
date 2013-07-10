@@ -28,11 +28,16 @@
 <script type="text/javascript" src="/js/jquery.form.js"></script> 
 
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
-<script src="/js/mobile/mustache.js"></script>
-
+   
 </head> 
 
 <body data-channel-id="{{channel}}"> 
+    <script>
+        var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
+        var s = document.createElement('script');
+        s.async = true; s.src = jsUrl;
+        document.body.appendChild(s);
+    </script>
 
 <!-- app -->
 <div data-role="page" id="page-stream">
@@ -143,7 +148,16 @@
     <div>
     <fieldset class="ui-grid-a">
       <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="bars" data-iconpos="left">Stat</a></div>
-      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">Vota</a></div>
+      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">
+    <span id="target_tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17"
+          data-api-key="apk-f7adfcbc-7279-3107-15d0-cbf4bca01496"
+          data-title="Pasta al pesto"
+          data-object-id="tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17"
+          data-group="group-vsite"
+          data-lang="it"
+          data-user-id="pappa-mi-10001"> 
+    </span>    
+      </a></div>
     </fieldset>
     </div>
     <table id="dish_table" data-role="table" class="ui-responsive table-stroke">
@@ -159,7 +173,6 @@
     <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
-
 
 <div data-role="page" id="page-notifiche">
  <div data-role="header">

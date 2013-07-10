@@ -986,11 +986,27 @@ class SocialAdmin(object):
 
       logging.info("migrate.end")
 
+class AdminVeespoHandler(BaseHandler):
+
+  @reguser_required
+  def get(self):
+    dishes = list()
+    for d in Piatto.get_all():
+      dishes.append({'id': d.key.id(),
+                     'name': d.nome })
+    template_values = {
+      'content': "admin/veespo.html",
+      'dishes': json.dumps(dishes),
+      'user': self.get_current_user(),
+    }
+    self.getBase(template_values)
+
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
   ('/admin/menu', AdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
+  ('/admin/veespo', AdminVeespoHandler),
   ('/admin', CMAdminHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
