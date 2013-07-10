@@ -439,6 +439,11 @@ class Piatto(model.Model):
   gi = model.IntegerProperty()
 
   _pi_gi_cache = dict()
+
+  @classmethod
+  def get_all(cls):
+    return cls.query().fetch()
+
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None

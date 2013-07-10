@@ -432,10 +432,15 @@ function onDishStat() {
   alert("Stats for: " + dish_name);
 }
 
+var _veespo_push = _veespo_push || [];
+var handler = function(response) {
+      alert("Grazie per il tuo feedback.");
+};
+_veespo_push.push(['widget.button-modal','target_tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17',{handler:handler}]);
+
 function onDishVote() {
   var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
-  var dish_name = getDish(dish_id).desc1
-  alert("Vote for: " + dish_name);
+  var dish_name = getDish(dish_id).desc1    
 }
 /*
  * Torna l'oggetto relativo al id del piatto passato
