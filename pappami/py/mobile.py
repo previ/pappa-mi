@@ -66,9 +66,20 @@ class AppMobileHandler(BasePage):
   def post(self):
     return self.get()
 
+class VeespoDemoHandler(BasePage):
+
+  def get(self):
+    template_values = {}
+    template_values["main"] = "mobile/veespo_demo.html"
+      
+    self.getBase(template_values)
+  def post(self):
+    return self.get()
+
 app = webapp.WSGIApplication([
     ('/mobile', MobileHandler),
-    ('/mobile/app', AppMobileHandler)
+    ('/mobile/app', AppMobileHandler),
+    ('/mobile/veespo', VeespoDemoHandler),
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 
 app.error_handlers[404] = handle_404
