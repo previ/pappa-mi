@@ -20,7 +20,6 @@ class ChannelConnectHandler(BasePage):
       users = dict()
     users[user_id] = datetime.now()
     memcache.set('OnlineUsers', users)
-    logging.info(users)
     
 
 class ChannelDisconnectHandler(BasePage):

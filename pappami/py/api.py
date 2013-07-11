@@ -349,7 +349,8 @@ class ConfigApiHandler(BaseHandler):
   def get(self):
     config = {'apihost': 'api.pappa-mi.it',
               'apiversion': '1.0',
-              'appname': 'Pappa-Mi'}
+              'appname': 'Pappa-Mi',
+              'veespoproduction': 'NO'}
     self.output_as_json(config)
 
 class TestApiHandler(BaseHandler):

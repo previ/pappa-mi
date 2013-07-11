@@ -3,7 +3,11 @@ var current_user = "";
 var guest_user_id = 0;
 
 function isUserLogged() {
- return current_user.id != guest_user_id
+ return current_user.type != "O";
+}
+
+function isUserCM() {
+ return current_user.type == 'C';
 }
 
 $(document).ready(function(){
@@ -167,7 +171,10 @@ function loadPost(post_id) {
 	att_list.append($('<li></li>').append($('<a></a>').attr('href', att.url).text(att.desc)));
       }
     }      
-    page_post_detail.find('#attachments').html(att_list);    
+    page_post_detail.find('#attachments').html(att_list); 
+    if(isUserLogged()){
+      page_post_detail.find('#post_commands').show();
+    }
     page_post_detail.trigger("create");
     $.mobile.navigate('#page-post-detail');
   }});    
@@ -397,7 +404,7 @@ function loadMenu() {
     $('#menu').trigger("create");
     $('.dish_info').on('click', onDishInfo);
     $('.dish_stat').on('click', onDishStat);
-    $('.dish_vote').on('click', onDishVote);
+    //$('.dish_vote').on('click', onDishVote);
     
     $.mobile.hidePageLoadingMsg();
     }});

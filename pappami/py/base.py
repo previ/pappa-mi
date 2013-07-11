@@ -212,7 +212,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.1.0.32 - 2013.06.16"
+    template_values["version"] = "3.1.0.33 - 2013.07.10"
     template_values["ctx"] = self.get_context()
 
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):

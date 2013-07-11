@@ -261,6 +261,7 @@ function onPostEdit(){
 	post_root.append(edit_undo);
 	post_container.empty();
 	post_container.append(edit_post);
+	tinymce.remove('#'+edit_post.find('.s_post_edit_content').attr('id'));
 	edit_post.find(".s_post_edit_content").tinymce(tiny_mce_opts);
 	post_root.find(".s_post_commands").hide()
 	edit_post.show()
@@ -337,6 +338,7 @@ function onCommentEdit(){
   
   edit_post.find('.s_comment_edit_content').attr('value', $(this).parents(".s_post_container").find('.s_post_content').html())
   comment_root.find(".s_edit_hollow").append(edit_post);
+  tinymce.remove('#'+edit_post.find('.s_comment_edit_content').attr('id'));
   edit_post.find(".s_comment_edit_content").tinymce(tiny_mce_opts);
   comment_root.find(".s_post_commands").hide()
   comment_root.find('.s_post_content').hide()
@@ -412,7 +414,8 @@ function onPostCollapse() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
   var data = {'cmd':'collapse_post', 'post':post_key }
-
+  
+  tinymce.remove('#'+post_item.find('.s_post_comment').attr('id'));
   $.ajax({
 	  type: 'POST',
 	  url:'/post/manage', 
@@ -457,9 +460,9 @@ function onPostCommentFormExpand() {
 
 function onOpenPostForm(){
   if(!$('#new_post').is(':visible')){
-    $("#new_post").slideDown()
+    $("#new_post").slideDown();
   } else {
-    $("#new_post").slideUp()  
+    $("#new_post").slideUp();  
   }
 }
 
@@ -486,6 +489,7 @@ function onPostReshare() {
       $(document).ready(function () {
         modal_reshare.find('[data-loading-text]').button();
 	modal_reshare.find('input[name="post"]').attr("value", post);
+	tinymce.remove('#reshare_post_content_text');
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
 	modal_reshare.find('form').ajaxForm({beforeSubmit: function() {modal_reshare.find('[data-loading-text]').button('loading');}, clearForm: true, dataType:'json', error: onError, success:function(data){
 	  if(data.response!="success") {
@@ -844,6 +848,8 @@ function initNode(node_key){
       }
   }
  });
+ 
+ tinymce.remove('#post_content_text');
  $("#post_content_text").tinymce(tiny_mce_opts);
  $('#new_post_form').ajaxForm({clearForm: true, dataType:'html', error: onError, success: function(data) { 
   /*
