@@ -82,9 +82,11 @@
     <div class="s_post_d_content" id="content"></div>
     <div id="resources"></div>
     <div id="attachments"></div>
-    <button href="#" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
-    <button href="#" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="c">Inoltra</button>  
-    <button href="#" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="c">Vota</button>  
+    <div id="post_commands" style="display:none;">
+      <button href="#" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
+      <button href="#" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="c">Inoltra</button>  
+      <button href="#" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="c">Vota</button> 
+    </div>
     <a href="#page-stream" data-icon="arrow-l" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
@@ -149,16 +151,51 @@
     <fieldset class="ui-grid-a">
       <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="bars" data-iconpos="left">Stat</a></div>
       <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">
-    <span id="target_tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17"
+    <span id="button_vote"
           data-api-key="apk-f7adfcbc-7279-3107-15d0-cbf4bca01496"
-          data-title="Pasta al pesto"
-          data-object-id="tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17"
+          data-title=""
+          data-object-id=""
           data-group="group-vsite"
           data-lang="it"
-          data-user-id="pappa-mi-10001"> 
+          data-user-id=""> 
     </span>    
       </a></div>
     </fieldset>
+    </div>
+    <div id="dish_stats">
+    <h2>Voti</h2>
+    <div id="dish_stats_graph"></div>
+    <div id="dish_stats_table">
+      <table id="" data-role="table" class="ui-responsive table-stroke">
+      <thead>
+	<tr>
+	  <th data-priority="1">Parametro</th>
+	  <th data-priority="2">Voto</th>
+	</tr>
+      </thead>
+      <tbody id="dish_components">
+	<tr>
+	  <td>Assaggio</th>
+	  <td>3</th>
+	</tr>
+	<tr>
+	  <td>Gradimento</th>
+	  <td>4</th>
+	</tr>
+	<tr>
+	  <td>Ben cotto</th>
+	  <td>2</th>
+	</tr>
+	<tr>
+	  <td>Educativo</th>
+	  <td>1</th>
+	</tr>
+	<tr>
+	  <td>Salutare</th>
+	  <td>5</th>
+	</tr>
+      </tbody>
+    </div>
     </div>
     <table id="dish_table" data-role="table" class="ui-responsive table-stroke">
       <thead>
