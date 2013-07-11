@@ -334,18 +334,6 @@ $("#page-menu").bind('swiperight', function(event) {
   if(next_date) initUI(current_user, cur_sk.val(), next_date);
 });
 
-$("#page-menu").bind('pagebeforeshow', function(event){ 
-  console.log("Schools page...");
-    $("#page-menu").find('span[data-role="button"]').each(function(){
-      var e = $(this);
-    });
-}); 
-
-var back = function(){
-  $.mobile.changePage("#page-menu");
-  return false;
-};
-
 function initUI(current_user, sk, dt) {
   var params = $('<fieldset id="params" data-role="controlgroup" data-type="vertical"><select id="cm" name="school" data-mini="true" data-native-menu="false"/><select id="data" name="cm" data-mini="true" data-native-menu="false"/></fieldset>');
   //var params = $('<select id="cm" name="school" data-mini="true" data-native-menu="true"/><div data-role="controlgroup" data-type="horizontal"><a href="#" data-role="button" data-mini="true" data-inline="true" data-icon="arrow-l">&nbsp</a><select id="data" name="data" data-role="button" data-mini="true" data-inline="true" data-native-menu="true"/><a href="#" data-inline="true" data-mini="true" data-role="button" data-icon="arrow-r" data-iconpos="right">&nbsp</a></div>');
@@ -420,6 +408,8 @@ function onDishInfo() {
 	  type: "GET",
 	  dataType:'json',
 	  success:function(data) {
+	    initVeespo(current_user.id, dish_id);
+
 	    $('#dish_components').empty();
 	    var dish_info = data;
 	    var components = dish_info["components"];
@@ -439,15 +429,34 @@ function onDishStat() {
   alert("Stats for: " + dish_name);
 }
 
-var _veespo_push = _veespo_push || [];
-var handler = function(response) {
-      alert("Grazie per il tuo feedback.");
-};
-_veespo_push.push(['widget.button-modal','target_tgt-aee57d3e-9742-d5dd-64b3-bcca9bdb4a17',{handler:handler}]);
-
 function onDishVote() {
-  var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
-  var dish_name = getDish(dish_id).desc1    
+  //var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
+  //var dish_name = getDish(dish_id).desc1    
+  //$('#widget-feedback').click();
+}
+
+var context = {
+  apiKey:"apk-f7adfcbc-7279-3107-15d0-cbf4bca01496", 
+  group:"group-vsite", 
+  lang:"it", 
+  enviroment:"sandbox",
+  custom_button: 'http://www.pappa-mi.it/img/pappa-mi-logo.png'
+};
+
+function initVeespo(user_id, dish_id) {
+  context.title = getDish(dish_id).desc1;
+  context.targetId = "tgt-pappa-mi-dish-"+dish_id;
+  context.userId = "pappa-mi-user-"+current_user.id;
+	  
+  $("#widget-feedback").veespo('widget.button-modal',{ context:context}).then(function(response) {
+    if (response.code == 1) {     
+      var url = "http://sandbox.veespo.com/v1/ratings/user/" + context.userId + "/target/" + context.targetId
+      
+      $.getJSON(url+"?callback=?").then(function(json) {
+	alert(JSON.stringify(json));
+      });
+    }
+  }); 
 }
 /*
  * Torna l'oggetto relativo al id del piatto passato

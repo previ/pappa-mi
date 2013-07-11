@@ -849,7 +849,7 @@ function initNode(node_key){
   }
  });
  
- tinymce.remove('#post_content_text');
+ tinymce.remove();
  $("#post_content_text").tinymce(tiny_mce_opts);
  $('#new_post_form').ajaxForm({clearForm: true, dataType:'html', error: onError, success: function(data) { 
   /*
