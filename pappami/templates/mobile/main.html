@@ -26,10 +26,8 @@
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 <script src="/js/jquery.form.js"></script> 
 <script src="http://cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
-
-
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
-   
+<script src="/js/Chart.min.js"></script>    
 </head> 
 
 <body data-channel-id="{{channel}}"> 
@@ -138,52 +136,18 @@
 </div>
 <div data-role="page" id="page-dish-detail">
   <div data-role="header" data-theme="d">
-   <h1 id="dish_name"></h1>
+   <h1 class="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
     <div>
     <fieldset class="ui-grid-a">
-      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="bars" data-iconpos="left">Stat</a></div>
+      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Opinioni</a></div>
       <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">
-	<span id="widget-feedback"></span>
+	<span id="widget_vote">Vota</span>
 	</a>
       </div>
     </fieldset>
     </div>
-    {#<div id="dish_stats">
-    <h2>Voti</h2>
-    <div id="dish_stats_graph"></div>
-    <div id="dish_stats_table">
-      <table id="" data-role="table" class="ui-responsive table-stroke">
-      <thead>
-	<tr>
-	  <th data-priority="1">Parametro</th>
-	  <th data-priority="2">Voto</th>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td>Assaggio</th>
-	  <td>3</th>
-	</tr>
-	<tr>
-	  <td>Gradimento</th>
-	  <td>4</th>
-	</tr>
-	<tr>
-	  <td>Ben cotto</th>
-	  <td>2</th>
-	</tr>
-	<tr>
-	  <td>Educativo</th>
-	  <td>1</th>
-	</tr>
-	<tr>
-	  <td>Salutare</th>
-	  <td>5</th>
-	</tr>
-      </tbody>
-    </div>#}
     <table id="dish_table" data-role="table" class="ui-responsive table-stroke">
       <thead>
 	<tr>
@@ -194,6 +158,34 @@
       <tbody id="dish_components">
       </tbody>
     </table>
+    <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
+  </div>
+</div>
+<div data-role="page" id="page-dish-vote">
+  <div data-role="content" data-theme="c" style="width:320px;height:600px" id="widget_vote">
+  </div>
+</div>
+<div data-role="page" id="page-dish-stat">
+  <div data-role="header" data-theme="d">
+   <h1 class="dish_name"></h1>
+  </div>
+  <div data-role="content" data-theme="c">
+    <div id="dish_stat_graph">
+      <canvas id="vote_canvas" height="320px" width="320px"></canvas>
+    </div>
+    <div id="dish_stat_table">
+      <table data-role="table" class="ui-responsive table-stroke">
+	<thead>
+	  <tr>
+	    <th data-priority="1">Caratteristica</th>
+	    <th data-priority="2">Voto medio</th>
+	  </tr>
+	</thead>
+	<tbody id="dish_stat_votes">
+	</tbody>
+      </table>
+     </div>
+    </div>
     <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
@@ -244,13 +236,12 @@
     <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
   </div>
 </div>
-    <script>      
+    <script>  
       var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
       var s = document.createElement('script');
       s.async = true; s.src = jsUrl;
       document.body.appendChild(s);
     </script>  
-
 </body>
 <!--  pages pappa mi-->
 <script src="/js/mobile/mobile-menu.js"></script>
