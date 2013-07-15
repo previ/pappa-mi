@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var current_user = "";
 var guest_user_id = 0;
 
@@ -393,7 +393,7 @@ function loadMenu() {
     $('#menu').trigger("create");
     $('.dish_info').on('click', onDishInfo);
     $('.dish_stat').on('click', onDishStat);
-    //$('.dish_vote').on('click', onDishVote);
+    $('.dish_vote').on('click', onDishVote);
     
     $.mobile.hidePageLoadingMsg();
     }});
@@ -402,6 +402,7 @@ function loadMenu() {
 function onDishInfo() {
   var dish_id = $(this).parents('li').attr('data-dish-id');
   var school_id = $('#cm').val();
+
   var dish_name = getDish(dish_id).desc1
   $('.dish_name').text(dish_name);
 
@@ -409,28 +410,7 @@ function onDishInfo() {
 	  type: "GET",
 	  dataType:'json',
 	  success:function(data) {
-	    initVeespo(current_user.id, dish_id, dish_name);
-	    getVotesAvg(dish_id, function() {
-	      var dish_stat_tbody = $('#dish_stat_votes');
-	      dish_stat_tbody.empty();
-	      var dish_votes_avg = vote_avg[dish_id].avgS;
-	      var radarChartData = {labels: [], datasets: []};
-	      radarChartData.datasets[0] = {fillColor : "rgba(127,255,127,0.5)",
-					    strokeColor : "rgba(127,255,127,1)",
-					    pointColor : "rgba(0,255,0,1)",
-					    pointStrokeColor : "#fff",
-					    data: []}
-	      for( var vote in dish_votes_avg ) {
-		//vote = vote_avg.avgS[vote];
-		radarChartData.labels.push(tag_map[vote].label);
-		radarChartData.datasets[0].data.push(dish_votes_avg[vote]);
-		var tr = $('<tr></tr>');
-		tr.append('<td>'+tag_map[vote].label+'</td>');
-		tr.append('<td>'+dish_votes_avg[vote]+'</td>');
-		dish_stat_tbody.append(tr);
-	      }
-	      var radar = new Chart(document.getElementById("vote_canvas").getContext("2d")).Radar(radarChartData,{scaleShowLabels : false, pointLabelFontSize : 10});
-	    });	  
+	    //initVeespo(current_user.id, dish_id, dish_name);
 
 	    $('#dish_components').empty();
 	    var dish_info = data;
@@ -448,14 +428,21 @@ function onDishInfo() {
 function onDishStat() {
   var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
   var dish_name = getDish(dish_id).desc1;
-  $.mobile.navigate( "#page-dish-stat" );
+  
+  getVotesAvg(dish_id, function() {
+    var vote_map = createVoteMap(dish_id);
+    createVoteChart(dish_id, vote_map, "dish_stat_graph");
+    createVoteTable(dish_id, vote_map, "dish_stat_table");
+  
+    $.mobile.navigate( "#page-dish-stat" );
+  });
 }
 
 function onDishVote() {
   var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
   var dish_name = getDish(dish_id).desc1;
-  initVeespo()
   $.mobile.navigate( "#page-dish-vote" );
+  createWidget(current_user.id, dish_id, dish_name);
 }
 
 var context = {
@@ -469,12 +456,10 @@ var context = {
 var veespo_api_const = {
 category: 'ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d',
 api_tag_list: 'http://sandbox.veespo.com/v1/tag-frequency/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d?lang=it',
-api_vote_avg: 'http://sandbox.veespo.com/v1/average/target/'
+api_vote_avg: 'http://sandbox.veespo.com/v1/average/target/',
+api_last_vote: "http://sandbox.veespo.com/v1/ratings/user/:user_id/target/:target_id"
 };
-/*
-'{"data":{"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564":{"freq":14,"label":"Salata"},"tag-df84a68b-c562-42e4-6dec-051825fd1460":{"freq":10,"label":"Scotta"},"tag-56953501-c214-c3c2-d004-406803df6276":{"freq":9,"label":"Fredda"},"tag-C8802390-422F-4627-9E95-EE60C4825FD1":{"freq":7,"label":"Bollente"},"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f":{"freq":6,"label":"Gradimento"},"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54":{"freq":6,"label":"Educativo"},"tag-b3ded253-7628-490b-41e6-c061e899542d":{"freq":3,"label":"Assaggio"},"tag-ECF2E5D4-034A-4543-BFA5-0B75E69A1D81":{"freq":1,"label":"Crudi"}}}';
-'{"data":{"summary":{"numTypes":8,"numVotes":8},"sumN":{"tag-56953501-c214-c3c2-d004-406803df6276":1,"tag-df84a68b-c562-42e4-6dec-051825fd1460":1,"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564":1,"tag-C8802390-422F-4627-9E95-EE60C4825FD1":1,"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f":1,"id-0":1,"tag-b3ded253-7628-490b-41e6-c061e899542d":1,"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54":1},"sumR":{"tag-b3ded253-7628-490b-41e6-c061e899542d":4,"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f":3,"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54":3,"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564":2,"id-0":1,"tag-56953501-c214-c3c2-d004-406803df6276":0,"tag-df84a68b-c562-42e4-6dec-051825fd1460":0,"tag-C8802390-422F-4627-9E95-EE60C4825FD1":0},"avgS":{"tag-b3ded253-7628-490b-41e6-c061e899542d":4.0,"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f":3.0,"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54":3.0,"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564":2.0,"id-0":1.0,"tag-56953501-c214-c3c2-d004-406803df6276":0.0,"tag-df84a68b-c562-42e4-6dec-051825fd1460":0.0,"tag-C8802390-422F-4627-9E95-EE60C4825FD1":0.0},"variance":{"tag-56953501-c214-c3c2-d004-406803df6276":0.0,"tag-df84a68b-c562-42e4-6dec-051825fd1460":0.0,"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564":0.0,"tag-C8802390-422F-4627-9E95-EE60C4825FD1":0.0,"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f":0.0,"id-0":0.0,"tag-b3ded253-7628-490b-41e6-c061e899542d":0.0,"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54":0.0}}}';
-*/
+
 var tag_map;
 var vote_avg = Object();
 
@@ -492,55 +477,108 @@ function getVotesTag() {
 	    tag_map["id-0"]={"freq":0,"label":"Complessivo"};
 	  });
 }
-/*
-'{"data":[{"timestamp":1373733714094,"tag":"id-0","rating":1},{"timestamp":1373724448530,"tag":"tag-553e7fd5-962e-2963-acca-8d2b9d8eaa54","rating":3},{"timestamp":1373724448530,"tag":"tag-b3ded253-7628-490b-41e6-c061e899542d","rating":4},{"timestamp":1373724448530,"tag":"tag-9ba5fb92-6595-6b88-1d55-d4607893cf4f","rating":3},{"timestamp":1373724448530,"tag":"tag-C8802390-422F-4627-9E95-EE60C4825FD1","rating":0},{"timestamp":1373724448530,"tag":"tag-4ce42e2e-a46e-7492-8552-ad0dd8468564","rating":2},{"timestamp":1373724448530,"tag":"tag-df84a68b-c562-42e4-6dec-051825fd1460","rating":0},{"timestamp":1373724222780,"tag":"tag-56953501-c214-c3c2-d004-406803df6276","rating":0}]}';
-*/
-function initVeespo(user_id, dish_id, dish_name) {
+
+function getLastVote(user_id, dish_id, success) {
+  var url = veespo_api_const.api_last_vote.replace(":user_id", "pappa-mi-user-"+user_id).replace(":target_id", "tgt-pappa-mi-dish-"+dish_id);
+  $.getJSON(url+"?callback=?").then(function(json) {
+    var votes = json.data;
+    if(success) {
+      success(votes);
+    }
+  });
+}
+
+function createWidget(user_id, dish_id, dish_name) {
   context.title = dish_name;
   context.targetId = "tgt-pappa-mi-dish-"+dish_id;
   context.userId = "pappa-mi-user-"+current_user.id;
-    
-  $("#widget_vote").veespo('widget.button-modal',{ context:context }).then(function(response) {
+
+  $("#widget_vote").veespo('widget.inject-to-dom',{context:context}).then(function(response) {
     if (response.code == 1) {     
-      var url = "http://sandbox.veespo.com/v1/ratings/user/" + context.userId + "/target/" + context.targetId
-      
-      $.getJSON(url+"?callback=?").then(function(json) {
-	var votes = json.data;
-	var dish_stat_tbody = $('#dish_stat_votes');
-	dish_stat_tbody.empty();
-
-	var dish_votes_avg = vote_avg[dish_id].avgS;
-        var radarChartData = {labels: [], datasets: []};
-	radarChartData.datasets[0] = {fillColor : "rgba(127,255,127,0.5)",
-				  strokeColor : "rgba(127,255,127,1)",
-				  pointColor : "rgba(0,255,0,1)",
-				  pointStrokeColor : "#fff",
-				  data: []}
-	radarChartData.datasets[1] = {fillColor : "rgba(127,127,255,0.5)",
-				  strokeColor : "rgba(127,127,255,1)",
-				  pointColor : "rgba(0,0,255,1)",
-				  pointStrokeColor : "#fff",
-				  data: []}
-        for( var vote in dish_votes_avg ) {
-	  radarChartData.labels.push(tag_map[vote].label);
-	  radarChartData.datasets[0].data.push(dish_votes_avg[vote]);
-        }
-	for( var vote in votes ) {
-	  vote = votes[vote];
-	  //radarChartData.labels.push(tag_map[vote.tag].label);
-	  radarChartData.datasets[1].data.push(dish_votes_avg[vote.tag]);
-	  var tr = $('<tr></tr>');
-	  tr.append('<td>'+tag_map[vote.tag].label+'</td>');
-	  tr.append('<td>'+vote.rating+'</td>');
-    	  dish_stat_tbody.append(tr);
-	}
-	var radar = new Chart(document.getElementById("vote_canvas").getContext("2d")).Radar(radarChartData,{scaleShowLabels : false, pointLabelFontSize : 10});
-
-	$.mobile.navigate('#page-dish-stat');
+      getLastVote(current_user.id, dish_id, function(votes) {
+	getVotesAvg(dish_id, function() {
+	  var vote_map = createVoteMap(dish_id, votes);
+	  createVoteChart(dish_id, vote_map, "dish_stat_graph");
+	  createVoteTable(dish_id, vote_map, "dish_stat_table");
+	  $.mobile.navigate('#page-dish-stat');
+	});
       });
     }
-  }); 
+  });
 }
+
+function createVoteMap(dish_id, votes) {
+  console.log("votes: " + JSON.stringify(votes));
+  console.log("avgs: " + JSON.stringify(vote_avg[dish_id].avgS));
+  var vote_map = {};
+  var dish_votes_avg = vote_avg[dish_id].avgS;
+  for( var vote in dish_votes_avg ) {
+    vote_map[vote] = {label:tag_map[vote].label,
+		      avg: dish_votes_avg[vote],
+		      rating: ""};
+  }
+  if( votes ) {
+    for(var vote in votes) {
+      var vote = votes[vote];
+      vote_map[vote.tag].rating = vote.rating;
+    }
+  }
+  console.log(JSON.stringify(vote_map));
+  return vote_map;
+}
+
+function createVoteChart(dish_id, vote_map, chart_element_id) {  
+  var cdata = {labels: [], datasets: []};
+  cdata.datasets[0] = { fillColor : "rgba(127,255,127,0.5)",
+			strokeColor : "rgba(127,255,127,1)",
+			pointColor : "rgba(0,255,0,1)",
+			pointStrokeColor : "#fff",
+			data: []};
+  if(vote_map['id-0'].rating != "") {
+    cdata.datasets[1] = { fillColor : "rgba(127,127,255,0.5)",
+			  strokeColor : "rgba(127,127,255,1)",
+			  pointColor : "rgba(0,0,255,1)",
+			  pointStrokeColor : "#fff",
+			  data: []};
+  }
+  for( var vote in vote_map ) {
+    var vote = vote_map[vote];
+    cdata.labels.push(vote.label);
+    cdata.datasets[0].data.push(vote.avg);
+    if(vote_map['id-0'].rating) {
+      cdata.datasets[1].data.push(vote.rating);
+    }
+  }
+  var radar = new Chart(document.getElementById(chart_element_id).getContext("2d")).Radar(cdata,{scaleShowLabels : false, pointLabelFontSize : 10});
+}
+
+function createVoteTable(dish_id, vote_map, table_id) {
+  var thead = $('#'+ table_id).find('thead');
+  thead.empty();
+  var tr = $('<tr></tr>');
+  tr.append('<td>Caratteristica</td>');
+  tr.append('<td>Media</td>');
+  if(vote_map['id-0'].rating!=""){
+    tr.append('<td>Mio voto</td>');
+  }
+  thead.append(tr);
+
+  var tbody = $('#'+ table_id).find('tbody');
+  tbody.empty();
+  
+  for( var vote in vote_map ) {
+    var vote = vote_map[vote];
+    var tr = $('<tr></tr>');
+    tr.append('<td>'+vote.label+'</td>');
+    tr.append('<td>'+vote.avg+'</td>');
+    if(vote_map['id-0'].rating!=""){
+      tr.append('<td>'+vote.rating+'</td>');
+    }
+    tbody.append(tr);
+  }
+
+}
+
 /*
  * Torna l'oggetto relativo al id del piatto passato
  */

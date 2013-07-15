@@ -142,9 +142,7 @@
     <div>
     <fieldset class="ui-grid-a">
       <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Opinioni</a></div>
-      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">
-	<span id="widget_vote">Vota</span>
-	</a>
+      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">Vota</a>
       </div>
     </fieldset>
     </div>
@@ -162,7 +160,7 @@
   </div>
 </div>
 <div data-role="page" id="page-dish-vote">
-  <div data-role="content" data-theme="c" style="width:320px;height:600px" id="widget_vote">
+  <div data-role="content" data-theme="c" style="margin:0;padding:0;width:320px;height:600px" id="widget_vote">
   </div>
 </div>
 <div data-role="page" id="page-dish-stat">
@@ -170,18 +168,14 @@
    <h1 class="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
-    <div id="dish_stat_graph">
-      <canvas id="vote_canvas" height="320px" width="320px"></canvas>
+    <div>
+      <canvas id="dish_stat_graph" height="320px" width="320px"></canvas>
     </div>
-    <div id="dish_stat_table">
-      <table data-role="table" class="ui-responsive table-stroke">
+    <div>
+      <table id="dish_stat_table" data-role="table" class="ui-responsive table-stroke">
 	<thead>
-	  <tr>
-	    <th data-priority="1">Caratteristica</th>
-	    <th data-priority="2">Voto medio</th>
-	  </tr>
 	</thead>
-	<tbody id="dish_stat_votes">
+	<tbody>
 	</tbody>
       </table>
      </div>
