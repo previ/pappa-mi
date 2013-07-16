@@ -45,7 +45,17 @@ def post_as_json(post, cmsro):
           'content': post.content,
           'resource': resources_as_json(post),
           'images': post.images,
-          'attachments': attachments_as_json(post) }
+          'attachments': attachments_as_json(post),
+          'votes': post.votes }
+
+def comment_as_json(comment):
+  return {'id': post.id,
+          'author': {'id': str(comment.author.id()),
+                     'name': comment.commissario.nomecompleto(cmsro),
+                     'avatar': comment.commissario.avatar(cmsro)},
+          'ext_date': comment.extended_date(),
+          'content': comment.content,
+          'votes': comment.votes}
 
 def resources_as_json(post):
   resources = list()
@@ -266,6 +276,55 @@ class PostApiHandler(BaseHandler):
     response = post_as_json(post_key.get(), cmsro)
     self.output_as_json(response)
 
+class PostVoteApiHandler(BaseHandler):
+
+  def post(self, node_id, post_id):
+    user = self.get_current_user()
+    cmsro = self.getCommissario()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    
+    vote = int(self.request.get('vote'))
+    post.vote(vote, user)
+
+    response = {'response':'success', 'key': post.key.urlsafe(), 'votes':str(len(post.votes))}
+    self.output_as_json(response)
+
+    response = post_as_json(post_key.get(), cmsro)
+    self.output_as_json(response)
+
+class PostCommentApiHandler(BaseHandler):
+
+  def post(self, node_id, post_id):
+    user = self.get_current_user()
+    cmsro = self.getCommissario()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    
+    clean_content = Sanitizer.sanitize(self.request.get("content"))
+    comment = post.create_comment(clean_content,user)
+
+    EventHandler.startTask()
+    
+    response = {'response':'success', 'comment': comment_as_json(comment) }
+    self.output_as_json(response)
+
+class PostReshareApiHandler(BaseHandler):
+
+  def post(self, node_id, post_id):
+    user = self.get_current_user()
+    cmsro = self.getCommissario()
+    node=model.Key(urlsafe=self.request.get('node')).get()
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    
+    clean_title = Sanitizer.text(self.request.get("title"))
+    clean_content = Sanitizer.sanitize(self.request.get("content"))
+
+    rs_post_key=post.reshare(node.key,user,clean_content,clean_title)
+    
+    EventHandler.startTask()    
+
+    response = {'response':'success','post':post_as_json(rs_post_key)}
+    self.output_as_json(response)
+
 class MenuApiHandler(CMMenuHandler):
 
   def get(self, school_id, date):
@@ -373,6 +432,9 @@ app = webapp.WSGIApplication([
     ('/api/user/current', UserApiHandler),
     ('/api/node/list', NodeListApiHandler),
     ('/api/node/(.*)/stream/(.*)', NodeApiHandler),
+    ('/api/post/(.*)-(.*)/vote', PostVoteApiHandler),
+    ('/api/post/(.*)-(.*)/comment', PostCommentApiHandler),
+    ('/api/post/(.*)-(.*)/reshare', PostReshareApiHandler),
     ('/api/post/(.*)-(.*)', PostApiHandler),
     ('/api/post/create', PostApiHandler),
     ('/api/menu/(.*)/(.*)', MenuApiHandler),
