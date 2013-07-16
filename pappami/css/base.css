@@ -592,6 +592,26 @@ font-weight: bold;
   }
 }
 
+@media (max-width: 979px) {
+  .auth .provider-btn {
+      display: inline;
+      list-style: none;
+      padding: 0px;
+  }
+  .auth .provider-btn .btn img {
+      width: 90px;
+      height: 30px;
+  }
+  .auth ul {
+  padding: 0px;
+  margin: 0px;
+  }
+  .auth .provider-btn a {
+  padding: 0px;
+  margin: 0px;
+  }
+}
+
 .carousel-control {
   top:50%;
 }
