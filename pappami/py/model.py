@@ -1784,7 +1784,7 @@ class SocialPost(model.Model):
 
     @cached_property
     def votes(self):
-      #logging.info("votes")
+      #logging.info("votes()")
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
@@ -2026,7 +2026,10 @@ class SocialPost(model.Model):
         vote = Vote(ref = self.key, vote = vote, c_u = user.key)
         vote.put()
 
+      #logging.info(str(self.votes))
       self.votes = None
+      #logging.info(str(self.votes))
+      
 
       self.calc_rank(Vote)
       self.key.parent().get().calc_rank(Vote)

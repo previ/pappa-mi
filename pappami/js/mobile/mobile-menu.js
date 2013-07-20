@@ -1,6 +1,26 @@
 "use strict";
+
 var current_user = "";
 var guest_user_id = 0;
+
+function setCookie(c_name, value, exdays) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+    document.cookie = c_name + "=" + c_value;
+}
+
+function getCookie(c_name) {
+    var i, x, y, ARRcookies = document.cookie.split(";");
+    for (i = 0; i < ARRcookies.length; i++) {
+        x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+        y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+        x = x.replace(/^\s+|\s+$/g, "");
+        if (x == c_name) {
+            return unescape(y);
+        }
+    }
+}
 
 function isUserLogged() {
  return current_user.type != "O";
@@ -39,8 +59,37 @@ $("#page-stream").bind('pageinit', function(event, entry) {
     current_user = data;    
     $('.user_info').append($('<img class="avatar"></img>').attr('src', current_user.avatar));
     $('.user_info').append($('<span></span>').text(current_user.fullname));
-
-  }});    
+    
+    if(!isUserLogged() && getCookie('school_id')) {
+      current_user.schools = [{id: getCookie('school_id'),
+			       name: getCookie('school_name')}];
+    }
+    if(!isUserLogged()) {
+      $.ajax({url:"/api/school/"+current_user.city+"/list", 
+	      dataType:'json',
+	      success:function(data) { 
+		  var schools_list = $('#school_list');
+		  for(var school in data) {
+		    school = data[school];
+		    schools_list.append('<li><a href="#" data-school-id="' + school.id + '">' + school.name + '</a></li>');
+		  }
+		  schools_list.find('a').on('click', function() {
+		      current_user.schools = [{id: $(this).attr('data-school-id'),
+					       name: $(this).text()}];
+		      setCookie('school_id', current_user.schools[0].id);
+		      setCookie('school_name', current_user.schools[0].name);
+		      var now = new Date();
+		      $.mobile.changePage('#page-menu');
+		      initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
+		    });
+		  if( !getCookie('school_id') ) {
+    		    $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
+		  }
+		}
+	      });
+	    }
+    }
+  });    
 
   $.ajax({url:"/api/node/list", 
 	  dataType:'json',
@@ -107,9 +156,28 @@ $("#page-stream").bind('pageinit', function(event, entry) {
     $('#page-stream').trigger("create");
   }});
   loadNode('news');
+  $('#post_delete').on('click', onPostDelete);
+  $('#post_reshare').on('click', onPostReshare);
+  $('#post_comment').on('click', onPostComment);
+  $('#post_comment_submit').on('click', onPostCommentSubmit);
+  $('#post_comments_expand').on('click', onPostShowComments);
+  $('#post_vote').on('click', onPostVote);
+  $('#post_unvote').on('click', onPostVote);
 });
 
 var channel = "";
+
+function initCheck(event, entry) { 
+  $.mobile.showPageLoadingMsg();
+
+  if(current_user=="") {
+    window.location.href="/mobile/app";
+  }
+}
+
+$("#page-dish-detail").bind('pageinit', initCheck);
+$("#page-dish-stat").bind('pageinit', initCheck);
+$("#page-dish-vote").bind('pageinit', initCheck);
 
 $("#page-notifiche").bind('pageinit', function(event, entry) { 
   $.mobile.showPageLoadingMsg();
@@ -146,17 +214,109 @@ $("#page-notifiche").bind('pageinit', function(event, entry) {
   }
 });
 
+function onPostDelete() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+  
+  if(confirm("Cancellare il post?")) {
+    $.ajax({url:"/api/post/"+post_id+'/delete', 
+	    dataType:'json',
+	    success:function(data) { 
+	$.mobile.navigate('/mobile/app');
+      }});
+    
+  }
+}
+
+function onPostReshare() {
+}
+
+function onPostVote() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+
+  var data = {vote: $(this).attr('data-vote')};
+
+  $.ajax({url:"/api/post/"+post_id+'/vote', 
+	  type: 'POST',
+	  dataType:'json',
+	  data: data,
+	  success:function(data) { 
+
+      $('#vote_num').text(data.votes);
+      if(data.vote == '1') {
+	$('#post_vote_c').hide();
+	$('#post_unvote_c').show();
+      } else {
+	$('#post_vote_c').show();
+	$('#post_unvote_c').hide();
+      }
+  }});
+}
+
+function onPostShowComments() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+
+  $.ajax({url:"/api/post/"+post_id+'/comment', 
+	  type: 'GET',
+	  dataType:'json',
+	  success:function(data) { 
+	    var comments = data.comments;
+	    var comment_list = $('#comment_list');
+	    comment_list.empty();
+	    for ( var comment in comments ) {
+	      comment = comments[comment];
+	      var li = $('<li></li>');
+	      li.append('<img class="avatar" src="'+comment.author.avatar+'"></img>');
+	      li.append('<span>'+comment.author.name+'</span>');
+	      li.append('<p>'+comment.content+'</p>');
+	      comment_list.append(li);
+	      $('#comment_add').show();
+	    }
+  }});
+}
+
+function onPostComment() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id'); 
+  $('#page-post-comment').find('#post_id').attr('data-post-id', post_id);
+  onPostShowComments();
+  $.mobile.changePage('#page-post-comment');
+}
+
+function onPostCommentSubmit() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id'); 
+  var data = {content: $('#comment_content').val()}
+  $.ajax({url:"/api/post/"+post_id+'/comment', 
+	  type: 'POST',
+	  dataType:'json',
+	  data: data,
+	  success:function(data) { 
+	  var comments = data.comments;
+	  var comment_list = $('#comment_list');
+	  for ( var comment in comments ) {
+	    comment = comments[comment];
+	    var li = $('<li></li>');
+	    li.append('<img class="avatar" src="'+comment.author.avatar+'"></img>');
+	    li.append('<span>'+comment.author.name+'</span>');
+	    li.append('<p>'+comment.content+'</p>');
+	    comment_list.append(li);
+	  }
+  }});
+}
+
 function loadPost(post_id) {
   $.ajax({url:"/api/post/"+post_id, 
 	  dataType:'json',
 	  success:function(data) { 
     var page_post_detail = $('#page-post-detail');
     var post = data;    
+    page_post_detail.attr('data-post-id', post.id);
     page_post_detail.find('#author').text(post.author.name);
     page_post_detail.find('#avatar').attr('href', post.author.avatar);
     page_post_detail.find('#date').text(post.ext_date);
     page_post_detail.find('#title').html(post.title);
     page_post_detail.find('#content').html(post.content);
+    page_post_detail.find('#comment_num').text(post.comments);
+    page_post_detail.find('#vote_num').text(post.votes);
+    
     var res_list = $('<ul class="unstyled"></ul>').empty();
     for (var rn in post.resources) {
       var res = post.resources[rn]
@@ -173,11 +333,31 @@ function loadPost(post_id) {
       }
     }      
     page_post_detail.find('#attachments').html(att_list); 
-    if(isUserLogged()){
+    if(isUserLogged()){     
+      if(post.canadmin) {
+	$('#post_delete').show();
+      } else {
+	$('#post_delete').hide();
+      }
+      if(post.cancomment && post.comments == 0) {
+	$('#comment_add').show();
+      } else {
+	$('#comment_add').hide();
+      }
+      if(post.canvote) {
+	$('#post_vote_c').show();
+	$('#post_unvote_c').hide();
+      } else {
+	$('#post_vote_c').hide();
+	$('#post_unvote_c').show();
+      }      
       page_post_detail.find('#post_commands').show();
+    } else {
+      page_post_detail.find('#comment_add').hide();
+      page_post_detail.find('#post_commands').hide();
     }
     page_post_detail.trigger("create");
-    $.mobile.navigate('#page-post-detail');
+    $.mobile.changePage('#page-post-detail', {transition:'slide'});
   }});    
 }
 
@@ -249,7 +429,7 @@ function loadNode(node_id, cursor) {
       var post = data;
       $('#post_list').prepend(createPostItem(post));
       $('#post_list').listview("refresh");
-      $.mobile.navigate( "#page-stream" );
+      $.mobile.changePage( "#page-stream" );
   }});
 }
 
@@ -278,7 +458,13 @@ function createPostItem(post) {
     loadPost($(this).attr('data-post-id'));
   });
   if(post.images.length > 0) {
-   a.append($('<img></img>').attr('src', post.images[0]))
+   a.append($('<img></img>').attr('src', post.images[0]));
+  }
+  if(post.comments > 0) {
+   a.append($('<p class="ui-li-aside">Commenti: ' + post.comments + '</p>'));
+  }
+  if(post.votes > 0) {
+   a.append($('<p class="ui-li-aside">Voti: ' + post.votes + '</p>'));
   }
   a.append($('<span class="s_post_content"></span>').append(post.content_summary));
   //a.append($('<p class="ui-li-aside"><small>' + post.node.name +' di '+ post.author.name + ' ' + post.ext_date +'</small></p>'));
@@ -336,15 +522,26 @@ $("#page-menu").bind('swiperight', function(event) {
 });
 
 function initUI(current_user, sk, dt) {
-  var params = $('<fieldset id="params" data-role="controlgroup" data-type="vertical"><select id="cm" name="school" data-mini="true" data-native-menu="false"/><select id="data" name="cm" data-mini="true" data-native-menu="false"/></fieldset>');
-  //var params = $('<select id="cm" name="school" data-mini="true" data-native-menu="true"/><div data-role="controlgroup" data-type="horizontal"><a href="#" data-role="button" data-mini="true" data-inline="true" data-icon="arrow-l">&nbsp</a><select id="data" name="data" data-role="button" data-mini="true" data-inline="true" data-native-menu="true"/><a href="#" data-inline="true" data-mini="true" data-role="button" data-icon="arrow-r" data-iconpos="right">&nbsp</a></div>');
+  var params =  $('<fieldset id="params" data-role="controlgroup" data-type="vertical"></fieldset>');
+  if(isUserLogged()) {
+    params.append($('<select id="cm" name="school" data-mini="true" data-native-menu="false"/>'));  
+  } else {
+    params.append($('<input id="cm" type="hidden" name="cm" value="'+current_user.schools[0].id+'"/>')); 
+    params.append($('<button data-mini="true">'+current_user.schools[0].name+'</button>').on('click', function() {
+      $.mobile.changePage('#page-school-chooser');
+    }));  
+  }
+  params.append($('<select id="data" name="cm" data-mini="true" data-native-menu="false"/>'))  
+  
   var sel_sk = params.find("#cm");
   var sel_date = params.find("#data");
   
-  for( var school in current_user.schools) {
-    sel_sk.append( $("<option>").attr("value", current_user.schools[school].id).text(current_user.schools[school].name));
-  }     
-  sel_sk.find("option[value='" + sk + "']").attr("selected",1);
+  if(isUserLogged()) {  
+    for( var school in current_user.schools) {
+      sel_sk.append( $("<option>").attr("value", current_user.schools[school].id).text(current_user.schools[school].name));
+    }     
+    sel_sk.find("option[value='" + sk + "']").attr("selected",1);
+  }  
   
   for( var i=-7;i<=7;i++) {
    var date = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()-i);
@@ -421,7 +618,7 @@ function onDishInfo() {
 	      $('#dish_components').append(tr);
 	    }
 	    $('#page-dish-detail').attr('data-dish-id', dish_id);
-  	    $.mobile.navigate( "#page-dish-detail" );
+  	    $.mobile.changePage( "#page-dish-detail", {transition:'slide'});
 	  }});  
 }
 
@@ -434,14 +631,14 @@ function onDishStat() {
     createVoteChart(dish_id, vote_map, "dish_stat_graph");
     createVoteTable(dish_id, vote_map, "dish_stat_table");
   
-    $.mobile.navigate( "#page-dish-stat" );
+    $.mobile.changePage( "#page-dish-stat", {transition:'flip'} );
   });
 }
 
 function onDishVote() {
   var dish_id = $(this).parents('[data-dish-id]').attr('data-dish-id');
   var dish_name = getDish(dish_id).desc1;
-  $.mobile.navigate( "#page-dish-vote" );
+  $.mobile.changePage( "#page-dish-vote", {transition:'flip'});
   createWidget(current_user.id, dish_id, dish_name);
 }
 
@@ -449,15 +646,15 @@ var context = {
   apiKey:"apk-f7adfcbc-7279-3107-15d0-cbf4bca01496", 
   group:"group-vsite", 
   lang:"it", 
-  enviroment:"sandbox",
+  enviroment:"production",
   custom_button: 'http://www.pappa-mi.it/img/pappa-mi-logo.png'
 };
 
 var veespo_api_const = {
 category: 'ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d',
-api_tag_list: 'http://sandbox.veespo.com/v1/tag-frequency/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d?lang=it',
-api_vote_avg: 'http://sandbox.veespo.com/v1/average/target/',
-api_last_vote: "http://sandbox.veespo.com/v1/ratings/user/:user_id/target/:target_id"
+api_tag_list: 'http://production.veespo.com/v1/tag-frequency/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d?lang=it',
+api_vote_avg: 'http://production.veespo.com/v1/average/target/',
+api_last_vote: "http://production.veespo.com/v1/ratings/user/:user_id/target/:target_id"
 };
 
 var tag_map;
@@ -467,7 +664,6 @@ function getVotesAvg(dish_id, success) {
   $.getJSON(veespo_api_const.api_vote_avg + 'tgt-pappa-mi-dish-' + dish_id+'?callback=?').then(function(json) {
 	    vote_avg[dish_id] = json.data;
 	    success();
-	    //alert(JSON.stringify(vote_avg));
 	  });
 }
 
@@ -500,7 +696,7 @@ function createWidget(user_id, dish_id, dish_name) {
 	  var vote_map = createVoteMap(dish_id, votes);
 	  createVoteChart(dish_id, vote_map, "dish_stat_graph");
 	  createVoteTable(dish_id, vote_map, "dish_stat_table");
-	  $.mobile.navigate('#page-dish-stat');
+	  $.mobile.changePage('#page-dish-stat', {transition:'flip'});
 	});
       });
     }
@@ -513,14 +709,18 @@ function createVoteMap(dish_id, votes) {
   var vote_map = {};
   var dish_votes_avg = vote_avg[dish_id].avgS;
   for( var vote in dish_votes_avg ) {
-    vote_map[vote] = {label:tag_map[vote].label,
-		      avg: dish_votes_avg[vote],
-		      rating: ""};
+    if(tag_map[vote]) {
+      vote_map[vote] = {label:tag_map[vote].label,
+			avg: dish_votes_avg[vote],
+			rating: ""};
+    }
   }
   if( votes ) {
     for(var vote in votes) {
       var vote = votes[vote];
-      vote_map[vote.tag].rating = vote.rating;
+      if( vote_map[vote.tag] ) {
+	vote_map[vote.tag].rating = vote.rating;
+      }
     }
   }
   console.log(JSON.stringify(vote_map));
@@ -545,7 +745,7 @@ function createVoteChart(dish_id, vote_map, chart_element_id) {
     var vote = vote_map[vote];
     cdata.labels.push(vote.label);
     cdata.datasets[0].data.push(vote.avg);
-    if(vote_map['id-0'].rating) {
+    if(vote_map['id-0'] && vote_map['id-0'].rating) {
       cdata.datasets[1].data.push(vote.rating);
     }
   }
@@ -557,9 +757,9 @@ function createVoteTable(dish_id, vote_map, table_id) {
   thead.empty();
   var tr = $('<tr></tr>');
   tr.append('<td>Caratteristica</td>');
-  tr.append('<td>Media</td>');
+  tr.append('<td><span style="color:rgb(0,255,0);">Media</span></td>');
   if(vote_map['id-0'].rating!=""){
-    tr.append('<td>Mio voto</td>');
+    tr.append('<td><span style="color:rgb(0,0,255);">Mio voto</span></td>');
   }
   thead.append(tr);
 

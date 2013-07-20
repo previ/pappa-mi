@@ -33,6 +33,7 @@ from py.model import *
 from event import EventHandler
 
 def post_as_json(post, cmsro):
+  user = cmsro.usera.get() if cmsro else None
   return {'id': post.id,
           'author': {'id': str(post.author.id()),
                      'name': post.commissario.nomecompleto(cmsro),
@@ -46,10 +47,15 @@ def post_as_json(post, cmsro):
           'resource': resources_as_json(post),
           'images': post.images,
           'attachments': attachments_as_json(post),
-          'votes': post.votes }
+          'votes': len(post.votes),
+          'comments': post.comments,
+          'canadmin': post.can_admin(user),
+          'canvote': post.can_vote(user),
+          'cancomment': post.can_comment(user)}
 
-def comment_as_json(comment):
-  return {'id': post.id,
+def comment_as_json(comment, cmsro):
+  user = cmsro.usera
+  return {'id': comment.key.urlsafe(),
           'author': {'id': str(comment.author.id()),
                      'name': comment.commissario.nomecompleto(cmsro),
                      'avatar': comment.commissario.avatar(cmsro)},
@@ -84,6 +90,7 @@ class UserApiHandler(BaseHandler):
                 'fullname': 'Ospite',
                 'type': 'O',
                 'avatar': "/img/default_avatar.png",
+                'city': 1364003,
                 'schools': [{'id': 2212, 'name': 'Muzio Primaria'}]}
     if user:
       co = self.getCommissario()
@@ -93,11 +100,60 @@ class UserApiHandler(BaseHandler):
                           'name': cm.desc()})
       user_api = {'id': str(co.usera.id()),
                   'fullname': str(co.nomecompleto(None,True)),
+                  'firstname': str(co.nome),
+                  'lastname': str(co.cognome),
                   'type': 'C' if co.stato == 1 else "G",
                   'avatar': str(co.avatar(co,48)),
+                  'city': co.citta.id(),
                   'schools': user_schools}
     self.output_as_json(user_api)
 
+  @reguser_required  
+  def post(self):
+    cmsro = self.getCommissario()
+    userprofile = JSON.decode(self.request.get('userprofile'))
+    if userprofile.get('firstname'):
+      cmsro.nome = userprofile.get('firstname')
+    if userprofile.get('lastname'):
+      cmsro.cognome = userprofile.get('lastname')
+      
+    if userprofile.get('schools'):
+      old = list()
+      for cm in cmsro.commissioni():
+        old.append(cm.key)
+      old = set(old)
+
+      new = list()
+      for s in userprofile.get('schools'):
+        new.append(model.Key("Commissione", int(s['id'])))
+      new = set(new)
+
+      todel = old - new
+      toadd = new - old
+
+      for cm_key in todel:
+        commissione = cm_key.get()
+        cmsro.unregister(commissione)
+        node = SocialNode.get_by_resource(cm_key)[0]
+        if node:
+          node.unsubscribe_user(cmsro.usera.get())
+
+      for cm_key in toadd:
+        commissione = cm_key.get()
+        cmsro.register(commissione)
+        node = SocialNode.get_by_resource(cm_key)[0]
+        if node:
+          node.subscribe_user(cmsro.usera.get())
+          if commissione.zona:
+            nodes = SocialNode.get_by_name(commissione.citta.get().nome + " - Zona " + str(commissione.zona))
+            if len(nodes) > 0:
+              nodes[0].subscribe_user(cmsro.usera.get())
+
+
+      cmsro.setCMDefault()
+    cmsro.put()
+    return self.get()
+      
 
 class NodeListApiHandler(BaseHandler):
 
@@ -285,15 +341,23 @@ class PostVoteApiHandler(BaseHandler):
     
     vote = int(self.request.get('vote'))
     post.vote(vote, user)
-
-    response = {'response':'success', 'key': post.key.urlsafe(), 'votes':str(len(post.votes))}
-    self.output_as_json(response)
-
-    response = post_as_json(post_key.get(), cmsro)
+    
+    response = {'response':'success', 'key': post.key.urlsafe(), 'votes':str(len(post.votes)), 'vote': vote}
     self.output_as_json(response)
 
 class PostCommentApiHandler(BaseHandler):
 
+  def get(self, node_id, post_id):
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    
+    comments = list();
+    for c in post.comment_list:
+      comments.append(comment_as_json(c, self.getCommissario()))
+      
+    response = {'response':'success', 'comments': comments}
+    self.output_as_json(response)
+      
+  @reguser_required  
   def post(self, node_id, post_id):
     user = self.get_current_user()
     cmsro = self.getCommissario()
@@ -304,7 +368,7 @@ class PostCommentApiHandler(BaseHandler):
 
     EventHandler.startTask()
     
-    response = {'response':'success', 'comment': comment_as_json(comment) }
+    response = {'response':'success', 'comments': [comment_as_json(comment, self.getCommissario())] }
     self.output_as_json(response)
 
 class PostReshareApiHandler(BaseHandler):
@@ -409,7 +473,7 @@ class ConfigApiHandler(BaseHandler):
     config = {'apihost': 'api.pappa-mi.it',
               'apiversion': '1.0',
               'appname': 'Pappa-Mi',
-              'veespoproduction': 'NO'}
+              'veespoproduction': 'YES'}
     self.output_as_json(config)
 
 class TestApiHandler(BaseHandler):
