@@ -172,7 +172,10 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content_' + post_root.parent().find('.s_post_root').attr('data-post-key')).setContent('');
+    //console.log('comment_content_' + post_root.closest('.s_post_root').html());
+    //console.log($('#' + 'comment_content_' + post_root.closest('.s_post_root').attr('data-post-key')).html())
+    var post_key = post_root.attr('data-post-key') ? post_root.attr('data-post-key') : post_root.find('.s_post_root').attr('data-post-key');
+    tinymce.get('comment_content_' + post_key).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);

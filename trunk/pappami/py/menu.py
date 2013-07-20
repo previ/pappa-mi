@@ -55,11 +55,14 @@ class CMMenuDataHandler(CMMenuHandler):
       piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
       details['piatto'] = piatto_key.get().nome
       details['ingredienti'] = list()
+      
       for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
         ing = p_i.ingrediente.get()
         qty = p_i.quantita
         details['ingredienti'].append({'nome': ing.nome,
                                        'quantita': p_i.quantita * factor})
+      
+      details['ingredienti'].sort(key=lambda item: item.get('quantita'), reverse=True)
       json.dump(details, self.response.out)
 
     else:
