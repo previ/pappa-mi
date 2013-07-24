@@ -1,7 +1,6 @@
 "use strict";
 
 var current_user = "";
-var guest_user_id = 0;
 
 function setCookie(c_name, value, exdays) {
     var exdate = new Date();
@@ -42,11 +41,9 @@ $("#page-menu").bind('pageinit', function(event, entry) {
   var now = new Date()
 
   if(current_user=="") {
-    window.location.href="/mobile/app";
+    window.location.href = '/mobile/app';
   }
   initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-  
-  $('#user').text(user.fullname); 
 });
 
 $("#page-stream").bind('pageinit', function(event, entry) {
@@ -76,8 +73,8 @@ $("#page-stream").bind('pageinit', function(event, entry) {
 		  schools_list.find('a').on('click', function() {
 		      current_user.schools = [{id: $(this).attr('data-school-id'),
 					       name: $(this).text()}];
-		      setCookie('school_id', current_user.schools[0].id);
-		      setCookie('school_name', current_user.schools[0].name);
+		      setCookie('school_id', current_user.schools[0].id, 365);
+		      setCookie('school_name', current_user.schools[0].name, 365);
 		      var now = new Date();
 		      $.mobile.changePage('#page-menu');
 		      initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
@@ -99,7 +96,7 @@ $("#page-stream").bind('pageinit', function(event, entry) {
     c.append('<h2>I tuoi argomenti</h2>');
     node_lists.append(c);
     var node_list = $('<ul data-role="listview" data-divider-theme="d"></ul>');
-    var node_list_select = $('#node_select');
+    var node_list_select = $('#node');
     c.append(node_list);
 
     if(isUserLogged()) {
@@ -158,10 +155,10 @@ $("#page-stream").bind('pageinit', function(event, entry) {
   loadNode('news');
   $('#post_delete').on('click', onPostDelete);
   $('#post_reshare').on('click', onPostReshare);
-  $('#post_comment').on('click', onPostComment);
   $('#post_comment_submit').on('click', onPostCommentSubmit);
   $('#post_comments_expand').on('click', onPostShowComments);
   $('#post_vote').on('click', onPostVote);
+  $('#post_votes_expand').on('click', onPostShowVotes);
   $('#post_unvote').on('click', onPostVote);
 });
 
@@ -171,7 +168,7 @@ function initCheck(event, entry) {
   $.mobile.showPageLoadingMsg();
 
   if(current_user=="") {
-    window.location.href="/mobile/app";
+    window.location.href = '/mobile/app';
   }
 }
 
@@ -183,9 +180,11 @@ $("#page-notifiche").bind('pageinit', function(event, entry) {
   $.mobile.showPageLoadingMsg();
 
   if(current_user=="") {
-    window.location.href="/mobile/app";
+    window.location.href = '/mobile/app';
   }
 
+  //load(45.463681,9.188171); 
+  
   $.ajax({url:"/api/user/online/list", 
 	  dataType:'json',
 	  success:function(data) { 
@@ -199,7 +198,7 @@ $("#page-notifiche").bind('pageinit', function(event, entry) {
       var a = $('<a href="#"></a>').attr('data-user-id', user_id).text(user.name).on('click', onUserClick);
       li.append(a);
       user_list.append(li);
-      console.log(a.attr('data-user-id'));
+      //console.log(a.attr('data-user-id'));
       user_to.append($('<option></option>').attr('value', user_id).text("A: " + user.name));
     }
     user_list.listview('refresh');
@@ -228,6 +227,19 @@ function onPostDelete() {
 }
 
 function onPostReshare() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+  $('#form_post_reshare').attr('action', '/api/post/' + post_id + '/reshare');
+  $('#post_reshare_title').val($('#post_title').text());
+  $('#post_reshared_title').text($('#post_title').text());
+  $('#post_reshared_content').text($('#post_content').text());
+  $('#post_reshare_node').empty().append($('#node').children().clone());
+  $('#form_post_reshare').ajaxForm({dataType:'json', success:function(data) {
+    var post = data.post;
+    $('#post_list').prepend(createPostItem(post));
+    $('#post_list').listview("refresh");
+    $.mobile.changePage( "#page-stream" );
+  }});
+  $.mobile.changePage('#page-post-reshare');
 }
 
 function onPostVote() {
@@ -269,16 +281,32 @@ function onPostShowComments() {
 	      li.append('<span>'+comment.author.name+'</span>');
 	      li.append('<p>'+comment.content+'</p>');
 	      comment_list.append(li);
-	      $('#comment_add').show();
 	    }
+	    $('#comment_add').show();
+	    comment_list.listview('refresh');
   }});
 }
 
-function onPostComment() {
-  var post_id = $(this).parents('[data-post-id]').attr('data-post-id'); 
-  $('#page-post-comment').find('#post_id').attr('data-post-id', post_id);
-  onPostShowComments();
-  $.mobile.changePage('#page-post-comment');
+function onPostShowVotes() {
+  var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+
+  $.ajax({url:"/api/post/"+post_id+'/vote', 
+	  type: 'GET',
+	  dataType:'json',
+	  success:function(data) { 
+	    var votes = data.votes;
+	    var vote_list = $('#vote_list');
+	    vote_list.empty();
+	    for ( var vote in votes ) {
+	      vote = votes[vote];
+	      var li = $('<li></li>');
+	      li.append('<img class="avatar" src="'+vote.author.avatar+'"></img>');
+	      li.append('<span>'+vote.author.name+'</span>');
+	      vote_list.append(li);
+	    }
+	    //vote_list.listview('refresh');
+	    $('#popup-post-votes').popup('open', {transition: 'fade'} );
+  }});
 }
 
 function onPostCommentSubmit() {
@@ -289,6 +317,7 @@ function onPostCommentSubmit() {
 	  dataType:'json',
 	  data: data,
 	  success:function(data) { 
+	  $('#comment_content').val('')
 	  var comments = data.comments;
 	  var comment_list = $('#comment_list');
 	  for ( var comment in comments ) {
@@ -307,22 +336,23 @@ function loadPost(post_id) {
 	  dataType:'json',
 	  success:function(data) { 
     var page_post_detail = $('#page-post-detail');
-    var post = data;    
+    var post = data.post;    
     page_post_detail.attr('data-post-id', post.id);
-    page_post_detail.find('#author').text(post.author.name);
-    page_post_detail.find('#avatar').attr('href', post.author.avatar);
-    page_post_detail.find('#date').text(post.ext_date);
-    page_post_detail.find('#title').html(post.title);
-    page_post_detail.find('#content').html(post.content);
-    page_post_detail.find('#comment_num').text(post.comments);
+    page_post_detail.find('#post_author').text(post.author.name);
+    page_post_detail.find('#post_avatar').attr('src', post.author.avatar);
+    page_post_detail.find('#post_date').text(post.ext_date);
+    page_post_detail.find('#post_title').html(post.title);
+    page_post_detail.find('#post_content').html(post.content);
+    page_post_detail.find('#post_comment_num').text(post.comments);
     page_post_detail.find('#vote_num').text(post.votes);
+    page_post_detail.find('#post_comment_list').empty();
     
     var res_list = $('<ul class="unstyled"></ul>').empty();
     for (var rn in post.resources) {
       var res = post.resources[rn]
       res_list.append($('<li></li>').append($('<a></a>').attr('href', res.url).text(res.desc)));
     }      
-    page_post_detail.find('#resources').html(res_list);
+    page_post_detail.find('#post_resources').html(res_list);
     var att_list = $('<ul class="unstyled"></ul>').empty();
     for (var an in post.attachments) {
       var att = post.attachments[an]
@@ -332,7 +362,7 @@ function loadPost(post_id) {
 	att_list.append($('<li></li>').append($('<a></a>').attr('href', att.url).text(att.desc)));
       }
     }      
-    page_post_detail.find('#attachments').html(att_list); 
+    page_post_detail.find('#post_attachments').html(att_list); 
     if(isUserLogged()){     
       if(post.canadmin) {
 	$('#post_delete').show();
@@ -356,17 +386,17 @@ function loadPost(post_id) {
       page_post_detail.find('#comment_add').hide();
       page_post_detail.find('#post_commands').hide();
     }
-    page_post_detail.trigger("create");
+    //page_post_detail.trigger("create");
     $.mobile.changePage('#page-post-detail', {transition:'slide'});
   }});    
 }
 
 function onNodeClick() {
-  console.log(this);
+  //console.log(this);
   var node_id = $(this).attr('data-node-id');
   $('#post_list').empty();
   loadNode(node_id);
-  var node_list_select = $('#node_select');
+  var node_list_select = $('#node');
   node_list_select.find('option').removeAttr('selected')
   node_list_select.find('option[value="'+node_id+'"]').attr('selected', 'true');
   node_list_select.selectmenu(); 
@@ -374,7 +404,7 @@ function onNodeClick() {
 }
 
 function onUserClick() {
-  console.log(this);
+  //console.log(this);
   var user_id = $(this).attr('data-user-id');
   var user_to = $('#user_to');
   user_to.find('option').removeAttr('selected')
@@ -397,7 +427,7 @@ function onMessageSend() {
 }
 
 function onChannelMessage(m){
-  console.log(m.data);
+  //console.log(m.data);
   var m = jQuery.parseJSON(m.data);
   var textmessage=""
   if(m.type=='message') {
@@ -420,16 +450,16 @@ function openChannel(channel_id) {
 }
 
 function loadNode(node_id, cursor) {
-  console.log(node_id);
+  //console.log(node_id);
   cursor = cursor ? cursor : ""
   $('#post_list').attr('data-node-id', node_id);
   $('#load_more').on('click', function(){loadPostList($('#post_list').attr('data-node-id'), $('#post_list').attr('data-next-cursor'));});
   loadPostList(node_id);
   $('#form_post_new').ajaxForm({dataType:'json', success:function(data) {
-      var post = data;
-      $('#post_list').prepend(createPostItem(post));
-      $('#post_list').listview("refresh");
-      $.mobile.changePage( "#page-stream" );
+    var post = data.post;
+    $('#post_list').prepend(createPostItem(post));
+    $('#post_list').listview("refresh");
+    $.mobile.changePage( "#page-stream" );
   }});
 }
 
@@ -586,11 +616,20 @@ function loadMenu() {
     }
     $('#menu_list').trigger("create");
     ul.listview('refresh');
+    
+    if(!isUserLogged() || date_d.getTime() > new Date().getTime()) {
+      $('#menu_vote_c').hide();
+    } else {
+      $('#menu_vote_c').show();
+    }
+
 
     $('#menu').trigger("create");
     $('.dish_info').on('click', onDishInfo);
     $('.dish_stat').on('click', onDishStat);
     $('.dish_vote').on('click', onDishVote);
+    $('.menu_stat').on('click', onMenuStat);
+    $('.menu_vote').on('click', onMenuVote);
     
     $.mobile.hidePageLoadingMsg();
     }});
@@ -607,17 +646,29 @@ function onDishInfo() {
 	  type: "GET",
 	  dataType:'json',
 	  success:function(data) {
-	    //initVeespo(current_user.id, dish_id, dish_name);
-
 	    $('#dish_components').empty();
 	    var dish_info = data;
 	    var components = dish_info["components"];
-	    for (var nc in components) {
-	      var comp = components[nc];
-	      var tr = $('<tr></tr>').append('<td>' + comp['name'] + '</td>'+'<td>' + comp['qty'] + '</td>');
+	    if(components.length>0) {
+	      for (var nc in components) {
+		var comp = components[nc];
+		var tr = $('<tr></tr>').append('<td>' + comp['name'] + '</td>'+'<td>' + comp['qty'] + '</td>');
+		$('#dish_components').append(tr);
+	      }
+	    } else {
+	      var tr = $('<tr></tr>').append('<td colspan="2">Ingredienti non disponibili</td>');
 	      $('#dish_components').append(tr);
 	    }
 	    $('#page-dish-detail').attr('data-dish-id', dish_id);
+	    var cur_date = $('#data');   
+	    var date = getDateFromStr(cur_date.val());
+
+	    if(!isUserLogged() || date.getTime() > new Date().getTime()) {
+	      $('#dish_vote_c').hide();
+	    } else {
+	      $('#dish_vote_c').show();
+	    }
+	    
   	    $.mobile.changePage( "#page-dish-detail", {transition:'slide'});
 	  }});  
 }
@@ -640,6 +691,29 @@ function onDishVote() {
   var dish_name = getDish(dish_id).desc1;
   $.mobile.changePage( "#page-dish-vote", {transition:'flip'});
   createWidget(current_user.id, dish_id, dish_name);
+}
+
+function onMenuStat() {
+  var dish_ids = [];
+  var dish_names = [];
+  $("#menu_list").find('[data-dish-id]').each(function(i, e){
+    var dish_id = $(e).attr('data-dish-id');
+    dish_ids.push(dish_id);
+    dish_names.push(getDish(dish_id).desc1);
+  });
+  showMenuStat(dish_ids, dish_names);
+}
+
+function onMenuVote() {
+  var dish_ids = [];
+  var dish_names = [];
+  $("#menu_list").find('[data-dish-id]').each(function(i, e){
+    var dish_id = $(e).attr('data-dish-id');
+    dish_ids.push(dish_id);
+    dish_names.push(getDish(dish_id).desc1);
+    });
+  $.mobile.changePage( "#page-dish-vote", {transition:'flip'});
+  createWidgetMenu(current_user.id, 0, dish_ids, dish_names);
 }
 
 var context = {
@@ -703,9 +777,84 @@ function createWidget(user_id, dish_id, dish_name) {
   });
 }
 
+function createWidgetMenu(user_id, d_index, dish_ids, dish_names) {
+  var dish_id = dish_ids[d_index];
+  var dish_name = dish_names[d_index];  
+  
+  context.title = dish_name;
+  context.targetId = "tgt-pappa-mi-dish-"+dish_id;
+  context.userId = "pappa-mi-user-"+current_user.id;
+
+  $("#widget_vote").veespo('widget.inject-to-dom',{context:context}).then(function(response) {
+    if (response.code == 1) {
+      d_index++;
+      if ( d_index < dish_ids.length ) {
+	createWidgetMenu(user_id, d_index, dish_ids, dish_names);
+      } else {
+	showMenuStat(dish_ids, dish_names);
+      }
+    }
+  });
+}
+
+function showMenuStat(dish_ids, dish_names) {
+  /*
+  for(var d_id in dish_ids) {
+    var dish_id=dish_ids[d_id];
+    $('#dish_name_'+d_id).text(dish_names[d_id]);
+    console.log(dish_names[d_id]);
+    getLastVote(current_user.id, dish_id, function(votes) {
+      console.log(getDish(dish_id).desc1);
+      getVotesAvg(dish_id, function() {
+        console.log(getDish(dish_id).desc1);
+	var vote_map = createVoteMap(dish_id, votes);
+	createVoteChart(dish_id, vote_map, "dish_stat_graph_"+d_id);
+	createVoteTable(dish_id, vote_map, "dish_stat_table_"+d_id);
+	console.log("created vote table and graph: " + getDish(dish_id).desc1);
+      });
+    });
+  }*/
+  $('#dish_name_'+0).text(dish_names[0]);
+  getLastVote(current_user.id, dish_ids[0], function(votes) {
+    getVotesAvg(dish_ids[0], function() {
+      console.log(dish_ids[0]);
+      var vote_map = createVoteMap(dish_ids[0], votes);
+      createVoteChart(dish_ids[0], vote_map, "dish_stat_graph_"+0);
+      createVoteTable(dish_ids[0], vote_map, "dish_stat_table_"+0);
+    });
+  });
+  $('#dish_name_1').text(dish_names[1]);
+  getLastVote(current_user.id, dish_ids[1], function(votes) {
+    getVotesAvg(dish_ids[1], function() {
+      console.log(getDish(dish_ids[1]).desc1);
+      var vote_map = createVoteMap(dish_ids[1], votes);
+      createVoteChart(dish_ids[1], vote_map, "dish_stat_graph_"+1);
+      createVoteTable(dish_ids[1], vote_map, "dish_stat_table_"+1);
+    });
+  });
+  $('#dish_name_2').text(dish_names[2]);
+  getLastVote(current_user.id, dish_ids[2], function(votes) {
+    getVotesAvg(dish_ids[2], function() {
+      console.log(getDish(dish_ids[2]).desc1);
+      var vote_map = createVoteMap(dish_ids[2], votes);
+      createVoteChart(dish_ids[2], vote_map, "dish_stat_graph_"+2);
+      createVoteTable(dish_ids[2], vote_map, "dish_stat_table_"+2);
+    });
+  });
+  $('#dish_name_3').text(dish_names[3]);
+  getLastVote(current_user.id, dish_ids[3], function(votes) {
+    getVotesAvg(dish_ids[3], function() {
+      console.log(getDish(dish_ids[3]).desc1);
+      var vote_map = createVoteMap(dish_ids[3], votes);
+      createVoteChart(dish_ids[3], vote_map, "dish_stat_graph_"+3);
+      createVoteTable(dish_ids[3], vote_map, "dish_stat_table_"+3);
+    });
+  });
+
+  $.mobile.changePage('#page-menu-stat', {transition:'flip'});
+}
+
 function createVoteMap(dish_id, votes) {
-  console.log("votes: " + JSON.stringify(votes));
-  console.log("avgs: " + JSON.stringify(vote_avg[dish_id].avgS));
   var vote_map = {};
   var dish_votes_avg = vote_avg[dish_id].avgS;
   for( var vote in dish_votes_avg ) {
@@ -734,7 +883,7 @@ function createVoteChart(dish_id, vote_map, chart_element_id) {
 			pointColor : "rgba(0,255,0,1)",
 			pointStrokeColor : "#fff",
 			data: []};
-  if(vote_map['id-0'].rating != "") {
+  if(vote_map['id-0'] && vote_map['id-0'].rating != "") {
     cdata.datasets[1] = { fillColor : "rgba(127,127,255,0.5)",
 			  strokeColor : "rgba(127,127,255,1)",
 			  pointColor : "rgba(0,0,255,1)",
@@ -758,7 +907,7 @@ function createVoteTable(dish_id, vote_map, table_id) {
   var tr = $('<tr></tr>');
   tr.append('<td>Caratteristica</td>');
   tr.append('<td><span style="color:rgb(0,255,0);">Media</span></td>');
-  if(vote_map['id-0'].rating!=""){
+  if(vote_map['id-0'] && vote_map['id-0'].rating!=""){
     tr.append('<td><span style="color:rgb(0,0,255);">Mio voto</span></td>');
   }
   thead.append(tr);

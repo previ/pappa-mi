@@ -54,7 +54,7 @@ def post_as_json(post, cmsro):
           'cancomment': post.can_comment(user)}
 
 def comment_as_json(comment, cmsro):
-  user = cmsro.usera
+  user = cmsro.usera.get() if cmsro else None
   return {'id': comment.key.urlsafe(),
           'author': {'id': str(comment.author.id()),
                      'name': comment.commissario.nomecompleto(cmsro),
@@ -62,6 +62,14 @@ def comment_as_json(comment, cmsro):
           'ext_date': comment.extended_date(),
           'content': comment.content,
           'votes': comment.votes}
+
+def vote_as_json(vote, cmsro):
+  user = cmsro.usera.get() if cmsro else None
+  return {'id': vote.key.urlsafe(),
+          'author': {'id': str(vote.author.id),
+                     'name': vote.author.nomecompleto(cmsro),
+                     'avatar': vote.author.avatar(cmsro)},
+          }
 
 def resources_as_json(post):
   resources = list()
@@ -309,9 +317,11 @@ class PostApiHandler(BaseHandler):
   def get(self, node_id, post_id):
     cmsro = self.getCommissario()
     post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
-    response = post_as_json(post, cmsro)
+
+    response = {'response':'success','post':post_as_json(post, cmsro)}    
     self.output_as_json(response)
 
+  @reguser_required
   def post(self):
     user = self.get_current_user()
     cmsro = self.getCommissario()
@@ -329,11 +339,12 @@ class PostApiHandler(BaseHandler):
 
     EventHandler.startTask()
 
-    response = post_as_json(post_key.get(), cmsro)
+    response = {'response':'success','post':post_as_json(post_key.get(), cmsro)}    
     self.output_as_json(response)
 
 class PostVoteApiHandler(BaseHandler):
 
+  @reguser_required
   def post(self, node_id, post_id):
     user = self.get_current_user()
     cmsro = self.getCommissario()
@@ -344,6 +355,17 @@ class PostVoteApiHandler(BaseHandler):
     
     response = {'response':'success', 'key': post.key.urlsafe(), 'votes':str(len(post.votes)), 'vote': vote}
     self.output_as_json(response)
+  
+  def get(self, node_id, post_id):
+    post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
+    
+    votes = list();
+    for v in post.votes:
+      votes.append(vote_as_json(v, self.getCommissario()))
+      
+    response = {'response':'success', 'votes': votes}
+    self.output_as_json(response)
+    
 
 class PostCommentApiHandler(BaseHandler):
 
@@ -373,10 +395,11 @@ class PostCommentApiHandler(BaseHandler):
 
 class PostReshareApiHandler(BaseHandler):
 
+  @reguser_required
   def post(self, node_id, post_id):
     user = self.get_current_user()
     cmsro = self.getCommissario()
-    node=model.Key(urlsafe=self.request.get('node')).get()
+    node=model.Key("SocialNode", int(self.request.get('node'))).get()
     post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
     
     clean_title = Sanitizer.text(self.request.get("title"))
@@ -386,7 +409,7 @@ class PostReshareApiHandler(BaseHandler):
     
     EventHandler.startTask()    
 
-    response = {'response':'success','post':post_as_json(rs_post_key)}
+    response = {'response':'success','post':post_as_json(rs_post_key.get(), cmsro)}
     self.output_as_json(response)
 
 class MenuApiHandler(CMMenuHandler):

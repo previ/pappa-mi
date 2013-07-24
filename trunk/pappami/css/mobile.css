@@ -1,3 +1,11 @@
+.logo_small {
+width:20px;
+height:20px;
+margin-top:-4px;
+margin-bottom:-8px;
+margin-right:4px;
+}
+
 img.avatar {
 display: inline;
 width: 48px;
@@ -36,6 +44,10 @@ display:inline;
 .s_post_d_title {
 }
 
+.s_post_d_subtitle {
+font-size:12px;
+display:inline;
+}
 .s_post_d_node {
 display:inline;
 }
@@ -54,6 +66,11 @@ margin-left:4px;
 margin-right:48px;
 zoom:0.8;
 overflow:auto;
+}
+
+.s_map {
+height:320px;
+width:320px;
 }
 
 @media (max-width: 767) {
@@ -95,9 +112,18 @@ font-size:8px;
 display:inline;
 font-size:8px;
 }
-
 .s_post_content {
 display:block;
 zoom:0.6;
+}
+
+.s_post_d_subtitle {
+font-size:10px;
+}
+
+.s_post_d_author {
+}
+
+.s_post_d_date {
 }
 }

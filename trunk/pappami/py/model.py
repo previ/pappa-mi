@@ -2470,3 +2470,11 @@ class StatisticheNonconf(model.Model):
   def getTipiPos(self):
     return self._tipiPos
 
+
+#class PiattoVoto(model.Model):
+  #piatto = model.KeyProperty()
+  #data = model.DateTimeProperty()
+   #= model.KeyProperty(repeated=True)
+
+  
+  
