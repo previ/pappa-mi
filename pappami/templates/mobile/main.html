@@ -25,18 +25,21 @@
 <!--  original -->
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="/js/Fluster2.packed.js"></script>
 <script src="/js/jquery.form.js"></script> 
 <script src="http://cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script src="/js/Chart.min.js"></script>    
+<script src="/js/map.js"></script>  
 </head> 
 
 <body data-channel-id="{{channel}}"> 
 <!-- app -->
 <div data-role="page" id="page-stream">
  <div data-role="header">
-  <a href="#node-panel" data-theme="b" data-icon="arrow-l" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+  <a href="#node-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
  </div> 
  <div id="page-stream-content" data-role="content">
   <div id="stream" class="stream-page">
@@ -50,10 +53,10 @@
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
-  <div data-role="footer" data-id="foo1" data-position="fixed">
+  <div data-role="footer" data-id="footer-1" data-position="fixed">
 	  <div data-role="navbar">
 		  <ul>
-			  <li><a class="ui-btn-active" data-icon="star" href="#page-stream">Attività</a></li>
+			  <li><a class="ui-btn-active ui-state-persist" data-icon="star" href="#page-stream">Attività</a></li>
 			  <li><a data-icon="grid" href="#page-menu">Menù</a></li>
 			  <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 		  </ul>
@@ -72,21 +75,26 @@
 
 <div data-role="page" id="page-post-detail">
  <div data-role="header">
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
  </div> 
   <div data-role="content" data-theme="c">
-    <h2 id="title"></h2>
+    <h3 id="post_title"></h3>
     <div>
-      <div class="s_post_d_node" id="node"></div>
-      <div class="s_post_d_author" id="author"></div>
-      <div class="s_post_d_date" id="date"></div>
+      <div class="s_post_d_author">
+	<img class="avatar" id="post_avatar" src=""/>
+      </div>
+      <div class="s_post_d_subtitle">
+	<div class="s_post_d_node" id="post_node"></div>
+	<div class="s_post_d_date" id="post_date"></div>
+	<div class="s_post_d_author" id="post_author"></div>
+      </div>      
     </div>
-    <div class="s_post_d_content" id="content"></div>
-    <div id="resources"></div>
-    <div id="attachments"></div>
+    <div class="s_post_d_content" id="post_content"></div>
+    <div id="post_resources"></div>
+    <div id="post_attachments"></div>
     <div id="post_feedback">
-      <span>Commenti: <span id="comment_num"></span><button id="post_comments_expand" data-icon="down" data-role="button" data-mini="true" data-inline="true" data-theme="b">Espandi</button></span>
-      <span>Voti: <span id="vote_num"></span></span>
+      <button id="post_comments_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="b">Commenti: <span id="comment_num"></span></button>
+      <button id="post_votes_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="b">Voti: <span id="vote_num"></span></button>
     </div>
     <div id="post_commands" style="display:none;">
       <button id="post_delete" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
@@ -98,26 +106,29 @@
 	<button id="post_unvote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="c" data-vote="0">Annulla voto</button>
       </span>
     </div>
-    <div>
-      <ul id="comment_list"></ul>
+    <div style="margin-top:20px;margin-bottom:30px;">
+      <ul id="post_comment_list" data-role="listview"></ul>
     </div>
     <div id="comment_add">
       <input type="hidden", name="post_id", id="post_id"/>
       <textarea name="content" id="comment_content"></textarea>   
-      <a data-role="button" id="post_comment_submit" data-theme="c">Salva</a>    
+      <a data-role="button" id="post_comment_submit" data-theme="c">Salva commento</a>    
     </div>
-    <a href="#page-stream" data-icon="arrow-l" data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
+    <a href="#page-stream" data-mini="true" data-icon="arrow-l" data-role="button" data-rel="back" data-mini="true" data-theme="c">Chiudi</a>    
   </div>
+  <div data-role="popup" id="popup-post-votes">
+    <ul id="vote_list" data-role="listview"></ul>
+  </div>  
 </div>
 <div data-role="page" id="page-post-new">
  <div data-role="header">
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
  </div> 
   <div data-role="content" data-theme="c">
-  <form id="form_post_new" action="/api/post/create" method="post" enctype="multipart/form-data">
+  <form id="form_post_new" data-ajax="false" action="/api/post/create" method="post" enctype="multipart/form-data">
     <div data-role="fieldcontain" class="ui-hide-label">
       <label for="title">Argomento:</label>
-      <select name="node" id="node_select" data-mini="true">
+      <select name="node" id="node" data-mini="true">
       </select>
     </div>
     <div data-role="fieldcontain" class="ui-hide-label">
@@ -137,21 +148,55 @@
   </form>
   </div>
 </div>
-
+<div data-role="page" id="page-post-reshare">
+ <div data-role="header">
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+ </div> 
+  <div data-role="content" data-theme="c">
+  <form id="form_post_reshare" data-ajax="false" action="/api/post/:post_id/reshare" method="post" enctype="multipart/form-data">
+    <div data-role="fieldcontain" class="ui-hide-label">
+      <label for="title">Argomento:</label>
+      <select name="node" id="post_reshare_node" data-mini="true">
+      </select>
+    </div>
+    <div data-role="fieldcontain" class="ui-hide-label">
+      <label for="title">Titolo:</label>
+      <input type="text" name="title" id="post_reshare_title" value="" placeholder="Titolo"/>
+    </div>
+    <div data-role="fieldcontain" class="ui-hide-label">
+      <label for="content">Testo:</label>
+      <textarea name="content" id="post_reshare_content" value="" placeholder="Testo"></textarea>
+    </div>
+    <div data-role="fieldcontain" class="ui-hide-label">
+      <div id="post_reshared_title"></div>
+      <div id="post_reshared_content"></div>
+    </div>
+    <button id="post_reshare" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Inoltra</button>  
+    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+  </form>
+  </div>
+</div>
 <div data-role="page" id="page-menu">
  <div data-role="header">
   <a href="#menu-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi - Menù</h1>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
  </div> 
  <div data-role="content">
   <div id="menu_form"></div>
   <ul id="menu_list" data-role="listview" data-inset="true"></ul>
+  <div>
+    <fieldset class="ui-grid-a">
+      <div class="ui-block-a"><a class="menu_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
+      <div class="ui-block-b" id="menu_vote_c"><a class="menu_vote" data-role="button" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
+      </div>
+    </fieldset>  
+  </div>
  </div>
- <div data-role="footer" data-id="foo1" data-position="fixed">
+ <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>
 	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
-	    <li><a class="ui-btn-active" data-icon="grid" href="#page-menu">Menù</a></li>
+	    <li><a class="ui-btn-active ui-state-persist" data-icon="grid" href="#page-menu">Menù</a></li>
 	    <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 	  </ul>
 	</div><!-- /navbar -->
@@ -162,39 +207,39 @@
  </div><!-- /panel -->
 </div>
 <div data-role="page" id="page-dish-detail">
-  <div data-role="header" data-theme="d">
+  <div data-role="header">
    <h1 class="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
     <div>
     <fieldset class="ui-grid-a">
-      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Opinioni</a></div>
-      <div class="ui-block-b"><a class="dish_vote" data-role="button" data-mini="true" data-icon="check" data-iconpos="left">Vota</a>
+      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
+      <div class="ui-block-b" id="dish_vote_c"><a class="dish_vote" data-role="button" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
       </div>
     </fieldset>
     </div>
-    <table id="dish_table" data-role="table" class="ui-responsive table-stroke">
+    <table id="dish_table">
       <thead>
 	<tr>
 	  <th data-priority="1">Ingrediente</th>
-	  <th data-priority="2">Qt.à</th>
+	  <th data-priority="2">Qt.à (gr.)</th>
 	</tr>
       </thead>
       <tbody id="dish_components">
       </tbody>
     </table>
-    <a data-role="button" href="#page-menu" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
+    <a data-role="button" href="#page-menu" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
   </div>
 </div>
 <div data-role="page" id="page-dish-vote">
  <div data-role="header">
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi - Dai il tuo giudizio</h1>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi - Vota</h1>
  </div> 
   <div data-role="content" data-theme="c" style="margin:0;padding:0;height:100%;" id="widget_vote">
   </div>
 </div>
 <div data-role="page" id="page-dish-stat">
-  <div data-role="header" data-theme="d">
+  <div data-role="header">
    <h1 class="dish_name"></h1>
   </div>
   <div data-role="content" data-theme="c">
@@ -202,7 +247,7 @@
       <canvas id="dish_stat_graph" height="320px" width="320px"></canvas>
     </div>
     <div>
-      <table id="dish_stat_table" data-role="table" class="ui-responsive table-stroke">
+      <table id="dish_stat_table">
 	<thead>
 	</thead>
 	<tbody>
@@ -210,16 +255,73 @@
       </table>
      </div>
     </div>
-    <a data-role="button" href="#page-dish-detail" data-theme="c">Chiudi</a>    
+    <a data-role="button" href="#page-dish-detail" data-mini="true" data-theme="c">Chiudi</a>    
+  </div>
+</div>
+<div data-role="page" id="page-menu-stat">
+  <div data-role="header">
+    <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi - Statistiche</h1>
+  </div>
+  <div data-role="content" data-theme="c">
+    <h3 id="dish_name_0"></h3>
+    <div>
+      <canvas id="dish_stat_graph_0" height="320px" width="320px"></canvas>
+    </div>
+    <div>
+      <table id="dish_stat_table_0">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+      </table>
+    </div>
+    <h3 id="dish_name_1"></h3>
+    <div>
+      <canvas id="dish_stat_graph_1" height="320px" width="320px"></canvas>
+    </div>
+    <div>
+      <table id="dish_stat_table_1">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+      </table>
+    </div>
+    <h3 id="dish_name_2"></h3>
+    <div>
+      <canvas id="dish_stat_graph_2" height="320px" width="320px"></canvas>
+    </div>
+    <div>
+      <table id="dish_stat_table_2">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+      </table>
+    </div>
+    <h3 id="dish_name_3"></h3>
+    <div>
+      <canvas id="dish_stat_graph_3" height="320px" width="320px"></canvas>
+    </div>
+    <div>
+      <table id="dish_stat_table_3">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+      </table>
+    </div>
+    <a data-role="button" href="#page-menu" data-mini="true" data-theme="c">Chiudi</a>    
   </div>
 </div>
 
 <div data-role="page" id="page-notifiche">
  <div data-role="header">
   <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Utenti</a>
-  <h1><img style="width:20px;height:20px;margin-top:-4px;margin-bottom:-8px;margin-right:4px;" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+  <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
  </div> 
  <div data-role="content">
+  <!--div class="s_map" id="map_canvas"></div-->
   <ul id="message_list" data-role="listview"></ul>
   <div data-role="fieldcontain" class="ui-hide-label">
    <label for="user_to">Per:</label>
@@ -239,44 +341,22 @@
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
 
- <div data-role="footer" data-id="foo1" data-position="fixed">
+ <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>
 	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
 	    <li><a data-icon="grid" href="#page-menu">Menù</a></li>
-	    <li><a class="ui-btn-active" data-icon="alert" href="#page-notifiche">Notifiche</a></li>
+	    <li><a class="ui-btn-active ui-state-persist" data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 	  </ul>
 	</div><!-- /navbar -->
  </div><!-- /footer -->	
 </div>
-
-<!--div data-role="dialog" id="page-post-comment">
-  <div data-role="header" data-theme="d">
-    <h1>Aggiungi Commento</h1>
-  </div>
-  <div data-role="content" data-theme="c">
-    <input type="hidden", name="post_id", id="post_id"/>
-    <textarea name="content" id="comment_content"></textarea>   
-    <a data-role="button" id="post_comment_submit" data-theme="c">Salva</a>    
-  </div>
-</div-->
-
-<div data-role="dialog" id="page-profile">
-  <div data-role="header" data-theme="d">
-  <h1>Profilo utente</h1>
-  </div>
-  <div data-role="content" data-theme="c">
-    <p><span id="user"></span></p>
-    <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a>  
-    <a data-role="button" data-rel="back" data-theme="c">Chiudi</a>    
-  </div>
-</div>
-    <script>  
-      var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
-      var s = document.createElement('script');
-      s.async = true; s.src = jsUrl;
-      document.body.appendChild(s);
-    </script>  
+<script>  
+  var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
+  var s = document.createElement('script');
+  s.async = true; s.src = jsUrl;
+  document.body.appendChild(s);
+</script>  
 </body>
 <!--  pages pappa mi-->
 <script src="/js/mobile/mobile-menu.js"></script>
