@@ -25,13 +25,13 @@
 <!--  original -->
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="/js/Fluster2.packed.js"></script>
+{#<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>#}
+{#<script type="text/javascript" src="/js/Fluster2.packed.js"></script>#}
 <script src="/js/jquery.form.js"></script> 
 <script src="http://cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script src="/js/Chart.min.js"></script>    
-<script src="/js/map.js"></script>  
+{#<script src="/js/map.js"></script>#}
 </head> 
 
 <body data-channel-id="{{channel}}"> 
@@ -93,17 +93,17 @@
     <div id="post_resources"></div>
     <div id="post_attachments"></div>
     <div id="post_feedback">
-      <button id="post_comments_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="b">Commenti: <span id="comment_num"></span></button>
-      <button id="post_votes_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="b">Voti: <span id="vote_num"></span></button>
+      <button id="post_comments_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="a">Commenti: <span id="post_comment_num"></span></button>
+      <button id="post_votes_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="a">Voti: <span id="post_vote_num"></span></button>
     </div>
     <div id="post_commands" style="display:none;">
       <button id="post_delete" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
-      <button id="post_reshare" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="c">Inoltra</button>  
+      <button id="post_reshare" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="b">Inoltra</button>  
       <span id="post_vote_c">
-	<button id="post_vote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="c" data-vote="1">Vota</button>
+	<button id="post_vote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="b" data-vote="1">Vota</button>
       </span>
       <span id="post_unvote_c">
-	<button id="post_unvote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="c" data-vote="0">Annulla voto</button>
+	<button id="post_unvote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="b" data-vote="0">Annulla voto</button>
       </span>
     </div>
     <div style="margin-top:20px;margin-bottom:30px;">
@@ -112,9 +112,9 @@
     <div id="comment_add">
       <input type="hidden", name="post_id", id="post_id"/>
       <textarea name="content" id="comment_content"></textarea>   
-      <a data-role="button" id="post_comment_submit" data-theme="c">Salva commento</a>    
+      <a data-role="button" id="post_comment_submit" data-mini="true" data-theme="b">Salva commento</a>    
     </div>
-    <a href="#page-stream" data-mini="true" data-icon="arrow-l" data-role="button" data-rel="back" data-mini="true" data-theme="c">Chiudi</a>    
+    <a href="#page-stream" data-mini="true" data-icon="arrow-l" data-role="button" data-rel="back" data-mini="true" data-theme="a">Chiudi</a>    
   </div>
   <div data-role="popup" id="popup-post-votes">
     <ul id="vote_list" data-role="listview"></ul>
@@ -143,8 +143,8 @@
       <label for="attach">Allega:</label>
       <input type="file" name="attach_file" placeholder="Allega..." allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
     </div>
-    <button id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Salva</button>  
-    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+    <button id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="b">Salva</button>  
+    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="a">Annulla</a>  
   </form>
   </div>
 </div>
@@ -187,7 +187,7 @@
   <div>
     <fieldset class="ui-grid-a">
       <div class="ui-block-a"><a class="menu_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
-      <div class="ui-block-b" id="menu_vote_c"><a class="menu_vote" data-role="button" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
+      <div class="ui-block-b" id="menu_vote_c"><a class="menu_vote" data-role="button" data-theme="b" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
       </div>
     </fieldset>  
   </div>
@@ -214,7 +214,7 @@
     <div>
     <fieldset class="ui-grid-a">
       <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
-      <div class="ui-block-b" id="dish_vote_c"><a class="dish_vote" data-role="button" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
+      <div class="ui-block-b" id="dish_vote_c"><a class="dish_vote" data-role="button" data-mini="true" data-theme="b" data-icon="star" data-iconpos="left">Vota</a>
       </div>
     </fieldset>
     </div>
@@ -330,8 +330,8 @@
    </select>
    <label for="message">Messaggio:</label>
    <input type="text" name="message" id="message" data-mini="true" value="" placeholder="Messaggio"/>
-   <button id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="a">Invia</a>  
-   <button data-icon="delete" data-rel="" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+   <button id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="b">Invia</a>  
+   <button data-icon="delete" data-rel="" data-mini="true" data-inline="true" data-theme="a">Annulla</a>  
   </div>
  </div>
  <div data-role="panel" data-display="overlay" id="user-panel" data-theme="b">

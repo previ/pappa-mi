@@ -253,7 +253,7 @@ function onPostVote() {
 	  data: data,
 	  success:function(data) { 
 
-      $('#vote_num').text(data.votes);
+      $('#post_vote_num').text(data.votes);
       if(data.vote == '1') {
 	$('#post_vote_c').hide();
 	$('#post_unvote_c').show();
@@ -266,13 +266,12 @@ function onPostVote() {
 
 function onPostShowComments() {
   var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
-
   $.ajax({url:"/api/post/"+post_id+'/comment', 
 	  type: 'GET',
 	  dataType:'json',
 	  success:function(data) { 
 	    var comments = data.comments;
-	    var comment_list = $('#comment_list');
+	    var comment_list = $('#post_comment_list');
 	    comment_list.empty();
 	    for ( var comment in comments ) {
 	      comment = comments[comment];
@@ -311,7 +310,7 @@ function onPostShowVotes() {
 
 function onPostCommentSubmit() {
   var post_id = $(this).parents('[data-post-id]').attr('data-post-id'); 
-  var data = {content: $('#comment_content').val()}
+  var data = {content: $('#comment_content').val()};
   $.ajax({url:"/api/post/"+post_id+'/comment', 
 	  type: 'POST',
 	  dataType:'json',
@@ -319,7 +318,7 @@ function onPostCommentSubmit() {
 	  success:function(data) { 
 	  $('#comment_content').val('')
 	  var comments = data.comments;
-	  var comment_list = $('#comment_list');
+	  var comment_list = $('#post_comment_list');
 	  for ( var comment in comments ) {
 	    comment = comments[comment];
 	    var li = $('<li></li>');
@@ -328,6 +327,7 @@ function onPostCommentSubmit() {
 	    li.append('<p>'+comment.content+'</p>');
 	    comment_list.append(li);
 	  }
+	  comment_list.listview('refresh');
   }});
 }
 
@@ -344,7 +344,7 @@ function loadPost(post_id) {
     page_post_detail.find('#post_title').html(post.title);
     page_post_detail.find('#post_content').html(post.content);
     page_post_detail.find('#post_comment_num').text(post.comments);
-    page_post_detail.find('#vote_num').text(post.votes);
+    page_post_detail.find('#post_vote_num').text(post.votes);
     page_post_detail.find('#post_comment_list').empty();
     
     var res_list = $('<ul class="unstyled"></ul>').empty();
@@ -490,11 +490,18 @@ function createPostItem(post) {
   if(post.images.length > 0) {
    a.append($('<img></img>').attr('src', post.images[0]));
   }
-  if(post.comments > 0) {
-   a.append($('<p class="ui-li-aside">Commenti: ' + post.comments + '</p>'));
+  var c_v = false;
+  if(post.comments > 0 || post.votes > 0) {  
+   c_v = $('<p class="ui-li-aside"></p>');
   }
   if(post.votes > 0) {
-   a.append($('<p class="ui-li-aside">Voti: ' + post.votes + '</p>'));
+   c_v.append($('<span> Voti: ' + post.votes + '</span>'));
+  }
+  if(post.comments > 0) {
+   c_v.append($('<span> Commenti: ' + post.comments + '</span>'));
+  }
+  if(c_v) {  
+   a.append(c_v);
   }
   a.append($('<span class="s_post_content"></span>').append(post.content_summary));
   //a.append($('<p class="ui-li-aside"><small>' + post.node.name +' di '+ post.author.name + ' ' + post.ext_date +'</small></p>'));
@@ -798,26 +805,9 @@ function createWidgetMenu(user_id, d_index, dish_ids, dish_names) {
 }
 
 function showMenuStat(dish_ids, dish_names) {
-  /*
-  for(var d_id in dish_ids) {
-    var dish_id=dish_ids[d_id];
-    $('#dish_name_'+d_id).text(dish_names[d_id]);
-    console.log(dish_names[d_id]);
-    getLastVote(current_user.id, dish_id, function(votes) {
-      console.log(getDish(dish_id).desc1);
-      getVotesAvg(dish_id, function() {
-        console.log(getDish(dish_id).desc1);
-	var vote_map = createVoteMap(dish_id, votes);
-	createVoteChart(dish_id, vote_map, "dish_stat_graph_"+d_id);
-	createVoteTable(dish_id, vote_map, "dish_stat_table_"+d_id);
-	console.log("created vote table and graph: " + getDish(dish_id).desc1);
-      });
-    });
-  }*/
   $('#dish_name_'+0).text(dish_names[0]);
   getLastVote(current_user.id, dish_ids[0], function(votes) {
     getVotesAvg(dish_ids[0], function() {
-      console.log(dish_ids[0]);
       var vote_map = createVoteMap(dish_ids[0], votes);
       createVoteChart(dish_ids[0], vote_map, "dish_stat_graph_"+0);
       createVoteTable(dish_ids[0], vote_map, "dish_stat_table_"+0);
@@ -826,7 +816,6 @@ function showMenuStat(dish_ids, dish_names) {
   $('#dish_name_1').text(dish_names[1]);
   getLastVote(current_user.id, dish_ids[1], function(votes) {
     getVotesAvg(dish_ids[1], function() {
-      console.log(getDish(dish_ids[1]).desc1);
       var vote_map = createVoteMap(dish_ids[1], votes);
       createVoteChart(dish_ids[1], vote_map, "dish_stat_graph_"+1);
       createVoteTable(dish_ids[1], vote_map, "dish_stat_table_"+1);
@@ -835,7 +824,6 @@ function showMenuStat(dish_ids, dish_names) {
   $('#dish_name_2').text(dish_names[2]);
   getLastVote(current_user.id, dish_ids[2], function(votes) {
     getVotesAvg(dish_ids[2], function() {
-      console.log(getDish(dish_ids[2]).desc1);
       var vote_map = createVoteMap(dish_ids[2], votes);
       createVoteChart(dish_ids[2], vote_map, "dish_stat_graph_"+2);
       createVoteTable(dish_ids[2], vote_map, "dish_stat_table_"+2);
@@ -844,7 +832,6 @@ function showMenuStat(dish_ids, dish_names) {
   $('#dish_name_3').text(dish_names[3]);
   getLastVote(current_user.id, dish_ids[3], function(votes) {
     getVotesAvg(dish_ids[3], function() {
-      console.log(getDish(dish_ids[3]).desc1);
       var vote_map = createVoteMap(dish_ids[3], votes);
       createVoteChart(dish_ids[3], vote_map, "dish_stat_graph_"+3);
       createVoteTable(dish_ids[3], vote_map, "dish_stat_table_"+3);
@@ -872,11 +859,18 @@ function createVoteMap(dish_id, votes) {
       }
     }
   }
-  console.log(JSON.stringify(vote_map));
   return vote_map;
 }
 
+var charts = {};
+
 function createVoteChart(dish_id, vote_map, chart_element_id) {  
+  var chart = charts[chart_element_id];
+  if(!chart) {
+    chart = new Chart(document.getElementById(chart_element_id).getContext("2d"));
+    charts[chart_element_id]=chart;
+  }
+  
   var cdata = {labels: [], datasets: []};
   cdata.datasets[0] = { fillColor : "rgba(127,255,127,0.5)",
 			strokeColor : "rgba(127,255,127,1)",
@@ -898,7 +892,7 @@ function createVoteChart(dish_id, vote_map, chart_element_id) {
       cdata.datasets[1].data.push(vote.rating);
     }
   }
-  var radar = new Chart(document.getElementById(chart_element_id).getContext("2d")).Radar(cdata,{scaleShowLabels : false, pointLabelFontSize : 10});
+  chart.Radar(cdata,{scaleShowLabels : false, pointLabelFontSize : 10})
 }
 
 function createVoteTable(dish_id, vote_map, table_id) {
