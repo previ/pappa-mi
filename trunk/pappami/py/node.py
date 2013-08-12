@@ -78,6 +78,7 @@ class NodeListHandler(BaseHandler):
     self.getBase(template_values)
 
 class NodeSubscribeHandler(BaseHandler):
+    @reguser_required
     def get(self):
         user = self.get_current_user()
 
@@ -121,6 +122,7 @@ class NodeCreateHandler(BaseHandler):
       }
       self.getBase(template_values)
 
+    @reguser_required
     def post(self):
       first, last = SocialNode.allocate_ids(1)
       node=SocialNode(id=first)
@@ -140,6 +142,7 @@ class NodeCreateHandler(BaseHandler):
 
 
 class NodeEditHandler(BaseHandler):
+    @reguser_required
     def get(self,id):
       logging.info(str(id))
       node=model.Key("SocialNode", long(id)).get()
@@ -160,7 +163,8 @@ class NodeEditHandler(BaseHandler):
                       }
 
       self.getBase(template_values)
-
+    
+    @reguser_required    
     def post(self,id):
       logging.info(id)
       node=model.Key("SocialNode", long(id)).get()
@@ -190,6 +194,7 @@ class NodePaginationHandler(BaseHandler):
 
     def get(self):
         return self.post()
+      
     def post(self):
             cmd=self.request.get("cmd")
             user=self.get_current_user()
