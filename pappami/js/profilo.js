@@ -64,10 +64,13 @@ $(document).ready(function() {
       $("#message_body").text(message);
       $("#message").fadeIn(300);
       if($('#form0').attr("action") == "/signup2") {	
-	setTimeout(function(){location.href="/";}, 2000);
+	location.href="/";
       } else {
         $("#do_submit").button('reset');
-	setTimeout(function(){$("#message").fadeOut(1000, function(){$("#message_body").text('');});}, 2000);
+	$("#message").fadeOut(1000, function(){
+	  $("#message_body").text('');
+	  location.href="/";
+	});
       }
     }});
         
