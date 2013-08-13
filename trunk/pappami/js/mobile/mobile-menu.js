@@ -148,10 +148,9 @@ function initApp() {
 	    $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
 	  }
 	  });
-      } else {
-	var now = new Date();
-	initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
       }
+      var now = new Date();
+      initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
       $.mobile.hidePageLoadingMsg();
       appInit = true;
     });
@@ -601,8 +600,8 @@ $(document).bind( "pageloadfailed", function( event, data ){
 	//$.mobile.changePage("#page-login");
 	data.deferred.reject( data.absUrl, data.options );
 });  
- 
-$("#page-menu").bind('swipeleft', function(event) {
+
+$(document).on( "swipeleft", "#page-menu", function( event ) {
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');   
   var cur_sk = $('#cm');    
@@ -611,7 +610,7 @@ $("#page-menu").bind('swipeleft', function(event) {
   if(next_date) initMenu(current_user, cur_sk.val(), next_date);
 });
   
-$("#page-menu").bind('swiperight', function(event) {
+$(document).on( "swiperight", "#page-menu", function( event ) {
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');    
   var cur_sk = $('#cm');    
