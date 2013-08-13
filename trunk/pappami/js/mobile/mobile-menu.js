@@ -1,6 +1,7 @@
 "use strict";
 
 var current_user = "";
+var appInit = false;
 
 function setCookie(c_name, value, exdays) {
     var exdate = new Date();
@@ -29,26 +30,7 @@ function isUserCM() {
  return current_user.type == 'C';
 }
 
-$(document).ready(function(){
-  var channel_id = $('body').attr('data-channel-id');
-  if(channel == "" && channel_id != "") {
-    channel = openChannel(channel_id);
-  }
-  getVotesTag();
-});
-
-$("#page-menu").bind('pageinit', function(event, entry) {
-  var now = new Date()
-
-  if(current_user=="") {
-    window.location.href = '/mobile/app';
-  }
-  initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-});
-
-$("#page-stream").bind('pageinit', function(event, entry) {
-
-  $.mobile.showPageLoadingMsg();
+function loadUser(success) {
   $.ajax({url:"/api/user/current", 
 	  dataType:'json',
 	  success:function(data) { 
@@ -56,38 +38,27 @@ $("#page-stream").bind('pageinit', function(event, entry) {
     current_user = data;    
     $('.user_info').append($('<img class="avatar"></img>').attr('src', current_user.avatar));
     $('.user_info').append($('<span></span>').text(current_user.fullname));
-    
-    if(!isUserLogged() && getCookie('school_id')) {
-      current_user.schools = [{id: getCookie('school_id'),
-			       name: getCookie('school_name')}];
-    }
-    if(!isUserLogged()) {
-      $.ajax({url:"/api/school/"+current_user.city+"/list", 
-	      dataType:'json',
-	      success:function(data) { 
-		  var schools_list = $('#school_list');
-		  for(var school in data) {
-		    school = data[school];
-		    schools_list.append('<li><a href="#" data-school-id="' + school.id + '">' + school.name + '</a></li>');
-		  }
-		  schools_list.find('a').on('click', function() {
-		      current_user.schools = [{id: $(this).attr('data-school-id'),
-					       name: $(this).text()}];
-		      setCookie('school_id', current_user.schools[0].id, 365);
-		      setCookie('school_name', current_user.schools[0].name, 365);
-		      var now = new Date();
-		      $.mobile.changePage('#page-menu');
-		      initUI(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-		    });
-		  if( !getCookie('school_id') ) {
-    		    $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
-		  }
-		}
-	      });
-	    }
-    }
-  });    
+    success();
+  }});
+}
 
+function loadSchoolList(success) {
+  $.ajax({url:"/api/school/"+current_user.city+"/list", 
+	  dataType:'json',
+	  success:function(data) { 
+	      var schools_list = $('#school_list');
+	      for(var school in data) {
+		school = data[school];
+		schools_list.append('<li><a href="#" data-school-id="' + school.id + '">' + school.name + '</a></li>');
+	      }
+	      schools_list.find('a').on('click', onSchoolSelected);
+	      if(success) success();
+	    }
+	  });
+}
+
+function loadNodeList(success) {
+  $.mobile.showPageLoadingMsg();
   $.ajax({url:"/api/node/list", 
 	  dataType:'json',
 	  success:function(data) { 
@@ -147,42 +118,94 @@ $("#page-stream").bind('pageinit', function(event, entry) {
       }
       c.append(node_list);
     }
+    $('#node-panel').trigger('create');
+    $.mobile.hidePageLoadingMsg();
+    if(success) success();
+    }});
+}
+
+function onSchoolSelected() {
+  current_user.schools = [{id: $(this).attr('data-school-id'),
+			   name: $(this).text()}];
+  setCookie('school_id', current_user.schools[0].id, 365);
+  setCookie('school_name', current_user.schools[0].name, 365);
+  var now = new Date();
+  initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
+  $.mobile.changePage('#page-menu');
+}
+
+function initApp() {
+    if(appInit) return;
+    
+    loadUser(function () {
+      if(!isUserLogged() && getCookie('school_id')) {
+	current_user.schools = [{id: getCookie('school_id'),
+				 name: getCookie('school_name')}];
+      }
+      if(!isUserLogged()) {
+	loadSchoolList(function () {
+	  if( !getCookie('school_id') ) {
+	    $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
+	  }
+	  });
+      } else {
+	var now = new Date();
+	initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
+      }
+      $.mobile.hidePageLoadingMsg();
+      appInit = true;
+    });
+}
+
+$( document ).on( 'mobileinit', function(){
+  var channel_id = $('body').attr('data-channel-id');
+  if(channel == "" && channel_id && channel_id != "") {
+    channel = openChannel(channel_id);
+  }
+  getVotesTag();
+
+  $.mobile.autoInitializePage = true;
+  $.mobile.loader.prototype.options.text = "caricamento";
+  $.mobile.loader.prototype.options.theme = "a";
+  
+  initApp();
+});
+
+$(document).on( "pageinit", "#page-menu", function( event ) {
+});
+
+$(document).on( "pageinit", "#page-stream", function( event ) {
+    initCheck();
+    loadNodeList();
+    loadNode('news');
     if(isUserLogged()) {
       $('#page-stream-content').prepend('<a data-role="button" data-transition="flip" href="#page-post-new" id="create_new">Nuovo messaggio</a>');
     }
     $('#page-stream').trigger("create");
-  }});
-  loadNode('news');
-  $('#post_delete').on('click', onPostDelete);
-  $('#post_reshare').on('click', onPostReshare);
-  $('#post_comment_submit').on('click', onPostCommentSubmit);
-  $('#post_comments_expand').on('click', onPostShowComments);
-  $('#post_vote').on('click', onPostVote);
-  $('#post_votes_expand').on('click', onPostShowVotes);
-  $('#post_unvote').on('click', onPostVote);
+    $('#post_delete').on('click', onPostDelete);
+    $('#post_reshare').on('click', onPostReshare);
+    $('#post_comment_submit').on('click', onPostCommentSubmit);
+    $('#post_comments_expand').on('click', onPostShowComments);
+    $('#post_vote').on('click', onPostVote);
+    $('#post_votes_expand').on('click', onPostShowVotes);
+    $('#post_unvote').on('click', onPostVote);
 });
 
 var channel = "";
 
 function initCheck(event, entry) { 
-  $.mobile.showPageLoadingMsg();
-
   if(current_user=="") {
-    window.location.href = '/mobile/app';
+    window.location.href='/mobile/app';
   }
 }
 
-$("#page-dish-detail").bind('pageinit', initCheck);
-$("#page-dish-stat").bind('pageinit', initCheck);
-$("#page-dish-vote").bind('pageinit', initCheck);
+$(document).on( "pageinit", "#page-dish-detail", initCheck);
+$(document).on( "pageinit", "#page-dish-stat", initCheck);
+$(document).on( "pageinit", "#page-dish-vote", initCheck);
 
-$("#page-notifiche").bind('pageinit', function(event, entry) { 
-  $.mobile.showPageLoadingMsg();
-
-  if(current_user=="") {
-    window.location.href = '/mobile/app';
-  }
-
+$(document).on( "pageinit", "#page-notifiche", function(event, entry) { 
+  initCheck();
+  
   //load(45.463681,9.188171); 
   
   $.ajax({url:"/api/user/online/list", 
@@ -585,7 +608,7 @@ $("#page-menu").bind('swipeleft', function(event) {
   var cur_sk = $('#cm');    
   var date = getDateFromStr(cur_date.val());
   var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
-  if(next_date) initUI(current_user, cur_sk.val(), next_date);
+  if(next_date) initMenu(current_user, cur_sk.val(), next_date);
 });
   
 $("#page-menu").bind('swiperight', function(event) {
@@ -594,10 +617,10 @@ $("#page-menu").bind('swiperight', function(event) {
   var cur_sk = $('#cm');    
   var date = getDateFromStr(cur_date.val());
   var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
-  if(next_date) initUI(current_user, cur_sk.val(), next_date);
+  if(next_date) initMenu(current_user, cur_sk.val(), next_date);
 });
 
-function initUI(current_user, sk, dt) {
+function initMenu(current_user, sk, dt) {
   var params =  $('<fieldset id="params" data-role="controlgroup" data-type="vertical"></fieldset>');
   if(isUserLogged()) {
     params.append($('<select id="cm" name="school" data-mini="true" data-native-menu="false"/>'));  
