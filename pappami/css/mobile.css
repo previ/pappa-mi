@@ -97,6 +97,20 @@ height:320px;
 width:320px;
 }
 
+.ui-icon-vote {
+    background: url('images/custom-icons-18-black.png');
+    width:18px;
+    height:18px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-stats {
+    background: url('images/custom-icons-18-black.png');
+    width:18px;
+    height:18px;
+    background-position: -18px 0px;
+}
+
 @media (max-width: 767) {
 .s_post_title {
 }

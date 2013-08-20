@@ -27,7 +27,7 @@
 {#<script type="text/javascript" src="/js/Fluster2.packed.js"></script>#}
 <script src="/js/jquery.form.js"></script> 
 <script src="http://cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
-<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+{%if notify%}<script type="text/javascript" src="/_ah/channel/jsapi"></script>{%endif%}
 <script src="/js/Chart.min.js"></script>    
 {#<script src="/js/map.js"></script>#}
 <!--  pages pappa mi-->
@@ -57,9 +57,9 @@
  <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>
-	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
-	    <li><a class="ui-btn-active ui-state-persist" data-icon="grid" href="#page-menu">Menù</a></li>
-	    <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
+	    <li><a data-icon="star" href="#page-stream">Novià</a></li>
+	    <li><a class="ui-btn-active ui-state-persist" data-icon="bars" href="#page-menu">Menù</a></li>
+	    {%if notify%}<li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>{%endif%}
 	  </ul>
 	</div><!-- /navbar -->
  </div><!-- /footer -->	
@@ -76,8 +76,8 @@
   <div data-role="content" data-theme="c">
     <div>
     <fieldset class="ui-grid-a">
-      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
-      <div class="ui-block-b" id="dish_vote_c"><a class="dish_vote" data-role="button" data-mini="true" data-theme="b" data-icon="star" data-iconpos="left">Vota</a>
+      <div class="ui-block-a"><a class="dish_stat" data-role="button" data-mini="true" data-icon="stats" data-iconpos="left">Statistiche</a></div>
+      <div class="ui-block-b" id="dish_vote_c"><a class="dish_vote" data-role="button" data-mini="true" data-theme="a" data-icon="vote" data-iconpos="left">Vota</a>
       </div>
     </fieldset>
     </div>
@@ -197,13 +197,13 @@
  </div><!-- /panel -->
 
   <div data-role="footer" data-id="footer-1" data-position="fixed">
-	  <div data-role="navbar">
-		  <ul>
-			  <li><a class="ui-btn-active ui-state-persist" data-icon="star" href="#page-stream">Attività</a></li>
-			  <li><a data-icon="grid" href="#page-menu">Menù</a></li>
-			  <li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>
-		  </ul>
-	  </div><!-- /navbar -->
+    <div data-role="navbar">
+      <ul>
+	<li><a class="ui-btn-active ui-state-persist" data-icon="star" href="#page-stream">Novità</a></li>
+	<li><a data-icon="bars" href="#page-menu">Menù</a></li>
+	{%if notify%}<li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>{%endif%}
+      </ul>
+    </div><!-- /navbar -->
   </div><!-- /footer -->
 </div>
 
@@ -320,6 +320,7 @@
   </div>
 </div>
 
+{%if notify%}
 <div data-role="page" id="page-notifiche">
  <div data-role="header">
   <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Utenti</a>
@@ -347,17 +348,17 @@
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%} 
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
  </div><!-- /panel -->
-
  <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>
-	    <li><a data-icon="star" href="#page-stream">Attività</a></li>
-	    <li><a data-icon="grid" href="#page-menu">Menù</a></li>
+	    <li><a data-icon="star" href="#page-stream">Novità</a></li>
+	    <li><a data-icon="bars" href="#page-menu">Menù</a></li>
 	    <li><a class="ui-btn-active ui-state-persist" data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 	  </ul>
 	</div><!-- /navbar -->
  </div><!-- /footer -->	
 </div>
+{%endif%}
 <script>  
   var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
   var s = document.createElement('script');
