@@ -157,10 +157,12 @@ function initApp() {
 }
 
 $( document ).on( 'mobileinit', function(){
+  /*
   var channel_id = $('body').attr('data-channel-id');
   if(channel == "" && channel_id && channel_id != "") {
     channel = openChannel(channel_id);
   }
+  */
   getVotesTag();
 
   $.mobile.autoInitializePage = true;
@@ -289,6 +291,7 @@ function onPostVote() {
 
 function onPostShowComments() {
   var post_id = $(this).parents('[data-post-id]').attr('data-post-id');
+  var can_post = $(this).parents('[data-post-id]').attr('data-post-can-comment');
   $.ajax({url:"/api/post/"+post_id+'/comment', 
 	  type: 'GET',
 	  dataType:'json',
@@ -299,12 +302,14 @@ function onPostShowComments() {
 	    for ( var comment in comments ) {
 	      comment = comments[comment];
 	      var li = $('<li></li>');
-	      li.append('<img class="avatar" src="'+comment.author.avatar+'"></img>');
+	      li.append('<img class="avatar-mini" src="'+comment.author.avatar+'"></img>');
 	      li.append('<span>'+comment.author.name+'</span>');
 	      li.append('<p>'+comment.content+'</p>');
 	      comment_list.append(li);
 	    }
-	    $('#comment_add').show();
+	    if(can_post == "true") {
+	      $('#comment_add').show();
+	    }
 	    comment_list.listview('refresh');
   }});
 }
@@ -346,7 +351,7 @@ function onPostCommentSubmit() {
 	    for ( var comment in comments ) {
 	      comment = comments[comment];
 	      var li = $('<li></li>');
-	      li.append('<img class="avatar" src="'+comment.author.avatar+'"></img>');
+	      li.append('<img class="avatar-mini" src="'+comment.author.avatar+'"></img>');
 	      li.append('<span>'+comment.author.name+'</span>');
 	      li.append('<p>'+comment.content+'</p>');
 	      comment_list.append(li);
@@ -364,6 +369,7 @@ function loadPost(post_id) {
     var page_post_detail = $('#page-post-detail');
     var post = data.post;    
     page_post_detail.attr('data-post-id', post.id);
+    page_post_detail.attr('data-post-can-comment', post.cancomment);
     page_post_detail.find('#post_author').text(post.author.name);
     page_post_detail.find('#post_avatar').attr('src', post.author.avatar);
     page_post_detail.find('#post_date').text(post.ext_date);
@@ -545,7 +551,7 @@ function createPostItem(post) {
   var a = $('<a href="#" class="s_post_item_a" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
   });
-  a.append('<div><img src="'+post.author.avatar+'" alt="Autore" style="left:4px;top:4px;" class="s_post_avatar ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,40)+'</span></div><div><span class="s_post_node">' + post.node.name +'</span><span class="s_post_author"> di '+ post.author.name + ' </span><span class="ui-li-aside s_post_date">' + post.ext_date +'</div></span>')
+  a.append('<div><img src="'+post.author.avatar+'" alt="Autore" style="left:4px;top:4px;" class="avatar-mini ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,40)+'</span></div><div><span class="s_post_node">' + post.node.name +'</span><span class="s_post_author"> di '+ post.author.name + ' </span><span class="ui-li-aside s_post_date">' + post.ext_date +'</div></span>')
   if(post.images.length > 0) {
    a.append($('<img class="s_post_img_thumb"></img>').attr('src', post.images[0]));
   }
