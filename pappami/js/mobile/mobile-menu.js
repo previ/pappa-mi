@@ -607,7 +607,9 @@ $(document).bind( "pageloadfailed", function( event, data ){
 	data.deferred.reject( data.absUrl, data.options );
 });  
 
-$(document).on( "swipeleft", "#page-menu", function( event ) {
+$("#page-menu").on( "swipeleft", function( event ) {
+  alert("swipeleft")
+
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');   
   var cur_sk = $('#cm');    
@@ -616,7 +618,8 @@ $(document).on( "swipeleft", "#page-menu", function( event ) {
   if(next_date) initMenu(current_user, cur_sk.val(), next_date);
 });
   
-$(document).on( "swiperight", "#page-menu", function( event ) {
+$("#page-menu").on( "swiperight", function( event ) {
+  alert("swiperight")
   $.mobile.showPageLoadingMsg();
   var cur_date = $('#data');    
   var cur_sk = $('#cm');    
@@ -754,10 +757,14 @@ function onDishStat() {
   
   getVotesAvg(dish_id, function() {
     var vote_map = createVoteMap(dish_id);
-    createVoteChart(dish_id, vote_map, "dish_stat_graph");
-    createVoteTable(dish_id, vote_map, "dish_stat_table");
-  
-    $.mobile.changePage( "#page-dish-stat", {transition:'flip'} );
+    if(vote_avg[dish_id].avgS['id-0']) {
+      createVoteChart(dish_id, vote_map, "dish_stat_graph");
+      createVoteTable(dish_id, vote_map, "dish_stat_table");
+    
+      $.mobile.changePage( "#page-dish-stat", {transition:'flip'} );
+    } else {
+      alert("Statistiche non disponibili per questo piatto.");
+    }
   });
 }
 
