@@ -134,6 +134,16 @@ function onSchoolSelected() {
   $.mobile.changePage('#page-menu');
 }
 
+function checkMenuHelp() {
+  var menuhelp = getCookie('menuhelp');
+  if( !menuhelp ) {
+    $( "#menu-help" ).popup( "open", {transition: 'slideup', positionTo:'window'} );
+    menuhelp = true;
+  }
+ 
+  setCookie('menuhelp', menuhelp, 365);
+}
+
 function initApp() {
     if(appInit) return;
     
@@ -172,7 +182,30 @@ $( document ).on( 'mobileinit', function(){
   initApp();
 });
 
+$(document).on( "pageshow", "#page-menu", function( event ) {
+  checkMenuHelp();
+});
+
 $(document).on( "pageinit", "#page-menu", function( event ) {
+  
+  $("#page-menu").on( "swipeleft", function( event ) {
+    $.mobile.showPageLoadingMsg();
+    var cur_date = $('#data');   
+    var cur_sk = $('#cm');    
+    var date = getDateFromStr(cur_date.val());
+    var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
+    if(next_date) initMenu(current_user, cur_sk.val(), next_date);
+  });
+    
+  $("#page-menu").on( "swiperight", function( event ) {
+    $.mobile.showPageLoadingMsg();
+    var cur_date = $('#data');    
+    var cur_sk = $('#cm');    
+    var date = getDateFromStr(cur_date.val());
+    var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
+    if(next_date) initMenu(current_user, cur_sk.val(), next_date);
+  });
+
 });
 
 $(document).on( "pageinit", "#page-stream", function( event ) {
@@ -607,28 +640,9 @@ $(document).bind( "pageloadfailed", function( event, data ){
 	data.deferred.reject( data.absUrl, data.options );
 });  
 
-$("#page-menu").on( "swipeleft", function( event ) {
-  alert("swipeleft")
-
-  $.mobile.showPageLoadingMsg();
-  var cur_date = $('#data');   
-  var cur_sk = $('#cm');    
-  var date = getDateFromStr(cur_date.val());
-  var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
-  if(next_date) initMenu(current_user, cur_sk.val(), next_date);
-});
-  
-$("#page-menu").on( "swiperight", function( event ) {
-  alert("swiperight")
-  $.mobile.showPageLoadingMsg();
-  var cur_date = $('#data');    
-  var cur_sk = $('#cm');    
-  var date = getDateFromStr(cur_date.val());
-  var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
-  if(next_date) initMenu(current_user, cur_sk.val(), next_date);
-});
 
 function initMenu(current_user, sk, dt) {
+  
   var params =  $('<fieldset id="params" data-role="controlgroup" data-type="vertical"></fieldset>');
   if(isUserLogged()) {
     params.append($('<select id="cm" name="school" data-mini="true" data-native-menu="false"/>'));  
@@ -664,12 +678,18 @@ function initMenu(current_user, sk, dt) {
   
   $('#menu_form').html(params).trigger("create");
   
-  sel_date.change( loadMenu );
+  sel_date.change( onMenuDateChange );
   sel_sk.change( loadMenu );
   
-  sel_date.trigger("change");
+  loadMenu();
 }
 
+function onMenuDateChange() {
+  var cur_date = $('#data');   
+  var cur_sk = $('#cm');    
+  var date = getDateFromStr(cur_date.val());
+  initMenu(current_user, cur_sk.val(), date);
+} 
 var menu = {};
 function loadMenu() {
   var date = $('#data').val(); 
@@ -678,6 +698,8 @@ function loadMenu() {
   var date_d = getDateFromStr(date);
   var today = getPrevBizDay(new Date());
   
+  $.mobile.showPageLoadingMsg();
+
   $.ajax({url:"/api/menu/" + cm +'/'+date,
 	dataType:'json',
 	success:function(data) { 
@@ -988,9 +1010,9 @@ function createVoteTable(dish_id, vote_map, table_id) {
     var vote = vote_map[vote];
     var tr = $('<tr></tr>');
     tr.append('<td>'+vote.label+'</td>');
-    tr.append('<td>'+vote.avg+'</td>');
+    tr.append('<td>'+Math.round(vote.avg*100)/100+'</td>');
     if(vote_map['id-0'].rating!=""){
-      tr.append('<td>'+vote.rating+'</td>');
+      tr.append('<td>'+Math.round(vote.rating*100)/100+'</td>');
     }
     tbody.append(tr);
   }

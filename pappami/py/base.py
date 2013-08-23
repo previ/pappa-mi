@@ -212,8 +212,11 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.1.0.34 - 2013.07.20"
+    template_values["version"] = "3.1.0.34 - 2013.08.22"
     template_values["ctx"] = self.get_context()
+    
+    #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
+    #logging.info("users.current_user(): " + str(users.get_current_user()))
 
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
