@@ -52,11 +52,29 @@
       </div>
     </fieldset>  
   </div>#}
+
+    <a href="#menu-help" data-rel="popup" data-transition="slideup" data-role="button" data-mini="true" data-inline="true" data-icon="info">Informazioni</a>
+  <div id="menu-help" class="ui-content" data-role="popup">
+    <h4>Menù del giorno</h5>
+    <p>Selezione un piatto per esprimere la tua opinione, leggere gli ingredienti e consultare le medie dei giudizi espressi.</p>
+    <p>Puoi mostrare il menù del giorno successivo o precedente scorrendo lo schermo verso destra o sinistra.</p>
+    <h4>Origine dei dati mostrati in questo sito</h4>
+    <h5>Anagrafica Scuole</h5>
+    <ul>
+    <li><a href="http://dati.comune.milano.it" data-ajax="false" target="new"><small>Sito OpenData Comune di Milano</small></a></li>
+    <li><a href="http://archivio.pubblica.istruzione.it/scuola_in_chiaro/open_data/index.html" data-ajax="false" target="new"><small>Sito OpenData Ministero Istruzione</small></a></li>
+    </ul>
+    <h5>Menù del giorno e ingredienti dei piatti</h5>
+    <ul>
+    <li><a href="http://www.milanoristorazione.it" data-ajax="false" target="new"><small>Sito MilanoRistorazione</small></li>
+    </ul>
+  <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Chiudi</a>
+  </div>
  </div>
  <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">
 	  <ul>
-	    <li><a data-icon="star" href="#page-stream">Novià</a></li>
+	    <li><a data-icon="star" href="#page-stream">Novità</a></li>
 	    <li><a class="ui-btn-active ui-state-persist" data-icon="bars" href="#page-menu">Menù</a></li>
 	    {%if notify%}<li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>{%endif%}
 	  </ul>
@@ -66,6 +84,8 @@
   <div class="user_info"></div>
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%}
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
+  <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
  </div><!-- /panel -->
 </div>
 <div data-role="page" id="page-dish-detail">
@@ -90,7 +110,7 @@
       <tbody id="dish_components">
       </tbody>
     </table>
-    <a data-role="button" href="#page-menu" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
+    <a data-role="button" data-rel="back" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
   </div>
 </div>
 <div data-role="page" id="page-dish-vote">
@@ -117,7 +137,7 @@
       </table>
      </div>
     </div>
-    <a data-role="button" href="#page-dish-detail" data-mini="true" data-theme="c">Chiudi</a>    
+    <a data-role="button" data-rel="back" data-mini="true" data-theme="c">Chiudi</a>    
   </div>
 </div>
 <div data-role="page" id="page-menu-stat">
@@ -193,6 +213,9 @@
   <div id="node_lists" data-role="collapsible-set" data-theme="b" data-content-theme="d"></div>
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%}
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
+  <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
+
  </div><!-- /panel -->
 
   <div data-role="footer" data-id="footer-1" data-position="fixed">
@@ -346,6 +369,8 @@
   </ul>
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%} 
   <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
+  <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
  </div><!-- /panel -->
  <div data-role="footer" data-id="footer-1" data-position="fixed">
 	<div data-role="navbar">

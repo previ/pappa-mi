@@ -36,6 +36,7 @@
     <a data-role="button" href="/signup" data-ajax="false">Registrati</a>
     <a data-role="button" href="/eauth/login?next=/mobile/app" data-ajax="false">Accedi</a>
     <a data-role="button" href="/mobile/app" data-ajax="false">Entra come Ospite</a>
+    <center><a href="https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4" data-ajax="false"><img src="/img/Available_on_the_App_Store_Badge_IT_135x40_0824.png"></a></center>
   </div>
   <div data-role="popup" data-overlay-theme="a" data-theme="d" id="popup-intro">
     <a href="#page-public" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
@@ -74,19 +75,21 @@ function checkReturning() {
  
   setCookie('returning', returning, 365) 
 }
+
+function checkNative() {
+  var native_ios = getCookie('native_ios');
+  if( (navigator.platform == 'iPhone' || navigator.platform == 'iPod' || navigator.platform == 'iPad' &&) native_ios == null ) {
+    native_ios = confirm("E' disponibile la app specifica per il tuo dispositivo, desideri scaricarla?");
+    location.href = "https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4";
+  }
+
+ setCookie('native_ios', native_ios, 365) 
+}
+
 $("#page-public").bind('pageshow', function(event, entry) {
   checkReturning();
+  checkNative();
 });
-
-$(document).bind( "pageloadfailed", function( event, data ){
-  // Let the framework know we're going to handle things.
-  event.preventDefault();
-  
-  window.location.href="/eauth/login?next="+data.absUrl;
-  //$.mobile.changePage("#page-login");
-  data.deferred.reject( data.absUrl, data.options );
-});  
-
 </script>
 </body>
 </html>
