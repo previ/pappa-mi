@@ -137,6 +137,7 @@ function onSchoolSelected() {
 function checkMenuHelp() {
   var menuhelp = getCookie('menuhelp');
   if( !menuhelp ) {
+    $( "#menu-help" ).popup({history: false});
     $( "#menu-help" ).popup( "open", {transition: 'slideup', positionTo:'window'} );
     menuhelp = true;
   }
@@ -152,16 +153,16 @@ function initApp() {
 	current_user.schools = [{id: getCookie('school_id'),
 				 name: getCookie('school_name')}];
       }
-      if(!isUserLogged()) {
+      if(!isUserLogged() && !getCookie('school_id') ) {
+	$.mobile.showPageLoadingMsg();
 	loadSchoolList(function () {
-	  if( !getCookie('school_id') ) {
-	    $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
-	  }
-	  });
+	  $.mobile.changePage('#page-school-chooser', {transition: 'fade'});
+	  $.mobile.hidePageLoadingMsg();
+	});
+      } else {
+	var now = new Date();
+	initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
       }
-      var now = new Date();
-      initMenu(current_user, current_user.schools[0].id, getPrevBizDay(new Date(now.getFullYear(), now.getMonth(), now.getDate())));
-      $.mobile.hidePageLoadingMsg();
       appInit = true;
     });
 }
@@ -175,7 +176,8 @@ $( document ).on( 'mobileinit', function(){
   */
   getVotesTag();
 
-  $.mobile.autoInitializePage = true;
+  //$.mobile.autoInitializePage = true;
+  //$.mobile.pushStateEnabled = false;
   $.mobile.loader.prototype.options.text = "caricamento";
   $.mobile.loader.prototype.options.theme = "a";
   
@@ -183,7 +185,7 @@ $( document ).on( 'mobileinit', function(){
 });
 
 $(document).on( "pageshow", "#page-menu", function( event ) {
-  checkMenuHelp();
+  if(appInit) checkMenuHelp();
 });
 
 $(document).on( "pageinit", "#page-menu", function( event ) {
@@ -193,7 +195,7 @@ $(document).on( "pageinit", "#page-menu", function( event ) {
     var cur_date = $('#data');   
     var cur_sk = $('#cm');    
     var date = getDateFromStr(cur_date.val());
-    var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
+    var next_date = getNextBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
     if(next_date) initMenu(current_user, cur_sk.val(), next_date);
   });
     
@@ -202,7 +204,7 @@ $(document).on( "pageinit", "#page-menu", function( event ) {
     var cur_date = $('#data');    
     var cur_sk = $('#cm');    
     var date = getDateFromStr(cur_date.val());
-    var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()+1));  
+    var next_date = getPrevBizDay(new Date(date.getFullYear(), date.getMonth(), date.getDate()-1));  
     if(next_date) initMenu(current_user, cur_sk.val(), next_date);
   });
 
@@ -233,7 +235,12 @@ function initCheck(event, entry) {
   }
 }
 
-$(document).on( "pageinit", "#page-dish-detail", initCheck);
+$(document).on( "pageinit", "#page-dish-detail", function() {
+  initCheck();
+  $('.dish_stat').on('click', onDishStat);
+  $('.dish_vote').on('click', onDishVote);
+});
+
 $(document).on( "pageinit", "#page-dish-stat", initCheck);
 $(document).on( "pageinit", "#page-dish-vote", initCheck);
 
@@ -584,7 +591,7 @@ function createPostItem(post) {
   var a = $('<a href="#" class="s_post_item_a" data-transition="slide"></a>').attr('data-post-id',post.id).on('click', function() {
     loadPost($(this).attr('data-post-id'));
   });
-  a.append('<div><img src="'+post.author.avatar+'" alt="Autore" style="left:4px;top:4px;" class="avatar-mini ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,40)+'</span></div><div><span class="s_post_node">' + post.node.name +'</span><span class="s_post_author"> di '+ post.author.name + ' </span><span class="ui-li-aside s_post_date">' + post.ext_date +'</div></span>')
+  a.append('<div><img src="'+post.author.avatar+'" alt="Autore" style="left:4px;top:4px;" class="avatar-mini ui-li-icon ui-corner-none"><span class="s_post_title">'+post.title.substring(0,60)+'</span></div><div><span class="s_post_node">' + post.node.name +'</span><span class="s_post_author"> di '+ post.author.name + ' </span><span class="ui-li-aside s_post_date">' + post.ext_date +'</div></span>')
   if(post.images.length > 0) {
    a.append($('<img class="s_post_img_thumb"></img>').attr('src', post.images[0]));
   }
@@ -649,7 +656,9 @@ function initMenu(current_user, sk, dt) {
   } else {
     params.append($('<input id="cm" type="hidden" name="cm" value="'+current_user.schools[0].id+'"/>')); 
     params.append($('<button data-mini="true">'+current_user.schools[0].name+'</button>').on('click', function() {
-      $.mobile.changePage('#page-school-chooser');
+      loadSchoolList(function() {
+	$.mobile.changePage('#page-school-chooser');
+      });
     }));  
   }
   params.append($('<select id="data" name="cm" data-mini="true" data-native-menu="false"/>'))  
@@ -676,11 +685,11 @@ function initMenu(current_user, sk, dt) {
    }
   }
   
-  $('#menu_form').html(params).trigger("create");
-  
-  sel_date.change( onMenuDateChange );
+  sel_date.change( loadMenu );
   sel_sk.change( loadMenu );
-  
+
+  $('#menu_form').html(params).trigger("create");
+    
   loadMenu();
 }
 
@@ -690,7 +699,9 @@ function onMenuDateChange() {
   var date = getDateFromStr(cur_date.val());
   initMenu(current_user, cur_sk.val(), date);
 } 
+
 var menu = {};
+
 function loadMenu() {
   var date = $('#data').val(); 
   var cm = $('#cm').val();
@@ -723,14 +734,7 @@ function loadMenu() {
       $('#menu_vote_c').show();
     }
     */
-
-    $('#menu').trigger("create");
-    $('.dish_info').on('click', onDishInfo);
-    $('.dish_stat').on('click', onDishStat);
-    $('.dish_vote').on('click', onDishVote);
-    //$('.menu_stat').on('click', onMenuStat);
-    //$('.menu_vote').on('click', onMenuVote);
-    
+    $('.dish_info').on('click', onDishInfo);    
     $.mobile.hidePageLoadingMsg();
     }});
 }
