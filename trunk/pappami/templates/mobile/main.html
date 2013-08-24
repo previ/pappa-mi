@@ -30,8 +30,8 @@
 <script src="/js/Chart.min.js"></script>    
 {#<script src="/js/map.js"></script>#}
 <!--  pages pappa mi-->
-<script src="/js/mobile/mobile-menu.js"></script>
-<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="/js/mobile/mobile-app.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.js"></script>
 </head> 
 
 <body data-channel-id="{{channel}}"> 
@@ -41,6 +41,7 @@
  <div data-role="header">
   <a href="#menu-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
+  <a href="#menu-help" data-rel="popup" data-transition="slideup" data-role="button" data-iconpos="notext" data-shadow="false" data-iconshadow="true" data-icon="info">Informazioni</a>
  </div> 
  <div data-role="content">
   <div id="menu_form"></div>
@@ -53,22 +54,27 @@
     </fieldset>  
   </div>#}
 
-    <a href="#menu-help" data-rel="popup" data-transition="slideup" data-role="button" data-mini="true" data-inline="true" data-icon="info">Informazioni</a>
   <div id="menu-help" class="ui-content" data-role="popup">
     <h4>Menù del giorno</h5>
     <p>Selezione un piatto per esprimere la tua opinione, leggere gli ingredienti e consultare le medie dei giudizi espressi.</p>
     <p>Puoi mostrare il menù del giorno successivo o precedente scorrendo lo schermo verso destra o sinistra.</p>
-    <h4>Origine dei dati mostrati in questo sito</h4>
-    <h5>Anagrafica Scuole</h5>
-    <ul>
-    <li><a href="http://dati.comune.milano.it" data-ajax="false" target="new"><small>Sito OpenData Comune di Milano</small></a></li>
-    <li><a href="http://archivio.pubblica.istruzione.it/scuola_in_chiaro/open_data/index.html" data-ajax="false" target="new"><small>Sito OpenData Ministero Istruzione</small></a></li>
-    </ul>
-    <h5>Menù del giorno e ingredienti dei piatti</h5>
-    <ul>
-    <li><a href="http://www.milanoristorazione.it" data-ajax="false" target="new"><small>Sito MilanoRistorazione</small></li>
-    </ul>
-  <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Chiudi</a>
+    <div data-role="collapsible-set" data-theme="c" data-content-theme="d" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d">
+    <div data-role="collapsible">
+        <h4>Fonti dati</h4>
+	<div>
+	  <h5>Anagrafica Scuole</h5>
+	  <ul>
+	  <li><a href="http://dati.comune.milano.it" data-ajax="false" target="new"><small>Sito OpenData Comune di Milano</small></a></li>
+	  <li><a href="http://archivio.pubblica.istruzione.it/scuola_in_chiaro/open_data/index.html" data-ajax="false" target="new"><small>Sito OpenData Ministero Istruzione</small></a></li>
+	  </ul>
+	  <h5>Menù del giorno e ingredienti dei piatti</h5>
+	  <ul>
+	  <li><a href="http://www.milanoristorazione.it" data-ajax="false" target="new"><small>Sito MilanoRistorazione</small></li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Chiudi</a>
   </div>
  </div>
  <div data-role="footer" data-id="footer-1" data-position="fixed">
@@ -110,7 +116,7 @@
       <tbody id="dish_components">
       </tbody>
     </table>
-    <a data-role="button" data-rel="back" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
+    <a href="#page-menu" data-role="button" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
   </div>
 </div>
 <div data-role="page" id="page-dish-vote">
@@ -137,7 +143,7 @@
       </table>
      </div>
     </div>
-    <a data-role="button" data-rel="back" data-mini="true" data-theme="c">Chiudi</a>    
+    <a href="#page-dish-detail" data-role="button" data-mini="true" data-theme="c">Chiudi</a>    
   </div>
 </div>
 <div data-role="page" id="page-menu-stat">

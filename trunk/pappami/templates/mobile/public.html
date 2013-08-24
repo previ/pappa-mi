@@ -39,7 +39,7 @@
     <center><a href="https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4" data-ajax="false"><img src="/img/Available_on_the_App_Store_Badge_IT_135x40_0824.png"></a></center>
   </div>
   <div data-role="popup" data-overlay-theme="a" data-theme="d" id="popup-intro">
-    <a href="#page-public" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+    <a href="#page-public" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Chiudi</a>
     <center><h2>Benvenuto su PappaMi!</h2></center>
     <p>PappaMi aiuta i genitori dei bambini a conoscere le mense scolastiche e contribuire al miglioramento del servizio di refezione.</p> 
     <p>Con questa app i genitori possono valutare la qualità dei pasti serviti a scuola e fornire utili indicazioni per il miglioramento continuo del servizio stesso.<p>
@@ -69,6 +69,7 @@ function getCookie(c_name) {
 function checkReturning() {
   var returning = getCookie('returning');
   if( !returning ) {
+    $( "#popup-intro" ).popup({history: false});
     $( "#popup-intro" ).popup( "open", {transition: 'fade', positionTo:'window'} );
     returning = true;
   }
@@ -78,15 +79,17 @@ function checkReturning() {
 
 function checkNative() {
   var native_ios = getCookie('native_ios');
-  if( (navigator.platform == 'iPhone' || navigator.platform == 'iPod' || navigator.platform == 'iPad' &&) native_ios == null ) {
+  if( (navigator.platform == 'iPhone' || navigator.platform == 'iPod' || navigator.platform == 'iPad' ) && native_ios == null ) {
     native_ios = confirm("E' disponibile la app specifica per il tuo dispositivo, desideri scaricarla?");
-    location.href = "https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4";
+    if(confirm) {
+      location.href = "https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4";
+    }
   }
 
  setCookie('native_ios', native_ios, 365) 
 }
 
-$("#page-public").bind('pageshow', function(event, entry) {
+$("#page-public").on('pageshow', function(event, entry) {
   checkReturning();
   checkNative();
 });

@@ -38,6 +38,7 @@ border-radius: 4px;
 }
 
 .s_post_title {
+display:block;
 margin-left:20px;
 text-overflow: ellipsis;
 overflow: hidden;
