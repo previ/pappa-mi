@@ -81,7 +81,7 @@ function checkNative() {
   var native_ios = getCookie('native_ios');
   if( (navigator.platform == 'iPhone' || navigator.platform == 'iPod' || navigator.platform == 'iPad' ) && native_ios == null ) {
     native_ios = confirm("E' disponibile la app specifica per il tuo dispositivo, desideri scaricarla?");
-    if(confirm) {
+    if(native_ios) {
       location.href = "https://itunes.apple.com/it/app/PappaMi/id673122977?mt=8&ign-mpt=uo%3D4";
     }
   }
@@ -94,5 +94,6 @@ $("#page-public").on('pageshow', function(event, entry) {
   checkNative();
 });
 </script>
+{%include "footer.inc"%}
 </body>
 </html>
