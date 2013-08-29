@@ -161,7 +161,7 @@ class BaseHandler(webapp.RequestHandler):
     if ((uri.find("m.") != -1 or 
          uri.find("mobile.") != -1) and 
         uri.find("/mobile") == -1 and 
-        not (("signup" in self.request.uri) or ("condizioni" in self.request.uri))):
+        not (("signup" in self.request.uri) or ("profilo" in self.request.uri) or ("condizioni" in self.request.uri))):
       logging.info("going mobile")
       self.redirect("/mobile")
       return
