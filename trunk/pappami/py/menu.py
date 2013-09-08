@@ -84,7 +84,7 @@ class CMMenuDataHandler(CMMenuHandler):
 
     template_values = dict()
     template_values['content'] = 'menu.html'
-    template_values["citta"] = Citta.get_all()
+    template_values["cittas"] = Citta.get_all()
     template_values["todayofweek"] = self.get_next_working_day(datetime.now().date()).isoweekday()
 
     if cm:

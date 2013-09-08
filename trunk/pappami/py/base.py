@@ -212,7 +212,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.1.0.34 - 2013.08.22"
+    template_values["version"] = "3.1.0.34 - 2013.08.30"
     template_values["ctx"] = self.get_context()
     
     #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
