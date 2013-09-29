@@ -990,9 +990,10 @@ function loadPosts(node_key,current_cursor) {
    $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
+    var new_posts = $(data.html);
     $('#main_stream_list').find('li.s_loading').remove();   
-    $('#main_stream_list').append(data.html)
-    initPostList($('#main_stream_list'));
+    initPostList(new_posts);
+    $('#main_stream_list').append(new_posts);
     if(data.eof){
      $("#more_posts").hide();   
      $("#no_more_posts").show();   
