@@ -65,6 +65,16 @@ var tiny_mce_opts = {
   toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
 };
 
+var tiny_mce_opts_nota = {
+  // General options
+  width : "100%",
+  theme : "modern",
+  plugins : "autolink,link,image,media", 
+  menubar: false,
+  statusbar : false,
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
+};
+
 // Flood control
 function onSuccess(data){
   if(data.response=="success"){
@@ -852,7 +862,6 @@ function initNode(node_key){
   }
  });
  
- tinymce.remove();
  $("#post_content_text").tinymce(tiny_mce_opts);
  $('#new_post_form').ajaxForm({clearForm: true, dataType:'html', error: onError, success: function(data) { 
   /*
@@ -961,6 +970,7 @@ function loadNode(node_key, node_name) {
   error: onError,
   success:function(data) { 
    if(data.response=="success"){
+    tinymce.remove();
     $("#node_container").empty();   
     $("#node_container").append(data.html);
     $(document).ready(function(){
