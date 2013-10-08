@@ -119,7 +119,7 @@ class SignupPage(BasePage):
 
   def post(self):
     error = None
-    email = self.request.get('email')
+    email = self.request.get('email').lower()
     password1 = self.request.get("password")
     password2 = self.request.get("password2")
     c1 = self.session.get("c")
