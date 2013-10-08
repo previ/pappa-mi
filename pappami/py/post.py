@@ -34,6 +34,14 @@ class PostHandler(BasePage):
 
 
   def get(self,node_id, post_id):
+    try:
+      n_id = int(node_id)
+      p_id = int(post_id)
+    except:
+      logging.info("invalid request")
+      self.response.set_status(400)
+      return
+    
     post = SocialPost.get_by_key(model.Key("SocialNode", int(node_id), "SocialPost", int(post_id)))
     node = SocialNode.get_by_key(post.key.parent())
 

@@ -61,7 +61,7 @@ def comment_as_json(comment, cmsro):
                      'avatar': comment.commissario.avatar(cmsro)},
           'ext_date': comment.extended_date(),
           'content': comment.content,
-          'votes': comment.votes}
+          'votes': len(comment.votes)}
 
 def vote_as_json(vote, cmsro):
   user = cmsro.usera.get() if cmsro else None
