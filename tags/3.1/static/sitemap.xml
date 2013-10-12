@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url>
+  <loc>http://www.pappa-mi.it/</loc>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/chi</loc>
+  <changefreq>yearly</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/commissioni</loc>
+  <changefreq>never</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/stream</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/contatti</loc>
+  <changefreq>never</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/condizioni</loc>
+  <changefreq>yearly</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/widget/get</loc>
+  <changefreq>never</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/node/list</loc>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/menu</loc>
+  <changefreq>never</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/stats</loc>
+  <changefreq>never</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/node/2147094</loc>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/node/2142072</loc>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/node/2151075</loc>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://www.pappa-mi.it/node/2149078</loc>
+  <changefreq>daily</changefreq>
+</url>
+</urlset>
