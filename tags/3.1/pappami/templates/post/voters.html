@@ -1,0 +1,26 @@
+<div id="votes_modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Questo post è piaciuto a</h3>
+  </div>
+  <div class="modal-body">
+  <ul class="voter_list">
+{%for vote in votes %}
+<li class="voter_item">
+<div class="voter_box">
+ <div class="voter_avatar" onclick="filteractivities('user={{vote.c_u.id()}}&type=&tag=&cm=')">
+  <img class="avatar" src="{{vote.author.avatar(cmsro)}}" title="{{vote.author.nomecompleto(cmsro)}}">
+ </div>
+ <div class="voter_body">
+  <div class="voter_author" onclick="filteractivities('user={{vote.c_u.id()}}&type=&tag=&cm=')">{{vote.author.nomecompleto(cmsro)}}</div>
+  <div class="voter_author_title">{{vote.author.titolo(cmsro)}}</div>
+ </div>
+</div>
+</li>
+{%endfor%}
+</ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Chiudi</button>
+  </div>
+</div>
