@@ -1,0 +1,29 @@
+<form class="s_update_post_form" action="/post/manage" method="post" enctype="multipart/form-data" class="form-stacked" novalidate="true">
+	<input type="hidden" name="cmd" value="update_post"/>
+	<input type="hidden" name="fullscreen" value="{{fullscreen}}"/>
+	<input type="hidden" name="post" value="{{post.key.urlsafe()}}"/>
+	<div class="s_post_header control-group">			
+		<input class="s_post_edit_title required" type="text" name="title" value="{{post.title}}">
+	</div>				
+	<div class="s_post_body control-group">
+		<textarea class="s_post_edit_content required" name="content">{{post.content}}</textarea>
+		{%for resource in post.resource%}
+		<div class="s_post_resource well">
+		{%include "resources/"+post.resource[loop.index-1].get().restype + ".html"%}
+		</div>			
+		{%endfor%}		
+		<div class="s_post_attachs well">
+		 <div><i class="icon-file"></i> Allegati</div>
+		 <ul class="thumbnails">{%for attach in post.attachments%}
+		  <li class="thumbnail s_attach" data-attach-key="{{attach.key.urlsafe()}}"><a class="thumbnail" href="{{attach.path}}" target="new">{%if attach.isImage()%}<img src="{{attach.imgthumb}}" alt="{{attach.nome}}"/>{%else%}{{attach.nome}}{%endif%}</a>&nbsp;{{attach.descrizione}}<span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Elimina</span>
+		  </li>{%endfor%}
+		  <li class="thumbnail s_attach"><input type="file" name="attach_file" allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
+		  <span class="btn btn-small post_attach_delete"><i class="icon-remove-sign"></i>Cancella</span></li>
+		 </ul>
+		</div>			
+	</div>			
+	<div class="s_post_edit_commands">
+		<button type="submit" class="btn btn-primary post_edit_submit" data-loading-text='Attendi...'>Conferma</button>	
+		<button type="button" class="btn btn-normal post_edit_cancel">Annulla</button>			
+	</div>
+</form>
