@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Pappa-Mi org
+# Authors: R.Previtera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -147,8 +148,12 @@ class MenuScraper(BasePage):
 
   def get(self):
     template_values = dict()
+    
+    year = self.request.get('y')
+    month = self.request.get('m')
+    day = self.request.get('d')    
 
-    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1=06&x2=05&x3=2013', deadline=60)
+    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1='+day+'&x2='+month+'&x3='+year, deadline=60)
     p = MenuParser()
     p.text = ""
     p.feed(response.content)
