@@ -40,9 +40,14 @@ function getNotificationsNum() {
 }
 
 function onChannelMessage(m) {
-  var m = jQuery.parseJSON(m.data)
-  getNotificationsNum();
-  var textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
+  var m = jQuery.parseJSON(m.data);
+  var textmessage = "";
+  if(m.type=='message') {
+    textmessage = '<strong>'+m.user+'</strong>: '+m.body;
+  } else if(m.type=='post'|| m.type=='comment') {
+    getNotificationsNum();
+    textmessage = m.user + ' ha aggiunto un <a href="' + m.source_uri +'">' + m.source_desc + '</a> su <a href="' + m.target_uri + '">' + m.target_desc + '</a>';
+  }
   $.pnotify({
     title: 'Notifica',
     text: textmessage
@@ -50,22 +55,24 @@ function onChannelMessage(m) {
 }
 
 var tiny_mce_opts = {
-  // Location of TinyMCE script
-  script_url : '/js/tiny_mce/tiny_mce.js',     
   // General options
   width : "100%",
-  //height: "300px",
-  content_css : "/js/tiny_mce/themes/advanced/skins/default/custom_content.css",
-  theme_advanced_font_sizes: "10px,12px,13px,14px,16px,18px,20px",
-  font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",  
-  theme : "advanced",
-  plugins : "autolink,autoresize,media", 
-  theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,bullist,numlist,image,media,undo,redo",
-  theme_advanced_buttons2 : "",
-  theme_advanced_buttons3 : "",			
-  theme_advanced_toolbar_location : "top",
-  theme_advanced_toolbar_align : "left",
-  theme_advanced_resizing : false     
+  autoresize_min_height: 100,
+  theme : "modern",
+  plugins : "autolink,autoresize,link,image,media", 
+  menubar: false,
+  statusbar : false,
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
+};
+
+var tiny_mce_opts_nota = {
+  // General options
+  width : "100%",
+  theme : "modern",
+  plugins : "autolink,link,image,media", 
+  menubar: false,
+  statusbar : false,
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
 };
 
 // Flood control
@@ -175,7 +182,10 @@ function initPost(post_root) {
     post_root.find(".s_comment_list").append(data.html);
     post_root.find(".s_post_comment_num").text(data.num);
     post_root.find(".s_comment_submit").button("reset");
-    tinymce.get('comment_content_' + post_root.parent().find('.s_post_root').attr('data-post-key')).setContent('');
+    //console.log('comment_content_' + post_root.closest('.s_post_root').html());
+    //console.log($('#' + 'comment_content_' + post_root.closest('.s_post_root').attr('data-post-key')).html())
+    var post_key = post_root.attr('data-post-key') ? post_root.attr('data-post-key') : post_root.find('.s_post_root').attr('data-post-key');
+    tinymce.get('comment_content_' + post_key).setContent('');
     var comment = post_root.find('.s_comment_list > li:last-child');
 
     initComment(comment);
@@ -264,6 +274,7 @@ function onPostEdit(){
 	post_root.append(edit_undo);
 	post_container.empty();
 	post_container.append(edit_post);
+	tinymce.remove('#'+edit_post.find('.s_post_edit_content').attr('id'));
 	edit_post.find(".s_post_edit_content").tinymce(tiny_mce_opts);
 	post_root.find(".s_post_commands").hide()
 	edit_post.show()
@@ -340,6 +351,7 @@ function onCommentEdit(){
   
   edit_post.find('.s_comment_edit_content').attr('value', $(this).parents(".s_post_container").find('.s_post_content').html())
   comment_root.find(".s_edit_hollow").append(edit_post);
+  tinymce.remove('#'+edit_post.find('.s_comment_edit_content').attr('id'));
   edit_post.find(".s_comment_edit_content").tinymce(tiny_mce_opts);
   comment_root.find(".s_post_commands").hide()
   comment_root.find('.s_post_content').hide()
@@ -415,7 +427,8 @@ function onPostCollapse() {
   var post_key = getPostKeyByElement($(this));
   var post_item = $(this).parents('.s_post_item');
   var data = {'cmd':'collapse_post', 'post':post_key }
-
+  
+  tinymce.remove('#'+post_item.find('.s_post_comment').attr('id'));
   $.ajax({
 	  type: 'POST',
 	  url:'/post/manage', 
@@ -460,9 +473,9 @@ function onPostCommentFormExpand() {
 
 function onOpenPostForm(){
   if(!$('#new_post').is(':visible')){
-    $("#new_post").slideDown()
+    $("#new_post").slideDown();
   } else {
-    $("#new_post").slideUp()  
+    $("#new_post").slideUp();  
   }
 }
 
@@ -489,6 +502,7 @@ function onPostReshare() {
       $(document).ready(function () {
         modal_reshare.find('[data-loading-text]').button();
 	modal_reshare.find('input[name="post"]').attr("value", post);
+	tinymce.remove('#reshare_post_content_text');
 	modal_reshare.find('#reshare_post_content_text').tinymce(tiny_mce_opts);
 	modal_reshare.find('form').ajaxForm({beforeSubmit: function() {modal_reshare.find('[data-loading-text]').button('loading');}, clearForm: true, dataType:'json', error: onError, success:function(data){
 	  if(data.response!="success") {
@@ -847,6 +861,7 @@ function initNode(node_key){
       }
   }
  });
+ 
  $("#post_content_text").tinymce(tiny_mce_opts);
  $('#new_post_form').ajaxForm({clearForm: true, dataType:'html', error: onError, success: function(data) { 
   /*
@@ -955,6 +970,7 @@ function loadNode(node_key, node_name) {
   error: onError,
   success:function(data) { 
    if(data.response=="success"){
+    tinymce.remove();
     $("#node_container").empty();   
     $("#node_container").append(data.html);
     $(document).ready(function(){
@@ -984,9 +1000,10 @@ function loadPosts(node_key,current_cursor) {
    $("#form_node").attr("value",node_key);
    $("#main_stream").attr("next_cursor",data.cursor)
    if(data.response=="success"){
+    var new_posts = $(data.html);
     $('#main_stream_list').find('li.s_loading').remove();   
-    $('#main_stream_list').append(data.html)
-    initPostList($('#main_stream_list'));
+    initPostList(new_posts);
+    $('#main_stream_list').append(new_posts);
     if(data.eof){
      $("#more_posts").hide();   
      $("#no_more_posts").show();   

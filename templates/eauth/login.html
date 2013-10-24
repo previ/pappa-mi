@@ -12,7 +12,7 @@ $(document).ready(function() {
   ('linkedin', '/auth/linkedin'),
   ('windowslive', '/auth/windowslive'),
 ] -%}
-<div class="row">
+<div class="row auth">
   <div class="span12">
     <legend>Scegli uno dei seguenti account per accedere</legend>    
     <div class="well">
@@ -29,12 +29,12 @@ $(document).ready(function() {
       <div class="span4 well">
         <form id="form0" method="POST" action="/auth/password" class="horizontal-form" novalidate>
           <fieldset class="control-group">
-            <label for="email" class="control-label">Email</label>
-            <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
+            <label for="email" class="control-label hidden-phone">Email</label>
+            <div class="controls"><input type="text" name="email" class="span3 required email" placeholder="Email" /></div>
           </fieldset>
           <fieldset class="control-group">
-            <label for="password" class="control-label">Password</label>
-            <div class="controls"><input type="password" name="password" class="span3 required password" /></div><a href="/eauth/pwdrecrq">Ho dimenticato la password</a>
+            <label for="password" class="control-label hidden-phone">Password</label>
+            <div class="controls"><input type="password" name="password" class="span3 required password" placeholder="Password" /></div><a href="/eauth/pwdrecrq">Ho dimenticato la password</a>
           </fieldset>
           <fieldset class="">
             <button type="submit" class="btn" id="do_submit" data-loading-text="Attendi...">Login</button>
@@ -51,7 +51,7 @@ $(document).ready(function() {
           {% endif %}
         </form>
       </div>
-      <div class="span6">
+      <div class="span6 hidden-phone">
         <div class="alert alert-info"><strong>Importante:</strong> Chi era gi&agrave; iscritto a Pappa-Mi deve accedere utilizzando "Google"</div>
       </div>        
     </div>

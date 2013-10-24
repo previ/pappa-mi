@@ -66,7 +66,7 @@ class NodeListHandler(BaseHandler):
     user = self.get_current_user()
     subs = list()
     if user:
-        subs = SocialNodeSubscription.get_nodes_by_user(user)
+      subs = SocialNodeSubscription.get_nodes_by_user(user)
 
     template_values = {
       'content': 'node/nodelist.html',
@@ -78,6 +78,7 @@ class NodeListHandler(BaseHandler):
     self.getBase(template_values)
 
 class NodeSubscribeHandler(BaseHandler):
+    @reguser_required
     def get(self):
         user = self.get_current_user()
 
@@ -121,8 +122,10 @@ class NodeCreateHandler(BaseHandler):
       }
       self.getBase(template_values)
 
+    @reguser_required
     def post(self):
-      node=SocialNode()
+      first, last = SocialNode.allocate_ids(1)
+      node=SocialNode(id=first)
       node.name=Sanitizer.text(self.request.get("name"))
       node.description=Sanitizer.sanitize(self.request.get("description"))
       node.default_comment=bool(self.request.get("default_comment"))
@@ -139,6 +142,7 @@ class NodeCreateHandler(BaseHandler):
 
 
 class NodeEditHandler(BaseHandler):
+    @reguser_required
     def get(self,id):
       logging.info(str(id))
       node=model.Key("SocialNode", long(id)).get()
@@ -159,7 +163,8 @@ class NodeEditHandler(BaseHandler):
                       }
 
       self.getBase(template_values)
-
+    
+    @reguser_required    
     def post(self,id):
       logging.info(id)
       node=model.Key("SocialNode", long(id)).get()
@@ -189,6 +194,7 @@ class NodePaginationHandler(BaseHandler):
 
     def get(self):
         return self.post()
+      
     def post(self):
             cmd=self.request.get("cmd")
             user=self.get_current_user()

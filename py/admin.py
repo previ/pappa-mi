@@ -701,6 +701,36 @@ class CMAdminHandler(BasePage):
           
           logging.info("deactivated: " + email)
 
+    if self.request.get("cmd") == "toupper_profile":
+      data = self.request.get("rawdata")
+      for email in data.splitlines():
+        logging.info("toupper: " + email)
+        commissario = Commissario.get_by_email_lower(email.lower())
+        if commissario:
+          user = commissario.usera.get()   
+          
+          auth_ids = list()
+          for auth_id in user.auth_ids:
+            if auth_id.lower() == 'password:'+email.lower():
+              profile_old = models.UserProfile.get_by_id(auth_id)  
+              auth_id = auth_id.lower()
+              if profile_old:
+                profile_new = models.UserProfile.get_or_create(auth_id, profile_old.user_info,
+                          password=profile_old.password)
+                profile_new.put()
+                profile_old.key.delete()
+            auth_ids.append(auth_id)
+              
+          user.auth_ids=auth_ids
+          user.email = user.email.lower()
+          user.put();
+              
+          
+          
+          
+          
+          logging.info("toupper: " + email)
+
     template_values = {
       'content': 'admin/admin.html',
     }
@@ -986,11 +1016,27 @@ class SocialAdmin(object):
 
       logging.info("migrate.end")
 
+class AdminVeespoHandler(BaseHandler):
+
+  @reguser_required
+  def get(self):
+    dishes = list()
+    for d in Piatto.get_all():
+      dishes.append({'id': d.key.id(),
+                     'name': d.nome })
+    template_values = {
+      'content': "admin/veespo.html",
+      'dishes': json.dumps(dishes),
+      'user': self.get_current_user(),
+    }
+    self.getBase(template_values)
+
 app = webapp.WSGIApplication([
   ('/admin/commissione', CMAdminCommissioneHandler),
   ('/admin/commissione/getdata', CMAdminCommissioneDataHandler),
   ('/admin/menu', AdminMenuHandler),
   ('/admin/commissario', CMAdminCommissarioHandler),
+  ('/admin/veespo', AdminVeespoHandler),
   ('/admin', CMAdminHandler)
   ], debug=os.environ['HTTP_HOST'].startswith('localhost'), config=config)
 

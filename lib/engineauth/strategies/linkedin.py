@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import json
-
+import logging
 from engineauth.models import User
 from engineauth.strategies.oauth import OAuthStrategy
 
@@ -30,6 +30,7 @@ class LinkedInStrategy(OAuthStrategy):
         if res.status is not 200:
             return self.raise_error('There was an error contacting LinkedIn. Please try again.')
         user = json.loads(results)
+        logging.info(user)
         auth_id = User.generate_auth_id(req.provider, user['id'])
         return {
             'auth_id': auth_id,
@@ -44,6 +45,14 @@ class LinkedInStrategy(OAuthStrategy):
                     'honorificPrefix': None,
                     'honorificSuffix': None,
                 },
+                'emails': [
+                        {
+                        'value': user.get('email-address'), # email
+                        'type': None, # home, work
+                        'primary': True, # boolean
+                        'verified': True # email                        
+                    },
+                ],                
                 'image': {
                     'url': user.get('pictureUrl')
                 },
