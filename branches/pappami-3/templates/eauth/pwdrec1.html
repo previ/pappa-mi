@@ -24,14 +24,14 @@ $(document).ready(function() {
   });
 });
 </script>
-<div class="row">
+<div class="row auth">
   <div class="span11">
     <legend>Inserisci l'indirizzo email con cui ti sei registrato</legend>
     <div class="password-form">
       <form id="form0" method="POST" action="/eauth/pwdrecrq" class="horizontal-form" novalidate>
         <fieldset class="control-group">
-          <label for="email" class="control-label">Email</label>
-          <div class="controls"><input type="text" name="email" class="span3 required email" /></div>
+          <label for="email" class="control-label hidden-phone">Email</label>
+          <div class="controls"><input type="text" name="email" class="span3 required email" placeholder="Email"/></div>
         </fieldset>
         <fieldset class="control-group">
           <label for="captcha" class="control-label">{{cap_a}} <i class="icon-plus"></i> {{cap_b}}</label>

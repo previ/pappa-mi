@@ -1,6 +1,7 @@
 ﻿#!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Pappa-Mi org
+# Authors: R.Previtera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -155,11 +156,15 @@ class BaseHandler(webapp.RequestHandler):
     if self.request.url.find("appspot.com") != -1 and self.request.url.find("test") == -1 and self.request.url.find("-hr") == -1:
       self.redirect("http://www.pappa-mi.it")
 
-    if self.request.url.find("beta") != -1:
-      self.redirect("http://www.pappa-mi.it")
+    uri = self.request.url[self.request.url.find('//')+2:]
 
-    if (self.request.url.find("m.") != -1 or self.request.url.find("mobile.") != -1) and self.request.url.find("/mobile") == -1:
+    if ((uri.find("m.") != -1 or 
+         uri.find("mobile.") != -1) and 
+        uri.find("/mobile") == -1 and 
+        not (("signup" in self.request.uri) or ("profilo" in self.request.uri) or ("condizioni" in self.request.uri))):
+      logging.info("going mobile")
       self.redirect("/mobile")
+      return
 
     user = self.get_current_user()
 
@@ -207,8 +212,11 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.0.3.31 - 2013.05.21"
+    template_values["version"] = "3.1.1.35 - 2013.10.07"
     template_values["ctx"] = self.get_context()
+    
+    #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
+    #logging.info("users.current_user(): " + str(users.get_current_user()))
 
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
@@ -333,10 +341,8 @@ class CMMenuHandler(BasePage):
       if offset >= 0:
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
 
-      #memcache.set("menu-" + str(offset) + "-" + str(data), menu)
       menu_cache.put("menu-" + str(offset) + "-" + str(data), menu)
       
-    #logging.info(str(menu))
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):

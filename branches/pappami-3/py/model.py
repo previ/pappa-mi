@@ -1,6 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+# Copyright 2012 Pappa-Mi org
+# Authors: R.Previtera, S.Robutti
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
 from google.appengine.api import search
 from datetime import date, datetime, time, timedelta
 import logging
@@ -423,6 +439,11 @@ class Piatto(model.Model):
   gi = model.IntegerProperty()
 
   _pi_gi_cache = dict()
+
+  @classmethod
+  def get_all(cls):
+    return cls.query().fetch()
+
   @classmethod
   def get_by_menu_settimana(cls, menu, settimana):
     pi_gi = None
@@ -453,13 +474,28 @@ class Piatto(model.Model):
       settimane[pg.settimana][pg.tipo] = pg.piatto.get()
     return settimane
 
-
+  def ingredienti(self, tipoScuola):
+    ingredienti = list()
+    factor = Ingrediente.factors[tipoScuola]
+    for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==self.key):
+      ing = p_i.ingrediente.get()
+      qty = p_i.quantita
+      ingredienti.append({'name': ing.nome,
+                          'qty': round(p_i.quantita * factor, 1)})
+    ingredienti.sort(key=lambda item: item.get('qty'), reverse=True)
+    return ingredienti
+  
+    
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
   #stato = model.IntegerProperty()
 
 class Ingrediente(model.Model):
   nome = model.StringProperty()
+
+  factors = {'Materna': 0.625,
+             'Primaria': 0.875,
+             'Secondaria': 1.0}
 
   #creato_da = model.UserProperty(auto_current_user_add=True)
   #creato_il = model.DateTimeProperty(auto_now_add=True)
@@ -1521,8 +1557,9 @@ class SocialNode(model.Model):
         floodControl=memcache.get("FloodControl-"+str(author.key))
         if floodControl:
           raise base.FloodControlException
-
-      new_post= SocialPost(parent=self.key)
+      
+      first, last = SocialPost.allocate_ids(1, parent=self.key)
+      new_post= SocialPost(parent=self.key, id=first)
       new_post.author=author.key
       new_post.content=content
       new_post.title=title
@@ -1747,7 +1784,7 @@ class SocialPost(model.Model):
 
     @cached_property
     def votes(self):
-      #logging.info("votes")
+      #logging.info("votes()")
       votes = list()
       for v in Vote.get_by_ref(self.key):
         votes.append(v)
@@ -1935,18 +1972,18 @@ class SocialPost(model.Model):
     def unsubscribe_user(self, user):
       subscription=self.subscriptions.get(user.key)
       if subscription is not None:
-         subscription.key.delete()
-         self.subscriptions = None
-
+        subscription.key.delete()
+        self.subscriptions = None
       else:
-          raise users.UserNotFoundError
+        raise users.UserNotFoundError
 
     def create_comment(self,content,author):
       floodControl=memcache.get("FloodControl-"+str(author.key))
       if floodControl:
         raise base.FloodControlException
 
-      new_comment= SocialComment(parent=self.key)
+      first, last = SocialComment.allocate_ids(1, parent=self.key)
+      new_comment= SocialComment(parent=self.key, id=first)
       new_comment.author=author.key
       new_comment.content=content
       new_comment.put()
@@ -1989,7 +2026,10 @@ class SocialPost(model.Model):
         vote = Vote(ref = self.key, vote = vote, c_u = user.key)
         vote.put()
 
+      #logging.info(str(self.votes))
       self.votes = None
+      #logging.info(str(self.votes))
+      
 
       self.calc_rank(Vote)
       self.key.parent().get().calc_rank(Vote)
@@ -2430,3 +2470,11 @@ class StatisticheNonconf(model.Model):
   def getTipiPos(self):
     return self._tipiPos
 
+
+#class PiattoVoto(model.Model):
+  #piatto = model.KeyProperty()
+  #data = model.DateTimeProperty()
+   #= model.KeyProperty(repeated=True)
+
+  
+  

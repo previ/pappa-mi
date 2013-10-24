@@ -87,8 +87,14 @@ class ProtectedPage(BasePage):
 class LogoutPage(BasePage):
 
   def get(self):
+    dest = self.request.get("next") if self.request.get("next") else "/"      
     self.response.delete_cookie('_eauth')
-    self.redirect("/")
+    self.session = {}
+    if self.request.cookies.get('_eauth'):
+      del self.request.cookies['_eauth']
+    logging.info("cookie: " + str(self.request.cookies.get('_eauth')))
+    self.redirect(dest)
+    return
 
 class SignupPage(BasePage):
 
@@ -113,7 +119,7 @@ class SignupPage(BasePage):
 
   def post(self):
     error = None
-    email = self.request.get('email')
+    email = self.request.get('email').lower()
     password1 = self.request.get("password")
     password2 = self.request.get("password2")
     c1 = self.session.get("c")

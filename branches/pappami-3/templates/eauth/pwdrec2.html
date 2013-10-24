@@ -24,17 +24,17 @@ $(document).ready(function() {
   });
 });
 </script>
-<div class="row">
+<div class="row auth">
   <div class="span11">
     <legend>Inserisci la nuova password</legend>
     <div class="password-form">
       <form id="form0" method="POST" action="/eauth/pwdrecch" class="horizontal-form" novalidate>
       <input type="hidden" name="key" value="{{key}}" />
         <fieldset class="control-group">
-          <label for="email" class="control-label">Nuova password</label>
-          <div class="controls"><input type="password" name="password1" class="span3 required password" /></div>
-          <label for="email" class="control-label">Ripeti nuova password</label>
-          <div class="controls"><input type="password" name="password2" class="span3 required password" /></div>
+          <label for="email" class="control-label hidden-phone">Nuova password</label>
+          <div class="controls"><input type="password" name="password1" class="span3 required password" placeholder="Nuova password"/></div>
+          <label for="email" class="control-label hidden-phone">Ripeti nuova password</label>
+          <div class="controls"><input type="password" name="password2" class="span3 required password" placeholder="Ripeti nuova password"/></div>
         </fieldset>
         <fieldset class="form-actions">
           <button type="submit" class="btn">Cambia password</button>
