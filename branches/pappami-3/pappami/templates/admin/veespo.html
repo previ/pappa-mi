@@ -1,0 +1,74 @@
+<script>
+$(document).ready(function(){
+ $('#veespo_category').ajaxForm({dataType:'json', success:function(data) {alert(data);}});
+ $('#veespo_category_ok').on('click', function() {
+  for (d in dishes) {
+   alert(dishes[d].name);
+   var dish = dishes[d]
+   $('#id').val('pappa-mi-dish-'+dish.id);
+   $('#name').val(dish.name);
+   $('#desc').val("");
+   $('#veespo_category').submit();
+  }
+ });
+
+ $('#veespo_category_single').ajaxForm({dataType:'json', success:function(data) {alert(data);}});
+ 
+ drawDishes();
+
+});
+var dishes = {{dishes}};
+
+function drawDishes() {
+  var dishlist = $('#dishlist');
+  for (d in dishes) {
+   var dish = dishes[d];
+   var dishitem = $('<li></li>').text(dish.name).attr('data-dish-id', dish.id);
+   dishitem.on('click', function() {
+    $('#s_id').val('pappa-mi-dish-'+$(this).attr('data-dish-id'));
+    $('#s_name').val($(this).text());
+    $('#s_desc').val("");
+   })
+   
+   dishlist.append(dishitem);
+  }
+}
+
+</script>
+<h2>Pappa-Mi Veespo Admin</h2>
+<div class="row">
+ <div class="span6">
+  <legend>Create all dish targets</legend>
+  <form id="veespo_category" action="http://production.veespo.com/admin/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d/target/add" method="post">
+  <input type="hidden" name="jfMethodOverride" value="post"/>
+  <input type="hidden" id="id" name="uuid" value="pappa-mi-dish-"/>
+  <input type="hidden" id="name" name="desc1" value=""/>
+  <input type="hidden" id="desc" name="desc2" value=""/>
+  </form>
+  <button id="veespo_category_ok" class="btn btn-normal">Create menù targets</button>
+ </div>
+ <div class="span6">
+  <div id="output"></div>
+ </div>
+</div>
+<div class="row">
+ <div class="span6">
+  <legend>Create single dish target</legend>
+  <form id="veespo_category_single" action="http://production.veespo.com/admin/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d/target/add" method="post">
+  <input type="hidden" name="jfMethodOverride" value="post"/>
+  <input type="text" id="s_id" name="uuid" value="pappa-mi-dish-"/>
+  <input type="text" id="s_name" name="desc1" value=""/>
+  <input type="text" id="s_desc" name="desc2" value=""/>
+  <button id="veespo_category_single_ok" class="btn btn-normal">Create dish target</button>
+  </form>
+ </div>
+ <div class="span6">
+  <div id="output"></div>
+ </div>
+</div>
+<div class="row">
+ <div id="span12">
+ <ul id="dishlist">
+ </ul>
+ </div>
+</div>
