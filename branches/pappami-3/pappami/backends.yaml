@@ -1,4 +1,0 @@
-backends:
-- name: admin
-  class: B8
-  options: public
