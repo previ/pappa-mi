@@ -226,6 +226,12 @@ indexes:
 
 - kind: SocialNotification
   properties:
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: SocialNotification
+  properties:
   - name: user
   - name: date
     direction: desc
