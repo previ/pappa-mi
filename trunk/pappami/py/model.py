@@ -2217,7 +2217,7 @@ class SocialNodeSubscription(model.Model):
         if (sub.ntfy_period == 0 or #case period==immediate
             (sub.ntfy_period > 0 and #case period == dayly or weekly
              (sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now()) and #last_sent older then period
-             (datetime.now().hour >=4 and datetime.now().hour <=5) and #ensure processing is on nightly job (5:00 gmt)
+             (datetime.now().hour >=5 and datetime.now().hour <=6) and #ensure processing is on nightly job (5:00 gmt)
              ((datetime.today() - sub.last_ntfy_sent).days % sub.ntfy_period == 0))): #ensure weekly report does trigger weekly
           subs.append(sub)
       return subs

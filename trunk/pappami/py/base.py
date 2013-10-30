@@ -212,7 +212,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.1.1.35 - 2013.10.07"
+    template_values["version"] = "3.2.0.35 - 2013.10.25"
     template_values["ctx"] = self.get_context()
     
     #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
@@ -479,7 +479,7 @@ def user_required(func):
 def commissario_required(func):
   def callf(basePage, *args, **kwargs):
     user = basePage.request.user if basePage.request.user else None
-    commissario = basePage.getCommissario(basePage.request.user)
+    commissario = basePage.getCommissario(user)
     #logging.info(commissario)
     if commissario == None or commissario.isCommissario() == False:
       basePage.redirect("/eauth/login?next="+basePage.request.url)
