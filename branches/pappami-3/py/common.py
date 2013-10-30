@@ -4,7 +4,7 @@
 
 import threading
 import logging
-import datetime
+from datetime import timedelta, tzinfo, datetime
 from HTMLParser import HTMLParser
 import lxml.html
 from lxml.html.clean import Cleaner
@@ -21,7 +21,7 @@ class Const:
   ACTIVITY_CACHE_EXP = 900
   SOCIAL_FLOOD_TIME = 5
   FLOOD_SYSTEM_ACTIVATED = False
-  BASE_RANK = datetime.datetime(2008, 1, 1)
+  BASE_RANK = datetime(2008, 1, 1)
   DAY_SECONDS = 86400
   EVENT_PROC_LIMIT=2
   EVENT_PROC_NODE_SUB_LIMIT = 200
@@ -271,4 +271,58 @@ class Channel(object):
   def send_message(cls, user, message):
     channel.send_message('pappa-mi.' + str(user.key.id()), message)
 
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
 
+# Last Sunday in March, which is the first Sunday on or after Mar 24.
+DSTSTART_CET = datetime(1, 3, 24, 2)
+# and ends at 2am (DST time; 1am standard time) on the last Sunday of Oct.
+DSTEND_CET = datetime(1, 10, 24, 1)
+
+def first_sunday_on_or_after(dt):
+    days_to_go = 6 - dt.weekday()
+    if days_to_go:
+        dt += timedelta(days_to_go)
+    return dt
+
+class CETimeZone(tzinfo):
+
+    def __init__(self):
+        self.stdoffset = timedelta(hours=1) #GMT+1
+        self.reprname = "Europe/Rome"
+        self.stdname = "CET"
+        self.dstname = "CET"
+
+    def __repr__(self):
+        return self.reprname
+
+    def tzname(self, dt):
+        if self.dst(dt):
+            return self.dstname
+        else:
+            return self.stdname
+
+    def utcoffset(self, dt):
+        return self.stdoffset + self.dst(dt)
+
+    def dst(self, dt):
+        if dt is None or dt.tzinfo is None:
+            # An exception may be sensible here, in one or both cases.
+            # It depends on how you want to treat them.  The default
+            # fromutc() implementation (called by the default astimezone()
+            # implementation) passes a datetime with dt.tzinfo is self.
+            return ZERO
+        assert dt.tzinfo is self
+
+        # Find start and end times for US DST. For years before 1967, return
+        # ZERO for no DST.
+
+        start = first_sunday_on_or_after(DSTSTART_CET.replace(year=dt.year))
+        end = first_sunday_on_or_after(DSTEND_CET.replace(year=dt.year))
+
+        # Can't compare naive to aware objects, so strip the timezone from
+        # dt first.
+        if start <= dt.replace(tzinfo=None) < end:
+            return HOUR
+        else:
+            return ZERO

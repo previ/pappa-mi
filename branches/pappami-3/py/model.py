@@ -19,6 +19,7 @@
 #
 from google.appengine.api import search
 from datetime import date, datetime, time, timedelta
+#from pytz import timezone
 import logging
 import fpformat
 from google.appengine.api import images
@@ -32,7 +33,7 @@ from google.appengine.api import memcache
 from google.appengine.api import users
 
 import base
-from common import cached_property, memcached_property, Const, Cache, Sanitizer
+from common import cached_property, memcached_property, Const, Cache, Sanitizer, CETimeZone
 from engineauth import models
 from py.blob import *
 
@@ -2210,6 +2211,8 @@ class SocialNodeSubscription(model.Model):
       subs = list()
       for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).order(SocialNodeSubscription.user).fetch():
 
+        #now = datetime.now(timezone('Europe/Rome'))
+        now = datetime.now(CETimeZone())
         #if (sub.ntfy_period >= 0 and (not sub.last_ntfy_sent or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())):
           #subs.append(sub)
         if not sub.last_ntfy_sent:
@@ -2217,7 +2220,7 @@ class SocialNodeSubscription(model.Model):
         if (sub.ntfy_period == 0 or #case period==immediate
             (sub.ntfy_period > 0 and #case period == dayly or weekly
              (sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now()) and #last_sent older then period
-             (datetime.now().hour >=4 and datetime.now().hour <=5) and #ensure processing is on nightly job (5:00 gmt)
+             (now.hour >=7 and now.hour <=8) and #ensure processing is on nightly job (5:00 gmt)
              ((datetime.today() - sub.last_ntfy_sent).days % sub.ntfy_period == 0))): #ensure weekly report does trigger weekly
           subs.append(sub)
       return subs

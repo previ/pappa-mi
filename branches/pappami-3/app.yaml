@@ -1,4 +1,4 @@
-application: test-pappa-mi-hr
+application: pappa-mi-hr
 version: 35
 runtime: python27
 api_version: 1
