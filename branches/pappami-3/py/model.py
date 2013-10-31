@@ -2211,7 +2211,6 @@ class SocialNodeSubscription(model.Model):
       subs = list()
       for sub in SocialNodeSubscription.query().filter(SocialNodeSubscription.has_ntfy==True).order(SocialNodeSubscription.user).fetch():
 
-        #now = datetime.now(timezone('Europe/Rome'))
         now = datetime.now(CETimeZone())
         #if (sub.ntfy_period >= 0 and (not sub.last_ntfy_sent or sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now())):
           #subs.append(sub)
@@ -2220,7 +2219,7 @@ class SocialNodeSubscription(model.Model):
         if (sub.ntfy_period == 0 or #case period==immediate
             (sub.ntfy_period > 0 and #case period == dayly or weekly
              (sub.last_ntfy_sent + timedelta(sub.ntfy_period) < datetime.now()) and #last_sent older then period
-             (now.hour >=7 and now.hour <=8) and #ensure processing is on nightly job (5:00 gmt)
+             (now.hour >=7 and now.hour <=8) and #ensure processing is on nightly job (7:00 CET)
              ((datetime.today() - sub.last_ntfy_sent).days % sub.ntfy_period == 0))): #ensure weekly report does trigger weekly
           subs.append(sub)
       return subs
