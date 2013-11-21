@@ -1071,7 +1071,7 @@ function onResharesDetail() {
   };
  $.ajax({
   type: 'POST',
-  url:'//post/manage/managepost',
+  url:'/post/manage',
   data: data,
   dataType:'json',
   error: onError,

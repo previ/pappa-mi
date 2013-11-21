@@ -334,7 +334,7 @@ class NodeFeedHandler(BasePage):
 
 
     rss = py.PyRSS2Gen.RSS2( title = "Pappa-Mi - " + node.name,
-                             link = "http://" + self.getHost() + "/node/" + str(node.key.id()) + "/rss",
+                             link = "http://" + self.getHost() + "/node/" + str(node.key.id()),
                              description = node.description,
                              items = items)
 
