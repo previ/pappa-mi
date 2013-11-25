@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2010 Pappa-Mi org
 # Authors: R.Previtera
@@ -30,6 +31,7 @@ import webapp2 as webapp
 from google.appengine.api import memcache
 
 from py.model import *
+import py.PyRSS2Gen
 
 class CMMenuDataHandler(CMMenuHandler):
 
@@ -66,6 +68,31 @@ class CMMenuDataHandler(CMMenuHandler):
       details['ingredienti'].sort(key=lambda item: item.get('quantita'), reverse=True)
       json.dump(details, self.response.out)
 
+    if( self.request.get("format") == "rss" ):
+      menu = Menu();
+      data = datetime.now().date()
+      
+      c = model.Key("Commissione", int(self.request.get("cm"))).get()
+      menus = self.getMenu(data, c)
+      items = list()
+
+      for menu in menus:
+
+        items.append(py.PyRSS2Gen.RSSItem(title = menu.getData(),
+                          description = "Primo: " + menu.primo.nome + " - Secondo: " + menu.secondo.nome + " - Contorno: " + menu.contorno.nome + " - Dessert: " + menu.dessert.nome,
+                          guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/menu?cm=" + str(c.key.id())),
+                          pubDate = menu.data.strftime("%a, %d %b %Y %H:%M:%S +0100")))
+  
+  
+      rss = py.PyRSS2Gen.RSS2( title = "Pappa-Mi - " + c.nome,
+                               link = "http://" + self.getHost() + "/menu?cm=" + str(c.key.id()),
+                               description = "Menu' per la Scuola " + c.nome,
+                               items = items)
+  
+      expires_date = datetime.utcnow() + timedelta(1)
+      expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
+      self.response.headers.add_header("Expires", expires_str)
+      self.response.out.write(rss.to_xml())
     else:
       template_values = dict()
       template_values['content'] = 'menu.html'
