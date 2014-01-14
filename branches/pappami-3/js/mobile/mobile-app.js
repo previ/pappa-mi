@@ -237,8 +237,8 @@ function initCheck(event, entry) {
 
 $(document).on( "pageinit", "#page-dish-detail", function() {
   initCheck();
-  $('.dish_stat').on('click', onDishStat);
-  $('.dish_vote').on('click', onDishVote);
+  //$('.dish_stat').on('click', onDishStat);
+  //$('.dish_vote').on('click', onDishVote);
 });
 
 $(document).on( "pageinit", "#page-dish-stat", initCheck);

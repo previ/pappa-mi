@@ -330,6 +330,7 @@ class NodeFeedHandler(BasePage):
       items.append(py.PyRSS2Gen.RSSItem(title = post.title,
                         description = post.content_summary,
                         guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/post/" + str(node.key.id()) + "-" + str(post.key.id())),
+                        link = "http://" + self.getHost() + "/post/" + str(node.key.id()) + "-" + str(post.key.id()),
                         pubDate = post.created.strftime("%a, %d %b %Y %H:%M:%S +0100")))
 
 

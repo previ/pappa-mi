@@ -68,9 +68,10 @@ class CMMenuDataHandler(CMMenuHandler):
       details['ingredienti'].sort(key=lambda item: item.get('quantita'), reverse=True)
       json.dump(details, self.response.out)
 
-    if( self.request.get("format") == "rss" ):
+    elif( self.request.get("format") == "rss" ):
       menu = Menu();
       data = datetime.now().date()
+      data = self.get_next_working_day(data)
       
       c = model.Key("Commissione", int(self.request.get("cm"))).get()
       menus = self.getMenu(data, c)
@@ -81,6 +82,7 @@ class CMMenuDataHandler(CMMenuHandler):
         items.append(py.PyRSS2Gen.RSSItem(title = menu.getData(),
                           description = "Primo: " + menu.primo.nome + " - Secondo: " + menu.secondo.nome + " - Contorno: " + menu.contorno.nome + " - Dessert: " + menu.dessert.nome,
                           guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/menu?cm=" + str(c.key.id())),
+                          link = "http://" + self.getHost() + "/menu?cm=" + str(c.key.id()),
                           pubDate = menu.data.strftime("%a, %d %b %Y %H:%M:%S +0100")))
   
   
