@@ -22,8 +22,7 @@
                  }
 %}{% macro label(t, a) -%}
 <span class="label labelbox {{cls[t][a]}}" title="{{testi[t][a]}}">&nbsp;&nbsp;&nbsp;</span>
-{%- endmacro %}<div>
-<h4>{{isp.commissione.get().desc()}} - Ispezione del {{isp.dataIspezione}}</h4>
+{%- endmacro %}<div><h4>{{isp.commissione.get().desc()}} - Ispezione del {{isp.dataIspezione}}{%if cmsro and cmsro.isCommissario()%}<small class="pull-right"><a href="/isp/isp?id={{isp.key.id()}}&format=print">versione stampabile<i class="icon-print"></i></a></small>{%endif%}</h4>
 <table class="table">
 <tbody>
 <tr><td colspan="7" style="padding:0 0 0 0;">
@@ -83,15 +82,18 @@
 {%endif%}
 </tbody>
 </table>
-{% if preview %}
-<div id="formnav" class="modal-footer modal-actions">
- <form id="form1" action="/isp/isp" method="POST">
-  <input type="hidden" name="preview" value="{{preview}}">
-  <input type="hidden" id="act_last" name="last" value="">
-  <input type="hidden" id="node" name="node" value="">
-  <button type="submit" id="e_submit" class="btn btn-primary" onclick="ulmsg=false;" style="float:right;" data-loading-text="Salvataggio in corso...">Conferma e Salva</button>
-  <button class="btn" type="reset" onclick="previewback();" style="float:right;">Indietro</button>
- </form>
 </div>
-{% endif %}
-</div>
+<script>
+$("#{{isp.key.id()}}").click(function(){
+	source = $(this).attr('data-source');
+	generator = $(this).attr('data-generator');
+	$.ajax({
+    	type: 'POST',
+    	url: generator, 
+    	data: { 'source': source },
+    dataType:'text',
+    error: onError,
+    success:function(data){
+
+});
+</script>

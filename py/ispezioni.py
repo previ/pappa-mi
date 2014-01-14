@@ -16,6 +16,7 @@ import webapp2 as webapp
 from google.appengine.api import memcache
 from google.appengine.ext.webapp import template
 from google.appengine.api import mail
+from google.appengine.api import urlfetch
 
 from py.gviz_api import *
 from py.model import *
@@ -24,6 +25,7 @@ from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
 from py.post import PostHandler
 
+API_KEY = "GSgBy1LHl8SJXAc"
 
 class CMGetIspDataHandler(BasePage):
 
@@ -97,17 +99,43 @@ class IspezioneHandler(BasePage):
   def get(self):
     commissario = self.getCommissario()
 
-    isp = Ispezione(commissario = commissario.key)
-    form = IspezioneForm(self.request.POST,isp)
+    if self.request.get('format') == 'print':
+      isp = model.Key('Ispezione', int(self.request.get('id'))).get()
+      template_values = {
+        'main': 'main_print.html',
+        'content': 'ispezioni/ispezione_print.html',
+        'title': isp.commissione.get().desc() + ' - Ispezione del ' + str(isp.dataIspezione),
+        'isp': isp
+        }
+      template = jinja_environment.get_template(template_values["main"])
+      html=template.render(template_values)
+	  
+      form_fields = { "apikey": API_KEY,
+                      "source": html.encode("utf-8") }
+      form_data = urllib.urlencode(form_fields)
+	  
+      provider_local = 'http://localhost:10080'
+      provider_prod = 'http://pappa-mi-pdf.appspot.com'
+      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+      pdf = response.content
+	  
+      self.response.headers.add_header('Content-type', 'application/pdf')
+      self.response.headers.add_header('Content-Disposition', 'attachment; filename="' + str(isp.commissione.get().desc()) + ' - Ispezione del ' + str(isp.dataIspezione) + '.pdf";');
+      self.response.out.write(pdf)
+      return
+  	  
+    else:  	
+      isp = Ispezione(commissario = commissario.key)
+      form = IspezioneForm(self.request.POST,isp)
 
-    template_values = {
-      'main': 'ispezioni/ispezione_div.html',
-      'form': form,
-      'commissioni': commissario.commissioni()
-      }
+      template_values = {
+        'main': 'ispezioni/ispezione_div.html',
+        'form': form,
+        'commissioni': commissario.commissioni()
+        }
 
 
-    self.getBase(template_values)
+      self.getBase(template_values)
 
   @commissario_required
   def post(self):
@@ -222,21 +250,30 @@ class NonconfHandler(BasePage):
   def get(self):
     commissario = self.getCommissario()
 
-    if( self.request.get("cmd") == "edit" ):
-
-      nc = memcache.get(self.request.get("preview"))
-      memcache.delete(self.request.get("preview"))
-
-      form = NonconformitaForm(self.request.POST,nc)
-      form.commissione = nc.commissione
-
+    if self.request.get('format') == 'print':
+      nc = model.Key('Nonconformita', int(self.request.get('id'))).get()
       template_values = {
-        'content': 'ispezioni/nonconf_div.html',
-        'form': form,
-        'commissioni': commissario.commissioni()
-      }
-
-      self.getBase(template_values)
+        'main': 'main_print.html',
+        'content': 'ispezioni/nonconf_print.html',
+        'title': str(nc.commissione.get().desc()) + u' - Non conformità del ' + str(nc.dataNonconf),
+        'nc': nc
+        }
+      template = jinja_environment.get_template(template_values["main"])
+      html=template.render(template_values)
+	  
+      form_fields = { "apikey": API_KEY,
+                      "source": html.encode("utf-8") }
+      form_data = urllib.urlencode(form_fields)
+	  
+      provider_local = 'http://localhost:10080'
+      provider_prod = 'http://pappa-mi-pdf.appspot.com'
+      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+      pdf = response.content
+	  
+      self.response.headers.add_header('Content-type', 'application/pdf')
+      self.response.headers.add_header('Content-Disposition', 'attachment; filename="' + str(nc.commissione.get().desc()) + ' - Non conf del ' + str(nc.dataNonconf) + '.pdf";');
+      self.response.out.write(pdf)
+      return
 
     else:
 
