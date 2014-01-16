@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Pappa-Mi org
+# Authors: R.Previtera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -467,6 +468,12 @@ class CMAdminHandler(BasePage):
         self.response.out.write(s_str)
       return
 
+    if self.request.get("cmd") == "del_node":
+      node_key = model.Key("SocialNode", int(self.request.get("kind")))
+      node_key.delete()
+      self.response.out.write("node deleted")
+      return;
+    
     if self.request.get("cmd") == "fixnodeperm":
       what = self.request.get("kind")
       if what == "node":

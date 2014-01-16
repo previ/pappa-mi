@@ -150,7 +150,7 @@ class NodeEditHandler(BaseHandler):
         self.response.clear()
         self.response.set_status(404)
         template = jinja_environment.get_template('404_custom.html')
-        c={"error": "Il post a cui stai provando ad accedere non esiste"}
+        c={"error": "Il nodo a cui stai provando ad accedere non esiste"}
         t = template.render(c)
         self.response.out.write(t)
         return
