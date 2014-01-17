@@ -1,5 +1,5 @@
-application: pappa-mi-hr
-version: 35
+application: test-pappa-mi-hr
+version: 37
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -16,13 +16,13 @@ builtins:
 
 libraries:
 - name: PIL
-  version: latest
+  version: 1.1.7
 - name: jinja2
-  version: latest
+  version: 2.6
 - name: setuptools
-  version: latest
+  version: 0.6c11
 - name: markupsafe
-  version: latest
+  version: 0.15
 - name: lxml
   version: 2.3
   
@@ -66,6 +66,9 @@ handlers:
 
 - url: /js
   static_dir: js
+
+- url: /fonts
+  static_dir: fonts
 
 - url: /(.*\.(gif|png|jpg|txt|html|xml))
   static_files: static/\1

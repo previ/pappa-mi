@@ -20,7 +20,7 @@
     <![endif]-->
 
     <!-- styles -->
-    {%if False%}
+    {%if True%}
     <link type="text/css" href="/css/custom-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet"/>
     <link type="text/css" href="/css/custom-theme/jquery.ui.1.10.0.ie.css" rel="stylesheet"/>
     <link type="text/css" href="/css/bootstrap.min.css" rel="stylesheet"/>
@@ -193,25 +193,25 @@ $(document).ready(function(){
 
       <!-- Three columns of text below the carousel -->
       <div class="row">
-        <div class="span3">
+        <div class="col-md-3">
           <h2 class="marketing-heading"><a class="" href="/commissioni">Scuole registrate &raquo;</a></h2>
 	  <div id="map_canvas" class="tile img-rounded" onclick="location.href='/commissioni';"></div>
-        </div><!-- /.span4 -->
-        <div class="span6">
+        </div><!-- /.col-md-4 -->
+        <div class="col-md-6">
           <h2 class="marketing-heading"><a class="" href="/stream">Ultimi dati raccolti &raquo;</a></h2>
 	  <div id="main_stream" class="tile" onclick="location.href='/stream'">
 	   <ul id="main_stream_list" class="unstyled">
 	   </ul>
 	  </div>
-        </div><!-- /.span4 -->
-        <div class="span3">
+        </div><!-- /.col-md-6 -->
+        <div class="col-md-3">
           <h2 class="marketing-heading"><a class="" href="/contatti">Utenti iscritti &raquo;</a></h2>
 	    <ul class="thumbnails tile tile-user" id="contacts">  
 	  {%for c in contacts%}
 	     <li class="user"><img class="avatar" src="{{c.avatar(cmsro,myself=True)}}" alt="{{c.nome}}" rel="tooltip" data-original-title="{{c.nomecompleto(cmsro)}}"></li>
 	  {%endfor%}
 	    </ul>
-        </div><!-- /.span4 -->
+        </div><!-- /.col-md-3 -->
       </div><!-- /.row -->
 
 
@@ -256,7 +256,7 @@ $(document).ready(function(){
       </center>
     </div>
     <hr class="featurette-divider">
-    <div class="row span12">
+    <div class="row col-md-12">
       <p>Pappa-Mi versione {{version}} - <a href="/condizioni">Condizioni del Servizio</a> - <a href="/widget/get">Widget di Pappa-Mi per il mio sito</a> - <a href="/citta" target="new">Pappa-Mi per la mia Città</a></p>
     </div>
    </div><!-- /.container -->

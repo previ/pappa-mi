@@ -150,7 +150,7 @@ class NodeEditHandler(BaseHandler):
         self.response.clear()
         self.response.set_status(404)
         template = jinja_environment.get_template('404_custom.html')
-        c={"error": "Il post a cui stai provando ad accedere non esiste"}
+        c={"error": "Il nodo a cui stai provando ad accedere non esiste"}
         t = template.render(c)
         self.response.out.write(t)
         return
@@ -330,11 +330,12 @@ class NodeFeedHandler(BasePage):
       items.append(py.PyRSS2Gen.RSSItem(title = post.title,
                         description = post.content_summary,
                         guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/post/" + str(node.key.id()) + "-" + str(post.key.id())),
+                        link = "http://" + self.getHost() + "/post/" + str(node.key.id()) + "-" + str(post.key.id()),
                         pubDate = post.created.strftime("%a, %d %b %Y %H:%M:%S +0100")))
 
 
     rss = py.PyRSS2Gen.RSS2( title = "Pappa-Mi - " + node.name,
-                             link = "http://" + self.getHost() + "/node/" + str(node.key.id()) + "/rss",
+                             link = "http://" + self.getHost() + "/node/" + str(node.key.id()),
                              description = node.description,
                              items = items)
 

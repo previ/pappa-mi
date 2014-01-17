@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Pappa-Mi org
+# Authors: R.Previtera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -414,7 +415,7 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
     logging.info("dataFine: " + str(dataFine))
     logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))
 
-    for nc in Nonconformita.query().filter(Nonconformita.creato_il > dataUltimoCalcolo).order(Nonconformita.creato_il).fetch(limit=limit+1, offset=offset):
+    for nc in Nonconformita.query().filter(Nonconformita.modificato_il > dataUltimoCalcolo).order(Nonconformita.modificato_il).fetch(limit=limit+1, offset=offset):
       if nc.dataNonconf >= dataInizio and nc.dataNonconf < dataFine :
         if nc.commissione not in statsCM:
           statCM = StatisticheNonconf()
@@ -589,7 +590,7 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
     logging.info("dataFine: " + str(dataFine))
     logging.info("dataUltimoCalcolo: " + str(dataUltimoCalcolo))
 
-    for isp in Ispezione.query().filter(Ispezione.creato_il > dataUltimoCalcolo).order(Ispezione.creato_il).fetch(limit=limit+1, offset=offset):
+    for isp in Ispezione.query().filter(Ispezione.modificato_il > dataUltimoCalcolo).order(Ispezione.modificato_il).fetch(limit=limit+1, offset=offset):
       if isp.dataIspezione >= dataInizio and isp.dataIspezione < dataFine:
         if( isp.commissione not in statsCM ):
           statCM = StatisticheIspezioni()

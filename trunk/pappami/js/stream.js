@@ -62,7 +62,8 @@ var tiny_mce_opts = {
   plugins : "autolink,autoresize,link,image,media", 
   menubar: false,
   statusbar : false,
-  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo",
+  relative_urls: false
 };
 
 var tiny_mce_opts_nota = {
@@ -72,7 +73,8 @@ var tiny_mce_opts_nota = {
   plugins : "autolink,link,image,media", 
   menubar: false,
   statusbar : false,
-  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo"
+  toolbar: "bold italic underline strikethrough | bullist numlist | link image media | undo redo",
+  relative_urls: false
 };
 
 // Flood control
@@ -1071,7 +1073,7 @@ function onResharesDetail() {
   };
  $.ajax({
   type: 'POST',
-  url:'//post/manage/managepost',
+  url:'/post/manage',
   data: data,
   dataType:'json',
   error: onError,

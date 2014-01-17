@@ -43,7 +43,7 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 			<div class="s_post_commands btn-toolbar">
 				{%if user and node.subscriptions.get(user.key) and node.subscriptions[user.key].can_admin or True%}
 				<div class="btn-group dropup">
-				 <a class="btn dropdown-toggle btn-mini" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
+				 <a class="btn dropdown-toggle btn-xs" data-toggle="dropdown" href="#">Evidenzia<span class="caret"></span></a>
 				 <ul class="dropdown-menu">
 				  <li><a class="post_pin" data-days="0" href="#">Annulla</a></li>
 				  <li><a class="post_pin" data-days="1" href="#">Giorno</a></li>
@@ -53,16 +53,16 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				</div>
 				{%endif%}
 				{%if post.can_admin(user)%}
-				<button class="btn btn-normal btn-mini post_del"><i class="icon-remove"></i>Elimina</button>
+				<button class="btn btn-normal btn-xs post_del"><i class="icon-remove"></i>Elimina</button>
 				{%endif%}
 				{%if post.can_admin(user)%}
-				<button class="btn btn-normal btn-mini post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
-				<button id="postunsub" class="btn btn-normal btn-mini post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
-				<button id="postsub" class="btn btn-normal btn-mini post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
-				<button class="btn btn-normal btn-mini post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
+				<button class="btn btn-normal btn-xs post_edit"><i class="icon-pencil"></i>Modifica</button>{%endif%}
+				<button id="postunsub" class="btn btn-normal btn-xs post_unsub" {%if post.can_sub(user) %}style="display:none;"{%endif%}><i class="icon-minus-sign"></i>Non seguire</button>
+				<button id="postsub" class="btn btn-normal btn-xs post_sub" {%if not post.can_sub(user) %}style="display:none;"{%endif%} ><i class="icon-plus-sign"></i>Segui</button>					
+				<button class="btn btn-normal btn-xs post_reshare"><i class="icon-share-alt"></i>Inoltra</button>
 				{%if fullscreen and not edit%}
 				<div class="pull-right btn-group dropup s_post_share_sn">
-				 <a class="btn dropdown-toggle btn-normal btn-mini" data-toggle="dropdown" href="#"><i class="icon-share"></i> Condividi</a>
+				 <a class="btn dropdown-toggle btn-normal btn-xs" data-toggle="dropdown" href="#"><i class="icon-share"></i> Condividi</a>
 				 <ul class="dropdown-menu">
 				  <li><div class="fb-like" data-href="http://{{host}}/post/{{post.id}}" data-send="false" data-layout="button_count" data-width="120" data-show-faces="true"></div></li>
 				  <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://{{host}}/post/{{post.id}}" data-via="pappa_mi" data-lang="it" data-count="none">Tweet</a></li>
@@ -71,8 +71,8 @@ $(document).ready(function(){initPost(getPostElementByKey('{{post.key.urlsafe()}
 				 </ul>
 				</div>
 				{%endif%}
-				<button class="btn btn-normal btn-mini post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
-				<button class="btn btn-normal btn-mini post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
+				<button class="btn btn-normal btn-xs post_vote" data-vote="1"{%if not post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star"></i>Vota</button>
+				<button class="btn btn-normal btn-xs post_unvote" data-vote="0"{%if post.can_vote(user)%} style="display:none;"{%endif%}><i class="icon-star-empty"></i>Annulla voto</button>
 			</div><!-- s_post_commands -->		
 			{% endif%}			
 		</div>	<!-- s_post_container -->		
