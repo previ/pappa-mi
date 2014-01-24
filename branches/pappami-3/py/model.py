@@ -197,6 +197,7 @@ class Commissario(model.Model):
     self._commissioni = list()
     self._privacy = None
     self._notify = None
+    self.cmdefault = None
     super(Commissario, self).__init__(*args, **kwargs)
 
   user = model.UserProperty()
@@ -225,8 +226,6 @@ class Commissario(model.Model):
   ultimo_accesso_notifiche= model.DateTimeProperty(auto_now_add=True)
 
   stato = model.IntegerProperty()
-
-  cmdefault = None
 
   @classmethod
   def get_by_user(cls, user):
@@ -519,16 +518,17 @@ class PiattoGiorno(model.Model):
   #stato = model.IntegerProperty()
 
 class MenuHelper():
-  primo = None
-  secondo = None
-  contorno = None
-  dessert = None
-  data = None
-  giorno = None
-  settimana = None
+  def __init__(self, *args, **kwargs):
+    self.primo = None
+    self.secondo = None
+    self.contorno = None
+    self.dessert = None
+    self.data = None
+    self.giorno = None
+    self.settimana = None
 
-  #_giorni = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì","Sabato", "Domenica"]
-  _giorni = ["Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'","Sabato", "Domenica"]
+  _giorni = [u"Lunedì", u"Martedì", u"Mercoledì", u"Giovedì", u"Venerdì",u"Sabato", u"Domenica"]
+
   def getData(self):
     return self._giorni[self.giorno-1] + " " + datetime.strftime(self.data, Const.ACTIVITY_DATE_FORMAT)
   def today(self):
@@ -972,8 +972,6 @@ class Allegato(model.Model):
   nome = model.StringProperty(default="",indexed=False)
   descrizione = model.StringProperty(default="",indexed=False)
 
-  dati=None
-
   @classmethod
   def _pre_delete_hook_1(cls, key):
     blobstore.delete(key.get().blob_key)
@@ -1057,15 +1055,6 @@ class Allegato(model.Model):
       logging.info("deleting attachment")
       model.Key(urlsafe=att_key).delete()
     obj.get().attachments = None
-
-class Statistiche:
-  anno1 = int(0)
-  anno2 = int(0)
-  numeroCommissioni = int(0)
-  numeroSchede = int(0)
-  ncTotali = int(0)
-  diete = int(0)
-  note = int(0)
 
 class StatisticheIspezioni(model.Model):
   citta = model.KeyProperty(kind=Citta)
@@ -2472,11 +2461,3 @@ class StatisticheNonconf(model.Model):
   def getTipiPos(self):
     return self._tipiPos
 
-
-#class PiattoVoto(model.Model):
-  #piatto = model.KeyProperty()
-  #data = model.DateTimeProperty()
-   #= model.KeyProperty(repeated=True)
-
-  
-  
