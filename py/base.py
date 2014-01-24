@@ -214,7 +214,13 @@ class BaseHandler(webapp.RequestHandler):
     template_values["host"] = self.getHost()
     template_values["version"] = "3.2.0.37 - 2014.01.15"
     template_values["ctx"] = self.get_context()
-    
+    if not template_values.get("page_title"):
+      template_values["page_title"] = "Pappa-Mi Cosa e Come si mangia a Scuola"
+    if not template_values.get("page_desc"):
+      template_values["page_dec"] = "Il network sull'alimentazione scolastica"
+    if not template_values.get("page_image"):
+      template_values["page_image"] = "/img/pappa-mi-logo-big.png"
+      
     #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
     #logging.info("users.current_user(): " + str(users.get_current_user()))
 
