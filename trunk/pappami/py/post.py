@@ -46,13 +46,18 @@ class PostHandler(BasePage):
     node = SocialNode.get_by_key(post.key.parent())
 
     current_user=self.get_current_user()
-
+    image = None
+    if len(post.images):
+      image = post.images[0]
     template_values = {
              'content': 'post/post.html',
              'node': node,
              'post': post,
              'user':current_user,
              'fullscreen': True,
+             'page_title': post.title,
+             'page_desc': post.content_summary,
+             'page_image': image
     }
 
     self.getBase(template_values)
