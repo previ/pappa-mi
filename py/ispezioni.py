@@ -116,7 +116,7 @@ class IspezioneHandler(BasePage):
 	  
       provider_local = 'http://localhost:10080'
       provider_prod = 'http://pappa-mi-pdf.appspot.com'
-      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'}, deadline=20)
       pdf = response.content
 	  
       self.response.headers.add_header('Content-type', 'application/pdf')
@@ -267,7 +267,7 @@ class NonconfHandler(BasePage):
 	  
       provider_local = 'http://localhost:10080'
       provider_prod = 'http://pappa-mi-pdf.appspot.com'
-      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+      response = urlfetch.fetch(url=provider_prod, payload=form_data, method=urlfetch.POST, headers={'Content-Type': 'application/x-www-form-urlencoded'}, deadline=20)
       pdf = response.content
 	  
       self.response.headers.add_header('Content-type', 'application/pdf')

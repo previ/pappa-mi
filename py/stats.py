@@ -606,19 +606,20 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         else:
           statCM = statsCM[isp.commissione]
 
-        if( isp.commissione.get().getCentroCucina(now).key not in statsCC ):
-          statCC = StatisticheIspezioni()
-          #statCC.creato_da = self.get_current_user()
-          statCC.dataInizio = dataInizio
-          statCC.dataFine = dataFine
-          statCC.timeId = timeId
-          statCC.timePeriod = timePeriod
-          statCC.centroCucina = isp.commissione.get().getCentroCucina(now).key
-          statsCC[statCC.centroCucina] = statCC
-          self.initWeek(statCC, wtot)
-          statCC.init()
-        else:
-          statCC = statsCC[isp.commissione.get().getCentroCucina(now).key]
+        if isp.commissione.get().getCentroCucina(now):
+          if( isp.commissione.get().getCentroCucina(now).key not in statsCC ):
+            statCC = StatisticheIspezioni()
+            #statCC.creato_da = self.get_current_user()
+            statCC.dataInizio = dataInizio
+            statCC.dataFine = dataFine
+            statCC.timeId = timeId
+            statCC.timePeriod = timePeriod
+            statCC.centroCucina = isp.commissione.get().getCentroCucina(now).key
+            statsCC[statCC.centroCucina] = statCC
+            self.initWeek(statCC, wtot)
+            statCC.init()
+          else:
+            statCC = statsCC[isp.commissione.get().getCentroCucina(now).key]
 
         if( isp.commissione.get().citta not in statsCY ):
           statCY = StatisticheIspezioni()
@@ -634,9 +635,13 @@ class CMStatIspCalcHandler(CMStatCalcHandler):
         else:
           statCY = statsCY[isp.commissione.get().citta]
 
-        self.calcIsp(isp,statCM)
-        self.calcIsp(isp,statCC)
-        self.calcIsp(isp,statCY)
+        if statCM:
+          self.calcIsp(isp,statCM)
+        if statCC:
+          self.calcIsp(isp,statCC)
+        if statCY:
+          self.calcIsp(isp,statCY)
+          
         self.calcIsp(isp,statAll)
       count += 1
       if count == limit : break

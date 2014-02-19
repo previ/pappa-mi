@@ -70,7 +70,7 @@ function onMenuChanged() {
 }
 
 function getPrevIspData() {
-  $("#form0").find("#e_submit").attr("disabled", true); 
+  //$("#form0").find("#e_submit").attr("disabled", true); 
   getMenu();
   var commissione = $("#e_commissione").attr("value");
 

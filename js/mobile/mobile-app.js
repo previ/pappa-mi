@@ -237,8 +237,8 @@ function initCheck(event, entry) {
 
 $(document).on( "pageinit", "#page-dish-detail", function() {
   initCheck();
-  //$('.dish_stat').on('click', onDishStat);
-  //$('.dish_vote').on('click', onDishVote);
+  $('.dish_stat').on('click', onDishStat);
+  $('.dish_vote').on('click', onDishVote);
 });
 
 $(document).on( "pageinit", "#page-dish-stat", initCheck);
@@ -834,9 +834,9 @@ var context = {
 
 var veespo_api_const = {
 category: 'ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d',
-api_tag_list: 'http://legacy1.veespo.com/v1/tag-frequency/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d?lang=it',
-api_vote_avg: 'http://legacy1.veespo.com/v1/average/target/',
-api_last_vote: "http://legacy1.veespo.com/v1/ratings/user/:user_id/target/:target_id"
+api_tag_list: 'http://production.veespo.com/v1/tag-frequency/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d?lang=it',
+api_vote_avg: 'http://production.veespo.com/v1/average/target/',
+api_last_vote: "http://production.veespo.com/v1/ratings/user/:user_id/target/:target_id"
 };
 
 var tag_map;

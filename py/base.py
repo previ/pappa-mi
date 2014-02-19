@@ -387,7 +387,8 @@ class CMMenuHandler(BasePage):
 
     #logging.info(str(cm.key))
     #logging.info(str(data))
-    offset = cm.getCentroCucina(data).getMenuOffset(data)
+    if cm.getCentroCucina(data):
+      offset = cm.getCentroCucina(data).getMenuOffset(data)
 
     if offset == None:
       offset = 0
