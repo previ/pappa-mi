@@ -55,8 +55,8 @@ class PostHandler(BasePage):
              'post': post,
              'user':current_user,
              'fullscreen': True,
-             'page_title': post.title,
-             'page_desc': post.content_summary,
+             'page_title': "Pappa-Mi - " + post.title,
+             'page_desc': Sanitizer.text(post.content_summary),
              'page_image': image
     }
 

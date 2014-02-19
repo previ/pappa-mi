@@ -1,7 +1,7 @@
 <div class="form-vertical">
  <div class="row">
   <div class="span8">
-   <h4>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.data()}} - Turno {{nc.turno}}{%if cmsro and cmsro.isCommissario() and (cmsro.key.id() == 500001 or cmsro.key.id() == 3273) and not preview%}<small class="pull-right"><a href="/isp/nc?id={{nc.key.id()}}&format=print">versione stampabile<i class="icon-print"></i></a></small>{%endif%}</h4>
+   <h4>{{nc.commissione.get().desc()}} - Non Conformit&agrave; del {{nc.data()}} - Turno {{nc.turno}}{%if cmsro and cmsro.isCommissario() and not preview%}<small class="pull-right"><a href="/isp/nc?id={{nc.key.id()}}&format=print">versione stampabile<i class="icon-print"></i></a></small>{%endif%}</h4>
   </div>
  </div>
  <div class="row">

@@ -529,6 +529,13 @@ class CMAdminHandler(BasePage):
           node.put()
           node.init_rank()
           node.put()
+
+    if self.request.get("cmd") == "fixPost":
+      post = model.Key(urlsafe=self.request.get('limit')).get()
+      post.resource[0] = model.Key(urlsafe=self.request.get('offset'))
+      post.put()
+      self.response.out.write("fixPost Ok")
+      return
           
 
     if self.request.get("cmd") == "migSocial":
