@@ -170,9 +170,12 @@ class WidgetListitem:
 
   def url(self):
     u = "#"
-    post = SocialPost.get_by_resource(self.item.key)[0]
-    if post > 0:
-      u = "/post/"+post.id
+    post = SocialPost.get_by_resource(self.item.key)
+    if len(post) and post[0] > 0:
+      u = "/post/"+post[0].id
+    else:
+      logging.error("invalid item: " + str(self.item.key))
+      
     return u
 
 

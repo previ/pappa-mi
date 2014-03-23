@@ -385,6 +385,8 @@ class CMMenuHandler(BasePage):
 
   def getMenuWeek(self, data, cm):
 
+    offset = 0    
+
     #logging.info(str(cm.key))
     #logging.info(str(data))
     if cm.getCentroCucina(data):

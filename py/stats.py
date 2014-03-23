@@ -430,18 +430,19 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
         else:
           statCM = statsCM[nc.commissione]
 
-        if nc.commissione.get().getCentroCucina(now).key not in statsCC:
-          statCC = StatisticheNonconf()
-          #statCC.creato_da = self.get_current_user()
-          statCC.dataInizio = dataInizio
-          statCC.dataFine = dataFine
-          statCC.centroCucina = nc.commissione.get().getCentroCucina(now).key
-          statCC.timeId = timeId
-          statCC.timePeriod = timePeriod
-          statsCC[statCC.centroCucina] = statCC
-          self.initWeek(statCC, wtot)
-        else:
-          statCC = statsCC[nc.commissione.get().getCentroCucina(now).key]
+        if nc.commissione.get().getCentroCucina(now):        
+          if nc.commissione.get().getCentroCucina(now).key not in statsCC:
+            statCC = StatisticheNonconf()
+            #statCC.creato_da = self.get_current_user()
+            statCC.dataInizio = dataInizio
+            statCC.dataFine = dataFine
+            statCC.centroCucina = nc.commissione.get().getCentroCucina(now).key
+            statCC.timeId = timeId
+            statCC.timePeriod = timePeriod
+            statsCC[statCC.centroCucina] = statCC
+            self.initWeek(statCC, wtot)
+          else:
+            statCC = statsCC[nc.commissione.get().getCentroCucina(now).key]
 
         if( nc.commissione.get().citta not in statsCY ):
           statCY = StatisticheNonconf()
@@ -456,9 +457,13 @@ class CMStatNCCalcHandler(CMStatCalcHandler):
         else:
           statCY = statsCY[nc.commissione.get().citta]
 
-        self.calcNC(nc,statCM)
-        self.calcNC(nc,statCC)
-        self.calcNC(nc,statCY)
+        if statCM:
+          self.calcNC(nc,statCM)
+        if statCC:
+          self.calcNC(nc,statCC)
+        if statCY:
+          self.calcNC(nc,statCY)
+          
         self.calcNC(nc,statAll)
       count += 1
       if count == limit : break
