@@ -118,11 +118,13 @@ class CMStatWidgetHandler(BasePage):
         statCY = StatisticheIspezioni.get_cy_cc_cm_time(cy=c.citta, timeId=year).get()
         memcache.set("statCY" + str(c.citta.id), statCY, 86400)
 
-      statCC = memcache.get("statCC" + str(c.centroCucina.id))
-      if not statCC:
-        #logging.info("statCC miss")
-        statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=c.centroCucina, timeId=year).get()
-        memcache.set("statCC" + str(c.centroCucina.id), statCC, 86400)
+      if c.getCentroCucina():
+        cc_key = c.getCentroCucina().key
+        statCC = memcache.get("statCC" + str(c.getCentroCucina().key.id))
+        if not statCC:
+          #logging.info("statCC miss")
+          statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc_key, timeId=year).get()
+          memcache.set("statCC" + str(cc_key.id), statCC, 86400)
 
       statCM = memcache.get("statCM" + str(c.key.id))
       if not statCM:
