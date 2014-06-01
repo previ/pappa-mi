@@ -297,12 +297,20 @@ class EventHandler(BaseHandler):
            'roberto@pvri.com']
     
     if host == "www.pappa-mi.it" or user.get().email in test_emails:
-      mail.send_mail(sender=Const.EMAIL_ADDR_NOTIFICATION,
-      to=user.get().email,
-      subject="[Pappa-Mi] Novità",
-      body="",
-      html=html
-      )
+      retries = 3
+      while retries > 0:       
+        try:      
+          mail.send_mail(sender=Const.EMAIL_ADDR_NOTIFICATION,
+            to=user.get().email,
+            subject="[Pappa-Mi] Novità",
+            body="",
+            html=html
+          )
+          retries = 0
+        except DeadlineExceededError:
+          retries -= 1
+          log.warn('DeadlineExceededError in send_mail, retry')
+      
     #logging.info(html)
 
 class NotificationHandler(BasePage):
