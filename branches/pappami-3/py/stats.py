@@ -126,7 +126,8 @@ class CMStatsHandler(BasePage):
         cm = model.Key("Commissione", int(self.request.get("cm"))).get()
       if cm:
         cc = cm.getCentroCucina(now)
-        statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
+        if cc:
+          statCC = StatisticheIspezioni.get_cy_cc_cm_time(cc=cc.key, timeId=anno).get()
         statCM = StatisticheIspezioni.get_cy_cc_cm_time(cm=cm.key, timeId=anno).get()
       stats = [statCY,statCC,statCM]
   
