@@ -11,6 +11,7 @@ from datetime import date, datetime, time, timedelta
 import wsgiref.handlers
 from google.appengine.ext.ndb import model, Future, toplevel
 from google.appengine.api.taskqueue import Task, Queue
+from google.appengine.runtime import DeadlineExceededError
 
 import webapp2 as webapp
 from google.appengine.api import memcache
