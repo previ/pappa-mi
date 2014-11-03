@@ -386,6 +386,7 @@ class CMAdminHandler(BasePage):
       
       for isp in Ispezione.query().filter(Ispezione.dataIspezione>dataInizio).order(Ispezione.dataIspezione):
         isp_str = ""
+        isp_str += isp.commissione.get().citta.get().nome + "\t"
         isp_str += ((isp.commissione.get().nome + " - " + isp.commissione.get().tipoScuola) if isp.commissione else "") + "\t"
         isp_str += (isp.commissario.get().usera.get().email if isp.commissario.get().usera else "") + "\t"
         isp_str += str(isp.dataIspezione) + "\t"
