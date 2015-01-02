@@ -1,0 +1,192 @@
+﻿<div id="header_content">www.pappa-mi.it - Cosa e come si mangia a scuola</div>
+<div id="footer_content" style="text-align:right;">pagina <pdf:pagenumber> di 2</div>
+<div> <!--pagina 1-->
+<div class='intestazione'>
+ALLEGATO B<br/>
+Al Dirigente Scolastico Responsabile della struttura scolastica<br/>
+Alla P.O. dell Unità Educativa<br/>
+<br/>
+<br/>
+Al Settore Programmazione e Coordinamento Servizi Educativi<br/>
+Servizio Coordinamento e Controllo Milano Ristorazione<br/>
+Via Porpora 10 - 20131 Milano<br/>
+Fax n. 02 884 62592<br/>
+<br/>
+Alla Società Milano Ristorazione SpA<br/>
+Ufficio Relazioni Esterne<br/>
+Via Quaranta, 41<br/>
+20139 Milano<br/> 
+FAX 02 884 64675<br/>
+</div>
+<div style="text-align:center">
+<b><i>SCHEDA DI VALUTAZIONE COMMISSIONE MENSA</i></b>
+</div>
+<div style="text-align:left;">
+<b><i>SCUOLA: {{isp.commissione.get().nomeScuola}} VIA: {{isp.commissione.get().strada}} {{isp.commissione.get().civico}}</i></b>
+</div>
+<div>
+<b>Tipo di scuola</b>
+</div>
+<div>
+Nido {%if isp.commissione.get().tipoScuola == 'Nido'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}&nbsp; 
+Scuola dell'Infanzia {%if isp.commissione.get().tipoScuola == 'Materna'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}&nbsp;
+Scuola Primaria {%if isp.commissione.get().tipoScuola == 'Primaria'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}&nbsp;
+Scuola Secondaria di 1° grado {%if isp.commissione.get().tipoScuola == 'Secondaria'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}&nbsp;
+</div>
+<div>
+A) Ambiente e attrezzature<br/>
+<b>Cucina/Centro Cottura/Dispensa</b><br/> 
+1) La pulizia di ambiente e arredi è buona {%if isp.puliziaCentroCottura == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} mediocre {%if isp.puliziaCentroCottura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} sufficiente {%if isp.puliziaCentroCottura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.puliziaCentroCottura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+2) Le derrate alimentari corrispondono a quanto previsto<br/>
+ nel capitolato d appalto e nel menù in vigore? Sì {%if isp.aaRispettoCapitolato == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaRispettoCapitolato == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+<b>Refettorio</b><br/>
+1) La pulizia di ambiente e arredi è{%if isp.puliziaRefettorio == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} mediocre {%if isp.puliziaRefettorio == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} sufficiente {%if isp.puliziaRefettorio == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.puliziaRefettorio == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+2) I tavoli sono coperti con tovaglie o tovagliette Sì {%if isp.aaTavoliApparecchiati == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaTavoliApparecchiati == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+<b>Nelle scuole con pasto trasportato</b><br/>
+1) i contenitori termici sono puliti e in buone condizioni? Sì {%if isp.aaTermichePulite == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaTermichePulite == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+2) sono presenti dei sistemi di mantenimento della temperatura<br/>
+(ad es. carrelli termici, scaldavivande) nel refettorio? Sì {%if isp.aaScaldaVivande == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaScaldaVivande == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+</div>
+<div>
+Note:<br/> 
+{%if isp.note%}Vedi note alla fine della pagina 2{%endif%}<br/>
+</div>
+<div>
+<div>
+B) Servizio<br/> 
+<b>Menù</b><br/> 
+1) Il menù del giorno è:<br/> 
+</div>
+<div class="indent1">
+1° {{isp.primoEffettivo}}<br/>
+2° {{isp.secondoEffettivo}}<br/>
+Contorno {{isp.contornoEffettivo}} Frutta/dessert {{isp.fruttaTipo}}
+</div>
+2) La tabella dietetica è ben esposta all interno dei locali scolastici? Sì {%if isp.aaTabellaEsposta == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaTabellaEsposta == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+<div class="indent1">
+Se No, perché .............................<br/>
+</div>
+3) Il menù del giorno corrisponde a quello indicato nella tabella? Sì {%if isp.aaTabellaEsposta == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.aaTabellaEsposta == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+<div class="indent1">
+Se No, perché .............................<br/> 
+</div>
+4) Sono serviti menù diversi da quelli indicati nella tabella ? Sì {%if isp.primoPrevisto == isp.primoEffettivo%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.primoPrevisto != isp.primoEffettivo%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+<div class="indent1">
+(per diete speciali o altre situazioni)?<br/> 
+Se Sì, quanti? ..............................<br/>
+</div>
+5) Indicare il numero di pasti complessivi serviti in quella struttura {{isp.numeroPastiTotale}}<br/>
+</div>
+</div> <!--/pagina 1-->
+<div> <!--pagina 2-->
+<div>
+<b>Distribuzione pasto</b><br/>
+1) Il tempo trascorso dall arrivo alla distribuzione (*) è < 10 min {%if isp.arrivoDist == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} 10 < 20 min {%if isp.arrivoDist == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} > 20 min {%if isp.arrivoDist == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+2) La pasta e l insalata vengono condite al momento?  Sì {%if isp.primoCondito == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.primoCondito == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+3) La durata della distribuzione del 1° piatto è < 10 min {%if isp.primoDist == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} 10 < 20 min {%if isp.primoDist == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} > 20 min {%if isp.primoDist == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+4) La durata della distribuzione del 2° piatto è < 10 min {%if isp.secondoDist == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} 10 < 20 min {%if isp.secondoDist == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} > 20 min {%if isp.secondoDist == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+5) La durata del pranzo è < 30 min {%if isp.durataPasto == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} 30 < 60 min {%if isp.durataPasto == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} > 60 min {%if isp.durataPasto == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+6) I contenitori termici vengono aperti immediatamente prima della distribuzione del pasto? Sì No<br/> 
+7) Indicare il numero di persone addette alla distribuzione {{isp.numeroAddetti}}<br/> 
+ (*) Prendere in esame un solo turno<br/>
+</div>
+<div>
+<br/> 
+<b>Valutazione personale all assaggio</b><br/> 
+<table>
+<tr>
+<td width="40%">1) Temperatura del cibo</td>
+<td>1° piatto caldo {%if isp.primoTemperatura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} tiepido {%if isp.primoTemperatura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} freddo {%if isp.primoTemperatura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td>
+<td>2° piatto caldo {%if isp.secondoTemperatura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} tiepido {%if isp.secondoTemperatura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} freddo {%if isp.secondoTemperatura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td>
+<td>contorno caldo {%if isp.contornoTemperatura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} tiepido {%if isp.contornoTemperatura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} freddo {%if isp.contornoTemperatura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td>2) Cottura del cibo</td><td>1° piatto adeguata {%if isp.primoCottura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} eccessiva {%if isp.primoCottura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.primoCottura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td><td>2° piatto adeguata {%if isp.secondoCottura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} eccessiva {%if isp.secondoCottura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.secondoCottura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td><td>contorno adeguata {%if isp.contornoCottura == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} eccessiva {%if isp.contornoCottura == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.contornoCottura == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td>3) Quantità porzione servita</td>
+<td>sufficiente {%if isp.primoQuantita == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} abbondante {%if isp.primoQuantita == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.primoQuantita == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td>4) Sapore</td><td>1° piatto gradevole {%if isp.primoAssaggio == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} accettabile {%if isp.primoAssaggio == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} non accettabile {%if isp.primoAssaggio == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td><td>2° piatto gradevole {%if isp.secondoAssaggio == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} accettabile {%if isp.secondoAssaggio == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} non accettabile {%if isp.secondoAssaggio == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td></td><td>contorno gradevole {%if isp.contornoAssaggio == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} accettabile {%if isp.contornoAssaggio == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} non accettabile {%if isp.contornoAssaggio == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td>5) Giudizio globale</td>
+<td>buono {%if isp.giudizioGlobale == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} sufficiente {%if isp.giudizioGlobale == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} non sufficiente {%if isp.giudizioGlobale == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+</table>
+</div>
+<br/> 
+<div>
+<b>Valutazioni specifiche</b><br/>
+1) Il pane è di tipo integrale {%if isp.paneTipo == "Integrale"%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} con farina 00/0 {%if isp.paneTipo == "Farina 0/00"%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}con farina tipo 1 o 2 {%if isp.paneTipo == "Farina 1/2"%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+2) Il pane è presente sui tavoli prima della distribuzione? Sì {%if isp.paneServito == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} No {%if isp.paneServito == 0%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+3) Il pane è di qualità buona {%if isp.paneAssaggio == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} mediocre {%if isp.paneAssaggio == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} scarsa {%if isp.paneAssaggio == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+4) La frutta è accettabile {%if isp.fruttaMaturazione == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} acerba {%if isp.fruttaMaturazione == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} troppo matura {%if isp.fruttaMaturazione == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/>
+5) La frutta viene servita a metà mattina {%if isp.fruttaServita == "A metà mattina"%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} dopo il pasto {%if isp.fruttaServita == "A fine pasto"%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}<br/> 
+</div>
+<div>
+C) Indice di gradimento del pasto<br/>
+</div>
+<div class="indent1">
+<b>Si calcola sul numero di bambini che hanno mangiato più della metà della porzione servita.</b><br/> 
+<div class="legenda">
+Per ciascun piatto si calcola l indice di gradibilità: ad esempio, se si considera una classe di 25<br/>
+bambini e di questi 20 hanno mangiato più della metà, la percentuale sul numero di bambini presi<br/> 
+in esame è: 20/25 x 100 = 80%. Quindi, essendo questo valore compreso tra 75% e 100%, il<br/>
+piatto preso in esame si considera totalmente accettato.<br/> 
+I valori dell indice di gradibilità presi in esame per considerare un piatto sono:<br/> 
+indice di gradibilità tra 75% e 100% = piatto totalmente accettato (TA)<br/> 
+indice di gradibilità tra 50% e 74% = piatto parzialmente accettato (PA)<br/> 
+indice di gradibilità tra 25% e 49% = piatto parzialmente rifiutato (PR)<br/> 
+indice di gradibilità tra 0% e 24% = piatto totalmente rifiutato (TR)<br/> 
+</div>
+</div>
+<div>
+<table>
+<tr>
+<td width="50%">Primo piatto</td><td>TA {%if isp.primoGradimento == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PA {%if isp.primoGradimento == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PR {%if isp.primoGradimento == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} TR {%if isp.primoGradimento == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td width="50%">Secondo piatto</td><td>TA {%if isp.secondoGradimento == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PA {%if isp.secondoGradimento == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PR {%if isp.secondoGradimento == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} TR {%if isp.secondoGradimento == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td width="50%">Contorno</td><td>TA {%if isp.contornoGradimento == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PA {%if isp.contornoGradimento == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PR {%if isp.contornoGradimento == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} TR {%if isp.contornoGradimento == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+<tr>
+<td width="50%">Frutta</td><td>TA {%if isp.fruttaGradimento == 4%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PA {%if isp.fruttaGradimento == 3%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} PR {%if isp.fruttaGradimento == 2%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%} TR {%if isp.fruttaGradimento == 1%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+</table>
+</div>
+<div>
+Note e osservazioni: {{isp.note}}<br/> 
+<table>
+<tr>
+<td width="50%">Data, {{isp.dataIspezione}}</td><td>Nome e Cognome del compilatore:<td/>
+</tr>  
+<tr>
+<td width="50%"></td>
+<td align="center">{{isp.commissario.get().nome}} {{isp.commissario.get().cognome}}<br/> 
+(firma leggibile)</td>
+</tr>  
+</table> 
+</div>
+</div> <!--/pagina2-->
