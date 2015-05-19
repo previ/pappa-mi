@@ -177,8 +177,8 @@ class User(ndb.Expando):
     auth_ids = ndb.StringProperty(repeated=True)
     # primary email address used for
     email = ndb.StringProperty(indexed=False)
-
     authenticated = ndb.BooleanProperty(default=False)
+    admin = ndb.BooleanProperty(indexed=False, default=False)
     
     def get_id(self):
         """Returns this user's unique ID, which can be an integer or string."""
@@ -254,6 +254,9 @@ class User(ndb.Expando):
         return cls.query(cls.auth_ids == auth_id).get()
     get_by_auth_id = _get_by_auth_id
 
+    def is_admin(self):
+		return self.admin == True
+		
     def has_auth_strategy(self, auth_strategy):
         for auth_id in self.auth_ids:
             if auth_strategy in auth_id:

@@ -185,6 +185,9 @@ class BaseHandler(webapp.RequestHandler):
           if browser_ver in u_b:
             template_values["main"] = 'unsupported.html'
 
+    if user and user.admin == None:
+      user.admin = False
+      user.put()
     commissario = self.getCommissario(user)
     if( commissario and commissario.is_active()) :
       if commissario.ultimo_accesso_il is None and self.request.url.find("/stream") != -1:
@@ -212,7 +215,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.2.1.38 - 2014.11.3"
+    template_values["version"] = "3.2.2.39 - 2015.05.19"
     template_values["ctx"] = self.get_context()
     if not template_values.get("page_title"):
       template_values["page_title"] = "Pappa-Mi Cosa e Come si mangia a Scuola"
@@ -475,6 +478,15 @@ def handle_500(request, response, exception):
   t = template.render(c)
   response.write(t)
   response.set_status(500)
+
+def admin_required(func):
+  def callf(basePage, *args, **kwargs):
+    user = basePage.request.user if basePage.request.user else None
+    if user == None or not user.is_admin():
+      basePage.redirect("/eauth/login?next="+basePage.request.url)
+    else:
+      return func(basePage, *args, **kwargs)
+  return callf
 
 def user_required(func):
   def callf(basePage, *args, **kwargs):

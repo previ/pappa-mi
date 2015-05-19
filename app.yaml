@@ -1,5 +1,5 @@
 application: pappa-mi-hr
-version: 39
+version: 40
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -80,11 +80,11 @@ handlers:
   
 - url: /admin/stats.*
   script: py.stats.app
-  login: admin
+  #login: admin
   
 - url: /admin.*
   script: py.admin.app
-  login: admin
+  #login: admin
   
 - url: /public/.*
   script: py.public.app

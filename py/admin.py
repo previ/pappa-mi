@@ -39,7 +39,7 @@ from model import *
 from modelMsg import *
 from form import CommissioneForm
 from gviz_api import *
-from base import BasePage, config
+from base import BasePage, config, admin_required
 #from gcalendar import *
 from stream import *
 
@@ -48,7 +48,7 @@ DATE_FORMAT = "%Y-%m-%d"
 
 class AdminMenuHandler(BasePage):
 
-  @reguser_required
+  @admin_required
   def get(self):
     template_values = {
       'content': '/admin/menu.html',
@@ -57,6 +57,7 @@ class AdminMenuHandler(BasePage):
     self.getBase(template_values)
 
 
+  @admin_required
   def post(self):
     if self.request.get("cmd") == "upload" and self.request.get("what") == "menu":
       citta = model.Key("Citta", int(self.request.get("city")))
@@ -194,6 +195,7 @@ class AdminMenuHandler(BasePage):
 
 class CMAdminCommissioneHandler(BasePage):
 
+  @admin_required
   def get(self):
 
     if self.request.get("cmd") == "open":
@@ -234,6 +236,7 @@ class CMAdminCommissioneHandler(BasePage):
       self.getBase(template_values)
 
 
+  @admin_required
   def post(self):
     if( self.request.get("cmd") == "save" ):
       if self.request.get("key"):
@@ -281,6 +284,7 @@ class CMAdminCommissioneHandler(BasePage):
 
 class CMAdminCommissioneDataHandler(BasePage):
 
+  @admin_required
   def get(self):
       tq = urllib.unquote(self.request.get("tq"))
       #logging.info(tq)
@@ -357,10 +361,12 @@ class CMAdminCommissioneDataHandler(BasePage):
 class CMAdminHandler(BasePage):
 
   @toplevel
+  @admin_required
   def post(self):
     return self.get()
 
   @toplevel
+  @admin_required
   def get(self):
 
     if self.request.get("cmd") == "getCommissari":
@@ -773,6 +779,7 @@ class CMAdminHandler(BasePage):
 
 class CMAdminCommissarioHandler(BasePage):
 
+  @admin_required
   def get(self):
 
     if( self.request.get("cmd") == "enable" or
@@ -895,6 +902,8 @@ class CMAdminCommissarioHandler(BasePage):
 
 
 class SocialAdmin(object):
+
+  @admin_required
   @classmethod
   def migrate(cls, what, offset, limit):
       if what == "nodes":
@@ -1033,7 +1042,7 @@ class SocialAdmin(object):
 
 class AdminVeespoHandler(BaseHandler):
 
-  @reguser_required
+  @admin_required
   def get(self):
     dishes = list()
     for d in Piatto.get_all():
