@@ -35,7 +35,7 @@ from google.appengine.api import users
 import base
 from common import cached_property, memcached_property, Const, Cache, Sanitizer, CETimeZone
 from engineauth import models
-from py.blob import *
+from blob_cloud import *
 
 class Citta(model.Model):
   nome = model.StringProperty()
@@ -969,6 +969,7 @@ class Allegato(model.Model):
   obj = model.KeyProperty()
   path = model.StringProperty(indexed=False)
   blob_key = model.BlobKeyProperty()
+  blob_name = model.StringProperty(indexed=False)
   nome = model.StringProperty(default="",indexed=False)
   descrizione = model.StringProperty(default="",indexed=False)
 
@@ -992,16 +993,16 @@ class Allegato(model.Model):
   
   @cached_property  
   def imgthumb(self):
-    if self.isImage():
-      return images.get_serving_url(blob_key=self.blob_key,size=128)
+  	if self.isImage():
+	  return BlobCloud.get_serving_url(key=self.blob_key, size=128)
+      	#return images.get_serving_url(blob_key=self.blob_key,size=128)
 
   @cached_property  
   def path(self):
-    if self.isImage():
-      return images.get_serving_url(blob_key=self.blob_key)
-    else:
-      return "/blob/get?key=" + str(self.blob_key)
+	return BlobCloud.get_serving_url(key=self.blob_key, name=self.blob_name)
 
+  _cs_folder = "/attachments/"
+  
   _tipi = {".png":"image/png",
            ".jpg":"image/jpeg",
            ".jpeg":"image/jpeg",
@@ -1025,9 +1026,11 @@ class Allegato(model.Model):
         if len(att.value) < 10000000 :
           attachment = Allegato()
           attachment.nome = att.filename
-          blob = Blob()
-          blob.create(attachment.nome)
-          attachment.blob_key = blob.write(att.value)
+          attachment.put()
+          blob = BlobCloud()
+          attachment.blob_name = blob.create(cls._cs_folder + str(attachment.key.id()) + "/" + attachment.nome, attachment.nome, attachment.contentType())
+          attachment.blob_key = blob.get_blob_key()
+          blob.write(att.value)
           attachment.obj = obj
           attachment.put()
         else:
@@ -1044,9 +1047,11 @@ class Allegato(model.Model):
         if len(att.value) < 10000000 :
           attachment = Allegato()
           attachment.nome = att.filename
-          blob = Blob()
-          blob.create(attachment.nome)
-          attachment.blob_key = blob.write(att.value)
+          attachment.put()
+          blob = BlobCloud()
+          attachment.blob_name = blob.create(cls._cs_folder + str(attachment.key.id()) + "/" + attachment.nome, attachment.nome, attachment.contentType())
+          attachment.blob_key = blob.get_blob_key()
+          blob.write(att.value)
           attachment.obj = obj
           attachment.put()
         else:

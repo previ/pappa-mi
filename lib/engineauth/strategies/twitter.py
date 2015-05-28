@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import json
+import logging
 
 from engineauth.models import User
 from engineauth.strategies.oauth import OAuthStrategy
@@ -20,7 +21,7 @@ class TwitterStrategy(OAuthStrategy):
         pass
 
     def user_info(self, req):
-        url = 'https://api.twitter.com/1/account/verify_credentials.json'
+        url = 'https://api.twitter.com/1.1/account/verify_credentials.json'
         res, results = self.http(req).request(url)
         if res.status is not 200:
             raise('A {0} error.'.format(req.provider))
@@ -29,7 +30,7 @@ class TwitterStrategy(OAuthStrategy):
             auth_id = User.generate_auth_id(req.provider, user['id'])
         except:
             raise('A {0} error.'.format(req.provider))
-
+        
         return {
             'auth_id': auth_id,
             'info': {
@@ -57,3 +58,4 @@ class TwitterStrategy(OAuthStrategy):
                 'raw_info': user,
                 },
         }
+

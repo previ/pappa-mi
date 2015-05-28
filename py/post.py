@@ -33,7 +33,7 @@ class PostHandler(BasePage):
     self.response.out.write(t)
 
 
-  def get(self,node_id, post_id):
+  def get(self, node_id, post_id):
     try:
       n_id = int(node_id)
       p_id = int(post_id)

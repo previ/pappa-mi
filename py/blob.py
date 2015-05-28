@@ -30,6 +30,7 @@ class Blob:
 
     def open(self,key):
         self.blob_key = key
+        blob_info = blobstore.BlobInfo.get(self.blob_key)
         self.blob_reader = blobstore.BlobReader(self.blob_key)
 
 
@@ -46,9 +47,9 @@ class Blob:
 
         return self.blob_key
 
-    def read(self):
+    def read(self, size=-1):
         # Open the file and write to it
-        value = self.blob_reader.read()
+        value = self.blob_reader.read(size)
         return value
 
     def mime(self):
@@ -71,8 +72,8 @@ class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):
             self.send_blob(blob_info)
 
 
-app = webapp.WSGIApplication([
-    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
+#app = webapp.WSGIApplication([
+#    ('/blob/get', BlobHandler)], debug=os.environ['HTTP_HOST'].startswith('localhost'))
 
 #app.error_handlers[404] = handle_404
 #app.error_handlers[500] = handle_500

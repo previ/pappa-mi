@@ -42,6 +42,8 @@ from gviz_api import *
 from base import BasePage, config, admin_required
 #from gcalendar import *
 from stream import *
+import blob
+import blob_cloud
 
 TIME_FORMAT = "T%H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
@@ -745,12 +747,41 @@ class CMAdminHandler(BasePage):
           user.auth_ids=auth_ids
           user.email = user.email.lower()
           user.put();
-              
-          
-          
-          
-          
+                        
           logging.info("toupper: " + email)
+
+    if self.request.get("cmd") == "blob2cloud":
+      count = 0
+      buff = ""
+      for attachment in Allegato.query():
+        if attachment.blob_name is None:
+          
+          blob_c = blob_cloud.BlobCloud()
+          blob_b = blob.Blob()
+          blob_b.open(attachment.blob_key)            
+          try:
+            attachment.blob_name = blob_c.create(attachment._cs_folder + str(attachment.key.id()) + "/" + attachment.nome, attachment.nome, attachment.contentType())
+            #logging.info("blob create")
+            data = blob_b.read(size=-1)
+            #logging.info("blob read")
+            blob_c.write(data)
+            #logging.info("blob write")
+            attachment.blob_key = blob_c.get_blob_key()
+            attachment.put()
+            count +=1
+            logging.info("ok.attachment.nome: " + attachment.nome)
+            buff += attachment.nome + "\n"
+          except blobstore.PermissionDeniedError:
+            logging.info("error.attachment.nome: " + attachment.nome)
+            logging.info("error.attachment.blob_key: " + str(attachment.blob_key))
+          except:  
+            logging.info("blob read error: " + str(sys.exc_info()[0]))
+            	  
+        if count > 20:
+          break
+                
+      self.response.out.write(buff)
+      return
 
     template_values = {
       'content': 'admin/admin.html',

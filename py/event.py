@@ -293,7 +293,7 @@ class EventHandler(BaseHandler):
     
     test_emails = ['roberto.previtera@gmail.com',
            'aiuto@pappa-mi.it',
-           'bob_previ@tahoo.com',
+           'bob_previ@yahoo.com',
            'muriel.verweij@gmail.com',
            'roberto@pvri.com']
     
