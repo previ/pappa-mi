@@ -1445,7 +1445,7 @@ class SocialNode(model.Model):
     def image_avatar_path(self):
       for a in self.attachments:
         if 'avatar' in a.nome:
-          return a.path + "=s128"
+          return a.path #+ "=s128"
       
       if len(self.resources) > 0:
         return "/img/avatar/node_" + self.resources[0].get().restype + "_avatar.jpg"
@@ -1456,7 +1456,7 @@ class SocialNode(model.Model):
     def image_wall_path(self):
       for a in self.attachments:
         if 'wall' in a.nome:
-          return a.path + "=s1170"
+          return a.path #+ "=s1170"
       
       if len(self.resources) > 0:
         return "/img/avatar/node_" + self.resources[0].get().restype + "_wall.jpg"
