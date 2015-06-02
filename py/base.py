@@ -215,7 +215,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.2.2.39 - 2015.05.19"
+    template_values["version"] = "3.2.3.41 - 2015.06.01"
     template_values["ctx"] = self.get_context()
     if not template_values.get("page_title"):
       template_values["page_title"] = "Pappa-Mi Cosa e Come si mangia a Scuola"

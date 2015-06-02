@@ -758,15 +758,17 @@ class CMAdminHandler(BasePage):
           
           blob_c = blob_cloud.BlobCloud()
           blob_b = blob.Blob()
-          blob_b.open(attachment.blob_key)            
           try:
-            attachment.blob_name = blob_c.create(attachment._cs_folder + str(attachment.key.id()) + "/" + attachment.nome, attachment.nome, attachment.contentType())
-            #logging.info("blob create")
+            blob_b.open(attachment.blob_key)            
+            logging.info("blob open: " + attachment.nome )
+            attachment.blob_name = blob_c.create(attachment._cs_folder + str(attachment.key.id()) + "/" + unicode(attachment.nome), unicode(attachment.nome), attachment.contentType())
+            logging.info("blob create")
             data = blob_b.read(size=-1)
-            #logging.info("blob read")
+            logging.info("blob read")
             blob_c.write(data)
-            #logging.info("blob write")
+            logging.info("blob write")
             attachment.blob_key = blob_c.get_blob_key()
+            logging.info("creating new blob key")
             attachment.put()
             count +=1
             logging.info("ok.attachment.nome: " + attachment.nome)
@@ -775,9 +777,9 @@ class CMAdminHandler(BasePage):
             logging.info("error.attachment.nome: " + attachment.nome)
             logging.info("error.attachment.blob_key: " + str(attachment.blob_key))
           except:  
-            logging.info("blob read error: " + str(sys.exc_info()[0]))
+            logging.info("attachment: " + str(attachment.key) + " blob read error: " + str(sys.exc_info()[0]))
             	  
-        if count > 20:
+        if count >= 10:
           break
                 
       self.response.out.write(buff)

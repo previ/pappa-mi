@@ -985,7 +985,7 @@ class Allegato(model.Model):
     return ".png" in self.nome.lower() or ".gif" in ".png" in self.nome.lower() or ".jpg" in self.nome.lower() or ".jpeg" in self.nome.lower()
 
   def contentType(self):
-    return self._tipi[self.nome.lower()[self.nome.rfind("."):]]
+    return self._tipi.get(self.nome.lower()[self.nome.rfind("."):], "application/octet-stream")
 
   @property
   def id(self):
@@ -1011,7 +1011,10 @@ class Allegato(model.Model):
            ".tiff":"image/tiff",
            ".pdf":"application/pdf",
            ".doc":"application/msword",
-           ".pdf":"application/msword"}
+           ".pdf":"application/msword",
+           ".zip":"application/zip",
+           ".mp3":"application/mp3",
+           ".mp4":"application/mp4"}
 
   @property
   def size(self):

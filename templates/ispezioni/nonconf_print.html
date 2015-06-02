@@ -1,0 +1,102 @@
+﻿<div id="header_content">www.pappa-mi.it - Cosa e come si mangia a scuola</div>
+<div id="footer_content" style="text-align:right;">pagina <pdf:pagenumber> di 1</div>
+<div> <!--pagina 1-->
+<div>
+<table>
+<tr>
+<td valign="top" style="font-size:9pt;">
+Settore Programmazione e<br/>
+Coordinamento Servizi Educativi<br/>
+Ufficio Controllo Refezione<br/>
+</td>
+<td style="font-family:'serif'">
+<div style="text-align:'center';padding-top:5pt;border-style:solid;border-top-width:1pt;border-bottom-width:1pt;border-left-width:1pt;border-right-width:1pt;">
+<span style="text-decoration:underline;">ALLEGATO C</span><br/>
+MODELLO PER<br/>
+SEGNALAZIONI NON CONFORMITA<br/>
+SERVIZIO REFEZIONE SCOLASTICA<br/>
+</div>
+<div style="font-size:10pt;">
+<br/>
+Da inviare a:<br/>
+Al Dirigente Responsabile della Struttura Scolastica<br/>
+Statale /Alla PO Responsabile dell Unità Educativa<br/>
+Comunale<br/>
+</div>
+<div style="padding-left:10pt;padding-top:5pt;border-style:solid;border-top-width:1pt;border-bottom-width:1pt;border-left-width:1pt;border-right-width:1pt;">
+Al Settore Programmazione e Coordinamento<br/>
+Servizi Educativi<br/>
+Servizio Coordinamento e Controllo Milano<br/>
+Ristorazione<br/>
+Via Porpora 10 - 20131 Milano<br/>
+Fax n. 02 884 62592<br/>
+</div>
+<br/>
+<div style="font-size:10pt;">
+Milano Ristorazione SpA<br/>
+Ufficio Relazioni Esterne<br/>
+Via Quaranta 41 - 20139 Milano<br/>
+Fax n. 02 884 64675<br/>
+</div>
+</td>
+</tr>
+</table>
+<br/>
+</div>
+<div>
+<table>
+<tr style="font-weight:bold;">
+<td width="80pt" valign="top">OGGETTO:</td>
+<td>
+SEGNALAZIONI INCONVENIENTI E NON CONFORMITA.<br/>
+ANNO SCOLASTICO {{nc.anno}}/{{nc.anno+1}}
+</td>
+</tr>
+</table>
+<div>
+<b>TIPO DI SCUOLA</b> <small><i>(barrare la casella corrispondente):</i></small>
+</div>
+<div>
+<table>
+<tr>
+<td width="45%"><i>Scuola Infanzia Comunale</i></td><td width="5%" align="center">[&nbsp;&nbsp;&nbsp;]</td>
+<td width="45%">Nidi d Infanzia</td><td width="5%" align="center">{%if nc.commissione.get().tipoScuola == 'Nido'%}X{%else%}[&nbsp;&nbsp;&nbsp;]{%endif%}</td>
+</tr>
+</table>
+</div>
+<div>
+<table>
+<tr>
+<td width="30%"><i>Scuola Infanzia Statale</i></td><td width="5%" align="center"><span class="check">[&nbsp;&nbsp;]</span></td>
+<td width="25%">Scuola Primaria</td><td  width="5%" align="center">{%if nc.commissione.get().tipoScuola == 'Primaria'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+<td width="30%">Scuola Second. 1° grado</td><td  width="5%" align="center">{%if nc.commissione.get().tipoScuola == 'Secondaria'%}<span class="check">[X]</span>{%else%}<span class="check">[&nbsp;&nbsp;]</span>{%endif%}</td>
+</tr>
+</table>
+</div>
+<div>di via {{nc.commissione.get().strada}} n. {{nc.commissione.get().civico}}</div>
+<div>
+<b>INCONVENIENTE/NON CONFORMITA :</b>
+</div>
+<div>
+{{nc.tipoNome()}}
+</div>
+<div>
+{{nc.note}}
+</div>
+<div>
+Data in cui si è verificato l'inconveniente {{nc.dataNonconf}}
+</div>
+<div>
+Segnalazione effettuata da {{nc.commissario.get().nome}} {{nc.commissario.get().cognome}}
+</div>
+<div>
+Data invio segnalazione
+</div>
+<table>
+<tr>
+<td width="50%"></td>
+<td align="center">{{nc.commissario.get().nome}} {{nc.commissario.get().cognome}}<br/> 
+(firma leggibile)</td>
+</tr>  
+</table> 
+</div> <!--/pagina1-->
