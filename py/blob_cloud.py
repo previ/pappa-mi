@@ -25,10 +25,10 @@ class BlobCloud:
 		self.content_type = content_type
 		
 		write_retry_params = gcs.RetryParams(backoff_factor=1.1)
-		self.gcs_file = gcs.open(self.bucket_name + self.blob_name,
+		self.gcs_file = gcs.open((self.bucket_name + self.blob_name).encode('utf8'),
 							'w',
 							content_type=content_type,
-							options={ 'x-goog-acl': 'public-read', 'x-goog-meta-filename': filename_orig},
+							options={ 'x-goog-acl': 'public-read', 'x-goog-meta-filename': filename_orig.encode('utf8')},
 							retry_params=write_retry_params)
 		return blob_name
  
