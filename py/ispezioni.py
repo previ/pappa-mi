@@ -20,7 +20,7 @@ from google.appengine.api import urlfetch
 
 from py.gviz_api import *
 from py.model import *
-from py.blob import *
+from py.blob_cloud import *
 from py.form import IspezioneForm, NonconformitaForm, DietaForm, NotaForm
 from py.base import BasePage, CMCommissioniDataHandler, CMMenuHandler, commissario_required, reguser_required, Const, config, handle_404, handle_500
 from py.post import PostHandler
@@ -86,10 +86,14 @@ def populate_tags_attach(request, obj):
         allegato = Allegato()
         allegato.descrizione = request.get('allegato_desc_' + str(i))
         allegato.nome = request.POST['allegato_file_' + str(i)].filename
-        blob = Blob()
-        blob.create(allegato.nome)
-        allegato.blob_key = blob.write(request.get('allegato_file_' + str(i)))
+        allegato.put()
+        blob = BlobCloud()
+        allegato.blob_name = blob.create(allegato._cs_folder + str(allegato.key.id()) + "/" + allegato.nome, allegato.nome, allegato.contentType())
+        allegato.blob_key = blob.get_blob_key()
+        blob.write(request.get('allegato_file_' + str(i)))
+        allegato.obj = obj.key
         obj.allegati.append(allegato)
+        allegato.put()
       else:
         logging.info("attachment is too big.")
 

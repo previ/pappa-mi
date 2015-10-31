@@ -16,7 +16,7 @@ from google.appengine.api import memcache
 from datetime import date, datetime, time, timedelta
 from gviz_api import *
 from py.model import *
-from py.blob import *
+from py.blob_cloud import *
 
 import py.PyRSS2Gen
 

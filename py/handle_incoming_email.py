@@ -15,7 +15,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 from google.appengine.api.app_identity import *
 
-from py.blob import *
+from py.blob_cloud import *
 from py.model import *
 #from py.sendmail import SendMail
 
