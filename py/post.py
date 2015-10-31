@@ -15,7 +15,6 @@ import webapp2 as webapp
 from google.appengine.api import memcache
 from datetime import date, datetime, time, timedelta
 from model import *
-from blob import *
 from event import EventHandler
 
 from form import *
