@@ -65,7 +65,7 @@ class BlobCloud:
         if size:
             return images.get_serving_url(blob_key=key, size=size)
         else:
-            return cls.server_base_url + cls.bucket_name + name
+            return cls.server_base_url + str(cls.bucket_name) + str(name)
             #return "/blob/" + str(key)
 
 class BlobHandler(blobstore_handlers.BlobstoreDownloadHandler):

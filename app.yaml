@@ -1,5 +1,5 @@
 application: pappa-mi-hr
-version: 41
+version: 43
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -10,7 +10,7 @@ derived_file_type:
 - python_precompiled
 
 builtins:
-- remote_api: on 
+- remote_api: on
 - appstats: on
 - deferred: on
 
@@ -25,7 +25,7 @@ libraries:
   version: 0.15
 - name: lxml
   version: 2.3
-  
+
 inbound_services:
 - mail
 - channel_presence
@@ -41,7 +41,7 @@ skip_files: |
  (.*\.py[co])|
  (.*\.bak)|
  (.*/RCS/.*)|
- (\..*)| 
+ (\..*)|
  )$
 
 handlers:
@@ -50,14 +50,14 @@ handlers:
   script: handle_node_email.app
   login: admin
 
-- url: /_ah/mail/.+ 
-  script: py.handle_incoming_email.app 
+- url: /_ah/mail/.+
+  script: py.handle_incoming_email.app
   login: admin
-  
+
 - url: /admin/dblog
   script: py.dblog.app
   login: admin
-  
+
 - url: /css
   static_dir: css
 
@@ -77,21 +77,21 @@ handlers:
 
 - url: /_ah/login_required
   script: py.login.app
-  
+
 - url: /admin/stats.*
   script: py.stats.app
   #login: admin
-  
+
 - url: /admin.*
   script: py.admin.app
   #login: admin
-  
+
 - url: /public/.*
   script: py.public.app
 
 - url: /isp/.*
-  script: py.ispezioni.app   
-  
+  script: py.ispezioni.app
+
 - url: /stats.*
   script: py.stats.app
 
@@ -100,7 +100,7 @@ handlers:
 
 - url: /widget.*
   script: py.widget.app
-   
+
 - url: /fb.*
   script: py.fb.app
 
@@ -115,7 +115,7 @@ handlers:
 
 - url: /signup2
   script: py.signup.app
-  
+
 - url: /blob/*
   script: py.blob.app
 
@@ -124,16 +124,16 @@ handlers:
 
 - url: /commissioni.*
   script: py.commissioni.app
-  
+
 - url: /contatti.*
   script: py.commissioni.app
 
 - url: /eauth.*
   script: py.login.app
-  
+
 - url: /menu.*
   script: py.menu.app
-  
+
 - url: /menuslide.*
   script: py.menu.app
 
@@ -167,10 +167,6 @@ handlers:
 
 - url: /_ah/channel.*
   script: py.channel.app
-  
+
 - url: .*
   script: py.main.app
-
-
-  
-  

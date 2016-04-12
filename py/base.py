@@ -121,7 +121,7 @@ class BaseHandler(webapp.RequestHandler):
           ctx["cm_name"] = str(commissario.commissione().desc())
       else:
         ctx["node"] = "news"
-          
+
       anno = datetime.now().date().year
       if datetime.now().date().month <= 9: #siamo in inverno -estate, data inizio = settembre anno precedente
         anno = anno - 1
@@ -158,9 +158,9 @@ class BaseHandler(webapp.RequestHandler):
 
     uri = self.request.url[self.request.url.find('//')+2:]
 
-    if ((uri.find("m.") != -1 or 
-         uri.find("mobile.") != -1) and 
-        uri.find("/mobile") == -1 and 
+    if ((uri.find("m.") != -1 or
+         uri.find("mobile.") != -1) and
+        uri.find("/mobile") == -1 and
         not (("signup" in self.request.uri) or ("profilo" in self.request.uri) or ("condizioni" in self.request.uri))):
       logging.info("going mobile")
       self.redirect("/mobile")
@@ -173,7 +173,7 @@ class BaseHandler(webapp.RequestHandler):
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
 
-    user_agent = httpagentparser.detect(self.request.headers["User-Agent"])
+    user_agent = httpagentparser.detect(self.request.headers.get("User-Agent"))
     if user_agent.get("browser"):
       if user_agent.get("browser").get("name"):
         browser_name = user_agent.get("browser").get("name")
@@ -215,7 +215,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.2.3.41 - 2015.06.01"
+    template_values["version"] = "3.2.3.43 - 2016.04.12"
     template_values["ctx"] = self.get_context()
     if not template_values.get("page_title"):
       template_values["page_title"] = "Pappa-Mi Cosa e Come si mangia a Scuola"
@@ -223,14 +223,14 @@ class BaseHandler(webapp.RequestHandler):
       template_values["page_dec"] = "Il network sull'alimentazione scolastica"
     if not template_values.get("page_image"):
       template_values["page_image"] = "/img/pappa-mi-logo-big.png"
-      
+
     #logging.info("users.is_current_user_admin(): " + str(users.is_current_user_admin()))
     #logging.info("users.current_user(): " + str(users.get_current_user()))
 
     if user and not commissario and not (("signup" in self.request.uri) or ("condizioni" in self.request.uri)):
       self.redirect("/signup")
       return
-    
+
     template = jinja_environment.get_template(template_values["main"])
     self.response.write(template.render(template_values))
 
@@ -338,11 +338,11 @@ class CMMenuHandler(BasePage):
 
     if not citta:
       citta = Citta.get_first()
-      
+
     #menu = memcache.get("menu-" + str(offset) + "-" + str(data))
     menu_cache = Cache.get_cache("Menu")
     menu = menu_cache.get("menu-" + str(offset) + "-" + str(data))
-    
+
     if not menu:
       menu = list()
 
@@ -351,7 +351,7 @@ class CMMenuHandler(BasePage):
         self.getMenuHelper(menu,self.workingDay(data+timedelta(1)),offset,citta)
 
       menu_cache.put("menu-" + str(offset) + "-" + str(data), menu)
-      
+
     return menu
 
   def getMenuHelper(self, menu, data, offset, citta):
@@ -388,7 +388,7 @@ class CMMenuHandler(BasePage):
 
   def getMenuWeek(self, data, cm):
 
-    offset = 0    
+    offset = 0
 
     #logging.info(str(cm.key))
     #logging.info(str(data))
