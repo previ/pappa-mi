@@ -58,13 +58,13 @@ class CMMenuDataHandler(CMMenuHandler):
       piatto_key = model.Key("Piatto", int(self.request.get("piatto")))
       details['piatto'] = piatto_key.get().nome
       details['ingredienti'] = list()
-      
+
       for p_i in PiattoIngrediente.query().filter(PiattoIngrediente.piatto==piatto_key):
         ing = p_i.ingrediente.get()
         qty = p_i.quantita
         details['ingredienti'].append({'nome': ing.nome,
                                        'quantita': p_i.quantita * factor})
-      
+
       details['ingredienti'].sort(key=lambda item: item.get('quantita'), reverse=True)
       json.dump(details, self.response.out)
 
@@ -72,7 +72,7 @@ class CMMenuDataHandler(CMMenuHandler):
       menu = Menu();
       data = datetime.now().date()
       data = self.get_next_working_day(data)
-      
+
       c = model.Key("Commissione", int(self.request.get("cm"))).get()
       menus = self.getMenu(data, c)
       items = list()
@@ -84,13 +84,13 @@ class CMMenuDataHandler(CMMenuHandler):
                           guid = py.PyRSS2Gen.Guid("http://" + self.getHost() + "/menu?cm=" + str(c.key.id())),
                           link = "http://" + self.getHost() + "/menu?cm=" + str(c.key.id()),
                           pubDate = menu.data.strftime("%a, %d %b %Y %H:%M:%S +0100")))
-  
-  
+
+
       rss = py.PyRSS2Gen.RSS2( title = "Pappa-Mi - " + c.nome,
                                link = "http://" + self.getHost() + "/menu?cm=" + str(c.key.id()),
                                description = "Menu' per la Scuola " + c.nome,
                                items = items)
-  
+
       expires_date = datetime.utcnow() + timedelta(1)
       expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
       self.response.headers.add_header("Expires", expires_str)
@@ -155,13 +155,13 @@ class CMMenuSlideHandler(CMMenuHandler):
         date = datetime.strptime(date,Const.DATE_FORMAT).date()
       else:
         date = datetime.now().date()
-  
+
       date = self.get_next_working_day(date)
-  
+
       date1 = date - timedelta(date.isoweekday() - 1)
       datep = date1 - timedelta(7)
       daten = date1 + timedelta(7)
-  
+
       template_values['menu'] = self.getMenuWeek(date1, cm)
       template_values['data'] = date
       template_values['data1'] = date1
@@ -177,17 +177,25 @@ class MenuScraper(BasePage):
 
   def get(self):
     template_values = dict()
-    
-    year = self.request.get('y')
-    month = self.request.get('m')
-    day = self.request.get('d')    
 
-    response = urlfetch.fetch('http://www.milanoristorazione.it/cosa-si-mangia/ricerca-menu?ps=mese&codRefe=000413&x1='+day+'&x2='+month+'&x3='+year, deadline=60)
-    p = MenuParser()
-    p.text = ""
-    p.feed(response.content)
+    year = int(self.request.get('y'))
+    month = int(self.request.get('m'))
+    day = int(self.request.get('d'))
 
-    self.response.out.write(p.text)
+    menutext = ""
+    d_start = date(year=year, month=month, day=day)
+    for i in range(0, 28):
+        d = d_start + timedelta(days=i)
+        if d.isoweekday() < 6:
+            response = urlfetch.fetch('http://www.milanoristorazione.it/modules/mod_cosasimangia/views/new/newmenu.php?codRefe=000413&x1='+str(d.day)+'&x2='+str(d.month)+'&x3='+str(d.year), deadline=60)
+            p = MenuParser()
+            p.text = ""
+            p.feed(response.content)
+            d_end = date(2099, 12, 31)
+            d_week = i / 7 + 1
+            menutext += "Materna" + str("\t") + d_start.strftime("%d/%m/%Y") + "\t" + d_end.strftime("%d/%m/%Y") + "\t" + str(d_week) + "\t" + str(d.isoweekday()) + "\t" + str(p.text) + "\n"
+
+    self.response.out.write(menutext)
 
 
 # create a subclass and override the handler methods
@@ -208,13 +216,9 @@ class MenuParser(HTMLParser):
 
   def handle_data(self, data):
     #logging.info(data)
-    if self.curr_id == "divmleftletter":
+    if self.curr_id == "divdayright":
       logging.info(data)
-      self.text += "\n" + data + "|"
-      self.curr_id=""
-    if self.curr_id == "divplatedesc":
-      logging.info(data)
-      self.text += data + "|"
+      self.text += data + "\t"
       self.curr_id=""
 
 
@@ -226,5 +230,3 @@ app = webapp.WSGIApplication([
 
 app.error_handlers[404] = handle_404
 app.error_handlers[500] = handle_500
-
-
