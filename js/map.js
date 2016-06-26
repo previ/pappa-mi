@@ -22,20 +22,20 @@ var fluster = null;
 var fstyles = {
   // This style will be used for clusters with more than 0 markers
   0: {
-	  image: 'http://gmaps-utility-library.googlecode.com/svn/trunk/markerclusterer/1.0/images/m1.png',
+	  image: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m1.png',
 	  textColor: '#FFFFFF',
 	  width: 53,
 	  height: 52
   },
   // This style will be used for clusters with more than 10 markers
   10: {
-	  image: 'http://gmaps-utility-library.googlecode.com/svn/trunk/markerclusterer/1.0/images/m2.png',
+	  image: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m2.png',
 	  textColor: '#FFFFFF',
 	  width: 56,
 	  height: 55
   },
   20: {
-	  image: 'http://gmaps-utility-library.googlecode.com/svn/trunk/markerclusterer/1.0/images/m3.png',
+	  image: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m3.png',
 	  textColor: '#FFFFFF',
 	  width: 66,
 	  height: 65
@@ -50,9 +50,9 @@ function drawMap(data) {
   var f_numcm = $("#e_numcm").val();
   jmarkers = jQuery(data);
   jmarker = jmarkers.find("marker");
-  
+
   jmarker.each(function() {
-    var marker = jQuery(this);          
+    var marker = jQuery(this);
     var key = marker.attr("key");
     var name = marker.attr("nome");
     var address = marker.attr("indirizzo");
@@ -76,20 +76,20 @@ function drawMap(data) {
     $("#loading").hide();
     fluster.initialize();
   }
-}    
+}
 
 function redraw() {
   $("#loading").show();
-  
+
   $("#l_citta").html($("#e_citta option[value='"+$("#e_citta").val()+"']").text());
 
   var myOptions = {
     zoom: 12,
     center: new google.maps.LatLng(lat,lon),
     mapTypeId: google.maps.MapTypeId.ROADMAP
-  }    
+  }
   map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-  
+
   list.children().remove();
   list.lenght = 0;
   for (var i = 0; i < markersArray.length; i++) {
@@ -97,13 +97,13 @@ function redraw() {
   }
   markersArray.length = 0;
   offset = 0;
-  
+
   fluster = new Fluster2(map);
 
   // Set styles
   // These are the same styles as default, assignment is only for demonstration ...
   fluster.styles = fstyles;
-  
+
   jQuery.get("/map?cmd=all", {}, drawMap );
 }
 
@@ -123,7 +123,7 @@ function createMarker(school) {
 
   //var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li><li><a href='#contacts' data-toggle='tab'>Contatti</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div><div id='contacts'>contatti...</div></div></div>";
 
-  var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div></div><a class='btn btn-normal' href='/node/res/" + school.key + "/cm'>Post</a><a class='btn btn-normal' href='/contatti?cm=" + school.key + "'>Contatti</a></div>";  
+  var html = "<div id='info'><ul class='nav nav-tabs'><li class='active'><a href='#general' data-toggle='tab'>Generale</a></li></ul><div class='tab-contents' id='content'><div id='general'><b>Nome: " + school.name + "<br/>Tipo: " + school.type + "</b><br/>Indirizzo: " + school.address + "</div></div><a class='btn btn-normal' href='/node/res/" + school.key + "/cm'>Post</a><a class='btn btn-normal' href='/contatti?cm=" + school.key + "'>Contatti</a></div>";
   var openiw = function (){
     if (infowindow) infowindow.close();
     infowindow = new google.maps.InfoWindow({ content: html });
@@ -132,7 +132,7 @@ function createMarker(school) {
       $("#tabs").tabs();
     });
   };
-   
+
   google.maps.event.addListener(marker, 'click', openiw);
   addLocationToList(list, school, marker, openiw);
 
@@ -149,12 +149,12 @@ function addLocationToList(list, school, marker,openiw) {
  } else {
   }
   list.append(itm);
-}     
+}
 
 function drawSmallMap(data) {
   jmarkers = jQuery(data);
   jmarker = jmarkers.find("marker");
-  
+
   jmarker.each(function() {
     var marker = jQuery(this);
     var name = marker.attr("nome");
@@ -172,7 +172,7 @@ function drawSmallMap(data) {
   } else {
     fluster.initialize();
   }
-}    
+}
 
 function loadSmallMap(lat,lon) {
   var myOptions = {
@@ -184,10 +184,10 @@ function loadSmallMap(lat,lon) {
     navigationControl: false,
     scaleControl: false,
     draggable: false
-  }    
+  }
   var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-  fluster = new Fluster2(map); 
-  
+  fluster = new Fluster2(map);
+
   var image = new google.maps.MarkerImage('/img/school.png',
         new google.maps.Size(16, 18),
         new google.maps.Point(0,0),
@@ -202,6 +202,6 @@ function loadSmallMap(lat,lon) {
   // Set styles
   // These are the same styles as default, assignment is only for demonstration ...
   fluster.styles = fstyles;
-  
+
   jQuery.get("/map", {}, drawSmallMap );
-}  
+}
