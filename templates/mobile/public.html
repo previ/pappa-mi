@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -13,19 +13,19 @@
   <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
 
 <!--  original -->
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<link rel="stylesheet" href="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
 <link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />
-<link rel="stylesheet" href="/css/mobile.css" />  
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
-  
+<link rel="stylesheet" href="/css/mobile.css" />
+<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+
   <title>PappaMi Come si mangia ascuola</title>
-</head> 
-<body> 
+</head>
+<body>
 <div data-role="page" id="page-public" style="background:url('/img/slider/slide2_l.jpg') no-repeat center;height:100%;">
  <div data-role="header">
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
  <div data-role="content">
     <div style="background: rgba(255, 255, 255, .8);padding:10px;border-radius:6px;">
       <div style="text-align: center;">
@@ -41,7 +41,7 @@
   <div data-role="popup" data-overlay-theme="a" data-theme="d" id="popup-intro">
     <a href="#page-public" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Chiudi</a>
     <center><h2>Benvenuto su PappaMi!</h2></center>
-    <p>PappaMi aiuta i genitori dei bambini a conoscere le mense scolastiche e contribuire al miglioramento del servizio di refezione.</p> 
+    <p>PappaMi aiuta i genitori dei bambini a conoscere le mense scolastiche e contribuire al miglioramento del servizio di refezione.</p>
     <p>Con questa app i genitori possono valutare la qualità dei pasti serviti a scuola e fornire utili indicazioni per il miglioramento continuo del servizio stesso.<p>
   </div>
 </div>
@@ -73,8 +73,8 @@ function checkReturning() {
     $( "#popup-intro" ).popup( "open", {transition: 'fade', positionTo:'window'} );
     returning = true;
   }
- 
-  setCookie('returning', returning, 365) 
+
+  setCookie('returning', returning, 365)
 }
 
 function checkNative() {
@@ -86,7 +86,7 @@ function checkNative() {
     }
   }
 
- setCookie('native_ios', native_ios, 365) 
+ setCookie('native_ios', native_ios, 365)
 }
 
 $("#page-public").on('pageshow', function(event, entry) {

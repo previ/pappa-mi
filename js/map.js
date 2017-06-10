@@ -10,14 +10,14 @@ var markersArray = [];
 var lat;
 var lon;
 
-var image = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/school.png',
+var image = new google.maps.MarkerImage('/img/school.png',
       new google.maps.Size(32, 37),
       new google.maps.Point(0,0),
       new google.maps.Point(16, 37));
-var shadow = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/shadow.png',
+/*var shadow = new google.maps.MarkerImage('http://google-maps-icons.googlecode.com/files/shadow.png',
       new google.maps.Size(51, 37),
       new google.maps.Point(0,0),
-      new google.maps.Point(16, 37));
+      new google.maps.Point(16, 37));*/
 var fluster = null;
 var fstyles = {
   // This style will be used for clusters with more than 0 markers
@@ -117,7 +117,7 @@ function load(_lat, _lon) {
 }
 
 function createMarker(school) {
-  var marker = new google.maps.Marker({position:school.latlng, icon: image, shadow: shadow});
+  var marker = new google.maps.Marker({position:school.latlng, icon: image, shadow: null});
   fluster.addMarker(marker);
   markersArray.push(marker)
 

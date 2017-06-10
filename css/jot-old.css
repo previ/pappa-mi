@@ -171,7 +171,7 @@ background-color:#fe7;
 padding:10px}
 
 .goog-sprited-icon{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat;
 float:left;
 margin-top:1px}
 
@@ -195,7 +195,7 @@ color:#000;
 font-size:10px}
 
 .goog-ws-add{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_add.gif) no-repeat 0 3px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_add.gif) no-repeat 0 3px;
 padding:0 0 0 12px}
 
 .goog-ws-back{
@@ -248,7 +248,7 @@ padding:9px 0 5px 10px}
 
 .goog-attachment-icon,
 .goog-comment-icon{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat;
 display:block;
 float:left;
 height:11px;
@@ -502,7 +502,7 @@ margin:10px 0 0;
 padding:0}
 
 .goog-ws-dashboard li{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_right.gif) no-repeat 6px 1px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_right.gif) no-repeat 6px 1px;
 margin:0 0 16px;
 padding:0 10px 0 26px}
 
@@ -534,7 +534,7 @@ padding:4px}
  * Styling for the 'current' styles used throughout the site *
  * ********************************************************* */
 .goog-ws-table .goog-ws-current{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/table_background_on.png) repeat-x left top;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/table_background_on.png) repeat-x left top;
 color:#333}
 
 .goog-ws-subnav .goog-ws-selected a{
@@ -584,7 +584,7 @@ font-size:16px}
 .goog-ws-content-wrapper .goog-ws-dash-list h4,
 .goog-ws-content-wrapper .goog-ws-dash-text h4{
 background-color:#a3c0e0 !important;
-background-image:url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/sidebar-gadget-header-bg.gif);
+background-image:url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/sidebar-gadget-header-bg.gif);
 background-position:top;
 background-repeat:repeat-x;
 border-top:none;
@@ -657,7 +657,7 @@ border-bottom:1px solid #d0d7e0;
 padding-left:3px}
 
 .goog-ws-content-wrapper .goog-ws-dash-list li{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_announce.gif) no-repeat 4px 6px}
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_announce.gif) no-repeat 4px 6px}
 
 .goog-ws-content-wrapper .goog-ws-dash-box-inside .goog-ws-dash-list-last,
 .goog-ws-content-wrapper .goog-ws-dash-box-inside .goog-ws-dash-files-last{
@@ -789,31 +789,31 @@ width:100%}
 
 /* Icon styles used for doc items,calendar items,etc. */
 .sites-attach-icon-cal{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_cal.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_cal.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 .sites-attach-icon-doc{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_word.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_word.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 .sites-attach-icon-img{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_img.gif) no-repeat left 6px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_img.gif) no-repeat left 6px;
 padding-left:19px !important}
 
 .sites-attach-icon-page{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_page.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_page.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 .sites-attach-icon-spread{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_xls.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_xls.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 .sites-attach-icon-presentation{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_ppt.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_ppt.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 .sites-attach-icon-pdf{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_pdf.gif) no-repeat left 4px;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_pdf.gif) no-repeat left 4px;
 padding-left:19px !important}
 
 /* The sitemap pages' toolbar */
@@ -932,7 +932,7 @@ display:block;
 padding:3px 6px}
 
 .goog-ws-lp-list .selected{
-background:#fffab6 url(http://gstatic.com/sites/p/1238638800048/system/app/images/check.gif) no-repeat 5px 5px}
+background:#fffab6 url(https://gstatic.com/sites/p/1238638800048/system/app/images/check.gif) no-repeat 5px 5px}
 
 .goog-sites-pagefinder .goog-tree-root .selected {
   /* in the Page Finder, we don't want the little checkmark next to tree rows,
@@ -1267,7 +1267,7 @@ color:#551a8b}
 .goog-ws-sidebar-gadget h4,
 h4.goog-ws-sidebar-textgadget-header{
 background-color:#a3c0e0;
-background-image:url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/sidebar-gadget-header-bg.gif);
+background-image:url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/sidebar-gadget-header-bg.gif);
 background-position:top;
 background-repeat:repeat-x;
 border-top:none;
@@ -1381,7 +1381,7 @@ width: 11px;
 height: 11px;
 padding: 0;
 margin-top: 1px;
-background: url(http://gstatic.com/sites/p/1238638800048/system/app/images/tree.gif) no-repeat -194px -27px;}
+background: url(https://gstatic.com/sites/p/1238638800048/system/app/images/tree.gif) no-repeat -194px -27px;}
 
 .goog-ws-sidebar-nav li.closed .expander {
 background-position: -192px -3px;}
@@ -1474,7 +1474,7 @@ border-top:1px solid #ddd;
 padding:4px 4px 4px 12px}
 
 .goog-ws-sm th{
-background:#fff url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
+background:#fff url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
 background-position:0 0;
 border-bottom:1px solid #ddd;
 color:#444;
@@ -1493,7 +1493,7 @@ padding:4px 4px 4px 12px}
 
 #goog-ws-status {
   position: absolute;
-  z-index: 199;  
+  z-index: 199;
 }
 
 .sites-autosaveStatus{
@@ -1621,7 +1621,7 @@ padding:6px 9px;
 vertical-align:top}
 
 .goog-ws-table th{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/table_background_off.jpg) repeat-x left top;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/table_background_off.jpg) repeat-x left top;
 border-bottom:1px solid #b7bdc5;
 border-top:1px solid #b7bdc5;
 color:#444;
@@ -1933,7 +1933,7 @@ margin:0 3px 0 0;
 position:relative}
 
 .btn b b{
-background:#fff url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
+background:#fff url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
 background-position:0 0;
 border-width:0 1px;
 display:block;
@@ -2036,7 +2036,7 @@ font:icon}
 font:icon}
 
 .goog-tree-icon{
-background-image:url(http://gstatic.com/sites/p/1238638800048/system/app/images/tree.gif);
+background-image:url(https://gstatic.com/sites/p/1238638800048/system/app/images/tree.gif);
 height:16px;
 width:16px}
 
@@ -2161,7 +2161,7 @@ margin:0 !important;
 padding:10px 0 0 !important}
 
 .modal-dialog-close{
-background:url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_close.gif) no-repeat;
+background:url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_close.gif) no-repeat;
 cursor:pointer;
 height:15px;
 position:absolute;
@@ -2294,7 +2294,7 @@ padding-left:6px;
 padding-right:6px}
 
 .jot-extra-buttony{
-background:#fff url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x 0 3px;
+background:#fff url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x 0 3px;
 height:24px}
 
 /* Hideous Safari hacks */
@@ -2364,7 +2364,7 @@ margin:0 !important}
 margin:0 0 0 15px !important}
 
 .goog-ws-outer{
-background-image:url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/page-bg.gif);
+background-image:url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/page-bg.gif);
 background-position:top;
 background-repeat:repeat-x;
 border-top:none;
@@ -2395,7 +2395,7 @@ left:5px !important}
 
 /* Dashboard search dropdown (have to put here b/c it uses bg images */
 #scopeSelectMenu .goog-menu-button-outer-box{
-background:#fff url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
+background:#fff url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
 background-position:0 0;
 height:21px}
 
@@ -2424,7 +2424,7 @@ display:inline}
 display:inline}
 
 .goog-toolbar{
-background:#f9f9f9 url(http://gstatic.com/sites/p/1238638800048/system/app/images/toolbar_bg.gif) repeat-x left bottom;
+background:#f9f9f9 url(https://gstatic.com/sites/p/1238638800048/system/app/images/toolbar_bg.gif) repeat-x left bottom;
 border-bottom:1px solid #b0bdcc;
 cursor:default;
 font:12px Arial,sans-serif !important;/* Toolbar stays Arial */
@@ -2436,7 +2436,7 @@ text-align:left;
 zoom:1}/* The toolbar element must have layout on IE. */
 
 #goog-ws-page-tools-div .goog-toolbar{
-background:#f9f9f9 url(http://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
+background:#f9f9f9 url(https://gstatic.com/sites/p/1238638800048/system/app/themes/shipshape/bg_sprites.gif) repeat-x left bottom;
 background-position:0 -22px;
 height:24px;
 border-bottom:0}
@@ -2757,7 +2757,7 @@ border-color:#729bd1}
 .goog-toolbar-menu-button-dropdown,
 #scopeSelectMenu .goog-menu-button-dropdown{
 width:7px !important;
-background:transparent url(http://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat -27px 0 !important;
+background:transparent url(https://gstatic.com/sites/p/1238638800048/system/app/images/icon_sprites.gif) no-repeat -27px 0 !important;
 vertical-align:middle}
 
 /* Temp */
@@ -2852,5 +2852,3 @@ color:#000}
 
 .goog-s-text-box-editor-wrapper a{
 color:#4e7dbf}
-
-

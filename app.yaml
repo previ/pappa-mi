@@ -1,5 +1,5 @@
 application: pappa-mi-hr
-version: 44
+version: 45
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -66,6 +66,9 @@ handlers:
 
 - url: /js
   static_dir: js
+
+- url: /.well-known/acme-challenge/
+  static_dir: static
 
 - url: /(.*\.(gif|png|jpg|txt|html|xml))
   static_files: static/\1

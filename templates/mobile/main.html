@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -14,27 +14,27 @@
   <link rel="apple-touch-icon" sizes="144x144" href="/img/logo_144.png">
   <title>PappaMi Mobile</title>
 <!--  original -->
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<link rel="stylesheet" href="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
 <link rel="stylesheet" href="/css/pappa-mi-mobile.min.css" />
-<link rel="stylesheet" href="/css/base.css" />  
-<link rel="stylesheet" href="/css/mobile.css" />  
-<!--link rel="stylesheet" href="/css/mobile_extra.css" /-->  
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/mobile.css" />
+<!--link rel="stylesheet" href="/css/mobile_extra.css" /-->
 
 <!--  original -->
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-{#<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>#}
+<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+{#<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>#}
 {#<script type="text/javascript" src="/js/Fluster2.packed.js"></script>#}
-<script src="/js/jquery.form.js"></script> 
-<script src="http://cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="//cdn.veespo.com/widget.wrapper_api_production/javascripts/jquery.veespo.js"></script>
 {%if notify%}<script type="text/javascript" src="/_ah/channel/jsapi"></script>{%endif%}
-<script src="/js/Chart.min.js"></script>    
+<script src="/js/Chart.min.js"></script>
 {#<script src="/js/map.js"></script>#}
 <!--  pages pappa mi-->
 <script src="/js/mobile/mobile-app.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.js"></script>
-</head> 
+<script src="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.js"></script>
+</head>
 
-<body data-channel-id="{{channel}}"> 
+<body data-channel-id="{{channel}}">
 <!-- app -->
 
 <div data-role="page" id="page-menu">
@@ -42,7 +42,7 @@
   <a href="#menu-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
   <a href="#menu-help" data-rel="popup" data-transition="slideup" data-role="button" data-iconpos="notext" data-shadow="false" data-iconshadow="true" data-icon="info">Informazioni</a>
- </div> 
+ </div>
  <div data-role="content">
   <div id="menu_form"></div>
   <ul id="menu_list" data-role="listview" data-inset="true"></ul>
@@ -51,7 +51,7 @@
       <div class="ui-block-a"><a class="menu_stat" data-role="button" data-mini="true" data-icon="info" data-iconpos="left">Statistiche</a></div>
       <div class="ui-block-b" id="menu_vote_c"><a class="menu_vote" data-role="button" data-theme="b" data-mini="true" data-icon="star" data-iconpos="left">Vota</a>
       </div>
-    </fieldset>  
+    </fieldset>
   </div-->
 
   <div id="menu-help" class="ui-content" data-role="popup">
@@ -64,12 +64,12 @@
 	<div>
 	  <h5>Anagrafica Scuole</h5>
 	  <ul>
-	  <li><a href="http://dati.comune.milano.it" data-ajax="false" target="new"><small>Sito OpenData Comune di Milano</small></a></li>
-	  <li><a href="http://archivio.pubblica.istruzione.it/scuola_in_chiaro/open_data/index.html" data-ajax="false" target="new"><small>Sito OpenData Ministero Istruzione</small></a></li>
+	  <li><a href="//dati.comune.milano.it" data-ajax="false" target="new"><small>Sito OpenData Comune di Milano</small></a></li>
+	  <li><a href="//archivio.pubblica.istruzione.it/scuola_in_chiaro/open_data/index.html" data-ajax="false" target="new"><small>Sito OpenData Ministero Istruzione</small></a></li>
 	  </ul>
 	  <h5>Menù del giorno e ingredienti dei piatti</h5>
 	  <ul>
-	  <li><a href="http://www.milanoristorazione.it" data-ajax="false" target="new"><small>Sito MilanoRistorazione</small></li>
+	  <li><a href="//www.milanoristorazione.it" data-ajax="false" target="new"><small>Sito MilanoRistorazione</small></li>
 	  </ul>
 	</div>
       </div>
@@ -85,13 +85,13 @@
 	    {%if notify%}<li><a data-icon="alert" href="#page-notifiche">Notifiche</a></li>{%endif%}
 	  </ul>
 	</div><!-- /navbar -->
- </div><!-- /footer -->	
+ </div><!-- /footer -->
  <div data-role="panel" data-display="reveal" id="menu-panel" data-theme="b">
   <div class="user_info"></div>
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%}
-  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a>
   <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
-  <div><small><a href="http://www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
+  <div><small><a href="//www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
   <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
  </div><!-- /panel -->
 </div>
@@ -117,13 +117,13 @@
       <tbody id="dish_components">
       </tbody>
     </table>
-    <a href="#page-menu" data-role="button" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>    
+    <a href="#page-menu" data-role="button" data-mini="true" data-transition="slide" data-direction="reverse" data-theme="c">Chiudi</a>
   </div>
 </div>
 <div data-role="page" id="page-dish-vote">
  <div data-role="header">
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
   <div data-role="content" data-theme="c" style="margin:0;padding:0;height:100%;" id="widget_vote">
   </div>
 </div>
@@ -144,7 +144,7 @@
       </table>
      </div>
     </div>
-    <a href="#page-dish-detail" data-role="button" data-mini="true" data-theme="c">Chiudi</a>    
+    <a href="#page-dish-detail" data-role="button" data-mini="true" data-theme="c">Chiudi</a>
   </div>
 </div>
 <div data-role="page" id="page-menu-stat">
@@ -200,7 +200,7 @@
 	</tbody>
       </table>
     </div>
-    <a data-role="button" href="#page-menu" data-mini="true" data-theme="c">Chiudi</a>    
+    <a data-role="button" href="#page-menu" data-mini="true" data-theme="c">Chiudi</a>
   </div>
 </div>
 
@@ -208,7 +208,7 @@
  <div data-role="header">
   <a href="#node-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Argomenti</a>
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
  <div id="page-stream-content" data-role="content">
   <div id="stream" class="stream-page">
     <ul id="post_list" class="s_post_list" data-role="listview" data-inset="true"></ul>
@@ -219,9 +219,9 @@
   <div class="user_info"></div>
   <div id="node_lists" data-role="collapsible-set" data-theme="b" data-content-theme="d"></div>
   {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%}
-  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a>
   <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
-  <div><small><a href="http://www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
+  <div><small><a href="//www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
   <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
 
  </div><!-- /panel -->
@@ -240,7 +240,7 @@
 <div data-role="page" id="page-school-chooser">
  <div data-role="header">
   <h1>Scegli una Scuola</h1>
- </div> 
+ </div>
  <div data-role="content">
  <ul id="school_list" data-role="listview" data-filter="true" data-filter-reveal="true" data-filter-placeholder="Scrivi il nome della Scuola..." data-inset="true"></ul>
  </div>
@@ -249,7 +249,7 @@
 <div data-role="page" id="page-post-detail">
  <div data-role="header">
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
   <div data-role="content" data-theme="c">
     <h3 id="post_title"></h3>
     <div>
@@ -260,7 +260,7 @@
 	<div class="s_post_d_node" id="post_node"></div>
 	<div class="s_post_d_date" id="post_date"></div>
 	<div class="s_post_d_author" id="post_author"></div>
-      </div>      
+      </div>
     </div>
     <div class="s_post_d_content" id="post_content"></div>
     <div id="post_resources"></div>
@@ -270,8 +270,8 @@
       <button id="post_votes_expand" data-icon="arrow-d" data-iconpos="right" data-role="button" data-mini="true" data-inline="true" data-theme="a">Voti: <span id="post_vote_num"></span></button>
     </div>
     <div id="post_commands" style="display:none;">
-      <button id="post_delete" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>  
-      <button id="post_reshare" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="b">Inoltra</button>  
+      <button id="post_delete" data-icon="delete" data-role="button" data-mini="true" data-inline="true" data-theme="b">Elimina</button>
+      <button id="post_reshare" data-icon="forward" data-role="button" data-mini="true" data-inline="true" data-theme="b">Inoltra</button>
     <span id="post_vote_c">
 	<button id="post_vote" data-icon="star" data-role="button" data-mini="true" data-inline="true" data-theme="b" data-vote="1">Vota</button>
       </span>
@@ -284,19 +284,19 @@
     </div>
     <div id="comment_add">
       <input type="hidden", name="post_id", id="post_id"/>
-      <textarea name="content" id="comment_content"></textarea>   
-      <a data-role="button" id="post_comment_submit" data-mini="true" data-theme="b">Salva commento</a>    
+      <textarea name="content" id="comment_content"></textarea>
+      <a data-role="button" id="post_comment_submit" data-mini="true" data-theme="b">Salva commento</a>
     </div>
-    <a href="#page-stream" data-mini="true" data-icon="arrow-l" data-role="button" data-rel="back" data-mini="true" data-theme="a">Chiudi</a>    
+    <a href="#page-stream" data-mini="true" data-icon="arrow-l" data-role="button" data-rel="back" data-mini="true" data-theme="a">Chiudi</a>
   </div>
   <div data-role="popup" id="popup-post-votes">
     <ul id="vote_list" data-role="listview"></ul>
-  </div>  
+  </div>
 </div>
 <div data-role="page" id="page-post-new">
  <div data-role="header">
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
   <div data-role="content" data-theme="c">
   <form id="form_post_new" data-ajax="false" action="/api/post/create" method="post" enctype="multipart/form-data">
     <div data-role="fieldcontain" class="ui-hide-label">
@@ -316,15 +316,15 @@
       <label for="attach">Allega:</label>
       <input type="file" name="attach_file" placeholder="Allega..." allow="image/jpeg, image/png, image/gif, image/tiff, application/pdf, application/msword, application/x-excel"/>
     </div>
-    <button id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="b">Salva</button>  
-    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="a">Annulla</a>  
+    <button id="post_save" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="b">Salva</button>
+    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="a">Annulla</a>
   </form>
   </div>
 </div>
 <div data-role="page" id="page-post-reshare">
  <div data-role="header">
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
   <div data-role="content" data-theme="c">
   <form id="form_post_reshare" data-ajax="false" action="/api/post/:post_id/reshare" method="post" enctype="multipart/form-data">
     <div data-role="fieldcontain" class="ui-hide-label">
@@ -344,8 +344,8 @@
       <div id="post_reshared_title"></div>
       <div id="post_reshared_content"></div>
     </div>
-    <button id="post_reshare" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Inoltra</button>  
-    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="c">Annulla</a>  
+    <button id="post_reshare" data-icon="check" data-role="button" data-mini="true" data-inline="true" data-theme="a">Inoltra</button>
+    <a href="#page-stream" data-rel="back" data-role="button" data-mini="true" data-inline="true" data-theme="c">Annulla</a>
   </form>
   </div>
 </div>
@@ -355,7 +355,7 @@
  <div data-role="header">
   <a href="#user-panel" data-theme="b" data-icon="arrow-r" data-iconpos="notext" data-shadow="false" data-iconshadow="true">Utenti</a>
   <h1><img class="logo_small" src="/img/pappa-mi-logo.png"/>PappaMi</h1>
- </div> 
+ </div>
  <div data-role="content">
   <!--div class="s_map" id="map_canvas"></div-->
   <ul id="message_list" data-role="listview"></ul>
@@ -367,7 +367,7 @@
    </select>
    <label for="message">Messaggio:</label>
    <input type="text" name="message" id="message" data-mini="true" value="" placeholder="Messaggio"/>
-   <button type="submit" id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="b">Invia</button>  
+   <button type="submit" id="message_send" data-icon="check" data-mini="true" data-inline="true" data-theme="b">Invia</button>
   </form>
   </div>
  </div>
@@ -375,10 +375,10 @@
   <div class="user_info"></div>
   <ul id="user_list" data-role="listview" data-inset="true" data-divider-theme="d">
   </ul>
-  {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%} 
-  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a> 
+  {%if cmsro%}<a href="/profilo" data-role="button" data-icon="gear" data-ajax="false" data-theme="c">Impostazioni</a>{%endif%}
+  <a href="/eauth/logout" data-role="button" data-ajax="false" data-theme="c">Esci</a>
   <div><small><a href="/chi" data-ajax="false" target="new">Contatti<a></small></div>
-  <div><small><a href="http://www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
+  <div><small><a href="//www.pappa-mi.it" data-ajax="false">Sito desktop<a></small></div>
   <div><small><a href="/condizioni" data-ajax="false" target="new">Condizioni del servizio</a></small></div>
  </div><!-- /panel -->
  <div data-role="footer" data-id="footer-1" data-position="fixed">
@@ -389,15 +389,9 @@
 	    <li><a class="ui-btn-active ui-state-persist" data-icon="alert" href="#page-notifiche">Notifiche</a></li>
 	  </ul>
 	</div><!-- /navbar -->
- </div><!-- /footer -->	
+ </div><!-- /footer -->
 </div>
 {%endif%}
-<script>  
-  var jsUrl = 'http://cdn.veespo.com/widget.wrapper_api_production/javascripts/widget.js';
-  var s = document.createElement('script');
-  s.async = true; s.src = jsUrl;
-  document.body.appendChild(s);
-</script>
 {%include "footer.inc"%}
 </body>
 </html>

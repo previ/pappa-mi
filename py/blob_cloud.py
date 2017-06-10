@@ -17,7 +17,7 @@ from google.appengine.api.images import ObjectNotFoundError
 class BlobCloud:
 
     bucket_name = "/" + app_identity.get_default_gcs_bucket_name()
-    server_base_url = "http://storage.googleapis.com"
+    server_base_url = "https://storage.googleapis.com"
 
     def create(self, blob_name, filename_orig, content_type):
 		self.blob_name = blob_name
@@ -64,7 +64,7 @@ class BlobCloud:
     def get_serving_url(cls, key="", name="", size=None):
         try:
             if size:
-                return images.get_serving_url(blob_key=key, size=size)
+                return images.get_serving_url(blob_key=key, size=size, secure_url=True)
             else:
                 return cls.server_base_url + unicode(cls.bucket_name) + unicode(name)
                 #return "/blob/" + str(key)

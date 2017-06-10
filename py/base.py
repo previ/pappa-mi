@@ -173,17 +173,19 @@ class BaseHandler(webapp.RequestHandler):
     if self.request.url.find("www.pappa-mi.it") != -1 :
       template_values["pappamiit"] = "true"
 
-    user_agent = httpagentparser.detect(self.request.headers.get("User-Agent"))
-    if user_agent.get("browser"):
-      if user_agent.get("browser").get("name"):
-        browser_name = user_agent.get("browser").get("name")
-        browser_ver = user_agent.get("browser").get("version")
-        #logging.info("Browser: " + browser_name + " version: " + browser_ver )
+    user_agent_header = self.request.headers.get("User-Agent")
+    if user_agent_header:
+      user_agent = httpagentparser.detect(self.request.headers.get("User-Agent"))
+      if user_agent.get("browser"):
+        if user_agent.get("browser").get("name"):
+          browser_name = user_agent.get("browser").get("name")
+          browser_ver = user_agent.get("browser").get("version")
+          #logging.info("Browser: " + browser_name + " version: " + browser_ver )
 
-        if unsupported_browsers.get(browser_name):
-          u_b = unsupported_browsers.get(browser_name)
-          if browser_ver in u_b:
-            template_values["main"] = 'unsupported.html'
+          if unsupported_browsers.get(browser_name):
+            u_b = unsupported_browsers.get(browser_name)
+            if browser_ver in u_b:
+              template_values["main"] = 'unsupported.html'
 
     if user and user.admin == None:
       user.admin = False
@@ -215,7 +217,7 @@ class BaseHandler(webapp.RequestHandler):
     template_values["url"] = url
     template_values["url_linktext"] = url_linktext
     template_values["host"] = self.getHost()
-    template_values["version"] = "3.2.3.43 - 2016.04.12"
+    template_values["version"] = "3.2.3.45 - 2017.06.09"
     template_values["ctx"] = self.get_context()
     if not template_values.get("page_title"):
       template_values["page_title"] = "Pappa-Mi Cosa e Come si mangia a Scuola"
