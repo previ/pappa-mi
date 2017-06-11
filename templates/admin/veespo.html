@@ -13,7 +13,7 @@ $(document).ready(function(){
  });
 
  $('#veespo_category_single').ajaxForm({dataType:'json', success:function(data) {alert(data);}});
- 
+
  drawDishes();
 
 });
@@ -29,7 +29,7 @@ function drawDishes() {
     $('#s_name').val($(this).text());
     $('#s_desc').val("");
    })
-   
+
    dishlist.append(dishitem);
   }
 }
@@ -39,7 +39,7 @@ function drawDishes() {
 <div class="row">
  <div class="span6">
   <legend>Create all dish targets</legend>
-  <form id="veespo_category" action="http://production.veespo.com/admin/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d/target/add" method="post">
+  <form id="veespo_category" action="//production.veespo.com/admin/category/ctg-f86fbf9e-b53b-e7a5-d75d-57139ea6541d/target/add" method="post">
   <input type="hidden" name="jfMethodOverride" value="post"/>
   <input type="hidden" id="id" name="uuid" value="pappa-mi-dish-"/>
   <input type="hidden" id="name" name="desc1" value=""/>

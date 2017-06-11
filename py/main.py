@@ -284,5 +284,3 @@ app.error_handlers[500] = handle_500
 
 #import py.dblog
 #py.dblog.patch_appengine()
-
-

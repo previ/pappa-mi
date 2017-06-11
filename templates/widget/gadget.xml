@@ -2,15 +2,15 @@
 <Module>
   <ModulePrefs title="Pappa-Mi - Cosa e come si mangia a Scuola" title_url="http://www.pappa-mi.it/"
           description="Mostra l'elenco dei dati raccolti per la scuola specificata"
-          thumbnail="http://www.gstatic.com/sites-gadgets/common/images/sites-icon-gadget-thumb.png"
-          screenshot="http://www.gstatic.com/sites-gadgets/common/images/sites-icon-gadget-ss.png"
+          thumbnail="//www.gstatic.com/sites-gadgets/common/images/sites-icon-gadget-thumb.png"
+          screenshot="//www.gstatic.com/sites-gadgets/common/images/sites-icon-gadget-ss.png"
           height="400" width="600" author="Pappa-Mi">
     <Require feature="dynamic-height"/>
   </ModulePrefs>
-  <UserPref name="node" display_name="Scuola" default_value="" datatype="enum">{%for node in nodes%}{%if node.resource|length > 0%} 
+  <UserPref name="node" display_name="Scuola" default_value="" datatype="enum">{%for node in nodes%}{%if node.resource|length > 0%}
     <EnumValue value="{{node.key.urlsafe()}}#{{node.resource[0].id()}}" display_value="{{node.name}}"/>{%endif%}{%endfor%}
   </UserPref>
-  <UserPref name="tipo" display_name="Tipo widget" default_value="list" datatype="enum"> 
+  <UserPref name="tipo" display_name="Tipo widget" default_value="list" datatype="enum">
     <EnumValue value="node" display_value="Lista messaggi"/>
     <EnumValue value="list" display_value="Lista dati"/>
     <EnumValue value="stat" display_value="Statistiche"/>

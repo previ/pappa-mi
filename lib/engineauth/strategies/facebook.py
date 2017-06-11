@@ -49,14 +49,14 @@ class FacebookStrategy(OAuth2Strategy):
                         'value': user.get('email'), # email
                         'type': None, # home, work
                         'primary': True, # boolean
-                        'verified': True # email                        
+                        'verified': True # email
                     },
                 ],
                 'nickname': user.get('login'),
                 'location': user.get('location'), # user_location
                 'aboutMe': user.get('bio'),
                 'image': {
-                    'url': "http://graph.facebook.com/{0}/picture?type=square".format(user.get('id'))
+                    'url': "https://graph.facebook.com/{0}/picture?type=square".format(user.get('id'))
                 },
                 'urls': [
                     {
@@ -73,5 +73,3 @@ class FacebookStrategy(OAuth2Strategy):
                     'raw_info': user,
                 }
         }
-
-

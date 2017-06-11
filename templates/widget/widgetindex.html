@@ -2,7 +2,7 @@
 $(function(){
  $('#citta').change(oncitychanged);
 });
- 
+
 function genWidget() {
     type = $("#e_type").val();
     cm = $("#cm").val();
@@ -18,12 +18,12 @@ function genWidget() {
     text="";
     if(type == "node") {
      $.ajax({dataType:'json', url:"/widget/node?cmd=get_by_cm&cm="+cm, success:function(data){
-      text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/node/' + data.node_key + '?bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';     
+      text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="//{{host}}/widget/node/' + data.node_key + '?bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';     
       $("#e_text").val(text);
       $("#e_widget").html(text);
      }});
     } else {
-     text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="http://{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
+     text = '<iframe width="'+width+'" height="'+height+'" frameborder="0" marginwidth="0" scrolling="no" marginheight="0" src="//{{host}}/widget/' + type + '?cm=' + cm + '&bc='+bc+'&fc='+fc+'&t=' + t + '"></iframe>';
      $("#e_text").val(text);
      $("#e_widget").html(text);
     }
@@ -60,10 +60,10 @@ function genWidget() {
     <select class="large required" id="citta" name="citta">
      <option value=""></option>
      {%for cit in citta%}<option value="{{cit.key.id()}}"{%if ctx.citta_key and cit.key.id() == ctx.citta_key%} selected{%endif%}>{{cit.nome}}</option>{%endfor%}
-    </select>   
+    </select>
    </div>
    <div class="controls">
-    <label for="e_width">Scuola</label>   
+    <label for="e_width">Scuola</label>
     <div class="input"><input class="" id="commissione_sel" name="commissione_sel" value="{{ctx.cm_name}}"/>
     <input type="hidden" id="cm" name="cm" value="{{ctx.cm_key}}"/></div>
    </div>
@@ -93,6 +93,6 @@ function genWidget() {
  </div>
  <div class="span8">
   <legend>Anteprima</legend>
-  <div id="e_widget"></div> 
+  <div id="e_widget"></div>
  </div>
 </div>

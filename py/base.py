@@ -263,7 +263,8 @@ class BaseHandler(webapp.RequestHandler):
     return host
 
   def getHost(self):
-    host = self.request.url[len("http://"):]
+    host = self.request.url
+    host = host[host.find("//")+2:]
     host = host[:host.find("/")]
     #logging.info("host: " + host)
     return host
